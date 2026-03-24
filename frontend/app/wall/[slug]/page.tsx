@@ -12,7 +12,9 @@ interface Photo {
   uploader_name: string;
   created_at: string;
   caption?: string;
+  event_id: string;
 }
+
 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow';
 
@@ -26,6 +28,7 @@ export default function WallPage() {
   const [notFound, setNotFound] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
+  const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
 
   // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
@@ -63,22 +66,32 @@ export default function WallPage() {
 
     const channel = supabase
       .channel(`photos-${eventId}`)
+      // Remove filter for safety, filter on client side instead to be bulletproof
       .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'photos',
-        filter: `event_id=eq.${eventId}`,
+        event: 'INSERT', schema: 'public', table: 'photos'
       }, (payload) => {
-        setPhotos((prev) => [...prev, payload.new as Photo]);
+        const newPhoto = payload.new as Photo;
+        if (newPhoto.event_id === eventId) {
+          setPhotos((prev) => {
+            if (prev.some(p => p.id === newPhoto.id)) return prev;
+            return [...prev, newPhoto];
+         });
+        }
       })
       .on('postgres_changes', {
-        event: 'DELETE', schema: 'public', table: 'photos',
-        filter: `event_id=eq.${eventId}`,
+        event: 'DELETE', schema: 'public', table: 'photos'
       }, (payload) => {
-        setPhotos((prev) => prev.filter((p) => p.id !== (payload.old as Photo).id));
+        const oldPhoto = payload.old as Photo;
+        setPhotos((prev) => prev.filter((p) => p.id !== oldPhoto.id));
       })
-      .subscribe();
+      .subscribe((status) => {
+        setRealtimeStatus(status);
+        console.log(`Realtime debug status [${eventId}]:`, status);
+      });
 
     return () => { supabase.removeChannel(channel); };
   }, [eventId]);
+
 
   // Slideshow auto-advance
   useEffect(() => {
@@ -208,11 +221,13 @@ export default function WallPage() {
                     {eventName || 'Loading…'}
                   </h1>
                   <div className="flex items-center gap-4">
-                    <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
+                    <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full flex items-center gap-3">
                       <span className="text-base font-semibold">
                         📸 {photos.length} photo{photos.length !== 1 ? 's' : ''} shared
                       </span>
+                      <span className={`w-2.5 h-2.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} title={`Realtime: ${realtimeStatus}`} />
                     </div>
+
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3 lg:gap-4">
