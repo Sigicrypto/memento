@@ -62,10 +62,10 @@ export default function UploadPage() {
       setFiles(selectedFiles);
       setPreviews(selectedFiles.map(f => URL.createObjectURL(f)));
       setSuccess(false);
-      // AUTO-UPLOAD!
-      uploadFiles(selectedFiles);
+      // Disabled Auto-Upload so user can enter caption
     }
   };
+
 
 
   const uploadFiles = async (filesToUpload: File[]) => {
@@ -177,7 +177,26 @@ export default function UploadPage() {
 
         {/* Uploading & Previews section (floating above or placed inline) */}
         <div className="w-full max-w-sm space-y-4">
+          
+          {previews.length > 0 && !uploading && (
+            <div className="bg-white rounded-3xl p-6 shadow-xl space-y-4 text-slate-800 transform transition animate-scaleIn">
+              <h4 className="font-bold text-lg">Add Details (Optional)</h4>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Your Name</label>
+                <input type="text" className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)} placeholder="e.g. Uncle Bob" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Message</label>
+                <textarea className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="What a beautiful day!" rows={2} />
+              </div>
+              <button onClick={() => uploadFiles(files)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-95">
+                📤 Post to Wall
+              </button>
+            </div>
+          )}
+
           {previews.length > 0 && (
+
             <div className="grid grid-cols-2 gap-3">
               {previews.map((prev, idx) => (
                 <div key={idx} className="rounded-xl overflow-hidden border border-slate-800 aspect-square relative shadow-md">
