@@ -151,27 +151,12 @@ export default function UploadPage() {
 
   // Upload form
   return (
-    <div className="bg-[#0b1120] min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-white font-sans">
+
+    <div className="aurora-bg min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-white font-sans">
       <div className="w-full max-w-md flex flex-col items-center">
         
-        {/* Wizard Steps Indicators (similar to image 1 top bar) */}
-        <div className="flex items-center gap-4 mb-16 mt-6">
-          <div className="w-9 h-9 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)] flex items-center justify-center text-white text-sm font-semibold">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-            </svg>
-          </div>
-          <div className="w-8 h-[2px] bg-slate-700"></div>
-          <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 text-sm">✏️</div>
-          <div className="w-8 h-[2px] bg-slate-700"></div>
-          <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 text-sm">🎨</div>
-        </div>
-
-        {/* Title & Description */}
-        <h2 className="text-xl font-bold text-center mb-2 text-white">Let's set up your wall</h2>
-        <p className="text-slate-400 text-sm text-center mb-10 leading-relaxed">It takes less than 2 minutes.<br />Upload a few photos to get started.</p>
-
         {/* The White Prompt Card (Standard high contrast shape) */}
+
         <div className="w-full bg-white rounded-3xl p-8 shadow-2xl text-center mb-8 transform transition hover:scale-[1.01]">
           <h3 className="text-xl font-extrabold text-slate-900 mb-2">Upload your first photo or video</h3>
           <p className="text-slate-500 text-sm mb-10 leading-relaxed">Select some items you like and love from your camera roll.</p>
