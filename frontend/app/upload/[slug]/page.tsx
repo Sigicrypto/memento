@@ -17,8 +17,8 @@ export default function UploadPage() {
 
   const [uploaderName, setUploaderName] = useState('');
   const [caption, setCaption] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [success, setSuccess] = useState(false);
@@ -37,6 +37,19 @@ export default function UploadPage() {
     fetchEvent();
   }, [slug]);
 
+  // AUTO-CLICK CAMERA ON UNLOCK
+  useEffect(() => {
+    if (unlocked) {
+      setTimeout(() => {
+        const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (input) {
+          input.click();
+        }
+      }, 500);
+    }
+  }, [unlocked]);
+
+
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === eventPassword) { setUnlocked(true); setPasswordError(''); }
@@ -44,33 +57,57 @@ export default function UploadPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (f) { setFile(f); setPreview(URL.createObjectURL(f)); setSuccess(false); }
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > 0) {
+      setFiles(selectedFiles);
+      setPreviews(selectedFiles.map(f => URL.createObjectURL(f)));
+      setSuccess(false);
+      // AUTO-UPLOAD!
+      uploadFiles(selectedFiles);
+    }
+  };
+
+
+  const uploadFiles = async (filesToUpload: File[]) => {
+    if (filesToUpload.length === 0 || !eventId) return;
+    setUploading(true); setUploadProgress(10); setError('');
+
+    let uploadErrors: string[] = [];
+
+    for (let i = 0; i < filesToUpload.length; i++) {
+       const fileItem = filesToUpload[i];
+       const ext = fileItem.name.split('.').pop();
+       const filePath = `${eventId}/${Date.now()}-${i}.${ext}`;
+
+       setUploadProgress(Math.round(((i + 0.1) / filesToUpload.length) * 100));
+       const { error: uploadError } = await supabase.storage.from('photos').upload(filePath, fileItem);
+       if (uploadError) { uploadErrors.push(uploadError.message); continue; }
+
+       setUploadProgress(Math.round(((i + 0.5) / filesToUpload.length) * 100));
+       const { error: dbError } = await supabase.from('photos').insert({
+         event_id: eventId, storage_path: filePath,
+         uploader_name: uploaderName || 'Guest', caption: caption || null,
+       });
+       if (dbError) { uploadErrors.push(dbError.message); continue; }
+    }
+
+    if (uploadErrors.length > 0) {
+       setError(`Failed to upload ${uploadErrors.length} file(s): ${uploadErrors[0]}`);
+       setUploading(false);
+       setUploadProgress(0);
+       return;
+    }
+
+    setUploadProgress(100);
+    setTimeout(() => setUploadProgress(0), 800);
+    setSuccess(true); setFiles([]); setPreviews([]); setCaption(''); setUploading(false);
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !eventId) return;
-    setUploading(true); setUploadProgress(10); setError('');
-
-    const ext = file.name.split('.').pop();
-    const filePath = `${eventId}/${Date.now()}.${ext}`;
-
-    setUploadProgress(30);
-    const { error: uploadError } = await supabase.storage.from('photos').upload(filePath, file);
-    if (uploadError) { setError(uploadError.message); setUploading(false); setUploadProgress(0); return; }
-
-    setUploadProgress(70);
-    const { error: dbError } = await supabase.from('photos').insert({
-      event_id: eventId, storage_path: filePath,
-      uploader_name: uploaderName || 'Guest', caption: caption || null,
-    });
-    if (dbError) { setError(dbError.message); setUploading(false); setUploadProgress(0); return; }
-
-    setUploadProgress(100);
-    setTimeout(() => setUploadProgress(0), 800);
-    setSuccess(true); setFile(null); setPreview(null); setCaption(''); setUploading(false);
+    await uploadFiles(files);
   };
+
 
   // Not found
   if (error === 'Event not found.') {
@@ -141,14 +178,22 @@ export default function UploadPage() {
                 placeholder="e.g. What a beautiful day!" rows={2} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-dark-text mb-1.5">Photo</label>
-              <input type="file" accept="image/*" onChange={handleFileChange}
+              <label className="block text-xs font-medium text-dark-text mb-1.5">Photos & Videos</label>
+              <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange}
                 className="input cursor-pointer file:mr-3 file:border-0 file:bg-primary/10 file:text-primary-light file:font-medium file:rounded-lg file:px-3 file:py-1 file:text-xs" required />
             </div>
 
-            {preview && (
-              <div className="rounded-xl overflow-hidden border border-dark-border">
-                <img src={preview} alt="Preview" className="w-full h-52 object-cover" />
+            {previews.length > 0 && (
+              <div className="grid grid-cols-2 gap-3">
+                {previews.map((prev, idx) => (
+                  <div key={idx} className="rounded-xl overflow-hidden border border-dark-border aspect-square relative">
+                    {files[idx]?.type.startsWith('video/') ? (
+                      <video src={prev} className="w-full h-full object-cover" controls playsInline />
+                    ) : (
+                      <img src={prev} alt="Preview" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                ))}
               </div>
             )}
 
@@ -170,7 +215,7 @@ export default function UploadPage() {
               </div>
             )}
 
-            <button type="submit" className="btn-primary w-full !py-3" disabled={uploading || !file}>
+            <button type="submit" className="btn-primary w-full !py-3" disabled={uploading || files.length === 0}>
               {uploading ? (
                 <span className="flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
