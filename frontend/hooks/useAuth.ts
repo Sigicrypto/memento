@@ -26,7 +26,16 @@ export const useAuth = () => {
     supabase.auth.signInWithPassword({ email, password });
 
   const signUp = (email: string, password: string, phone?: string) =>
-    supabase.auth.signUp({ email, password, options: { data: { phone: phone || '' } } });
+    supabase.auth.signUp({ 
+      email, 
+      password, 
+      options: { 
+        data: { phone: phone || '' },
+        emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`
+      } 
+    });
+
+
 
   const signOut = () => supabase.auth.signOut();
 
