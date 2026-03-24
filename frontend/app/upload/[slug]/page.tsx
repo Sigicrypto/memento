@@ -151,81 +151,82 @@ export default function UploadPage() {
 
   // Upload form
   return (
-    <div className="aurora-bg min-h-[85vh] flex items-center justify-center px-4 py-8">
-      <div className="relative z-10 w-full max-w-md">
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-accent/10 to-accent2/10 blur-xl pointer-events-none" />
-        <div className="card relative !p-8">
-          <div className="flex justify-center mb-5">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent2 flex items-center justify-center text-2xl glow-purple">
-              📸
-            </div>
+    <div className="bg-[#0b1120] min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-white font-sans">
+      <div className="w-full max-w-md flex flex-col items-center">
+        
+        {/* Wizard Steps Indicators (similar to image 1 top bar) */}
+        <div className="flex items-center gap-4 mb-16 mt-6">
+          <div className="w-9 h-9 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)] flex items-center justify-center text-white text-sm font-semibold">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
           </div>
-          <h1 className="text-2xl font-bold text-center mb-1">Upload a Photo</h1>
-          <p className="text-dark-text text-sm text-center mb-6">
-            {eventName ? `Sharing to "${eventName}"` : 'Loading...'}
-          </p>
+          <div className="w-8 h-[2px] bg-slate-700"></div>
+          <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 text-sm">✏️</div>
+          <div className="w-8 h-[2px] bg-slate-700"></div>
+          <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 text-sm">🎨</div>
+        </div>
+
+        {/* Title & Description */}
+        <h2 className="text-xl font-bold text-center mb-2 text-white">Let's set up your wall</h2>
+        <p className="text-slate-400 text-sm text-center mb-10 leading-relaxed">It takes less than 2 minutes.<br />Upload a few photos to get started.</p>
+
+        {/* The White Prompt Card (Standard high contrast shape) */}
+        <div className="w-full bg-white rounded-3xl p-8 shadow-2xl text-center mb-8 transform transition hover:scale-[1.01]">
+          <h3 className="text-xl font-extrabold text-slate-900 mb-2">Upload your first photo or video</h3>
+          <p className="text-slate-500 text-sm mb-10 leading-relaxed">Select some items you like and love from your camera roll.</p>
 
           <form onSubmit={handleUpload} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-dark-text mb-1.5">Your Name (optional)</label>
-              <input type="text" className="input" value={uploaderName}
-                onChange={(e) => setUploaderName(e.target.value)} placeholder="e.g. Uncle Bob" />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-dark-text mb-1.5">Message (optional)</label>
-              <textarea className="input" value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                placeholder="e.g. What a beautiful day!" rows={2} />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-dark-text mb-1.5">Photos & Videos</label>
-              <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange}
-                className="input cursor-pointer file:mr-3 file:border-0 file:bg-primary/10 file:text-primary-light file:font-medium file:rounded-lg file:px-3 file:py-1 file:text-xs" required />
-            </div>
+            {/* Hidden Input */}
+            <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange}
+              className="hidden" id="photo-upload" required />
 
-            {previews.length > 0 && (
-              <div className="grid grid-cols-2 gap-3">
-                {previews.map((prev, idx) => (
-                  <div key={idx} className="rounded-xl overflow-hidden border border-dark-border aspect-square relative">
-                    {files[idx]?.type.startsWith('video/') ? (
-                      <video src={prev} className="w-full h-full object-cover" controls playsInline />
-                    ) : (
-                      <img src={prev} alt="Preview" className="w-full h-full object-cover" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {uploadProgress > 0 && (
-              <div className="w-full bg-dark-surface rounded-full h-2 overflow-hidden">
-                <div className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${uploadProgress}%` }} />
-              </div>
-            )}
-
-            {error && error !== 'Event not found.' && (
-              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/15 p-3 rounded-xl">
-                <span>⚠️</span> {error}
-              </div>
-            )}
-            {success && (
-              <div className="flex items-center gap-2 text-green-400 text-sm bg-green-500/10 border border-green-500/15 p-3 rounded-xl">
-                <span>✅</span> Photo uploaded! Feel free to upload another.
-              </div>
-            )}
-
-            <button type="submit" className="btn-primary w-full !py-3" disabled={uploading || files.length === 0}>
-              {uploading ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Uploading…
-                </span>
-              ) : '📤 Upload Photo'}
-            </button>
+            {/* Large Circle Trigger Icon */}
+            <label htmlFor="photo-upload" className="w-16 h-16 bg-white border border-slate-100 rounded-full flex items-center justify-center mx-auto shadow-lg hover:shadow-xl hover:scale-105 transition cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-slate-700">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+            </label>
           </form>
         </div>
+
+        {/* Uploading & Previews section (floating above or placed inline) */}
+        <div className="w-full max-w-sm space-y-4">
+          {previews.length > 0 && (
+            <div className="grid grid-cols-2 gap-3">
+              {previews.map((prev, idx) => (
+                <div key={idx} className="rounded-xl overflow-hidden border border-slate-800 aspect-square relative shadow-md">
+                  {files[idx]?.type.startsWith('video/') ? (
+                    <video src={prev} className="w-full h-full object-cover" controls playsInline />
+                  ) : (
+                    <img src={prev} alt="Preview" className="w-full h-full object-cover" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {uploadProgress > 0 && (
+            <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${uploadProgress}%` }} />
+            </div>
+          )}
+
+          {error && error !== 'Event not found.' && (
+            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 p-3 rounded-xl shadow-sm">
+              <span>⚠️</span> {error}
+            </div>
+          )}
+          {success && (
+            <div className="flex items-center gap-2 text-green-400 text-sm bg-green-500/10 border border-green-500/20 p-3 rounded-xl shadow-sm">
+              <span>✅</span> Uploaded successfully! Add more files above.
+            </div>
+          )}
+        </div>
+        
       </div>
     </div>
   );
 }
+
