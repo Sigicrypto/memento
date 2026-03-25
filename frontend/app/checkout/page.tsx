@@ -80,20 +80,20 @@ function CheckoutContent() {
                   {regionLabel} price
                 </span>
               </div>
-              <p className="text-dark-text text-sm mb-8">
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-8">
                 You are buying <span className="text-primary-light font-bold">{planLabel}</span>.
               </p>
               
-              <div className="bg-dark-card/50 border border-dark-border p-4 rounded-xl mb-8 text-left">
+              <div className="bg-white/10 border border-white/15 p-4 rounded-xl mb-8 text-left">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-dark-text">Memento {planLabel}</span>
+                  <span className="text-gray-600 dark:text-gray-200">Memento {planLabel}</span>
                   <span className="text-white font-bold">Demo checkout</span>
                 </div>
-                <div className="border-t border-dark-border my-2 pt-2 flex justify-between font-bold">
+                <div className="border-t border-white/15 my-2 pt-2 flex justify-between font-bold">
                   <span>Total Due</span>
                   <span className="text-primary-light">{priceDisplay}</span>
                 </div>
-                <div className="text-dark-text text-xs mt-2">
+                <div className="text-gray-500 dark:text-gray-300 text-xs mt-2">
                   Pay once today. Your wall remains available for Signature duration.
                 </div>
               </div>
@@ -104,7 +104,7 @@ function CheckoutContent() {
               >
                 Confirm Mock Payment
               </button>
-              <Link href="/pricing" className="block mt-4 text-xs text-dark-text hover:text-white transition">
+              <Link href="/pricing" className="block mt-4 text-xs text-gray-500 dark:text-gray-400 hover:text-white transition">
                 Cancel and go back
               </Link>
             </>
@@ -114,22 +114,22 @@ function CheckoutContent() {
             <div className="py-10">
               <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-6" />
               <h2 className="text-xl font-bold mb-2">Processing Payment...</h2>
-              <p className="text-dark-text text-sm">Please do not refresh the page.</p>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">Please do not refresh the page.</p>
             </div>
           )}
 
           {status === 'SUCCESS' && (
-            <div className="py-10 animate-scaleIn">
+            <div className="py-10">
               <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-lg shadow-green-500/20">
                 ✅
               </div>
               <h2 className="text-2xl font-bold mb-2 text-white">Upgrade Successful!</h2>
-              <p className="text-dark-text text-sm mb-8">
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-8">
                 Your account has been upgraded to **{planLabel}**.
                 Redirecting you to the dashboard...
               </p>
-              <div className="w-full bg-dark-border h-1 rounded-full overflow-hidden">
-                <div className="bg-green-500 h-full animate-progress" />
+              <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                <div className="bg-green-500 h-full w-full transition-all duration-500" />
               </div>
             </div>
           )}
