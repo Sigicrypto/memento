@@ -558,39 +558,61 @@ export default function WallPage() {
         </div>
       ) : viewMode === 'polaroid' ? (
         // ── POLAROID ──
-        <div className="flex flex-wrap justify-center gap-10 p-8">
-          {photos.map((photo, index) => (
-            <div 
-              key={photo.id} 
-              className="bg-white dark:bg-gray-900 p-5 pb-7 rounded-xl shadow-2xl w-80 transform hover:scale-105 transition-all duration-300 border border-gray-200 dark:border-gray-700 flex flex-col group hover:shadow-3xl"
-              style={{
-                transform: `rotate(${(index % 3 - 1) * 2}deg)`,
-                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-              }}
-            >
-              <div className="aspect-square overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-950 mb-5 group-hover:scale-105 transition-transform duration-300">
-                <img 
-                  src={getPublicUrl(photo.storage_path)} 
-                  alt={`By ${photo.uploader_name}`}
-                  className="w-full h-full object-cover" 
-                  loading="lazy" 
-                />
-              </div>
-              <div className="text-center flex-1">
-                {photo.caption && (
-                  <p className="text-gray-800 dark:text-gray-200 text-sm italic mb-3 font-medium">"{photo.caption}"</p>
-                )}
-                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">By {photo.uploader_name}</p>
-              </div>
-              <button
-                onClick={() => downloadPhoto(photo)}
-                className="mt-5 text-sm text-purple-600 dark:text-purple-400 opacity-0 group-hover:opacity-100 transition hover:underline font-medium"
-              >
-                ⬇ Download
-              </button>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-950/30 to-gray-900 relative overflow-hidden">
+          {/* Enhanced background */}
+          <div className="fixed inset-0 bg-gradient-to-br from-purple-950/20 via-transparent to-cyan-950/10 pointer-events-none" />
+          <div className="fixed inset-0 grid-pattern pointer-events-none opacity-20" />
+          <div className="noise-overlay opacity-10" />
+          
+          {/* Ambient glows */}
+          <div className="glow-orb w-[700px] h-[700px] bg-purple-600/12 top-[-300px] right-[-200px] blur-3xl" />
+          <div className="glow-orb w-[600px] h-[600px] bg-cyan-600/10 bottom-[-200px] left-[-100px] blur-2xl" />
+          <div className="glow-orb w-[400px] h-[400px] bg-pink-600/8 top-1/2 left-1/3 blur-xl" />
+          
+          <div className="relative z-10 p-8 pt-8">
+            <div className="flex flex-wrap justify-center gap-12">
+              {photos.map((photo, index) => (
+                <div 
+                  key={photo.id} 
+                  className="bg-gray-900/60 backdrop-blur-xl p-6 pb-8 rounded-2xl shadow-2xl w-80 transform hover:scale-105 transition-all duration-500 border border-purple-500/20 flex flex-col group hover:shadow-3xl hover:border-purple-400/40"
+                  style={{
+                    transform: `rotate(${(index % 5 - 2) * 3}deg)`,
+                    animation: `fadeInUp 0.8s ease-out ${index * 0.15}s both`
+                  }}
+                >
+                  {/* Polaroid frame decoration */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-cyan-500/5 rounded-2xl pointer-events-none" />
+                  
+                  <div className="aspect-square overflow-hidden rounded-xl bg-gray-800/50 mb-6 group-hover:scale-105 transition-transform duration-500 border border-purple-500/10">
+                    <img 
+                      src={getPublicUrl(photo.storage_path)} 
+                      alt={`By ${photo.uploader_name}`}
+                      className="w-full h-full object-cover" 
+                      loading="lazy" 
+                    />
+                  </div>
+                  
+                  <div className="text-center flex-1">
+                    {photo.caption && (
+                      <p className="text-gray-200 text-sm italic mb-3 font-medium text-shadow">"{photo.caption}"</p>
+                    )}
+                    <p className="text-gray-400 text-sm font-medium flex items-center justify-center gap-2">
+                      <span className="text-purple-400">📷</span> {photo.uploader_name}
+                    </p>
+                  </div>
+                  
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      onClick={() => downloadPhoto(photo)}
+                      className="text-sm text-purple-300 opacity-0 group-hover:opacity-100 transition hover:text-purple-200 font-medium flex items-center gap-2"
+                    >
+                      <span>⬇</span> Download
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
       ) : (
         // ── MASONRY GRID ──
         <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6 lg:gap-8 space-y-6 lg:space-y-8 p-6 lg:p-8">
