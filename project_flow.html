@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memento - Interactive project Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --primary: #9333ea;
+            --primary-glow: rgba(147, 51, 234, 0.3);
+            --secondary: #2563eb;
+            --secondary-glow: rgba(37, 99, 235, 0.3);
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Glows */
+        .ambient-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            filter: blur(50px);
+            z-index: 0;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--secondary-glow) 0%, transparent 70%);
+            bottom: -100px;
+            right: -100px;
+            filter: blur(60px);
+            z-index: 0;
+            animation: float-reverse 12s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 40px) scale(1.1); }
+        }
+
+        @keyframes float-reverse {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-40px, -20px) scale(1.05); }
+        }
+
+        header {
+            margin-top: 4rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 500px;
+        }
+
+        /* Timeline Container */
+        .timeline {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            padding: 0 2rem 5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+            z-index: 10;
+        }
+
+        /* Connection Line */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            bottom: 3rem;
+            left: 50px;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            opacity: 0.3;
+        }
+
+        .step {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            position: relative;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.6s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .step:nth-child(1) { animation-delay: 0.2s; }
+        .step:nth-child(2) { animation-delay: 0.4s; }
+        .step:nth-child(3) { animation-delay: 0.6s; }
+        .step:nth-child(4) { animation-delay: 0.8s; }
+
+        /* Number Circle */
+        .step-num {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover .step-num {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--primary);
+            color: #fff;
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        /* Card Content */
+        .step-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2rem;
+            flex-grow: 1;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .step:hover .step-card {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.12);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .step-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .step:nth-child(even) .step-tag {
+            color: var(--secondary);
+        }
+
+        .step-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* Action/Planning Grid */
+        .plan-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 1.5rem;
+        }
+
+        .plan-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .plan-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .plan-label span {
+            font-size: 1.1rem;
+        }
+
+        .plan-content {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            list-style: none;
+        }
+
+        .plan-content li {
+            position: relative;
+            padding-left: 1.2rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .plan-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .step:nth-child(even) .plan-content li::before {
+            color: var(--secondary);
+        }
+
+        @media (max-width: 640px) {
+            .plan-grid { grid-template-columns: 1fr; }
+            .timeline::before { left: 30px; }
+            .step-num { width: 40px; height: 40px; font-size: 1.2rem; border-radius: 12px; }
+            .timeline { padding: 0 1rem; }
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <header>
+        <h1>Memento Journey Map</h1>
+        <p>A user-centric flow of the application highlighting key action zones and where you can focus improvements.</p>
+    </header>
+
+    <div class="timeline">
+        <!-- Step 1: Host Dashboard -->
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-card">
+                <span class="step-tag">Step 1 — Setup</span>
+                <h3 class="step-title">The Host Dashboard</h3>
+                <p class="step-desc">The visual control center. Here, users register/login via ✨ <code>/auth</code> and create their custom event timeline via 📂 <code>/dashboard</code> and ➕ <code>/create</code>.</p>
+                
+                <div class="plan-grid">
+                    <div class="plan-item">
+                        <span class="plan-label">📂 App Location</span>
+                        <ul class="plan-content">
+                            <li><code>app/dashboard/page.tsx</code></li>
+                            <li><code>app/create/page.tsx</code></li>
+                        </ul>
+                    </div>
+                    <div class="plan-item">
+                        <span class="plan-label">🛠️ What to Plan / Change</span>
+                        <ul class="plan-content">
+                            <li>Add Stripe sub tier hooks?</li>
+                            <li>Refine folder deletion alerts?</li>
+                            <li>Multi-role host setup?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: QR Gate -->
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-card">
+                <span class="step-tag">Step 2 — Sharing</span>
+                <h3 class="step-title">The Onboarding Bridge</h3>
+                <p class="step-desc">The dashboard generates a dedicated 📱 <code>/upload/[slug]</code> link rendered as a QR code or direct link to display in real-time or printed tabletop signs.</p>
+                
+                <div class="plan-grid">
+                    <div class="plan-item">
+                        <span class="plan-label">📂 App Location</span>
+                        <ul class="plan-content">
+                            <li><code>app/dashboard/page.tsx</code></li>
+                            <li><code>app/wall/[slug]/page.tsx</code></li>
+                        </ul>
+                    </div>
+                    <div class="plan-item">
+                        <span class="plan-label">🛠️ What to Plan / Change</span>
+                        <ul class="plan-content">
+                            <li>Add "Download Printable PDF"?</li>
+                            <li>Enable slug updates?</li>
+                            <li>Shortened custom domains?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Guest Upload -->
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-card">
+                <span class="step-tag">Step 3 — Action</span>
+                <h3 class="step-title">Guest Camera Stream</h3>
+                <p class="step-desc">Guests visit 📤 <code>/upload/[slug]</code>. Behind a frictionless gateway, they select photos, add names, and streams files directly to Supabase storage to populate the grid.</p>
+                
+                <div class="plan-grid">
+                    <div class="plan-item">
+                        <span class="plan-label">📂 App Location</span>
+                        <ul class="plan-content">
+                            <li><code>app/upload/[slug]/page.tsx</code></li>
+                            <li><code>supabase_storage_rls.sql</code></li>
+                        </ul>
+                    </div>
+                    <div class="plan-item">
+                        <span class="plan-label">🛠️ What to Plan / Change</span>
+                        <ul class="plan-content">
+                            <li>Cache Guest Name during turn?</li>
+                            <li>Offline upload caching?</li>
+                            <li>HEIC to JPG convert fallback?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Live Wall -->
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-card">
+                <span class="step-tag">Step 4 — Presentation</span>
+                <h3 class="step-title">The Realtime Stream</h3>
+                <p class="step-desc">The projector screen view at 🖼️ <code>/wall/[slug]</code>. Listens instantly to Insert events to push pictures as polaroids or grids with fully animated transitions.</p>
+                
+                <div class="plan-grid">
+                    <div class="plan-item">
+                        <span class="plan-label">📂 App Location</span>
+                        <ul class="plan-content">
+                            <li><code>app/wall/[slug]/page.tsx</code></li>
+                            <li><code>supabase_photos_rls.sql</code></li>
+                        </ul>
+                    </div>
+                    <div class="plan-item">
+                        <span class="plan-label">🛠️ What to Plan / Change</span>
+                        <ul class="plan-content">
+                            <li>Moderate channel toggle integration?</li>
+                            <li>Confetti triggers on insert?</li>
+                            <li>Masonry layout optimizations?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Open this file in your browser. Design mockup by Antigravity.</p>
+    </footer>
+</body>
+</html>
