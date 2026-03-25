@@ -25,18 +25,19 @@ function getRegionFromCookie(): Region {
 function getSignaturePrice(region: Region) {
   if (region === 'IN') {
     return {
-      display: 'INR ₹5,000',
+      display: '5000 INR',
     };
   }
 
   return {
-    display: 'USD 60',
+    display: '60 USD',
   };
 }
 
 export default function Pricing() {
   const region = getRegionFromCookie();
   const price = getSignaturePrice(region);
+  const regionLabel = region === 'IN' ? 'India pricing' : 'Global pricing';
 
   return (
     <section id="pricing" className="relative z-10 w-full flex flex-col items-center px-6 py-32 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent">
@@ -63,21 +64,36 @@ export default function Pricing() {
 
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{SIGNATURE.name}</h3>
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white uppercase tracking-wider shadow-md">
-                  One-time
-                </span>
+                <div className="flex items-start gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-600/15 to-cyan-400/10 flex items-center justify-center text-2xl shadow-inner">
+                    ✨
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">{SIGNATURE.name}</h3>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white uppercase tracking-wider shadow-md">
+                    One-time
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-white/40 dark:bg-white/10 border border-purple-500/20 text-purple-700 dark:text-purple-300">
+                    {regionLabel}
+                  </span>
+                </div>
               </div>
 
               <p className="text-gray-500 dark:text-gray-400 text-xs mb-6 min-h-[40px] leading-relaxed">
                 {SIGNATURE.description}
               </p>
 
-              <div className="mb-6 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-gray-900 dark:text-white transition-all duration-300">
-                  {price.display}
-                </span>
-                <span className="text-gray-400 dark:text-gray-500 text-xs">/one time payment</span>
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-extrabold text-gray-900 dark:text-white transition-all duration-300">
+                    {price.display}
+                  </span>
+                  <span className="text-gray-400 dark:text-gray-500 text-xs">/one time</span>
+                </div>
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  Pay once. Keep your wall for the full Signature duration.
+                </div>
               </div>
 
               <Link

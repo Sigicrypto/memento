@@ -30,7 +30,8 @@ function CheckoutContent() {
   }, []);
 
   const planLabel = planName === 'SIGNATURE' ? 'Signature' : planName;
-  const priceDisplay = region === 'IN' ? 'INR ₹5,000' : 'USD 60';
+  const priceDisplay = region === 'IN' ? '5000 INR' : '60 USD';
+  const regionLabel = region === 'IN' ? 'India' : 'Global';
 
   const handlePayment = async () => {
     setStatus('PROCESSING');
@@ -71,18 +72,29 @@ function CheckoutContent() {
                 💳
               </div>
               <h1 className="text-2xl font-bold mb-2">Checkout</h1>
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white uppercase tracking-wider shadow-md">
+                  One-time
+                </span>
+                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-white/10 border border-white/20 text-white/90">
+                  {regionLabel} price
+                </span>
+              </div>
               <p className="text-dark-text text-sm mb-8">
-                You are upgrading to the <span className="text-primary-light font-bold">{planLabel}</span> plan.
+                You are buying <span className="text-primary-light font-bold">{planLabel}</span>.
               </p>
               
               <div className="bg-dark-card/50 border border-dark-border p-4 rounded-xl mb-8 text-left">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-dark-text">Memento {planLabel}</span>
-                  <span className="text-white font-bold">Mock Payment</span>
+                  <span className="text-white font-bold">Demo checkout</span>
                 </div>
                 <div className="border-t border-dark-border my-2 pt-2 flex justify-between font-bold">
                   <span>Total Due</span>
-                  <span className="text-primary-light">{priceDisplay} (Developer Mock)</span>
+                  <span className="text-primary-light">{priceDisplay}</span>
+                </div>
+                <div className="text-dark-text text-xs mt-2">
+                  Pay once today. Your wall remains available for Signature duration.
                 </div>
               </div>
 
