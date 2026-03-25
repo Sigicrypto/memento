@@ -115,34 +115,48 @@ export default function WallPage() {
     fetchPhotos();
 
     const channel = supabase
-      .channel(`photos-${eventId}`)
-      .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'photos'
-      }, (payload) => {
-        const newPhoto = payload.new as Photo;
-        if (newPhoto.event_id === eventId) {
+      .channel(`wall-photos-${eventId}`)
+      .on('postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
+        (payload) => {
+          console.log('New photo received:', payload.new);
+          const newPhoto = payload.new as Photo;
+          
           setPhotos((prev) => {
-            if (prev.some(p => p.id === newPhoto.id)) return prev;
+            // Check if photo already exists
+            if (prev.some(p => p.id === newPhoto.id)) {
+              console.log('Photo already exists, skipping');
+              return prev;
+            }
+            console.log('Adding new photo to wall');
             return [...prev, newPhoto];
-         });
-         
-         // Trigger confetti for new photos (only in non-moderation mode)
-         if (!moderationMode) {
-           setNewPhotoId(newPhoto.id);
-           setConfettiTrigger(true);
-           setTimeout(() => setConfettiTrigger(false), 100);
-         }
+          });
+          
+          // Trigger confetti for new photos (only in non-moderation mode)
+          if (!moderationMode) {
+            setNewPhotoId(newPhoto.id);
+            setConfettiTrigger(true);
+            setTimeout(() => setConfettiTrigger(false), 100);
+          }
         }
-      })
-      .on('postgres_changes', {
-        event: 'DELETE', schema: 'public', table: 'photos'
-      }, (payload) => {
-        const oldPhoto = payload.old as Photo;
-        setPhotos((prev) => prev.filter((p) => p.id !== oldPhoto.id));
-      })
+      )
+      .on('postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
+        (payload) => {
+          console.log('Photo deleted:', payload.old);
+          const oldPhoto = payload.old as Photo;
+          setPhotos((prev) => prev.filter((p) => p.id !== oldPhoto.id));
+        }
+      )
       .subscribe((status) => {
         setRealtimeStatus(status);
-        console.log(`Realtime debug status [${eventId}]:`, status);
+        console.log(`Realtime subscription status [${eventId}]:`, status);
+        
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Successfully subscribed to real-time updates');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Realtime subscription failed');
+        }
       });
 
     return () => { supabase.removeChannel(channel); };
@@ -317,6 +331,9 @@ export default function WallPage() {
                   </button>
                   <Link href={`/upload/${slug}`} className="bg-white text-purple-700 hover:bg-gray-100 px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
                     📸 Upload Photos
+                  </Link>
+                  <Link href={`/mobile/${slug}`} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
+                    📱 My Photos
                   </Link>
                 </div>
               </div>

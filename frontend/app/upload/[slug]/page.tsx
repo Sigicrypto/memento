@@ -262,6 +262,11 @@ export default function UploadPage() {
     } else {
       setSuccess(true);
       setError('');
+      
+      // Redirect to mobile page after successful upload
+      setTimeout(() => {
+        window.location.href = `/mobile/${slug}`;
+      }, 2000);
     }
 
     setUploadProgress(100);
@@ -420,7 +425,7 @@ export default function UploadPage() {
           )}
           {success && (
             <div className="flex items-center gap-2 text-green-400 text-sm bg-green-500/10 border border-green-500/20 p-3 rounded-xl shadow-sm">
-              <span>✅</span> Uploaded successfully! Add more files above.
+              <span>✅</span> Uploaded successfully! Redirecting to your photos...
             </div>
           )}
         </div>
