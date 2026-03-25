@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { QRCodeSVG } from 'qrcode.react';
+import Link from 'next/link';
 
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -12,9 +13,10 @@ function generateSlug(name: string): string {
 }
 
 export default function CreateEventPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, plan } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
+  const [customSlug, setCustomSlug] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
@@ -26,10 +28,22 @@ export default function CreateEventPage() {
     setLoading(true);
     setError('');
 
-    const slug = generateSlug(name);
+    const slug = customSlug.trim() || generateSlug(name);
+    
+    // If custom slug provided, check if it's already taken
+    if (customSlug) {
+      const { data: existing } = await supabase.from('events').select('id').eq('slug', slug).single();
+      if (existing) {
+        setError('This custom link is already taken. Please try another.');
+        setLoading(false);
+        return;
+      }
+    }
+
     const { error: dbError } = await supabase.from('events').insert({
       name, slug, owner_id: user.id, created_at: new Date().toISOString(),
       password: password || null,
+      plan_type: plan,
     });
 
     if (dbError) { setError(dbError.message); setLoading(false); return; }
@@ -108,6 +122,26 @@ export default function CreateEventPage() {
               <input type="text" className="input" value={name}
                 onChange={(e) => setName(e.target.value)} required
                 placeholder="e.g. Sarah & Tom's Wedding" />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-dark-text">Custom Link (URL)</label>
+                {plan === 'FREE' && (
+                  <Link href="/pricing" className="text-[9px] font-bold text-amber-500 hover:underline">✨ UPGRADE TO UNLOCK</Link>
+                )}
+              </div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-text/40 text-xs">/upload/</span>
+                <input 
+                  type="text" 
+                  className={`input !pl-16 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                  value={customSlug}
+                  disabled={plan === 'FREE'}
+                  onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  placeholder={plan === 'FREE' ? 'Auto-generated' : 'my-cool-party'} 
+                />
+              </div>
             </div>
 
             <div>

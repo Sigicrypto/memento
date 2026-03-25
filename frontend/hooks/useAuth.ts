@@ -34,10 +34,9 @@ export const useAuth = () => {
         emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`
       } 
     });
-
-
-
   const signOut = () => supabase.auth.signOut();
 
-  return { user, loading, signIn, signUp, signOut };
+  const plan = (user?.user_metadata?.plan_type as 'FREE' | 'PLUS' | 'PREMIUM' | 'SIGNATURE') || 'FREE';
+
+  return { user, loading, signIn, signUp, signOut, plan };
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 const plans = [
   {
@@ -156,15 +157,16 @@ export default function Pricing() {
                     <span className="text-gray-400 dark:text-gray-500 text-xs">{plan.period}</span>
                   </div>
 
-                  <button
-                    className={`w-full py-3.5 rounded-xl text-xs font-bold mb-8 transition-all duration-300 border ${
+                  <Link
+                    href={`/checkout?plan=${plan.name.toUpperCase()}`}
+                    className={`block w-full text-center py-3.5 rounded-xl text-xs font-bold mb-8 transition-all duration-300 border ${
                       isPopular
                         ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-transparent hover:from-purple-700 hover:to-indigo-700 shadow-md hover:shadow-purple-500/30 hover:scale-[1.01]'
                         : 'bg-gray-50 dark:bg-purple-950/30 text-gray-900 dark:text-purple-300 border-gray-200/80 dark:border-purple-800/20 hover:bg-gray-100 dark:hover:bg-purple-900/30'
                     }`}
                   >
                     {plan.buttonText}
-                  </button>
+                  </Link>
 
                   {/* Divider */}
                   <div className="border-t border-gray-100/80 dark:border-purple-800/10 mb-6" />

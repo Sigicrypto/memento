@@ -6,6 +6,53 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 
+// Confetti animation component
+const Confetti = ({ trigger }: { trigger: boolean }) => {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; color: string }>>([]);
+
+  useEffect(() => {
+    if (trigger) {
+      const colors = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'];
+      const newParticles = Array.from({ length: 50 }, (_, i) => ({
+        id: Date.now() + i,
+        x: Math.random() * 100,
+        y: -10,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
+      setParticles(newParticles);
+      
+      setTimeout(() => setParticles([]), 3000);
+    }
+  }, [trigger]);
+
+  if (particles.length === 0) return null;
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50">
+      {particles.map((particle) => (
+        <div
+          key={particle.id}
+          className="absolute w-2 h-2 animate-bounce"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            backgroundColor: particle.color,
+            animation: 'fall 3s ease-out forwards'
+          }}
+        />
+      ))}
+      <style jsx>{`
+        @keyframes fall {
+          to {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 interface Photo {
   id: string;
   storage_path: string;
@@ -29,6 +76,9 @@ export default function WallPage() {
   const [showQR, setShowQR] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
+  const [moderationMode, setModerationMode] = useState(false);
+  const [confettiTrigger, setConfettiTrigger] = useState(false);
+  const [newPhotoId, setNewPhotoId] = useState<string | null>(null);
 
   // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
@@ -66,7 +116,6 @@ export default function WallPage() {
 
     const channel = supabase
       .channel(`photos-${eventId}`)
-      // Remove filter for safety, filter on client side instead to be bulletproof
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'photos'
       }, (payload) => {
@@ -76,6 +125,13 @@ export default function WallPage() {
             if (prev.some(p => p.id === newPhoto.id)) return prev;
             return [...prev, newPhoto];
          });
+         
+         // Trigger confetti for new photos (only in non-moderation mode)
+         if (!moderationMode) {
+           setNewPhotoId(newPhoto.id);
+           setConfettiTrigger(true);
+           setTimeout(() => setConfettiTrigger(false), 100);
+         }
         }
       })
       .on('postgres_changes', {
@@ -243,6 +299,19 @@ export default function WallPage() {
                       </button>
                     ))}
                   </div>
+                  
+                  {/* Moderation mode toggle */}
+                  <button
+                    onClick={() => setModerationMode(!moderationMode)}
+                    className={`px-5 py-3 rounded-xl text-sm font-medium transition border ${
+                      moderationMode 
+                        ? 'bg-orange-500 text-white border-orange-400' 
+                        : 'bg-white/20 text-white border-white/20 hover:bg-white/30'
+                    }`}
+                  >
+                    {moderationMode ? '🛡️ Moderation ON' : '👁️ Auto-Show'}
+                  </button>
+                  
                   <button onClick={() => setShowQR(!showQR)} className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-5 py-3 rounded-xl text-sm font-medium transition border border-white/20">
                     {showQR ? 'Hide QR' : '📱 QR Code'}
                   </button>
@@ -258,12 +327,84 @@ export default function WallPage() {
       {/* QR Popover */}
       {showQR && (
         <div className="card max-w-sm mx-auto text-center mb-8 border-2 border-purple-200 dark:border-purple-800">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Share This Wall</h3>
           <div className="bg-white dark:bg-gray-900 p-6 rounded-xl inline-block mx-auto mb-4 shadow-lg">
             <QRCodeSVG value={uploadUrl} size={200} />
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 break-all mb-4 font-mono">{uploadUrl}</p>
-          <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="btn-secondary w-full text-sm">
-            📋 Copy Link
+          
+          {/* Enhanced Sharing Options */}
+          <div className="space-y-3">
+            <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="btn-secondary w-full text-sm">
+              📋 Copy Link
+            </button>
+            
+            <div className="flex gap-2">
+              <button 
+                onClick={() => {
+                  // Simple print functionality
+                  const printWindow = window.open('', '_blank');
+                  if (printWindow) {
+                    printWindow.document.write(`
+                      <html>
+                        <head>
+                          <title>${eventName} - Upload Guide</title>
+                          <style>
+                            body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
+                            h1 { color: #333; margin-bottom: 30px; }
+                            .qr-code { margin: 30px auto; display: block; }
+                            .url { font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 20px auto; max-width: 400px; }
+                            .instructions { margin: 30px auto; max-width: 400px; text-align: left; }
+                            @media print { body { padding: 20px; } }
+                          </style>
+                        </head>
+                        <body>
+                          <h1>${eventName}</h1>
+                          <h2>Scan to Upload Photos</h2>
+                          <div class="url">${uploadUrl}</div>
+                          <div class="instructions">
+                            <h3>Instructions:</h3>
+                            <ol>
+                              <li>Open your phone camera</li>
+                              <li>Point at the QR code</li>
+                              <li>Tap the link that appears</li>
+                              <li>Upload your photos!</li>
+                            </ol>
+                          </div>
+                          <script>window.onload = () => window.print();</script>
+                        </body>
+                      </html>
+                    `);
+                    printWindow.document.close();
+                  }
+                }}
+                className="flex-1 text-xs bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 px-3 py-2 rounded-lg transition"
+              >
+                📄 Print Guide
+              </button>
+              
+              <button 
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: eventName,
+                      text: `Upload photos to ${eventName}`,
+                      url: uploadUrl
+                    });
+                  } else {
+                    navigator.clipboard.writeText(uploadUrl);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+                className="flex-1 text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 px-3 py-2 rounded-lg transition"
+              >
+                📤 Share
+              </button>
+            </div>
+          </div>
+          
+          <button onClick={() => setShowQR(false)} className="text-xs text-gray-500 dark:text-gray-400 mt-4 hover:text-gray-700 dark:hover:text-gray-300">
+            ✕ Close
           </button>
         </div>
       )}
@@ -326,23 +467,29 @@ export default function WallPage() {
         </div>
       ) : (
         // ── MASONRY GRID ──
-        <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-8 space-y-8 p-8">
+        <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6 lg:gap-8 space-y-6 lg:space-y-8 p-6 lg:p-8">
           {photos.map((photo, index) => (
             <div 
               key={photo.id} 
-              className="break-inside-avoid rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 group relative hover:shadow-2xl transition-all duration-300"
-              style={{ animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both` }}
+              className={`break-inside-avoid rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 group relative hover:shadow-2xl transition-all duration-300 ${
+                newPhotoId === photo.id ? 'ring-4 ring-purple-400 ring-opacity-60 animate-pulse' : ''
+              }`}
+              style={{ 
+                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
+                animationDelay: newPhotoId === photo.id ? '0s' : `${index * 0.1}s`
+              }}
             >
               <img 
                 src={getPublicUrl(photo.storage_path)} 
                 alt={`By ${photo.uploader_name}`}
-                className="w-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                className="w-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 loading="lazy" 
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5">
-                {photo.caption && <p className="text-white text-sm italic mb-3 font-medium">"{photo.caption}"</p>}
+                {photo.caption && <p className="text-white text-sm italic mb-3 font-medium drop-shadow-lg">"{photo.caption}"</p>}
                 <div className="flex justify-between items-center">
-                  <p className="text-white text-sm font-semibold">{photo.uploader_name}</p>
+                  <p className="text-white text-sm font-semibold drop-shadow-lg">{photo.uploader_name}</p>
                   <button 
                     onClick={() => downloadPhoto(photo)} 
                     className="text-white text-sm bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105"
@@ -351,11 +498,21 @@ export default function WallPage() {
                   </button>
                 </div>
               </div>
+              
+              {/* New photo indicator */}
+              {newPhotoId === photo.id && (
+                <div className="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-bounce">
+                  NEW!
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
       </div>
+      
+      {/* Confetti Animation */}
+      <Confetti trigger={confettiTrigger} />
     </div>
   );
 }

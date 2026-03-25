@@ -1,8 +1,21 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+
+// Local storage keys
+const GUEST_NAME_KEY = 'memento_guest_name';
+const OFFLINE_UPLOADS_KEY = 'memento_offline_uploads';
+
+interface OfflineUpload {
+  id: string;
+  eventId: string;
+  file: File;
+  uploaderName: string;
+  caption: string;
+  timestamp: number;
+}
 
 export default function UploadPage() {
   const params = useParams();
@@ -10,6 +23,8 @@ export default function UploadPage() {
 
   const [eventName, setEventName] = useState('');
   const [eventId, setEventId] = useState<string | null>(null);
+  const [eventPlan, setEventPlan] = useState<string>('FREE');
+  
   const [eventPassword, setEventPassword] = useState<string | null>(null);
   const [unlocked, setUnlocked] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
@@ -27,15 +42,48 @@ export default function UploadPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       const { data, error } = await supabase.from('events')
-        .select('id, name, password').eq('slug', slug).single();
+        .select('id, name, password, plan_type').eq('slug', slug).single();
       if (error || !data) { setError('Event not found.'); return; }
       setEventName(data.name);
       setEventId(data.id);
       setEventPassword(data.password ?? null);
+      setEventPlan(data.plan_type || 'FREE');
       if (!data.password) setUnlocked(true);
     };
     fetchEvent();
   }, [slug]);
+
+  // Load cached guest name on mount
+  useEffect(() => {
+    const cachedName = localStorage.getItem(GUEST_NAME_KEY);
+    if (cachedName) {
+      setUploaderName(cachedName);
+    }
+  }, []);
+
+  // Cache guest name when changed
+  useEffect(() => {
+    if (uploaderName.trim()) {
+      localStorage.setItem(GUEST_NAME_KEY, uploaderName.trim());
+    }
+  }, [uploaderName]);
+
+  // Check for offline uploads and retry
+  useEffect(() => {
+    if (eventId && navigator.onLine) {
+      retryOfflineUploads();
+    }
+  }, [eventId]);
+
+  // Listen for online/offline events
+  useEffect(() => {
+    const handleOnline = () => {
+      if (eventId) retryOfflineUploads();
+    };
+    
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [eventId]);
 
   // AUTO-CLICK CAMERA ON UNLOCK
   useEffect(() => {
@@ -50,19 +98,119 @@ export default function UploadPage() {
   }, [unlocked]);
 
 
+  // Convert HEIC to JPG fallback
+  const convertHeicToJpg = async (file: File): Promise<File> => {
+    if (!file.type.includes('heic')) return file;
+    
+    try {
+      // For now, return the original file with a warning
+      // In production, you'd use a library like 'heic2any'
+      console.warn('HEIC file detected, conversion not implemented in browser');
+      return file;
+    } catch (error) {
+      console.error('HEIC conversion failed:', error);
+      return file;
+    }
+  };
+
+  // Store upload for offline retry
+  const storeOfflineUpload = async (file: File, uploaderName: string, caption: string) => {
+    const offlineUpload: OfflineUpload = {
+      id: `${Date.now()}-${Math.random()}`,
+      eventId: eventId!,
+      file,
+      uploaderName,
+      caption,
+      timestamp: Date.now()
+    };
+    
+    const existingUploads = JSON.parse(localStorage.getItem(OFFLINE_UPLOADS_KEY) || '[]');
+    existingUploads.push(offlineUpload);
+    localStorage.setItem(OFFLINE_UPLOADS_KEY, JSON.stringify(existingUploads));
+  };
+
+  // Retry offline uploads
+  const retryOfflineUploads = async () => {
+    const offlineUploads = JSON.parse(localStorage.getItem(OFFLINE_UPLOADS_KEY) || '[]') as OfflineUpload[];
+    const eventUploads = offlineUploads.filter(upload => upload.eventId === eventId);
+    
+    if (eventUploads.length === 0) return;
+    
+    const remainingUploads = [...offlineUploads];
+    
+    for (const upload of eventUploads) {
+      try {
+        const convertedFile = await convertHeicToJpg(upload.file);
+        await uploadSingleFile(convertedFile, upload.uploaderName, upload.caption);
+        
+        // Remove successful upload
+        const index = remainingUploads.findIndex(u => u.id === upload.id);
+        if (index > -1) remainingUploads.splice(index, 1);
+      } catch (error) {
+        console.error('Failed to retry upload:', error);
+      }
+    }
+    
+    localStorage.setItem(OFFLINE_UPLOADS_KEY, JSON.stringify(remainingUploads));
+    
+    if (eventUploads.length > 0) {
+      setSuccess(prev => prev || true);
+    }
+  };
+
+  // Upload single file
+  const uploadSingleFile = async (file: File, name: string, caption: string) => {
+    if (!eventId) throw new Error('No event ID');
+    
+    const ext = file.name.split('.').pop();
+    const filePath = `${eventId}/${Date.now()}-${Math.random()}.${ext}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('photos')
+      .upload(filePath, file);
+    
+    if (uploadError) throw uploadError;
+    
+    const { error: dbError } = await supabase.from('photos').insert({
+      event_id: eventId,
+      storage_path: filePath,
+      uploader_name: name || 'Guest',
+      caption: caption || null,
+    });
+    
+    if (dbError) throw dbError;
+  };
+
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === eventPassword) { setUnlocked(true); setPasswordError(''); }
     else setPasswordError('Incorrect password. Please try again.');
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
+    
+    // Check for videos on free plan
+    const hasVideo = selectedFiles.some(f => f.type.startsWith('video/'));
+    if (hasVideo && eventPlan === 'FREE') {
+      setError('Video uploads are a Premium feature. High-res photos only on this event!');
+      setFiles([]);
+      setPreviews([]);
+      return;
+    }
+
+    // Check for HEIC files and warn about conversion
+    const hasHeic = selectedFiles.some(f => f.type.includes('heic'));
+    if (hasHeic) {
+      setError('HEIC photos detected. They will be uploaded in original format. For best compatibility, use JPG files.');
+      setTimeout(() => setError(''), 5000);
+    }
+
     if (selectedFiles.length > 0) {
       setFiles(selectedFiles);
       setPreviews(selectedFiles.map(f => URL.createObjectURL(f)));
       setSuccess(false);
-      // Disabled Auto-Upload so user can enter caption
+      setError('');
     }
   };
 
@@ -70,37 +218,63 @@ export default function UploadPage() {
 
   const uploadFiles = async (filesToUpload: File[]) => {
     if (filesToUpload.length === 0 || !eventId) return;
-    setUploading(true); setUploadProgress(10); setError('');
+    
+    setUploading(true);
+    setUploadProgress(10);
+    setError('');
 
     let uploadErrors: string[] = [];
+    const isOffline = !navigator.onLine;
 
     for (let i = 0; i < filesToUpload.length; i++) {
-       const fileItem = filesToUpload[i];
-       const ext = fileItem.name.split('.').pop();
-       const filePath = `${eventId}/${Date.now()}-${i}.${ext}`;
-
-       setUploadProgress(Math.round(((i + 0.1) / filesToUpload.length) * 100));
-       const { error: uploadError } = await supabase.storage.from('photos').upload(filePath, fileItem);
-       if (uploadError) { uploadErrors.push(uploadError.message); continue; }
-
-       setUploadProgress(Math.round(((i + 0.5) / filesToUpload.length) * 100));
-       const { error: dbError } = await supabase.from('photos').insert({
-         event_id: eventId, storage_path: filePath,
-         uploader_name: uploaderName || 'Guest', caption: caption || null,
-       });
-       if (dbError) { uploadErrors.push(dbError.message); continue; }
+      const fileItem = filesToUpload[i];
+      
+      try {
+        // Convert HEIC if needed
+        const convertedFile = await convertHeicToJpg(fileItem);
+        
+        setUploadProgress(Math.round(((i + 0.1) / filesToUpload.length) * 100));
+        
+        if (isOffline) {
+          // Store for offline upload
+          await storeOfflineUpload(convertedFile, uploaderName, caption);
+        } else {
+          // Upload immediately
+          await uploadSingleFile(convertedFile, uploaderName, caption);
+        }
+        
+        setUploadProgress(Math.round(((i + 0.5) / filesToUpload.length) * 100));
+      } catch (error: any) {
+        uploadErrors.push(error.message || 'Upload failed');
+      }
     }
 
     if (uploadErrors.length > 0) {
-       setError(`Failed to upload ${uploadErrors.length} file(s): ${uploadErrors[0]}`);
-       setUploading(false);
-       setUploadProgress(0);
-       return;
+      setError(`Failed to upload ${uploadErrors.length} file(s): ${uploadErrors[0]}`);
+    } else if (isOffline) {
+      setSuccess(true);
+      setError('');
+      // Show offline message
+      setTimeout(() => {
+        setSuccess(false);
+        setError('Photos will be uploaded when you\'re back online.');
+      }, 3000);
+    } else {
+      setSuccess(true);
+      setError('');
     }
 
     setUploadProgress(100);
     setTimeout(() => setUploadProgress(0), 800);
-    setSuccess(true); setFiles([]); setPreviews([]); setCaption(''); setUploading(false);
+    
+    // Clear form only on successful online upload
+    if (!isOffline && uploadErrors.length === 0) {
+      setFiles([]);
+      setPreviews([]);
+      setCaption('');
+    }
+    
+    setUploading(false);
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -151,9 +325,20 @@ export default function UploadPage() {
 
   // Upload form
   return (
-
     <div className="aurora-bg min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-white font-sans">
       <div className="w-full max-w-md flex flex-col items-center">
+        
+        {/* Connection Status Indicator */}
+        <div className="w-full mb-4">
+          <div className={`flex items-center justify-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+            navigator.onLine 
+              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+              : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${navigator.onLine ? 'bg-green-400' : 'bg-orange-400'} animate-pulse`} />
+            {navigator.onLine ? '🟢 Online' : '📴 Offline - Photos will upload when connected'}
+          </div>
+        </div>
         
         {/* The White Prompt Card (Standard high contrast shape) */}
 
@@ -182,8 +367,19 @@ export default function UploadPage() {
             <div className="bg-white rounded-3xl p-6 shadow-xl space-y-4 text-slate-800 transform transition animate-scaleIn">
               <h4 className="font-bold text-lg">Add Details (Optional)</h4>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Your Name</label>
-                <input type="text" className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)} placeholder="e.g. Uncle Bob" />
+                <label className="block text-xs font-semibold text-slate-500 mb-1.5">
+                  Your Name
+                  {localStorage.getItem(GUEST_NAME_KEY) && (
+                    <span className="ml-2 text-green-500 text-xs">✓ Remembered</span>
+                  )}
+                </label>
+                <input 
+                  type="text" 
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" 
+                  value={uploaderName} 
+                  onChange={(e) => setUploaderName(e.target.value)} 
+                  placeholder="e.g. Uncle Bob" 
+                />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5">Message</label>
