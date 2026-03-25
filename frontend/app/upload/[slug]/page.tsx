@@ -42,12 +42,12 @@ export default function UploadPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       const { data, error } = await supabase.from('events')
-        .select('id, name, password, plan_type').eq('slug', slug).single();
+        .select('id, name, password').eq('slug', slug).single();
       if (error || !data) { setError('Event not found.'); return; }
       setEventName(data.name);
       setEventId(data.id);
       setEventPassword(data.password ?? null);
-      setEventPlan(data.plan_type || 'FREE');
+      setEventPlan('FREE'); // Default to FREE since plan_type doesn't exist
       if (!data.password) setUnlocked(true);
     };
     fetchEvent();
