@@ -295,7 +295,7 @@ export default function UploadPage() {
         <div className="relative z-10 card max-w-sm text-center !p-10">
           <div className="text-5xl mb-4">😢</div>
           <h1 className="text-xl font-bold mb-2">Event Not Found</h1>
-          <p className="text-dark-text text-sm">This link doesn't seem to be valid.</p>
+          <p className="text-gray-600 dark:text-gray-300 text-sm">This link doesn't seem to be valid.</p>
         </div>
       </div>
     );
@@ -312,7 +312,7 @@ export default function UploadPage() {
               🔒
             </div>
             <h1 className="text-xl font-bold mb-1">{eventName || 'Private Event'}</h1>
-            <p className="text-dark-text text-sm mb-6">Enter the password to upload photos.</p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">Enter the password to upload photos.</p>
             <form onSubmit={handleUnlock} className="space-y-3">
               <input type="password" className="input text-center" value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
@@ -332,6 +332,10 @@ export default function UploadPage() {
   return (
     <div className="aurora-bg min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-white font-sans">
       <div className="w-full max-w-md flex flex-col items-center">
+        <div className="w-full mb-4 rounded-2xl border border-purple-500/20 bg-white/10 backdrop-blur-xl px-4 py-3 text-center">
+          <p className="text-xs uppercase tracking-wider text-purple-200/90 font-semibold mb-1">Live Upload</p>
+          <h2 className="text-lg font-bold text-white truncate">{eventName || 'Loading event...'}</h2>
+        </div>
         
         {/* Connection Status Indicator */}
         <div className="w-full mb-4">
@@ -347,9 +351,9 @@ export default function UploadPage() {
         
         {/* The White Prompt Card (Standard high contrast shape) */}
 
-        <div className="w-full bg-white rounded-3xl p-8 shadow-2xl text-center mb-8 transform transition hover:scale-[1.01]">
+        <div className="w-full bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl text-center mb-8 border border-purple-200/40 transform transition hover:scale-[1.01]">
           <h3 className="text-xl font-extrabold text-slate-900 mb-2">Upload your first photo or video</h3>
-          <p className="text-slate-500 text-sm mb-10 leading-relaxed">Select some items you like and love from your camera roll.</p>
+          <p className="text-slate-500 text-sm mb-10 leading-relaxed">Pick your best moments and post them to the live wall instantly.</p>
 
           <form onSubmit={handleUpload} className="space-y-4">
             {/* Hidden Input */}
@@ -369,7 +373,7 @@ export default function UploadPage() {
         <div className="w-full max-w-sm space-y-4">
           
           {previews.length > 0 && !uploading && (
-            <div className="bg-white rounded-3xl p-6 shadow-xl space-y-4 text-slate-800 transform transition animate-scaleIn">
+            <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-6 shadow-xl space-y-4 text-slate-800 transform transition border border-purple-200/50">
               <h4 className="font-bold text-lg">Add Details (Optional)</h4>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5">
@@ -390,7 +394,7 @@ export default function UploadPage() {
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5">Message</label>
                 <textarea className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="What a beautiful day!" rows={2} />
               </div>
-              <button onClick={() => uploadFiles(files)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-95">
+              <button onClick={() => uploadFiles(files)} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-95">
                 📤 Post to Wall
               </button>
             </div>

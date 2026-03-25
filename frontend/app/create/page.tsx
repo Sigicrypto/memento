@@ -64,19 +64,22 @@ export default function CreateEventPage() {
   // ── Success: show QR ──
   if (createdSlug) {
     return (
-      <div className="aurora-bg min-h-[85vh] flex items-center justify-center px-4">
-        <div className="relative z-10 w-full max-w-md">
+      <div className="aurora-bg min-h-[90vh] flex items-center justify-center px-4 py-10">
+        <div className="relative z-10 w-full max-w-lg">
           <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/20 to-accent/20 blur-xl pointer-events-none" />
-          <div className="card relative !p-8 text-center">
+          <div className="card relative !p-10 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-purple-500/10 border border-purple-500/20 text-purple-500 mb-5">
+              Signature Experience
+            </div>
             <div className="text-5xl mb-4">🎉</div>
-            <h1 className="text-2xl font-bold mb-2">Wall Created!</h1>
-            <p className="text-dark-text text-sm mb-8">Share this QR code with your guests</p>
+            <h1 className="text-3xl font-bold mb-2">Wall Created!</h1>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-8">Share this QR code with your guests</p>
 
             <div className="bg-white p-5 rounded-2xl inline-block mx-auto mb-6 glow-purple">
               <QRCodeSVG value={uploadUrl} size={200} />
             </div>
 
-            <p className="text-xs text-dark-text/60 mb-6 break-all font-mono">{uploadUrl}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-300/80 mb-6 break-all font-mono">{uploadUrl}</p>
 
             <div className="flex flex-col gap-3">
               <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="btn-secondary w-full">
@@ -94,18 +97,23 @@ export default function CreateEventPage() {
 
   // ── Form ──
   return (
-    <div className="aurora-bg min-h-[85vh] flex items-center justify-center px-4">
-      <div className="relative z-10 w-full max-w-md">
+    <div className="aurora-bg min-h-[90vh] flex items-center justify-center px-4 py-10">
+      <div className="relative z-10 w-full max-w-lg">
         <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/15 to-accent/10 blur-xl pointer-events-none" />
-        <div className="card relative !p-8">
-          <div className="flex justify-center mb-5">
+        <div className="card relative !p-10">
+          <div className="flex justify-center mb-4">
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent2 flex items-center justify-center text-2xl glow-purple">
               🎉
             </div>
           </div>
+          <div className="text-center mb-5">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-purple-500/10 border border-purple-500/20 text-purple-500">
+              Launch your event wall
+            </span>
+          </div>
 
-          <h1 className="text-2xl font-bold text-center mb-1">Create a Photo Wall</h1>
-          <p className="text-dark-text text-sm text-center mb-6">
+          <h1 className="text-3xl font-bold text-center mb-1">Create a Photo Wall</h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm text-center mb-6">
             Name your event and get a QR code guests can scan to share photos.
           </p>
 
@@ -117,7 +125,7 @@ export default function CreateEventPage() {
 
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-dark-text mb-1.5">Event Name</label>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1.5">Event Name</label>
               <input type="text" className="input" value={name}
                 onChange={(e) => setName(e.target.value)} required
                 placeholder="e.g. Sarah & Tom's Wedding" />
@@ -125,13 +133,13 @@ export default function CreateEventPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-medium text-dark-text">Custom Link (URL)</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-300">Custom Link (URL)</label>
                 {plan === 'FREE' && (
                   <Link href="/pricing" className="text-[9px] font-bold text-amber-500 hover:underline">✨ UPGRADE TO UNLOCK</Link>
                 )}
               </div>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-text/40 text-xs">/upload/</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">/upload/</span>
                 <input 
                   type="text" 
                   className={`input !pl-16 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`} 
@@ -144,8 +152,8 @@ export default function CreateEventPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-dark-text mb-1.5">
-                Password <span className="text-dark-text/40">(optional — leave blank for open access)</span>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1.5">
+                Password <span className="text-gray-400">(optional — leave blank for open access)</span>
               </label>
               <input type="password" className="input" value={password}
                 onChange={(e) => setPassword(e.target.value)}

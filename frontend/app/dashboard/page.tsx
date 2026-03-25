@@ -137,24 +137,36 @@ export default function DashboardPage() {
   return (
     <div className="aurora-bg min-h-screen">
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-3xl font-bold">My Events</h1>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                plan === 'FREE' ? 'bg-gray-500/10 text-gray-400 border-gray-500/20' :
-                plan === 'PLUS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                plan === 'PREMIUM' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                'bg-amber-500/10 text-amber-400 border-amber-500/20'
-              }`}>
-                {plan} PLAN
-              </span>
+        <div className="mb-8 rounded-3xl border border-purple-500/15 bg-white/70 dark:bg-purple-950/40 backdrop-blur-xl p-6 sm:p-8 shadow-xl">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-purple-500/10 border border-purple-500/20 text-purple-500 mb-3">
+                Host Dashboard
+              </div>
+              <div className="flex items-center gap-3 mb-1">
+                <h1 className="text-3xl font-bold">My Events</h1>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                  plan === 'FREE' ? 'bg-gray-500/10 text-gray-400 border-gray-500/20' :
+                  plan === 'PLUS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                  plan === 'PREMIUM' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                  'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                }`}>
+                  {plan} PLAN
+                </span>
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">{events.length} event{events.length !== 1 ? 's' : ''}</p>
             </div>
-            <p className="text-dark-text text-sm">{events.length} event{events.length !== 1 ? 's' : ''}</p>
+            <Link href="/create" className="btn-primary text-sm">
+              ✨ Create New
+            </Link>
           </div>
-          <Link href="/create" className="btn-primary text-sm">
-            ✨ Create New
-          </Link>
+        </div>
+
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Your walls</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Manage sharing links, downloads, and moderation.</p>
+          </div>
         </div>
 
         {events.length === 0 ? (
@@ -171,28 +183,28 @@ export default function DashboardPage() {
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
             {events.map((event) => (
-              <div key={event.id} className="card group">
+              <div key={event.id} className="card group border border-purple-500/10 hover:border-purple-500/25">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-white group-hover:text-primary-light transition">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-primary-light transition">
                       {event.name}
                     </h3>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-dark-text/60 text-[10px]">
+                      <p className="text-gray-500 dark:text-gray-400 text-[10px]">
                         {new Date(event.created_at).toLocaleDateString()}
                       </p>
-                      <span className="text-dark-text/30">•</span>
+                      <span className="text-gray-400">•</span>
                       <p className="text-primary-light text-[10px] font-semibold">
                         📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Link href={`/dashboard/edit/${event.id}`} className="text-dark-text/40 hover:text-white transition text-sm p-1">
+                    <Link href={`/dashboard/edit/${event.id}`} className="text-gray-400 hover:text-purple-500 transition text-sm p-1">
                       ⚙️
                     </Link>
                     <button onClick={() => handleDelete(event.id)}
-                      className="text-dark-text/40 hover:text-red-400 transition text-sm p-1">
+                      className="text-gray-400 hover:text-red-400 transition text-sm p-1">
                       🗑️
                     </button>
                   </div>

@@ -376,6 +376,9 @@ export default function WallPage() {
         <div className="relative mb-12">
           <div className="aurora-bg rounded-3xl p-8 text-white">
             <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-white/15 border border-white/20 mb-4">
+                Live Wall Experience
+              </div>
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div className="flex-1">
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg leading-tight">
