@@ -92,27 +92,49 @@ export default function WallPage() {
     
     setUsePolling(true);
     setRealtimeStatus('polling');
+    console.log('🔄 Starting aggressive polling (2-second intervals)');
     
     pollingInterval.current = setInterval(async () => {
       if (!eventId) return;
       
-      const { data } = await supabase
+      console.log('📡 Polling for new photos...');
+      
+      const { data, error } = await supabase
         .from('photos')
         .select('*')
         .eq('event_id', eventId)
         .order('created_at', { ascending: false })
-        .limit(10); // Get latest 10 photos
+        .limit(20); // Get latest 20 photos
       
-      if (data) {
+      if (error) {
+        console.error('❌ Polling error:', error);
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        console.log(`📸 Polling found ${data.length} photos`);
+        
         setPhotos(prev => {
           const newPhotos = data.filter(photo => 
             !prev.some(p => p.id === photo.id)
           );
-          return [...newPhotos, ...prev].slice(0, 100); // Keep max 100 photos
+          
+          if (newPhotos.length > 0) {
+            console.log(`✨ Adding ${newPhotos.length} new photos to wall`);
+            
+            // Trigger confetti for new photos in polling mode too
+            if (!moderationMode) {
+              setNewPhotoId(newPhotos[0].id);
+              setConfettiTrigger(true);
+              setTimeout(() => setConfettiTrigger(false), 100);
+            }
+          }
+          
+          return [...newPhotos, ...prev].slice(0, 100);
         });
       }
-    }, 5000); // Poll every 5 seconds
-  }, [eventId]);
+    }, 2000); // Poll every 2 seconds (more aggressive)
+  }, [eventId, moderationMode]);
 
   const stopPolling = useCallback(() => {
     if (pollingInterval.current) {
@@ -216,13 +238,13 @@ export default function WallPage() {
         }
       });
 
-    // Start polling as backup if WebSocket doesn't connect within 5 seconds
+    // Start polling as backup if WebSocket doesn't connect within 3 seconds
     const fallbackTimer = setTimeout(() => {
       if (realtimeStatus === 'connecting') {
-        console.log('⚠️ WebSocket taking too long, starting polling');
+        console.log('⚠️ WebSocket taking too long, starting polling immediately');
         startPolling();
       }
-    }, 5000);
+    }, 3000);
 
     return () => { 
     supabase.removeChannel(channel); 
@@ -369,10 +391,10 @@ export default function WallPage() {
                 realtimeStatus === 'polling' ? 'bg-blue-400 animate-pulse' : 
                 'bg-yellow-400'
               }`} title={`Connection: ${realtimeStatus}`} />
-                      <span className="text-xs text-white/80">
-                        {realtimeStatus === 'SUBSCRIBED' ? 'Live' : 
-                         realtimeStatus === 'polling' ? 'Polling' : 
-                         'Connecting...'}
+                      <span className="text-xs text-white/80 font-medium">
+                        {realtimeStatus === 'SUBSCRIBED' ? '⚡ Live' : 
+                         realtimeStatus === 'polling' ? '🔄 Polling (2s)' : 
+                         '🟡 Connecting...'}
                       </span>
                     </div>
                     <button
