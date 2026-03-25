@@ -6,13 +6,31 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 
+type Region = 'IN' | 'GLOBAL';
+const REGION_COOKIE = 'livewall_region';
+
+function readRegionCookie(): Region {
+  if (typeof document === 'undefined') return 'GLOBAL';
+  const match = document.cookie.match(new RegExp(`(^| )${REGION_COOKIE}=([^;]+)`));
+  const value = match?.[2];
+  return value === 'IN' ? 'IN' : 'GLOBAL';
+}
+
 function CheckoutContent() {
   const searchParams = useSearchParams();
-  const planName = searchParams.get('plan') || 'PREMIUM';
+  const planName = searchParams.get('plan') || 'SIGNATURE';
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS'>('IDLE');
+  const [region, setRegion] = useState<Region>('GLOBAL');
+
+  useEffect(() => {
+    setRegion(readRegionCookie());
+  }, []);
+
+  const planLabel = planName === 'SIGNATURE' ? 'Signature' : planName;
+  const priceDisplay = region === 'IN' ? 'INR ₹5,000' : 'USD 60';
 
   const handlePayment = async () => {
     setStatus('PROCESSING');
@@ -54,17 +72,17 @@ function CheckoutContent() {
               </div>
               <h1 className="text-2xl font-bold mb-2">Checkout</h1>
               <p className="text-dark-text text-sm mb-8">
-                You are upgrading to the <span className="text-primary-light font-bold">{planName}</span> plan.
+                You are upgrading to the <span className="text-primary-light font-bold">{planLabel}</span> plan.
               </p>
               
               <div className="bg-dark-card/50 border border-dark-border p-4 rounded-xl mb-8 text-left">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-dark-text">Memento {planName}</span>
+                  <span className="text-dark-text">Memento {planLabel}</span>
                   <span className="text-white font-bold">Mock Payment</span>
                 </div>
                 <div className="border-t border-dark-border my-2 pt-2 flex justify-between font-bold">
                   <span>Total Due</span>
-                  <span className="text-primary-light">$0.00 (Developer Mock)</span>
+                  <span className="text-primary-light">{priceDisplay} (Developer Mock)</span>
                 </div>
               </div>
 
@@ -95,7 +113,7 @@ function CheckoutContent() {
               </div>
               <h2 className="text-2xl font-bold mb-2 text-white">Upgrade Successful!</h2>
               <p className="text-dark-text text-sm mb-8">
-                Your account has been upgraded to **{planName}**.
+                Your account has been upgraded to **{planLabel}**.
                 Redirecting you to the dashboard...
               </p>
               <div className="w-full bg-dark-border h-1 rounded-full overflow-hidden">

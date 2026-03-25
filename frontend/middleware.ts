@@ -1,8 +1,37 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const REGION_COOKIE = 'livewall_region';
+
+function detectCountryCode(request: NextRequest): string | undefined {
+  // Prefer Next.js geo (works in some deployments), then common platform headers.
+  const geoCountry = request.geo?.country;
+  if (geoCountry) return geoCountry;
+
+  return (
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    request.headers.get('x-country') ||
+    undefined
+  );
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // -------- Region cookie (India vs Global) --------
+  const countryCode = detectCountryCode(request);
+  const region = countryCode === 'IN' ? 'IN' : 'GLOBAL';
+  const existingRegion = request.cookies.get(REGION_COOKIE)?.value;
+
+  const response = NextResponse.next();
+  if (!existingRegion || existingRegion !== region) {
+    response.cookies.set(REGION_COOKIE, region, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      sameSite: 'lax',
+    });
+  }
 
   // Protect admin routes
   if (pathname.startsWith('/admin') || pathname.startsWith('/system')) {
@@ -28,9 +57,13 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/system/:path*']
+  // Apply to the whole site so pricing/checkout can read region reliably.
+  // Exclude static assets and common files.
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|api).*)',
+  ],
 };
