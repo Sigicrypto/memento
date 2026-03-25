@@ -58,13 +58,29 @@ export default function MobileUploadPage() {
     if (!eventId) return;
 
     const fetchPhotos = async () => {
-      const { data } = await supabase
+      // If uploader name exists, filter by it, otherwise show all event photos
+      let query = supabase
         .from('photos')
         .select('*')
         .eq('event_id', eventId)
-        .eq('uploader_name', uploaderName)
         .order('created_at', { ascending: false });
-      if (data) setPhotos(data);
+      
+      // Only filter by uploader name if it exists and is not empty
+      if (uploaderName && uploaderName.trim()) {
+        query = query.eq('uploader_name', uploaderName.trim());
+      }
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error fetching photos:', error);
+        return;
+      }
+      
+      if (data) {
+        console.log(`Found ${data.length} photos for ${uploaderName || 'all users'}`);
+        setPhotos(data);
+      }
     };
     fetchPhotos();
 
@@ -74,17 +90,21 @@ export default function MobileUploadPage() {
         event: 'INSERT', schema: 'public', table: 'photos'
       }, (payload) => {
         const newPhoto = payload.new as Photo;
-        if (newPhoto.event_id === eventId && newPhoto.uploader_name === uploaderName) {
-          setPhotos((prev) => {
-            if (prev.some(p => p.id === newPhoto.id)) return prev;
-            return [newPhoto, ...prev];
-          });
-          setSuccessMessage('Photo uploaded successfully!');
-          setTimeout(() => setSuccessMessage(''), 3000);
+        // Show photo if it matches event AND (no name filter OR matches uploader name)
+        if (newPhoto.event_id === eventId) {
+          if (!uploaderName || !uploaderName.trim() || newPhoto.uploader_name === uploaderName.trim()) {
+            setPhotos((prev) => {
+              if (prev.some(p => p.id === newPhoto.id)) return prev;
+              return [newPhoto, ...prev];
+            });
+            setSuccessMessage('Photo uploaded successfully!');
+            setTimeout(() => setSuccessMessage(''), 3000);
+          }
         }
       })
       .subscribe((status) => {
         setRealtimeStatus(status);
+        console.log('Mobile page realtime status:', status);
       });
 
     return () => { supabase.removeChannel(channel); };
@@ -113,7 +133,9 @@ export default function MobileUploadPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">{eventName}</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Your Uploaded Photos</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {uploaderName ? `Photos by: ${uploaderName}` : 'All Event Photos'}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${
@@ -123,6 +145,27 @@ export default function MobileUploadPage() {
                 {realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Connecting...'}
               </span>
             </div>
+          </div>
+          
+          {/* Name Filter */}
+          <div className="mt-4 flex gap-2">
+            <input
+              type="text"
+              value={uploaderName}
+              onChange={(e) => setUploaderName(e.target.value)}
+              placeholder="Enter your name to filter your photos..."
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              onClick={() => {
+                localStorage.setItem('memento_guest_name', uploaderName);
+                // Refetch photos
+                window.location.reload();
+              }}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              Filter
+            </button>
           </div>
         </div>
       </div>
@@ -146,17 +189,35 @@ export default function MobileUploadPage() {
               <span className="text-3xl">📸</span>
             </div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              No photos yet
+              {uploaderName ? `No photos found for "${uploaderName}"` : 'No photos yet'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Your uploaded photos will appear here in real-time
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              {uploaderName 
+                ? 'Try clearing the name filter to see all photos, or upload new photos with this name.'
+                : 'Upload photos to see them appear here in real-time.'}
             </p>
-            <Link 
-              href={`/upload/${slug}`}
-              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              📱 Upload More Photos
-            </Link>
+            
+            {uploaderName && (
+              <button
+                onClick={() => {
+                  setUploaderName('');
+                  localStorage.removeItem('memento_guest_name');
+                  window.location.reload();
+                }}
+                className="mb-4 text-purple-600 hover:text-purple-700 text-sm font-medium"
+              >
+                Clear filter & show all photos
+              </button>
+            )}
+            
+            <div className="mt-4">
+              <Link 
+                href={`/upload/${slug}`}
+                className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                📱 Upload Photos
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
