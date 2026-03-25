@@ -117,35 +117,52 @@ export default function WallPage() {
     const channel = supabase
       .channel(`wall-photos-${eventId}`)
       .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'photos'
+        },
         (payload) => {
           console.log('New photo received:', payload.new);
           const newPhoto = payload.new as Photo;
           
-          setPhotos((prev) => {
-            // Check if photo already exists
-            if (prev.some(p => p.id === newPhoto.id)) {
-              console.log('Photo already exists, skipping');
-              return prev;
+          // Filter on client side to ensure we only get photos for this event
+          if (newPhoto.event_id === eventId) {
+            setPhotos((prev) => {
+              // Check if photo already exists
+              if (prev.some(p => p.id === newPhoto.id)) {
+                console.log('Photo already exists, skipping');
+                return prev;
+              }
+              console.log('Adding new photo to wall');
+              return [...prev, newPhoto];
+            });
+            
+            // Trigger confetti for new photos (only in non-moderation mode)
+            if (!moderationMode) {
+              setNewPhotoId(newPhoto.id);
+              setConfettiTrigger(true);
+              setTimeout(() => setConfettiTrigger(false), 100);
             }
-            console.log('Adding new photo to wall');
-            return [...prev, newPhoto];
-          });
-          
-          // Trigger confetti for new photos (only in non-moderation mode)
-          if (!moderationMode) {
-            setNewPhotoId(newPhoto.id);
-            setConfettiTrigger(true);
-            setTimeout(() => setConfettiTrigger(false), 100);
+          } else {
+            console.log('Photo not for this event, ignoring');
           }
         }
       )
       .on('postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
+        { 
+          event: 'DELETE', 
+          schema: 'public', 
+          table: 'photos'
+        },
         (payload) => {
           console.log('Photo deleted:', payload.old);
           const oldPhoto = payload.old as Photo;
-          setPhotos((prev) => prev.filter((p) => p.id !== oldPhoto.id));
+          
+          // Filter on client side
+          if (oldPhoto.event_id === eventId) {
+            setPhotos((prev) => prev.filter((p) => p.id !== oldPhoto.id));
+          }
         }
       )
       .subscribe((status) => {
@@ -297,7 +314,13 @@ export default function WallPage() {
                       </span>
                       <span className={`w-2.5 h-2.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} title={`Realtime: ${realtimeStatus}`} />
                     </div>
-
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-3 rounded-full text-white text-sm font-medium transition border border-white/20"
+                      title="Refresh wall"
+                    >
+                      🔄 Refresh
+                    </button>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3 lg:gap-4">
