@@ -17,12 +17,13 @@ const SIGNATURE = {
   ],
 };
 
-function getRegion(): Region {
-  const cookieRegion = cookies().get('livewall_region')?.value;
+async function getRegion(): Promise<Region> {
+  const cookieStore = await cookies();
+  const cookieRegion = cookieStore.get('livewall_region')?.value;
   if (cookieRegion === 'IN') return 'IN';
 
   // Fallback for first render (middleware cookie may not be present yet)
-  const h = headers();
+  const h = await headers();
   const countryCode = h.get('x-vercel-ip-country') || h.get('cf-ipcountry') || h.get('x-country');
   return countryCode === 'IN' ? 'IN' : 'GLOBAL';
 }
@@ -39,8 +40,8 @@ function getSignaturePrice(region: Region) {
   };
 }
 
-export default function Pricing() {
-  const region = getRegion();
+export default async function Pricing() {
+  const region = await getRegion();
   const price = getSignaturePrice(region);
   const regionLabel = region === 'IN' ? 'India pricing' : 'Global pricing';
 
