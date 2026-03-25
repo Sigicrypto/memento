@@ -613,6 +613,7 @@ export default function WallPage() {
               ))}
             </div>
           </div>
+        </div>
       ) : (
         // ── MASONRY GRID ──
         <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6 lg:gap-8 space-y-6 lg:space-y-8 p-6 lg:p-8">

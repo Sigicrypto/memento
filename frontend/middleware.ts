@@ -5,7 +5,7 @@ const REGION_COOKIE = 'livewall_region';
 
 function detectCountryCode(request: NextRequest): string | undefined {
   // Prefer Next.js geo (works in some deployments), then common platform headers.
-  const geoCountry = request.geo?.country;
+  const geoCountry = (request as any).geo?.country;
   if (geoCountry) return geoCountry;
 
   return (
