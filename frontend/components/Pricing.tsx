@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 type Region = 'IN' | 'GLOBAL';
 
@@ -17,9 +17,14 @@ const SIGNATURE = {
   ],
 };
 
-function getRegionFromCookie(): Region {
-  const region = cookies().get('livewall_region')?.value;
-  return region === 'IN' ? 'IN' : 'GLOBAL';
+function getRegion(): Region {
+  const cookieRegion = cookies().get('livewall_region')?.value;
+  if (cookieRegion === 'IN') return 'IN';
+
+  // Fallback for first render (middleware cookie may not be present yet)
+  const h = headers();
+  const countryCode = h.get('x-vercel-ip-country') || h.get('cf-ipcountry') || h.get('x-country');
+  return countryCode === 'IN' ? 'IN' : 'GLOBAL';
 }
 
 function getSignaturePrice(region: Region) {
@@ -35,7 +40,7 @@ function getSignaturePrice(region: Region) {
 }
 
 export default function Pricing() {
-  const region = getRegionFromCookie();
+  const region = getRegion();
   const price = getSignaturePrice(region);
   const regionLabel = region === 'IN' ? 'India pricing' : 'Global pricing';
 
