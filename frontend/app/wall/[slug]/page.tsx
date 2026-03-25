@@ -76,6 +76,8 @@ export default function WallPage() {
   const [showQR, setShowQR] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
+  const [usePolling, setUsePolling] = useState(false);
+  const pollingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const [moderationMode, setModerationMode] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [newPhotoId, setNewPhotoId] = useState<string | null>(null);
@@ -83,6 +85,42 @@ export default function WallPage() {
   // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
   const slideshowTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Fallback polling when WebSocket fails
+  const startPolling = useCallback(() => {
+    if (pollingInterval.current) return;
+    
+    setUsePolling(true);
+    setRealtimeStatus('polling');
+    
+    pollingInterval.current = setInterval(async () => {
+      if (!eventId) return;
+      
+      const { data } = await supabase
+        .from('photos')
+        .select('*')
+        .eq('event_id', eventId)
+        .order('created_at', { ascending: false })
+        .limit(10); // Get latest 10 photos
+      
+      if (data) {
+        setPhotos(prev => {
+          const newPhotos = data.filter(photo => 
+            !prev.some(p => p.id === photo.id)
+          );
+          return [...newPhotos, ...prev].slice(0, 100); // Keep max 100 photos
+        });
+      }
+    }, 5000); // Poll every 5 seconds
+  }, [eventId]);
+
+  const stopPolling = useCallback(() => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+      pollingInterval.current = null;
+    }
+    setUsePolling(false);
+  }, []);
 
   // Fetch event info
   useEffect(() => {
@@ -171,12 +209,26 @@ export default function WallPage() {
         
         if (status === 'SUBSCRIBED') {
           console.log('✅ Successfully subscribed to real-time updates');
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Realtime subscription failed');
+          stopPolling(); // Stop polling if WebSocket works
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('❌ Realtime subscription failed, falling back to polling');
+          startPolling(); // Start polling as fallback
         }
       });
 
-    return () => { supabase.removeChannel(channel); };
+    // Start polling as backup if WebSocket doesn't connect within 5 seconds
+    const fallbackTimer = setTimeout(() => {
+      if (realtimeStatus === 'connecting') {
+        console.log('⚠️ WebSocket taking too long, starting polling');
+        startPolling();
+      }
+    }, 5000);
+
+    return () => { 
+    supabase.removeChannel(channel); 
+    clearTimeout(fallbackTimer);
+    stopPolling();
+  };
   }, [eventId]);
 
 
@@ -312,7 +364,16 @@ export default function WallPage() {
                       <span className="text-base font-semibold">
                         📸 {photos.length} photo{photos.length !== 1 ? 's' : ''} shared
                       </span>
-                      <span className={`w-2.5 h-2.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} title={`Realtime: ${realtimeStatus}`} />
+                      <span className={`w-2.5 h-2.5 rounded-full ${
+                realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' : 
+                realtimeStatus === 'polling' ? 'bg-blue-400 animate-pulse' : 
+                'bg-yellow-400'
+              }`} title={`Connection: ${realtimeStatus}`} />
+                      <span className="text-xs text-white/80">
+                        {realtimeStatus === 'SUBSCRIBED' ? 'Live' : 
+                         realtimeStatus === 'polling' ? 'Polling' : 
+                         'Connecting...'}
+                      </span>
                     </div>
                     <button
                       onClick={() => window.location.reload()}
