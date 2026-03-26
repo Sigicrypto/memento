@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import './landing.css';
+import '../landing.css';
 
 // Demo photos with different themes
 const demoPhotos = [
