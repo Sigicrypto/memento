@@ -126,22 +126,28 @@ export default function MobileUploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-amber-900 to-gray-900">
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl" />
+      </div>
+
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div className="relative z-10 bg-gray-800/50 backdrop-blur-md border-b border-amber-500/20">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">{eventName}</h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <h1 className="text-xl font-bold text-white">{eventName}</h1>
+              <p className="text-sm text-gray-400">
                 {uploaderName ? `Photos by: ${uploaderName}` : 'All Event Photos'}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${
-                realtimeStatus === 'SUBSCRIBED' ? 'bg-green-500' : 'bg-yellow-500'
+                realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400' : 'bg-yellow-400'
               }`} />
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="text-xs text-gray-400">
                 {realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Connecting...'}
               </span>
             </div>
@@ -154,7 +160,7 @@ export default function MobileUploadPage() {
               value={uploaderName}
               onChange={(e) => setUploaderName(e.target.value)}
               placeholder="Enter your name to filter your photos..."
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-700/50 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
             />
             <button
               onClick={() => {
@@ -162,7 +168,7 @@ export default function MobileUploadPage() {
                 // Refetch photos
                 window.location.reload();
               }}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white rounded-lg text-sm font-medium transition-all"
             >
               Filter
             </button>
@@ -173,8 +179,8 @@ export default function MobileUploadPage() {
       {/* Success Message */}
       {successMessage && (
         <div className="max-w-4xl mx-auto px-4 mt-4">
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-            <p className="text-green-700 dark:text-green-300 text-center font-medium">
+          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 backdrop-blur-sm">
+            <p className="text-green-400 text-center font-medium">
               ✅ {successMessage}
             </p>
           </div>
@@ -182,16 +188,16 @@ export default function MobileUploadPage() {
       )}
 
       {/* Photos Grid */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-6">
         {photos.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-cyan-100 dark:from-purple-900/30 dark:to-cyan-900/30 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-amber-500/20 to-rose-500/20 rounded-full flex items-center justify-center border border-amber-500/30">
               <span className="text-3xl">📸</span>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-xl font-semibold text-white mb-2">
               {uploaderName ? `No photos found for "${uploaderName}"` : 'No photos yet'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-gray-400 mb-4">
               {uploaderName 
                 ? 'Try clearing the name filter to see all photos, or upload new photos with this name.'
                 : 'Upload photos to see them appear here in real-time.'}
@@ -204,7 +210,7 @@ export default function MobileUploadPage() {
                   localStorage.removeItem('memento_guest_name');
                   window.location.reload();
                 }}
-                className="mb-4 text-purple-600 hover:text-purple-700 text-sm font-medium"
+                className="mb-4 text-amber-400 hover:text-amber-300 text-sm font-medium transition-colors"
               >
                 Clear filter & show all photos
               </button>
@@ -213,7 +219,7 @@ export default function MobileUploadPage() {
             <div className="mt-4">
               <Link 
                 href={`/upload/${slug}`}
-                className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white px-6 py-3 rounded-lg font-medium transition-all"
               >
                 📱 Upload Photos
               </Link>
@@ -223,7 +229,7 @@ export default function MobileUploadPage() {
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {photos.map((photo) => (
               <div key={photo.id} className="relative group">
-                <div className="aspect-square overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+                <div className="aspect-square overflow-hidden rounded-lg border border-gray-700 bg-gray-800/50">
                   <img
                     src={getPublicUrl(photo.storage_path)}
                     alt={`Uploaded by ${photo.uploader_name}`}
@@ -261,17 +267,17 @@ export default function MobileUploadPage() {
       </div>
 
       {/* Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800/50 backdrop-blur-md border-t border-amber-500/20 p-4 z-20">
         <div className="max-w-4xl mx-auto flex gap-3">
           <Link
             href={`/upload/${slug}`}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors text-center"
+            className="flex-1 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white px-4 py-3 rounded-lg font-medium transition-all text-center"
           >
             📸 Upload More
           </Link>
           <Link
             href={`/wall/${slug}`}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white px-4 py-3 rounded-lg font-medium transition-colors text-center"
+            className="flex-1 bg-gray-700/50 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-all text-center border border-gray-600"
           >
             🖼️ View Wall
           </Link>

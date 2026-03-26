@@ -12,7 +12,7 @@ const Confetti = ({ trigger }: { trigger: boolean }) => {
 
   useEffect(() => {
     if (trigger) {
-      const colors = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'];
+      const colors = ['#f59e0b', '#fb923c', '#f472b6', '#a78bfa', '#fcd34d', '#f97316'];
       const newParticles = Array.from({ length: 50 }, (_, i) => ({
         id: Date.now() + i,
         x: Math.random() * 100,
@@ -28,7 +28,7 @@ const Confetti = ({ trigger }: { trigger: boolean }) => {
   if (particles.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-50">
+    <div className="fixed inset-0 pointer-events-none z-50 dark">
       {particles.map((particle) => (
         <div
           key={particle.id}
@@ -308,15 +308,15 @@ export default function WallPage() {
   if (viewMode === 'slideshow') {
     const current = photos[slideIndex];
     return (
-      <div className="fixed inset-0 bg-black z-50 flex flex-col">
+      <div className="fixed inset-0 bg-[#07050c] z-50 flex flex-col dark">
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="text-white font-bold text-lg">{eventName}</h1>
+          <h1 className="text-[#f5f0e8] font-bold text-lg">{eventName}</h1>
           <div className="flex gap-3">
-            <span className="text-gray-300 text-sm">{slideIndex + 1} / {photos.length}</span>
+            <span className="text-[#a09080] text-sm">{slideIndex + 1} / {photos.length}</span>
             <button
               onClick={() => { setViewMode('polaroid'); if (slideshowTimer.current) clearInterval(slideshowTimer.current); }}
-              className="text-white text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded transition"
+              className="text-[#f5f0e8] text-sm bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] px-3 py-1 rounded transition"
             >
               ✕ Exit
             </button>
@@ -337,19 +337,19 @@ export default function WallPage() {
             {(current.caption || current.uploader_name) && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
                 {current.caption && (
-                  <p className="text-white text-xl italic mb-1">"{current.caption}"</p>
+                  <p className="text-[#f5f0e8] text-xl italic mb-1">"{current.caption}"</p>
                 )}
-                <p className="text-gray-300 text-sm">— {current.uploader_name}</p>
+                <p className="text-[#a09080] text-sm">— {current.uploader_name}</p>
               </div>
             )}
           </div>
         )}
 
         {/* Nav buttons */}
-        <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
+        <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] text-[#f5f0e8] w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
           ‹
         </button>
-        <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
+        <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] text-[#f5f0e8] w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
           ›
         </button>
 
@@ -357,7 +357,7 @@ export default function WallPage() {
         <div className="flex gap-2 px-6 py-3 overflow-x-auto">
           {photos.map((p, i) => (
             <button key={p.id} onClick={() => setSlideIndex(i)}
-              className={`flex-shrink-0 w-14 h-14 rounded overflow-hidden border-2 transition ${i === slideIndex ? 'border-white' : 'border-transparent opacity-50'}`}>
+              className={`flex-shrink-0 w-14 h-14 rounded overflow-hidden border-2 transition ${i === slideIndex ? 'border-[#f59e0b]' : 'border-transparent opacity-50'}`}>
               <img src={getPublicUrl(p.storage_path)} alt="" className="w-full h-full object-cover" />
             </button>
           ))}
@@ -370,31 +370,31 @@ export default function WallPage() {
 
   // ── NORMAL VIEWS ───────────────────────────────────────────────
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-8 dark">
       <div className="max-w-7xl mx-auto">
         {/* Header with Aurora Background */}
         <div className="relative mb-12">
-          <div className="aurora-bg rounded-3xl p-8 text-white">
+          <div className="aurora-bg rounded-3xl p-8 text-[#f5f0e8] dark">
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-white/15 border border-white/20 mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-[rgba(245,158,11,0.15)] border border-[rgba(245,158,11,0.25)] mb-4">
                 Live Wall Experience
               </div>
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                 <div className="flex-1">
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg leading-tight">
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg leading-tight text-[#f5f0e8]">
                     {eventName || 'Loading…'}
                   </h1>
                   <div className="flex items-center gap-4">
-                    <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full flex items-center gap-3">
+                    <div className="bg-[rgba(245,158,11,0.15)] backdrop-blur-sm px-6 py-3 rounded-full flex items-center gap-3">
                       <span className="text-base font-semibold">
                         📸 {photos.length} photo{photos.length !== 1 ? 's' : ''} shared
                       </span>
                       <span className={`w-2.5 h-2.5 rounded-full ${
-                realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' : 
-                realtimeStatus === 'polling' ? 'bg-blue-400 animate-pulse' : 
-                'bg-yellow-400'
+                realtimeStatus === 'SUBSCRIBED' ? 'bg-[#f59e0b] animate-pulse' : 
+                realtimeStatus === 'polling' ? 'bg-[#fb923c] animate-pulse' : 
+                'bg-[#f472b6]'
               }`} title={`Connection: ${realtimeStatus}`} />
-                      <span className="text-xs text-white/80 font-medium">
+                      <span className="text-xs text-[#f5f0e8]/80 font-medium">
                         {realtimeStatus === 'SUBSCRIBED' ? '⚡ Live' : 
                          realtimeStatus === 'polling' ? '🔄 Polling (2s)' : 
                          '🟡 Connecting...'}
@@ -402,7 +402,7 @@ export default function WallPage() {
                     </div>
                     <button
                       onClick={() => window.location.reload()}
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-3 rounded-full text-white text-sm font-medium transition border border-white/20"
+                      className="bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] backdrop-blur-sm px-4 py-3 rounded-full text-[#f5f0e8] text-sm font-medium transition border border-[rgba(245,158,11,0.25)]"
                       title="Refresh wall"
                     >
                       🔄 Refresh
@@ -411,12 +411,12 @@ export default function WallPage() {
                 </div>
                 <div className="flex flex-wrap gap-3 lg:gap-4">
                   {/* View mode toggles */}
-                  <div className="flex rounded-xl border border-white/20 overflow-hidden bg-white/10 backdrop-blur-sm">
+                  <div className="flex rounded-xl border border-[rgba(245,158,11,0.25)] overflow-hidden bg-[rgba(245,158,11,0.08)] backdrop-blur-sm">
                     {(['polaroid', 'grid', 'slideshow'] as ViewMode[]).map((mode) => (
                       <button
                         key={mode}
                         onClick={() => { setViewMode(mode); if (mode === 'slideshow') setSlideIndex(0); }}
-                        className={`px-5 py-3 text-sm font-medium transition ${viewMode === mode ? 'bg-white text-purple-700' : 'text-white hover:bg-white/10'}`}
+                        className={`px-5 py-3 text-sm font-medium transition ${viewMode === mode ? 'bg-[#f5f0e8] text-[#07050c]' : 'text-[#f5f0e8] hover:bg-[rgba(245,158,11,0.15)]'}`}
                       >
                         {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : '▶ Slideshow'}
                       </button>
@@ -428,20 +428,20 @@ export default function WallPage() {
                     onClick={() => setModerationMode(!moderationMode)}
                     className={`px-5 py-3 rounded-xl text-sm font-medium transition border ${
                       moderationMode 
-                        ? 'bg-orange-500 text-white border-orange-400' 
-                        : 'bg-white/20 text-white border-white/20 hover:bg-white/30'
+                        ? 'bg-[#f59e0b] text-[#07050c] border-[#fb923c]' 
+                        : 'bg-[rgba(245,158,11,0.15)] text-[#f5f0e8] border-[rgba(245,158,11,0.25)] hover:bg-[rgba(245,158,11,0.25)]'
                     }`}
                   >
                     {moderationMode ? '🛡️ Moderation ON' : '👁️ Auto-Show'}
                   </button>
                   
-                  <button onClick={() => setShowQR(!showQR)} className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-5 py-3 rounded-xl text-sm font-medium transition border border-white/20">
+                  <button onClick={() => setShowQR(!showQR)} className="bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] backdrop-blur-sm text-[#f5f0e8] px-5 py-3 rounded-xl text-sm font-medium transition border border-[rgba(245,158,11,0.25)]">
                     {showQR ? 'Hide QR' : '📱 QR Code'}
                   </button>
-                  <Link href={`/upload/${slug}`} className="bg-white text-purple-700 hover:bg-gray-100 px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
+                  <Link href={`/upload/${slug}`} className="bg-[#f59e0b] hover:bg-[#f97316] text-[#07050c] px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
                     📸 Upload Photos
                   </Link>
-                  <Link href={`/mobile/${slug}`} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
+                  <Link href={`/mobile/${slug}`} className="bg-[#f472b6] hover:bg-[#ec4899] text-[#f5f0e8] px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
                     📱 My Photos
                   </Link>
                 </div>
@@ -452,12 +452,12 @@ export default function WallPage() {
 
       {/* QR Popover */}
       {showQR && (
-        <div className="card max-w-sm mx-auto text-center mb-8 border-2 border-purple-200 dark:border-purple-800">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Share This Wall</h3>
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-xl inline-block mx-auto mb-4 shadow-lg">
+        <div className="card max-w-sm mx-auto text-center mb-8 border-2 border-[rgba(245,158,11,0.25)] dark:border-[rgba(245,158,11,0.35)]">
+          <h3 className="text-lg font-semibold text-[#0a0600] dark:text-[#f5f0e8] mb-4">Share This Wall</h3>
+          <div className="bg-[#faf7f2] dark:bg-[#1a1230] p-6 rounded-xl inline-block mx-auto mb-4 shadow-lg border border-[rgba(245,158,11,0.15)]">
             <QRCodeSVG value={uploadUrl} size={200} />
           </div>
-          <p className="text-xs text-gray-600 dark:text-gray-400 break-all mb-4 font-mono">{uploadUrl}</p>
+          <p className="text-xs text-[#5c4e38] dark:text-[#a09080] break-all mb-4 font-mono">{uploadUrl}</p>
           
           {/* Enhanced Sharing Options */}
           <div className="space-y-3">

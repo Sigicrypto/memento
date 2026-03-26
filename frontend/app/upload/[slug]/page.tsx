@@ -295,7 +295,7 @@ export default function UploadPage() {
         <div className="relative z-10 card max-w-sm text-center !p-10">
           <div className="text-5xl mb-4">😢</div>
           <h1 className="text-xl font-bold mb-2">Event Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-300 text-sm">This link doesn't seem to be valid.</p>
+          <p className="text-[#a09080] text-sm">This link doesn't seem to be valid.</p>
         </div>
       </div>
     );
@@ -308,17 +308,17 @@ export default function UploadPage() {
         <div className="relative z-10 w-full max-w-sm">
           <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/15 to-accent/10 blur-xl pointer-events-none" />
           <div className="card relative !p-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-3xl mx-auto mb-4 glow-purple">
+            <div className="w-16 h-16 rounded-2xl bg-[rgba(245,158,11,0.15)] border border-[rgba(245,158,11,0.25)] flex items-center justify-center text-3xl mx-auto mb-4 glow-purple">
               🔒
             </div>
-            <h1 className="text-xl font-bold mb-1">{eventName || 'Private Event'}</h1>
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">Enter the password to upload photos.</p>
+            <h1 className="text-xl font-bold mb-1 text-[#f5f0e8]">{eventName || 'Private Event'}</h1>
+            <p className="text-[#a09080] text-sm mb-6">Enter the password to upload photos.</p>
             <form onSubmit={handleUnlock} className="space-y-3">
               <input type="password" className="input text-center" value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 placeholder="Enter password…" autoFocus required />
               {passwordError && (
-                <p className="text-red-400 text-sm">{passwordError}</p>
+                <p className="text-[#f472b6] text-sm">{passwordError}</p>
               )}
               <button type="submit" className="btn-primary w-full">Unlock</button>
             </form>
@@ -330,30 +330,30 @@ export default function UploadPage() {
 
   // Upload form
   return (
-    <div className="aurora-bg min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-white font-sans">
+    <div className="aurora-bg min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-[#f5f0e8] font-sans dark">
       <div className="w-full max-w-md flex flex-col items-center">
-        <div className="w-full mb-4 rounded-2xl border border-purple-500/20 bg-white/10 backdrop-blur-xl px-4 py-3 text-center">
-          <p className="text-xs uppercase tracking-wider text-purple-200/90 font-semibold mb-1">Live Upload</p>
-          <h2 className="text-lg font-bold text-white truncate">{eventName || 'Loading event...'}</h2>
+        <div className="w-full mb-4 rounded-2xl border border-[rgba(245,158,11,0.25)] bg-[rgba(245,158,11,0.08)] backdrop-blur-xl px-4 py-3 text-center">
+          <p className="text-xs uppercase tracking-wider text-[#fcd34d]/90 font-semibold mb-1">Live Upload</p>
+          <h2 className="text-lg font-bold text-[#f5f0e8] truncate">{eventName || 'Loading event...'}</h2>
         </div>
         
         {/* Connection Status Indicator */}
         <div className="w-full mb-4">
           <div className={`flex items-center justify-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
             navigator.onLine 
-              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-              : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+              ? 'bg-[rgba(245,158,11,0.20)] text-[#f59e0b] border border-[rgba(245,158,11,0.30)]' 
+              : 'bg-[rgba(244,114,182,0.20)] text-[#f472b6] border border-[rgba(244,114,182,0.30)]'
           }`}>
-            <span className={`w-2 h-2 rounded-full ${navigator.onLine ? 'bg-green-400' : 'bg-orange-400'} animate-pulse`} />
+            <span className={`w-2 h-2 rounded-full ${navigator.onLine ? 'bg-[#f59e0b]' : 'bg-[#f472b6]'} animate-pulse`} />
             {navigator.onLine ? '🟢 Online' : '📴 Offline - Photos will upload when connected'}
           </div>
         </div>
         
         {/* The White Prompt Card (Standard high contrast shape) */}
 
-        <div className="w-full bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl text-center mb-8 border border-purple-200/40 transform transition hover:scale-[1.01]">
-          <h3 className="text-xl font-extrabold text-slate-900 mb-2">Upload your first photo or video</h3>
-          <p className="text-slate-500 text-sm mb-10 leading-relaxed">Pick your best moments and post them to the live wall instantly.</p>
+        <div className="w-full bg-[#faf7f2] dark:bg-[#1a1230]/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl text-center mb-8 border border-[rgba(245,158,11,0.15)] transform transition hover:scale-[1.01]">
+          <h3 className="text-xl font-extrabold text-[#0a0600] dark:text-[#f5f0e8] mb-2">Upload your first photo or video</h3>
+          <p className="text-[#5c4e38] dark:text-[#a09080] text-sm mb-10 leading-relaxed">Pick your best moments and post them to the live wall instantly.</p>
 
           <form onSubmit={handleUpload} className="space-y-4">
             {/* Hidden Input */}
@@ -361,8 +361,8 @@ export default function UploadPage() {
               className="hidden" id="photo-upload" required />
 
             {/* Large Circle Trigger Icon */}
-            <label htmlFor="photo-upload" className="w-16 h-16 bg-white border border-slate-100 rounded-full flex items-center justify-center mx-auto shadow-lg hover:shadow-xl hover:scale-105 transition cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-slate-700">
+            <label htmlFor="photo-upload" className="w-16 h-16 bg-[#faf7f2] dark:bg-[#1a1230] border border-[rgba(245,158,11,0.20)] rounded-full flex items-center justify-center mx-auto shadow-lg hover:shadow-xl hover:scale-105 transition cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-[#0a0600] dark:text-[#f5f0e8]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
             </label>
@@ -373,7 +373,7 @@ export default function UploadPage() {
         <div className="w-full max-w-sm space-y-4">
           
           {previews.length > 0 && !uploading && (
-            <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-6 shadow-xl space-y-4 text-slate-800 transform transition border border-purple-200/50">
+            <div className="bg-[#faf7f2] dark:bg-[#1a1230]/95 backdrop-blur-xl rounded-3xl p-6 shadow-xl space-y-4 text-[#0a0600] dark:text-[#f5f0e8] transform transition border border-[rgba(245,158,11,0.20)]">
               <h4 className="font-bold text-lg">Add Details (Optional)</h4>
               <div>
                 <label className="block text-xs font-semibold text-slate-500 mb-1.5">
@@ -384,17 +384,17 @@ export default function UploadPage() {
                 </label>
                 <input 
                   type="text" 
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" 
+                  className="w-full bg-[#f8f4ee] dark:bg-[#130f22] border border-[rgba(245,158,11,0.20)] text-[#0a0600] dark:text-[#f5f0e8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#f59e0b]" 
                   value={uploaderName} 
                   onChange={(e) => setUploaderName(e.target.value)} 
                   placeholder="e.g. Uncle Bob" 
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">Message</label>
-                <textarea className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="What a beautiful day!" rows={2} />
+                <label className="block text-xs font-semibold text-[#5c4e38] dark:text-[#a09080] mb-1.5">Message</label>
+                <textarea className="w-full bg-[#f8f4ee] dark:bg-[#130f22] border border-[rgba(245,158,11,0.20)] text-[#0a0600] dark:text-[#f5f0e8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#f59e0b]" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="What a beautiful day!" rows={2} />
               </div>
-              <button onClick={() => uploadFiles(files)} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-95">
+              <button onClick={() => uploadFiles(files)} className="w-full bg-gradient-to-r from-[#f59e0b] to-[#f472b6] hover:from-[#f97316] hover:to-[#ec4899] text-[#0a0600] font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-95">
                 📤 Post to Wall
               </button>
             </div>
@@ -404,7 +404,7 @@ export default function UploadPage() {
 
             <div className="grid grid-cols-2 gap-3">
               {previews.map((prev, idx) => (
-                <div key={idx} className="rounded-xl overflow-hidden border border-slate-800 aspect-square relative shadow-md">
+                <div key={idx} className="rounded-xl overflow-hidden border border-[rgba(245,158,11,0.30)] aspect-square relative shadow-md">
                   {files[idx]?.type.startsWith('video/') ? (
                     <video src={prev} className="w-full h-full object-cover" controls playsInline />
                   ) : (
@@ -416,19 +416,19 @@ export default function UploadPage() {
           )}
 
           {uploadProgress > 0 && (
-            <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden shadow-inner">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-500"
+            <div className="w-full bg-[#130f22] rounded-full h-2 overflow-hidden shadow-inner">
+              <div className="bg-gradient-to-r from-[#f59e0b] to-[#f472b6] h-2 rounded-full transition-all duration-500"
                 style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
 
           {error && error !== 'Event not found.' && (
-            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 p-3 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 text-[#f472b6] text-sm bg-[rgba(244,114,182,0.10)] border border-[rgba(244,114,182,0.20)] p-3 rounded-xl shadow-sm">
               <span>⚠️</span> {error}
             </div>
           )}
           {success && (
-            <div className="flex items-center gap-2 text-green-400 text-sm bg-green-500/10 border border-green-500/20 p-3 rounded-xl shadow-sm">
+            <div className="flex items-center gap-2 text-[#f59e0b] text-sm bg-[rgba(245,158,11,0.10)] border border-[rgba(245,158,11,0.20)] p-3 rounded-xl shadow-sm">
               <span>✅</span> Uploaded successfully! Redirecting to your photos...
             </div>
           )}

@@ -1,313 +1,497 @@
+"use client";
+
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import Pricing from '@/components/Pricing';
+import './landing.css';
 
-export default function Home() {
+export default function LandingPage() {
+  const [scrolled, setScrolled] = useState(false);
+  const [currency, setCurrency] = useState({ showINR: false });
+  const [showingINR, setShowingINR] = useState(false);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const cursorRingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    let trailTimer = 0;
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX; my = e.clientY;
+      trailTimer++;
+      if (trailTimer % 3 === 0) {
+        const t = document.createElement('div');
+        t.className = 'cursor-trail';
+        const size = 6 + Math.random() * 6;
+        t.style.cssText = `left:${mx}px;top:${my}px;width:${size}px;height:${size}px;`;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 600);
+      }
+    };
+    window.addEventListener('mousemove', onMove);
+    let raf: number;
+    const loop = () => {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      if (cursorRef.current) { cursorRef.current.style.left = `${mx}px`; cursorRef.current.style.top = `${my}px`; }
+      if (cursorRingRef.current) { cursorRingRef.current.style.left = `${rx}px`; cursorRingRef.current.style.top = `${ry}px`; }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    const cards = document.querySelectorAll('.gcard');
+    cards.forEach(card => {
+      const el = card as HTMLElement;
+      el.addEventListener('mousemove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        el.style.setProperty('--mx', `${x}px`);
+        el.style.setProperty('--my', `${y}px`);
+      });
+    });
+
+    (async () => {
+      let isIndia = false;
+      try {
+        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+        isIndia = (await res.json()).country_code === 'IN';
+      } catch { isIndia = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').includes('Kolkata'); }
+      setCurrency({ showINR: isIndia });
+      if (isIndia) setShowingINR(true);
+    })();
+
+    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); obs.disconnect(); };
+  }, []);
+
+  const Plus = showingINR ? "1,249" : "14.95";
+  const Premium = showingINR ? "2,499" : "29.95";
+  const Signature = showingINR ? "4,169" : "49.95";
+  const Sym = showingINR ? "₹" : "$";
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="lp">
+      <div className="cursor-dot" ref={cursorRef} />
+      <div className="cursor-ring" ref={cursorRingRef} />
 
-      {/* ── BACKGROUND LAYERS ── */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute rounded-full" style={{ top: '-20%', left: '-10%', width: '70vw', height: '70vw', background: 'radial-gradient(circle, #f59e0b, transparent 70%)', filter: 'blur(100px)', opacity: 0.06 }} />
-        <div className="absolute rounded-full" style={{ top: '5%', right: '-15%', width: '50vw', height: '50vw', background: 'radial-gradient(circle, #f472b6, transparent 70%)', filter: 'blur(80px)', opacity: 0.05 }} />
-        <div className="absolute rounded-full" style={{ bottom: '-10%', left: '15%', width: '65vw', height: '45vw', background: 'radial-gradient(circle, #7c3aed, transparent 70%)', filter: 'blur(90px)', opacity: 0.05 }} />
-        <div className="absolute inset-0 grid-pattern" style={{ opacity: 0.04 }} />
-        <div className="noise-overlay" style={{ opacity: 0.05 }} />
+      <div className="orbs">
+        <div className="orb orb1" />
+        <div className="orb orb2" />
+        <div className="orb orb3" />
       </div>
 
-      {/* ══════════════════════════════════
-          HERO
-      ══════════════════════════════════ */}
-      <section className="relative z-10 min-h-[100svh] flex flex-col items-center justify-center px-6 pt-24 pb-20 overflow-hidden">
+      <div className="grain" />
 
-        {/* Floating Polaroids — Left */}
-        <div className="absolute left-0 top-0 bottom-0 w-[30%] pointer-events-none hidden xl:flex flex-col items-start justify-center gap-8 pl-12">
-          <div className="polaroid-hero" style={{ transform: 'rotate(-12deg) translateX(-15%)', animationDelay: '0s' }}>
-            <div className="polaroid-photo" style={{ background: 'linear-gradient(135deg, #8b5e3c 0%, #d4956a 40%, #f5c6a0 100%)' }}>
-              <span style={{ fontSize: '1.8rem' }}>📸</span>
-            </div>
-            <p className="polaroid-caption">Golden Hour</p>
-          </div>
-          <div className="polaroid-hero" style={{ transform: 'rotate(8deg) translateX(35%)', animationDelay: '2s' }}>
-            <div className="polaroid-photo" style={{ background: 'linear-gradient(135deg, #3b1f6a 0%, #7c3aed 50%, #c4b5fd 100%)' }}>
-              <span style={{ fontSize: '1.8rem' }}>🥂</span>
-            </div>
-            <p className="polaroid-caption">Cheers!</p>
-          </div>
-          <div className="polaroid-hero" style={{ transform: 'rotate(-5deg) translateX(5%)', animationDelay: '4s' }}>
-            <div className="polaroid-photo" style={{ background: 'linear-gradient(135deg, #14302a 0%, #2d6a4f 50%, #95d5b2 100%)' }}>
-              <span style={{ fontSize: '1.8rem' }}>🎉</span>
-            </div>
-            <p className="polaroid-caption">First Dance</p>
-          </div>
+      {/* NAV */}
+      <nav className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
+        <Link href="/" className="nav-logo">
+          <span className="nav-logo-icon">📷</span>
+          <span className="nav-logo-text">Memento</span>
+        </Link>
+        <div className="nav-mid">
+          <Link href="#features">Features</Link>
+          <Link href="#how">How it works</Link>
+          <Link href="#pricing">Pricing</Link>
         </div>
+        <Link href="/create" className="nav-btn">
+          Get Started
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </Link>
+      </nav>
 
-        {/* Floating Polaroids — Right */}
-        <div className="absolute right-0 top-0 bottom-0 w-[30%] pointer-events-none hidden xl:flex flex-col items-end justify-center gap-8 pr-12">
-          <div className="polaroid-hero" style={{ transform: 'rotate(11deg) translateX(20%)', animationDelay: '1s' }}>
-            <div className="polaroid-photo" style={{ background: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 50%, #fed7aa 100%)' }}>
-              <span style={{ fontSize: '1.8rem' }}>🎊</span>
-            </div>
-            <p className="polaroid-caption">Party Time!</p>
-          </div>
-          <div className="polaroid-hero" style={{ transform: 'rotate(-8deg) translateX(-30%)', animationDelay: '2.5s' }}>
-            <div className="polaroid-photo" style={{ background: 'linear-gradient(135deg, #831843 0%, #db2777 50%, #fbcfe8 100%)' }}>
-              <span style={{ fontSize: '1.8rem' }}>💕</span>
-            </div>
-            <p className="polaroid-caption">With Love</p>
-          </div>
-          <div className="polaroid-hero" style={{ transform: 'rotate(5deg) translateX(15%)', animationDelay: '3.5s' }}>
-            <div className="polaroid-photo" style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #bfdbfe 100%)' }}>
-              <span style={{ fontSize: '1.8rem' }}>🎓</span>
-            </div>
-            <p className="polaroid-caption">We Did It!</p>
-          </div>
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-badge reveal">
+          <span className="pulse-dot" />
+          Free for your first event
         </div>
-
-        {/* Center Content */}
-        <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto">
-          <div className="hero-badge fade-in-up mb-10">
-            <span className="badge-dot" />
-            Free for your next event
-          </div>
-
-          <h1 className="hero-title fade-in-up-delay-1 mb-6">
-            <span className="block">Every Memory</span>
-            <em className="hero-title-accent not-italic">Preserved.</em>
-          </h1>
-
-          <p className="hero-desc fade-in-up-delay-2 mb-12 mx-auto" style={{ maxWidth: '38ch' }}>
-            Guests scan a QR code, snap photos, and watch them appear
-            live in a beautiful polaroid gallery — zero app needed.
-          </p>
-
-          <div className="fade-in-up-delay-3 flex flex-col sm:flex-row gap-4 items-center">
-            <Link href="/create" className="btn-hero-primary">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" className="mr-2 flex-shrink-0">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              Create Your Wall
-            </Link>
-            <a href="#how" className="btn-hero-ghost">
-              See How It Works
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </a>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 h-36 pointer-events-none" style={{ background: 'linear-gradient(to top, #07050c, transparent)' }} />
-      </section>
-
-      {/* ══════════════════════════════════
-          STATS
-      ══════════════════════════════════ */}
-      <section className="relative z-10 w-full flex justify-center px-6 pb-28">
-        <div className="stats-strip">
-          {[
-            { value: '∞',     label: 'Photos per wall' },
-            { value: '0s',    label: 'App install time' },
-            { value: '< 3s',  label: 'Upload speed' },
-            { value: '100%',  label: 'Free to start' },
-          ].map((stat, i) => (
-            <div key={i} className="flex items-center">
-              {i > 0 && <div className="stat-divider" />}
-              <div className="stat-item">
-                <div className="stat-value">{stat.value}</div>
-                <div className="stat-label">{stat.label}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════
-          HOW IT WORKS
-      ══════════════════════════════════ */}
-      <section id="how" className="relative z-10 w-full flex flex-col items-center px-6 py-28">
-        <div className="section-tag">How it works</div>
-        <h2 className="section-title mb-5">
-          Three steps. <span className="gradient-text">That's it.</span>
-        </h2>
-        <p className="text-center mb-20" style={{ color: '#6b6070', fontSize: '0.95rem', maxWidth: '34ch' }}>
-          No downloads. No accounts. No friction.
+        <h1 className="hero-h1 reveal">
+          Your Event.
+          <br />
+          <span className="gradient-text">Every Memory. Live.</span>
+        </h1>
+        <p className="hero-p reveal">
+          Guests scan a QR code, snap photos, and watch them appear live on a stunning wall. No app needed.
         </p>
-
-        <div className="relative w-full max-w-5xl">
-          <div
-            className="absolute top-[3.5rem] left-[22%] right-[22%] h-px hidden md:block"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(245,158,11,0.25) 30%, rgba(245,158,11,0.25) 70%, transparent)' }}
-          />
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { n: '01', icon: '🎉', title: 'Create Your Event',    desc: 'Name it, choose a theme, and get a shareable QR code in under a minute.' },
-              { n: '02', icon: '📲', title: 'Guests Scan & Share',  desc: 'No app download. No login. Just scan and upload — done in seconds.' },
-              { n: '03', icon: '✨', title: 'Watch It Come Alive',  desc: 'Every photo streams live into a stunning polaroid gallery for all to enjoy.' },
-            ].map((step) => (
-              <div key={step.n} className="step-card group">
-                <span className="step-number">{step.n}</span>
-                <div className="step-icon-wrap">
-                  <span className="text-2xl group-hover:scale-110 transition-transform inline-block">{step.icon}</span>
-                </div>
-                <h3 className="step-title">{step.title}</h3>
-                <p className="step-desc">{step.desc}</p>
-              </div>
-            ))}
-          </div>
+        <div className="hero-btns reveal">
+          <Link href="/create" className="btn-glow">
+            <span>Create Your Wall</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </Link>
+          <Link href="/demo" className="btn-outline">
+            <span>🎬 Try Live Demo</span>
+          </Link>
         </div>
-      </section>
-
-      {/* ══════════════════════════════════
-          FEATURES BENTO
-      ══════════════════════════════════ */}
-      <section className="relative z-10 w-full flex flex-col items-center px-6 py-28">
-        <div className="section-tag">Features</div>
-        <h2 className="section-title mb-16">
-          Everything <span className="gradient-text">built in.</span>
-        </h2>
-
-        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-4">
-
-          {/* Hero feature card */}
-          <div className="md:col-span-7 feature-card-hero group">
-            <div className="feature-icon-lg">📺</div>
-            <h3 className="feature-title-lg">Live Slideshow Mode</h3>
-            <p className="feature-desc-lg">
-              Auto-plays on any screen in real-time. Open on a TV or
-              projector — your guests will be amazed.
-            </p>
-            <div className="slideshow-mockup">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
-                <span style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(245,158,11,0.55)', fontWeight: 600 }}>Live Now</span>
+        <div className="hero-visual reveal">
+          {/* Left phone — Upload view */}
+          <div className="phone-mockup">
+            <div className="phone-notch" />
+            <div className="phone-screen">
+              <div className="phone-header">
+                <span className="phone-title">Upload</span>
+                <span className="phone-live"><span className="pulse-dot" /> Live</span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="phone-grid">
                 {[
-                  { bg: 'linear-gradient(135deg,#4a1830,#c2185b)', emoji: '💒' },
-                  { bg: 'linear-gradient(135deg,#1a3a2a,#2d8a5f)', emoji: '🎂' },
-                  { bg: 'linear-gradient(135deg,#1a2a5e,#1565c0)', emoji: '🏖️' },
-                ].map((item, i) => (
-                  <div key={i} className="h-16 rounded-lg flex items-center justify-center text-xl" style={{ background: item.bg }}>
-                    {item.emoji}
+                  { src: '/api/placeholder/150/150?text=Photo+1', alt: 'Guest photo' },
+                  { src: '/api/placeholder/150/150?text=Photo+2', alt: 'Guest photo' },
+                  { src: '/api/placeholder/150/150?text=Photo+3', alt: 'Guest photo' },
+                  { src: '/api/placeholder/150/150?text=Photo+4', alt: 'Guest photo' }
+                ].map((img, i) => (
+                  <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(245,158,11,${0.15 + i*0.05}), rgba(244,114,182,${0.1 + i*0.05}))`, animationDelay: `${0.8 + i * 0.2}s` }}>
+                    <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                  </div>
+                ))}
+              </div>
+              <div className="phone-upload-bar">
+                ⬆ Uploading...
+                <div className="upload-progress"><div className="upload-progress-bar" /></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Center phone — Live Wall */}
+          <div className="phone-mockup phone-c">
+            <div className="phone-notch" />
+            <div className="phone-screen">
+              <div className="phone-header">
+                <span className="phone-title">Sarah&apos;s Wedding</span>
+                <span className="phone-live"><span className="pulse-dot" /> 24 Live</span>
+              </div>
+              <div className="phone-grid">
+                {[
+                  { src: '/api/placeholder/150/150?text=Wedding+1', alt: 'Wedding photo' },
+                  { src: '/api/placeholder/150/150?text=Wedding+2', alt: 'Wedding photo' },
+                  { src: '/api/placeholder/150/150?text=Wedding+3', alt: 'Wedding photo' },
+                  { src: '/api/placeholder/150/150?text=Wedding+4', alt: 'Wedding photo' },
+                  { src: '/api/placeholder/150/150?text=Wedding+5', alt: 'Wedding photo' },
+                  { src: '/api/placeholder/150/150?text=Wedding+6', alt: 'Wedding photo' }
+                ].map((img, i) => (
+                  <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(${200+i*10},${100+i*15},${50+i*20},0.3), rgba(244,114,182,0.15))`, animationDelay: `${0.5 + i * 0.15}s` }}>
+                    <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Right column — 2 tall cards */}
-          <div className="md:col-span-5 grid grid-rows-2 gap-4">
-            <div className="feature-card group">
-              <div className="feature-icon">📷</div>
-              <h4 className="feature-title">Polaroid Gallery</h4>
-              <p className="feature-desc">Framed, nostalgic photos with captions and gentle float animations.</p>
-            </div>
-            <div className="feature-card group" style={{ borderColor: 'rgba(244,114,182,0.12)' }}>
-              <div className="feature-icon" style={{ background: 'rgba(244,114,182,0.08)', borderColor: 'rgba(244,114,182,0.14)' }}>🔒</div>
-              <h4 className="feature-title">Private Walls</h4>
-              <p className="feature-desc">Password-protect your wall with guest approval controls.</p>
+          {/* Right phone — QR Scan */}
+          <div className="phone-mockup phone-r">
+            <div className="phone-notch" />
+            <div className="phone-screen">
+              <div className="phone-header">
+                <span className="phone-title">Join Wall</span>
+              </div>
+              <div className="phone-qr">QR</div>
+              <p className="phone-scan-text">Scan to join the live wall</p>
+              <div className="phone-grid" style={{ marginTop: '0.75rem' }}>
+                {[
+                  { src: '/api/placeholder/150/150?text=Guest+1', alt: 'Guest photo' },
+                  { src: '/api/placeholder/150/150?text=Guest+2', alt: 'Guest photo' }
+                ].map((img, i) => (
+                  <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(252,211,77,0.2), rgba(245,158,11,0.15))`, animationDelay: `${1.2 + i * 0.2}s` }}>
+                    <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Bottom row — 4 small cards */}
+      {/* STATS */}
+      <section className="stats reveal">
+        {[
+          { val: '∞', label: 'Photos per wall' },
+          { val: '0s', label: 'App install time' },
+          { val: '<3s', label: 'Upload speed' },
+          { val: '100%', label: 'Free to start' },
+        ].map((s, i) => (
+          <div key={i} className="stat">
+            <span className="stat-val">{s.val}</span>
+            <span className="stat-lbl">{s.label}</span>
+          </div>
+        ))}
+      </section>
+
+      {/* FEATURES */}
+      <section id="features" className="sec">
+        <span className="kicker reveal">Features</span>
+        <h2 className="sec-h2 reveal">Everything you need. <span className="gradient-text">Built in.</span></h2>
+
+        <div className="feat-grid">
           {[
-            { icon: '📱', title: 'Mobile First',      desc: 'Each guest gets their own personal photo page.',           border: 'rgba(16,185,129,0.12)',  iconBg: 'rgba(16,185,129,0.08)'  },
-            { icon: '🎊', title: 'Confetti Bursts',   desc: 'Celebration animations trigger on each new upload.',      border: 'rgba(251,191,36,0.12)',  iconBg: 'rgba(251,191,36,0.08)'  },
-            { icon: '🛡️', title: 'Moderation',        desc: 'Approve or remove any photo instantly.',                  border: 'rgba(139,92,246,0.12)',  iconBg: 'rgba(139,92,246,0.08)'  },
-            { icon: '⚡', title: 'Real-time Updates', desc: "Zero delay — photos stream as they're uploaded.",         border: 'rgba(249,115,22,0.12)',  iconBg: 'rgba(249,115,22,0.08)'  },
+            { icon: '📺', title: 'Live Slideshow', desc: 'Auto-plays on any screen. Cast to TV or projector for a stunning real-time display.', big: true },
+            { icon: '📷', title: 'Polaroid Gallery', desc: 'Beautiful framed photos with captions and gentle float animations.' },
+            { icon: '🔒', title: 'Private Walls', desc: 'Password-protect your wall. Approve photos before they go live.' },
+            { icon: '📱', title: 'Mobile First', desc: 'Optimized for phones. Each guest gets their own personal photo page.' },
+            { icon: '⚡', title: 'Real-time Sync', desc: 'Zero delay. Photos appear the instant they\'re uploaded.' },
+            { icon: '🛡️', title: 'Moderation', desc: 'Full control. Approve or remove any photo with one tap.' },
           ].map((f, i) => (
-            <div key={i} className="md:col-span-3 feature-card group" style={{ borderColor: f.border }}>
-              <div className="feature-icon" style={{ background: f.iconBg, borderColor: f.border }}>{f.icon}</div>
-              <h4 className="feature-title">{f.title}</h4>
-              <p className="feature-desc">{f.desc}</p>
+            <div key={i} className={`gcard feat-card ${f.big ? 'feat-big' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <span className="feat-icon">{f.icon}</span>
+                <h3 className="feat-title">{f.title}</h3>
+                <p className="feat-desc">{f.desc}</p>
+              </div>
             </div>
           ))}
-
         </div>
       </section>
 
-      {/* ══════════════════════════════════
-          USE CASES — Scrolling Marquee
-      ══════════════════════════════════ */}
-      <section className="relative z-10 w-full py-24 overflow-hidden">
-        <div className="text-center mb-14 px-6">
-          <div className="section-tag" style={{ justifyContent: 'center' }}>Perfect for</div>
-          <h2 className="section-title mt-2">
-            Every <span className="gradient-text">Occasion.</span>
-          </h2>
+      {/* HOW IT WORKS */}
+      <section id="how" className="sec">
+        <span className="kicker reveal">How it works</span>
+        <h2 className="sec-h2 reveal">Three steps. <span className="gradient-text">That&apos;s it.</span></h2>
+        <p className="sec-sub reveal">No downloads. No accounts. No friction.</p>
+
+        <div className="steps">
+          {[
+            { num: '01', icon: '🎉', title: 'Create Your Event', desc: 'Name it and get a shareable QR code in under a minute.' },
+            { num: '02', icon: '📲', title: 'Guests Scan & Share', desc: 'No app. No login. Just scan the QR and upload photos instantly.' },
+            { num: '03', icon: '✨', title: 'Watch It Come Alive', desc: 'Every photo streams live into a beautiful gallery for everyone.' },
+          ].map((s, i) => (
+            <div key={i} className="gcard step-card reveal" style={{ animationDelay: `${i * 0.12}s` }}>
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <span className="step-num">{s.num}</span>
+                <span className="step-icon">{s.icon}</span>
+                <h3 className="step-title">{s.title}</h3>
+                <p className="step-desc">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+          <div className="steps-line" />
+        </div>
+      </section>
+
+      {/* IMAGE GALLERY */}
+      <section className="sec">
+        <span className="kicker reveal">Gallery</span>
+        <h2 className="sec-h2 reveal">Real <span className="gradient-text">Event Walls</span></h2>
+        <p className="sec-sub reveal">See how people are using Memento to capture their special moments</p>
+
+        <div className="gallery-grid reveal">
+          {[
+            { title: 'Sarah & John Wedding', src: '/api/placeholder/400/300?text=Wedding+Gallery', count: '156 photos' },
+            { title: 'Tech Conference 2024', src: '/api/placeholder/400/300?text=Conference+Gallery', count: '289 photos' },
+            { title: 'Birthday Celebration', src: '/api/placeholder/400/300?text=Birthday+Gallery', count: '87 photos' },
+            { title: 'Corporate Gala', src: '/api/placeholder/400/300?text=Gala+Gallery', count: '234 photos' },
+            { title: 'Graduation Party', src: '/api/placeholder/400/300?text=Graduation+Gallery', count: '145 photos' },
+            { title: 'Festival Weekend', src: '/api/placeholder/400/300?text=Festival+Gallery', count: '512 photos' }
+          ].map((item, i) => (
+            <div key={i} className="gallery-item" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="gallery-img-wrapper">
+                <img src={item.src} alt={item.title} className="gallery-img" />
+                <div className="gallery-overlay">
+                  <h3 className="gallery-title">{item.title}</h3>
+                  <p className="gallery-count">{item.count}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="sec">
+        <span className="kicker reveal">Testimonials</span>
+        <h2 className="sec-h2 reveal">Loved by <span className="gradient-text">Event Organizers</span></h2>
+        <p className="sec-sub reveal">See what people are saying about Memento</p>
+
+        <div className="testimonial-grid reveal">
+          {[
+            {
+              quote: "Memento made our wedding day even more special. Guests loved scanning the QR and seeing photos appear live!",
+              author: "Sarah Chen",
+              role: "Bride",
+              event: "Wedding • 156 photos",
+              rating: 5
+            },
+            {
+              quote: "Perfect for our corporate conference. No app downloads, just instant photo sharing. Everyone was impressed!",
+              author: "Michael Rodriguez",
+              role: "Event Manager",
+              event: "Tech Conference • 289 photos",
+              rating: 5
+            },
+            {
+              quote: "The polaroid gallery view is stunning! We printed the photos afterward and made a beautiful album.",
+              author: "Emma Thompson",
+              role: "Birthday Mom",
+              event: "Sweet 16 • 87 photos",
+              rating: 5
+            },
+            {
+              quote: "So easy to set up and use. Our guests kept uploading photos all night long. The live wall was the hit of the party!",
+              author: "David Park",
+              role: "Gala Organizer",
+              event: "Charity Gala • 234 photos",
+              rating: 5
+            },
+            {
+              quote: "As a photographer, I love this! Clients can see photos instantly while I keep shooting. No more waiting.",
+              author: "Lisa Kumar",
+              role: "Professional Photographer",
+              event: "Multiple Events",
+              rating: 5
+            },
+            {
+              quote: "We used it for our graduation party. Now every family member has all the photos in one place. Amazing!",
+              author: "James Wilson",
+              role: "Graduate",
+              event: "Graduation Party • 145 photos",
+              rating: 5
+            }
+          ].map((item, i) => (
+            <div key={i} className="gcard testimonial-card" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(item.rating)].map((_, j) => (
+                    <span key={j} className="text-amber-400">⭐</span>
+                  ))}
+                </div>
+                <p className="text-white mb-4 text-sm leading-relaxed">"{item.quote}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white font-semibold">
+                    {item.author.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">{item.author}</p>
+                    <p className="text-white/60 text-xs">{item.role}</p>
+                  </div>
+                </div>
+                <p className="text-amber-400 text-xs mt-3 font-medium">{item.event}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="marquee-track mb-3">
-          <div className="marquee-inner">
-            {['Weddings','Birthdays','Conferences','Graduations','Reunions','Festivals','Parties','Workshops','Concerts','School Events',
-              'Weddings','Birthdays','Conferences','Graduations','Reunions','Festivals','Parties','Workshops','Concerts','School Events'].map((tag, i) => (
-              <span key={i} className="marquee-tag">{tag}</span>
-            ))}
+        {/* Social Proof Bar */}
+        <div className="social-proof-bar reveal">
+          <div className="social-proof-item">
+            <span className="text-2xl font-bold gradient-text">10,000+</span>
+            <span className="text-white/70 text-sm">Events Created</span>
           </div>
-        </div>
-
-        <div className="marquee-track marquee-reverse">
-          <div className="marquee-inner">
-            {['Corporate Events','Baby Showers','Engagements','Award Nights','Sports Events','Art Shows','Fundraisers','Trade Shows','Family Gatherings','Holiday Parties',
-              'Corporate Events','Baby Showers','Engagements','Award Nights','Sports Events','Art Shows','Fundraisers','Trade Shows','Family Gatherings','Holiday Parties'].map((tag, i) => (
-              <span key={i} className="marquee-tag marquee-tag-alt">{tag}</span>
-            ))}
+          <div className="social-proof-item">
+            <span className="text-2xl font-bold gradient-text">500K+</span>
+            <span className="text-white/70 text-sm">Photos Shared</span>
+          </div>
+          <div className="social-proof-item">
+            <span className="text-2xl font-bold gradient-text">50+</span>
+            <span className="text-white/70 text-sm">Countries</span>
+          </div>
+          <div className="social-proof-item">
+            <span className="text-2xl font-bold gradient-text">4.9★</span>
+            <span className="text-white/70 text-sm">User Rating</span>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════
-          PRICING
-      ══════════════════════════════════ */}
-      <Pricing />
+      {/* PRICING */}
+      <section id="pricing" className="sec">
+        <span className="kicker reveal">Pricing</span>
+        <h2 className="sec-h2 reveal">Simple, <span className="gradient-text">honest</span> pricing.</h2>
+        <p className="sec-sub reveal">One-time payment per event. No subscriptions.</p>
 
-      {/* ══════════════════════════════════
-          CTA
-      ══════════════════════════════════ */}
-      <section className="relative z-10 w-full px-6 py-32 flex justify-center">
-        <div className="cta-card max-w-2xl w-full text-center relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[32px]">
-            <div className="absolute rounded-full" style={{ top: '-60%', left: '-20%', width: '70%', height: '130%', background: 'radial-gradient(circle,#f59e0b,transparent 70%)', filter: 'blur(50px)', opacity: 0.14 }} />
-            <div className="absolute rounded-full" style={{ top: '-40%', right: '-20%', width: '60%', height: '110%', background: 'radial-gradient(circle,#f472b6,transparent 70%)', filter: 'blur(50px)', opacity: 0.10 }} />
-          </div>
-          <div className="relative z-10 py-16 px-8 sm:px-16">
-            <div className="text-5xl mb-6" aria-hidden>✨</div>
-            <h2 className="cta-title">
-              Start for free.
-              <br />
-              <span className="gradient-text">No card needed.</span>
-            </h2>
-            <p className="cta-desc mb-10 mt-4">Zero friction. Your wall is live in under a minute.</p>
-            <Link href="/create" className="btn-hero-primary" style={{ fontSize: '1rem', padding: '1rem 2.75rem' }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" className="mr-2 flex-shrink-0">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              Create Your Wall — It's Free
-            </Link>
-          </div>
+        {currency.showINR && (
+          <button className="currency-toggle reveal" onClick={() => setShowingINR(!showingINR)}>
+            Switch to {showingINR ? '$ USD' : '₹ INR'}
+          </button>
+        )}
+
+        <div className="price-grid">
+          {[
+            { name: 'Plus', price: Plus, features: ['Unlimited photos', 'Ultra-fast uploads', 'Live Slideshow', 'Download as ZIP', 'E2E Encryption'], popular: false },
+            { name: 'Premium', price: Premium, features: ['Video uploads', 'Google Drive Sync', 'Safety Filter', 'All Plus features'], popular: true },
+            { name: 'Signature', price: Signature, features: ['1 Year access', 'Unlimited walls', 'Zapier & FTP', 'All Premium features'], popular: false },
+          ].map((p, i) => (
+            <div key={i} className={`gcard price-card ${p.popular ? 'popular' : ''} reveal`} style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                {p.popular && <span className="popular-tag">Most Popular</span>}
+                <p className="price-name">{p.name}</p>
+                <div className="price-amount">
+                  <span className="price-sym">{Sym}</span>
+                  <span className="price-val">{p.price}</span>
+                </div>
+                <span className="price-period">one-time payment</span>
+                <Link href="/pricing" className={`price-btn ${p.popular ? 'filled' : ''}`}>
+                  Get {p.name}
+                </Link>
+                <div className="price-divider" />
+                {p.features.map((f, j) => (
+                  <div key={j} className="price-feat">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ══════════════════════════════════
-          FOOTER
-      ══════════════════════════════════ */}
-      <footer className="relative z-10 py-12" style={{ borderTop: '1px solid rgba(245,158,11,0.08)' }}>
-        <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg" style={{ background: 'linear-gradient(135deg,#f59e0b,#f472b6)', color: '#0a0600' }}>M</div>
-            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.15rem', fontWeight: 600, color: '#f5f0e8', letterSpacing: '0.02em' }}>Memento</span>
+      {/* CTA */}
+      <section className="cta-sec reveal">
+        <div className="cta-glow" />
+        <h2 className="cta-h2">Ready to capture<br /><span className="gradient-text">every moment?</span></h2>
+        <p className="cta-p">Start for free. No credit card required. Your wall is live in under a minute.</p>
+        <Link href="/create" className="btn-glow btn-lg">
+          <span>Create Your Wall — It&apos;s Free</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </Link>
+      </section>
+
+      {/* WHATSAPP */}
+      <a
+        href="https://wa.me/96896095692?text=Hi%20Memento!%20I%27d%20like%20to%20know%20more."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="wa-fab"
+      >
+        <span className="wa-ping" />
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+
+      {/* FOOTER */}
+      <footer className="lp-footer">
+        <div className="footer-top">
+          <div className="footer-brand">
+            <span className="nav-logo-icon">📷</span>
+            <span className="nav-logo-text">Memento</span>
           </div>
-          <p style={{ fontSize: '0.82rem', color: '#4a4050' }}>© {new Date().getFullYear()} Memento — Share Every Moment</p>
-          <div className="flex gap-6" style={{ fontSize: '0.82rem', color: '#4a4050' }}>
-            {['Privacy', 'Terms', 'Contact'].map((link) => (
-              <a key={link} href="#" className="footer-link">
-                {link}
-              </a>
-            ))}
+          <div className="footer-cols">
+            <div className="footer-col">
+              <h4>Product</h4>
+              <Link href="#features">Features</Link>
+              <Link href="#pricing">Pricing</Link>
+              <Link href="#how">How it works</Link>
+            </div>
+            <div className="footer-col">
+              <h4>Company</h4>
+              <Link href="#">About</Link>
+              <Link href="#">Blog</Link>
+              <Link href="#">Contact</Link>
+            </div>
+            <div className="footer-col">
+              <h4>Legal</h4>
+              <Link href="#">Privacy</Link>
+              <Link href="#">Terms</Link>
+            </div>
           </div>
+        </div>
+        <div className="footer-bottom">
+          <p>© 2025 Memento. Made with ♥ for every celebration.</p>
         </div>
       </footer>
-
     </div>
   );
 }
