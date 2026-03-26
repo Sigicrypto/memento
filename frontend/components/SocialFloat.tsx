@@ -5,7 +5,7 @@ import { useState } from 'react';
 const socials = [
   {
     name: 'WhatsApp',
-    href: 'https://wa.me/96896095692',
+    href: 'https://wa.me/96896095692?text=Hi%20Memento!%20I%27d%20like%20to%20know%20more.',
     color: '#25D366',
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">

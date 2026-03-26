@@ -727,7 +727,7 @@ body:has(.gcard:hover) .cursor-ring {
 
 /* ═══ WHATSAPP BUTTON ═══ */
 .wa-fab {
-  position: fixed; bottom: 2rem; left: 2rem; z-index: 600;
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 600;
   width: 56px; height: 56px; border-radius: 50%;
   background: #25d366;
   display: flex; align-items: center; justify-content: center;
@@ -743,14 +743,14 @@ body:has(.gcard:hover) .cursor-ring {
 .wa-fab svg { width: 28px; height: 28px; fill: #fff; }
 .wa-fab::after {
   content: 'Chat with us';
-  position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  position: absolute; right: calc(100% + 12px); left: auto; top: 50%; transform: translateY(-50%);
   background: rgba(26,21,48,0.95); color: var(--text1);
   font-size: 0.72rem; font-weight: 500; white-space: nowrap;
   padding: 0.4rem 0.8rem; border-radius: 8px;
   border: 1px solid var(--border);
   opacity: 0; pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
-  transform: translateY(-50%) translateX(-4px);
+  transform: translateY(-50%) translateX(4px);
 }
 .wa-fab:hover::after {
   opacity: 1;
@@ -802,7 +802,7 @@ body:has(.gcard:hover) .cursor-ring {
   .footer-cols { gap: 2rem; }
   .stats { flex-wrap: wrap; }
   .stat { min-width: 50%; border-right: none; }
-  .wa-fab { width: 48px; height: 48px; bottom: 1.5rem; left: 1.5rem; }
+  .wa-fab { width: 48px; height: 48px; bottom: 1.5rem; right: 1.5rem; }
   .wa-fab svg { width: 24px; height: 24px; }
   .wa-fab::after { display: none; }
 }
