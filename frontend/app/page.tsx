@@ -14,23 +14,28 @@ export default function LandingPage() {
   useEffect(() => {
     let mx = 0, my = 0, rx = 0, ry = 0;
     let trailTimer = 0;
+    let lastTrailTime = 0;
     const onMove = (e: MouseEvent) => {
       mx = e.clientX; my = e.clientY;
-      trailTimer++;
-      if (trailTimer % 3 === 0) {
-        const t = document.createElement('div');
-        t.className = 'cursor-trail';
-        const size = 6 + Math.random() * 6;
-        t.style.cssText = `left:${mx}px;top:${my}px;width:${size}px;height:${size}px;`;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 600);
+      const now = Date.now();
+      if (now - lastTrailTime > 50) { // Throttle trail creation
+        trailTimer++;
+        if (trailTimer % 5 === 0) { // Reduce frequency further
+          const t = document.createElement('div');
+          t.className = 'cursor-trail';
+          const size = 4 + Math.random() * 4; // Smaller trails
+          t.style.cssText = `left:${mx}px;top:${my}px;width:${size}px;height:${size}px;`;
+          document.body.appendChild(t);
+          setTimeout(() => t.remove(), 400); // Shorter lifetime
+        }
+        lastTrailTime = now;
       }
     };
     window.addEventListener('mousemove', onMove);
     let raf: number;
     const loop = () => {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
+      rx += (mx - rx) * 0.15; // Slightly faster following
+      ry += (my - ry) * 0.15;
       if (cursorRef.current) { cursorRef.current.style.left = `${mx}px`; cursorRef.current.style.top = `${my}px`; }
       if (cursorRingRef.current) { cursorRingRef.current.style.left = `${rx}px`; cursorRingRef.current.style.top = `${ry}px`; }
       raf = requestAnimationFrame(loop);
@@ -279,12 +284,12 @@ export default function LandingPage() {
 
         <div className="gallery-grid reveal">
           {[
-            { title: 'Sarah & John Wedding', src: '/api/placeholder/400/300?text=Wedding+Gallery', count: '156 photos' },
-            { title: 'Tech Conference 2024', src: '/api/placeholder/400/300?text=Conference+Gallery', count: '289 photos' },
-            { title: 'Birthday Celebration', src: '/api/placeholder/400/300?text=Birthday+Gallery', count: '87 photos' },
-            { title: 'Corporate Gala', src: '/api/placeholder/400/300?text=Gala+Gallery', count: '234 photos' },
-            { title: 'Graduation Party', src: '/api/placeholder/400/300?text=Graduation+Gallery', count: '145 photos' },
-            { title: 'Festival Weekend', src: '/api/placeholder/400/300?text=Festival+Gallery', count: '512 photos' }
+            { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
+            { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
+            { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' },
+            { title: 'Corporate Gala', src: 'https://picsum.photos/400/300?random=4', count: '234 photos' },
+            { title: 'Graduation Party', src: 'https://picsum.photos/400/300?random=5', count: '145 photos' },
+            { title: 'Festival Weekend', src: 'https://picsum.photos/400/300?random=6', count: '512 photos' }
           ].map((item, i) => (
             <div key={i} className="gallery-item" style={{ animationDelay: `${i * 0.1}s` }}>
               <div className="gallery-img-wrapper">
