@@ -457,7 +457,7 @@ export default function LandingPage() {
 
       {/* WHATSAPP */}
       <a
-        href="https://wa.me/96896095692?text=Hi%20Memento!%20I%27d%20like%20to%20know%20more."
+        href="https://wa.me/+96896095692?text=Hi%20Memento!%20I%27d%20like%20to%20know%20more."
         target="_blank"
         rel="noopener noreferrer"
         className="wa-fab"

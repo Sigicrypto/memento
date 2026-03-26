@@ -289,16 +289,12 @@ export default function WallPage() {
 
   if (notFound) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center px-4">
-        <div className="card max-w-md text-center">
-          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 rounded-full flex items-center justify-center">
-            <p className="text-4xl">😢</p>
-          </div>
-          <h1 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">Wall Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">This event doesn't exist or has been removed.</p>
-          <Link href="/" className="btn-primary">
-            🏠 Go Home
-          </Link>
+      <div className="nm-page flex items-center justify-center px-4">
+        <div className="nm-card max-w-md text-center p-10">
+          <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">😢</div>
+          <h1 className="text-2xl font-bold mb-3" style={{color:'#e2e8f0'}}>Wall Not Found</h1>
+          <p className="mb-6" style={{color:'#7f849c'}}>This event doesn't exist or has been removed.</p>
+          <Link href="/" className="nm-btn nm-btn-accent px-6 py-3 font-bold">🏠 Go Home</Link>
         </div>
       </div>
     );
@@ -308,56 +304,37 @@ export default function WallPage() {
   if (viewMode === 'slideshow') {
     const current = photos[slideIndex];
     return (
-      <div className="fixed inset-0 bg-[#07050c] z-50 flex flex-col dark">
-        {/* Top bar */}
+      <div className="fixed inset-0 z-50 flex flex-col" style={{background:'#14182a'}}>
         <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="text-[#f5f0e8] font-bold text-lg">{eventName}</h1>
-          <div className="flex gap-3">
-            <span className="text-[#a09080] text-sm">{slideIndex + 1} / {photos.length}</span>
-            <button
-              onClick={() => { setViewMode('polaroid'); if (slideshowTimer.current) clearInterval(slideshowTimer.current); }}
-              className="text-[#f5f0e8] text-sm bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] px-3 py-1 rounded transition"
-            >
-              ✕ Exit
-            </button>
+          <h1 className="font-bold text-lg" style={{color:'#e2e8f0'}}>{eventName}</h1>
+          <div className="flex gap-3 items-center">
+            <span className="nm-badge">{slideIndex + 1} / {photos.length}</span>
+            <button onClick={() => { setViewMode('polaroid'); if (slideshowTimer.current) clearInterval(slideshowTimer.current); }}
+              className="nm-btn px-3 py-1 text-sm" style={{color:'#7f849c'}}>✕ Exit</button>
           </div>
         </div>
 
-        {/* Main photo */}
         {current && (
           <div className="flex-1 relative flex items-center justify-center px-16 overflow-hidden">
-            <img
-              key={current.id}
-              src={getPublicUrl(current.storage_path)}
-              alt=""
-              className="max-h-full max-w-full object-contain rounded-xl shadow-2xl"
-              style={{ animation: 'fadeIn 0.5s ease' }}
-            />
-            {/* Caption overlay */}
+            <img key={current.id} src={getPublicUrl(current.storage_path)} alt=""
+              className="max-h-full max-w-full object-contain rounded-xl"
+              style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
             {(current.caption || current.uploader_name) && (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
-                {current.caption && (
-                  <p className="text-[#f5f0e8] text-xl italic mb-1">"{current.caption}"</p>
-                )}
-                <p className="text-[#a09080] text-sm">— {current.uploader_name}</p>
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center nm-card px-6 py-3">
+                {current.caption && <p className="text-sm italic mb-1" style={{color:'#e2e8f0'}}>&#34;{current.caption}&#34;</p>}
+                <p className="text-xs" style={{color:'#7f849c'}}>— {current.uploader_name}</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Nav buttons */}
-        <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] text-[#f5f0e8] w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
-          ‹
-        </button>
-        <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] text-[#f5f0e8] w-12 h-12 rounded-full flex items-center justify-center text-2xl transition">
-          ›
-        </button>
+        <button onClick={prevSlide} className="nm-circle w-12 h-12 absolute left-4 top-1/2 -translate-y-1/2 text-2xl" style={{color:'#f59e0b'}}>‹</button>
+        <button onClick={nextSlide} className="nm-circle w-12 h-12 absolute right-4 top-1/2 -translate-y-1/2 text-2xl" style={{color:'#f59e0b'}}>›</button>
 
-        {/* Thumbnail strip */}
         <div className="flex gap-2 px-6 py-3 overflow-x-auto">
           {photos.map((p, i) => (
             <button key={p.id} onClick={() => setSlideIndex(i)}
-              className={`flex-shrink-0 w-14 h-14 rounded overflow-hidden border-2 transition ${i === slideIndex ? 'border-[#f59e0b]' : 'border-transparent opacity-50'}`}>
+              className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition ${i === slideIndex ? 'ring-2 ring-[#f59e0b]' : 'opacity-50'}`}>
               <img src={getPublicUrl(p.storage_path)} alt="" className="w-full h-full object-cover" />
             </button>
           ))}
@@ -370,289 +347,153 @@ export default function WallPage() {
 
   // ── NORMAL VIEWS ───────────────────────────────────────────────
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-8 dark">
+    <div className="nm-page px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header with Aurora Background */}
-        <div className="relative mb-12">
-          <div className="aurora-bg rounded-3xl p-8 text-[#f5f0e8] dark">
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-[rgba(245,158,11,0.15)] border border-[rgba(245,158,11,0.25)] mb-4">
-                Live Wall Experience
-              </div>
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-                <div className="flex-1">
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-lg leading-tight text-[#f5f0e8]">
-                    {eventName || 'Loading…'}
-                  </h1>
-                  <div className="flex items-center gap-4">
-                    <div className="bg-[rgba(245,158,11,0.15)] backdrop-blur-sm px-6 py-3 rounded-full flex items-center gap-3">
-                      <span className="text-base font-semibold">
-                        📸 {photos.length} photo{photos.length !== 1 ? 's' : ''} shared
-                      </span>
-                      <span className={`w-2.5 h-2.5 rounded-full ${
-                realtimeStatus === 'SUBSCRIBED' ? 'bg-[#f59e0b] animate-pulse' : 
-                realtimeStatus === 'polling' ? 'bg-[#fb923c] animate-pulse' : 
-                'bg-[#f472b6]'
-              }`} title={`Connection: ${realtimeStatus}`} />
-                      <span className="text-xs text-[#f5f0e8]/80 font-medium">
-                        {realtimeStatus === 'SUBSCRIBED' ? '⚡ Live' : 
-                         realtimeStatus === 'polling' ? '🔄 Polling (2s)' : 
-                         '🟡 Connecting...'}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => window.location.reload()}
-                      className="bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] backdrop-blur-sm px-4 py-3 rounded-full text-[#f5f0e8] text-sm font-medium transition border border-[rgba(245,158,11,0.25)]"
-                      title="Refresh wall"
-                    >
-                      🔄 Refresh
-                    </button>
-                  </div>
+        {/* Header */}
+        <div className="nm-card p-6 mb-8">
+          <div className="nm-badge mb-4">Live Wall Experience</div>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="flex-1">
+              <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight" style={{color:'#e2e8f0'}}>
+                {eventName || 'Loading…'}
+              </h1>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="nm-badge flex items-center gap-2">
+                  📸 {photos.length} photo{photos.length !== 1 ? 's' : ''}
+                  <span className={`w-2 h-2 rounded-full ${
+                    realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' :
+                    realtimeStatus === 'polling' ? 'bg-yellow-400 animate-pulse' :
+                    'bg-red-400'}`} />
+                  <span style={{color:'#7f849c'}}>
+                    {realtimeStatus === 'SUBSCRIBED' ? '⚡ Live' : realtimeStatus === 'polling' ? '🔄 Polling' : '🟡 Connecting'}
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-3 lg:gap-4">
-                  {/* View mode toggles */}
-                  <div className="flex rounded-xl border border-[rgba(245,158,11,0.25)] overflow-hidden bg-[rgba(245,158,11,0.08)] backdrop-blur-sm">
-                    {(['polaroid', 'grid', 'slideshow'] as ViewMode[]).map((mode) => (
-                      <button
-                        key={mode}
-                        onClick={() => { setViewMode(mode); if (mode === 'slideshow') setSlideIndex(0); }}
-                        className={`px-5 py-3 text-sm font-medium transition ${viewMode === mode ? 'bg-[#f5f0e8] text-[#07050c]' : 'text-[#f5f0e8] hover:bg-[rgba(245,158,11,0.15)]'}`}
-                      >
-                        {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : '▶ Slideshow'}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {/* Moderation mode toggle */}
-                  <button
-                    onClick={() => setModerationMode(!moderationMode)}
-                    className={`px-5 py-3 rounded-xl text-sm font-medium transition border ${
-                      moderationMode 
-                        ? 'bg-[#f59e0b] text-[#07050c] border-[#fb923c]' 
-                        : 'bg-[rgba(245,158,11,0.15)] text-[#f5f0e8] border-[rgba(245,158,11,0.25)] hover:bg-[rgba(245,158,11,0.25)]'
-                    }`}
-                  >
-                    {moderationMode ? '🛡️ Moderation ON' : '👁️ Auto-Show'}
-                  </button>
-                  
-                  <button onClick={() => setShowQR(!showQR)} className="bg-[rgba(245,158,11,0.15)] hover:bg-[rgba(245,158,11,0.25)] backdrop-blur-sm text-[#f5f0e8] px-5 py-3 rounded-xl text-sm font-medium transition border border-[rgba(245,158,11,0.25)]">
-                    {showQR ? 'Hide QR' : '📱 QR Code'}
-                  </button>
-                  <Link href={`/upload/${slug}`} className="bg-[#f59e0b] hover:bg-[#f97316] text-[#07050c] px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
-                    📸 Upload Photos
-                  </Link>
-                  <Link href={`/mobile/${slug}`} className="bg-[#f472b6] hover:bg-[#ec4899] text-[#f5f0e8] px-6 py-3 rounded-xl text-sm font-bold transition shadow-lg">
-                    📱 My Photos
-                  </Link>
-                </div>
+                <button onClick={() => window.location.reload()} className="nm-btn px-3 py-1.5 text-xs" style={{color:'#7f849c'}}>🔄 Refresh</button>
               </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <div className="flex rounded-xl overflow-hidden nm-inset p-1">
+                {(['polaroid', 'grid', 'slideshow'] as ViewMode[]).map((mode) => (
+                  <button key={mode} onClick={() => { setViewMode(mode); if (mode === 'slideshow') setSlideIndex(0); }}
+                    className="px-3 py-2 text-xs font-medium rounded-lg transition"
+                    style={{
+                      background: viewMode === mode ? 'linear-gradient(135deg,#f59e0b,#f472b6)' : 'transparent',
+                      color: viewMode === mode ? '#1e2235' : '#7f849c'
+                    }}>
+                    {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : '▶ Slideshow'}
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => setModerationMode(!moderationMode)}
+                className="nm-btn px-3 py-2 text-xs font-semibold"
+                style={{color: moderationMode ? '#f59e0b' : '#7f849c'}}>
+                {moderationMode ? '🛡️ Moderation ON' : '👁️ Auto-Show'}
+              </button>
+              <button onClick={() => setShowQR(!showQR)} className="nm-btn px-3 py-2 text-xs" style={{color:'#7f849c'}}>
+                {showQR ? 'Hide QR' : '📱 QR'}
+              </button>
+              <Link href={`/upload/${slug}`} className="nm-btn nm-btn-accent px-4 py-2 text-xs font-bold">📸 Upload</Link>
+              <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#f472b6'}}>📱 My Photos</Link>
             </div>
           </div>
         </div>
 
       {/* QR Popover */}
       {showQR && (
-        <div className="card max-w-sm mx-auto text-center mb-8 border-2 border-[rgba(245,158,11,0.25)] dark:border-[rgba(245,158,11,0.35)]">
-          <h3 className="text-lg font-semibold text-[#0a0600] dark:text-[#f5f0e8] mb-4">Share This Wall</h3>
-          <div className="bg-[#faf7f2] dark:bg-[#1a1230] p-6 rounded-xl inline-block mx-auto mb-4 shadow-lg border border-[rgba(245,158,11,0.15)]">
-            <QRCodeSVG value={uploadUrl} size={200} />
+        <div className="nm-card max-w-sm mx-auto text-center mb-8 p-8">
+          <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Share This Wall</h3>
+          <div className="nm-inset p-6 rounded-2xl inline-block mx-auto mb-4">
+            <QRCodeSVG value={uploadUrl} size={180} bgColor="#1e2235" fgColor="#e2e8f0" />
           </div>
-          <p className="text-xs text-[#5c4e38] dark:text-[#a09080] break-all mb-4 font-mono">{uploadUrl}</p>
+          <p className="text-xs break-all mb-4 font-mono" style={{color:'#7f849c'}}>{uploadUrl}</p>
           
           {/* Enhanced Sharing Options */}
           <div className="space-y-3">
-            <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="btn-secondary w-full text-sm">
+            <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="nm-btn w-full py-2.5 text-sm" style={{color:'#f59e0b'}}>
               📋 Copy Link
             </button>
-            
             <div className="flex gap-2">
-              <button 
-                onClick={() => {
-                  // Simple print functionality
-                  const printWindow = window.open('', '_blank');
-                  if (printWindow) {
-                    printWindow.document.write(`
-                      <html>
-                        <head>
-                          <title>${eventName} - Upload Guide</title>
-                          <style>
-                            body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
-                            h1 { color: #333; margin-bottom: 30px; }
-                            .qr-code { margin: 30px auto; display: block; }
-                            .url { font-family: monospace; background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 20px auto; max-width: 400px; }
-                            .instructions { margin: 30px auto; max-width: 400px; text-align: left; }
-                            @media print { body { padding: 20px; } }
-                          </style>
-                        </head>
-                        <body>
-                          <h1>${eventName}</h1>
-                          <h2>Scan to Upload Photos</h2>
-                          <div class="url">${uploadUrl}</div>
-                          <div class="instructions">
-                            <h3>Instructions:</h3>
-                            <ol>
-                              <li>Open your phone camera</li>
-                              <li>Point at the QR code</li>
-                              <li>Tap the link that appears</li>
-                              <li>Upload your photos!</li>
-                            </ol>
-                          </div>
-                          <script>window.onload = () => window.print();</script>
-                        </body>
-                      </html>
-                    `);
-                    printWindow.document.close();
-                  }
-                }}
-                className="flex-1 text-xs bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 px-3 py-2 rounded-lg transition"
-              >
-                📄 Print Guide
-              </button>
-              
-              <button 
-                onClick={() => {
-                  if (navigator.share) {
-                    navigator.share({
-                      title: eventName,
-                      text: `Upload photos to ${eventName}`,
-                      url: uploadUrl
-                    });
-                  } else {
-                    navigator.clipboard.writeText(uploadUrl);
-                    alert('Link copied to clipboard!');
-                  }
-                }}
-                className="flex-1 text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 px-3 py-2 rounded-lg transition"
-              >
-                📤 Share
-              </button>
+              <button onClick={() => {
+                const printWindow = window.open('', '_blank');
+                if (printWindow) {
+                  printWindow.document.write(`<html><head><title>${eventName}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:40px}h1{color:#333;margin-bottom:30px}.url{font-family:monospace;background:#f5f5f5;padding:10px;border-radius:5px;margin:20px auto;max-width:400px}@media print{body{padding:20px}}</style></head><body><h1>${eventName}</h1><h2>Scan to Upload Photos</h2><div class="url">${uploadUrl}</div><script>window.onload=()=>window.print();<\/script></body></html>`);
+                  printWindow.document.close();
+                }
+              }} className="nm-btn flex-1 text-xs py-2" style={{color:'#4ade80'}}>📄 Print</button>
+              <button onClick={() => {
+                if (navigator.share) { navigator.share({ title: eventName, text: `Upload photos to ${eventName}`, url: uploadUrl }); }
+                else { navigator.clipboard.writeText(uploadUrl); }
+              }} className="nm-btn flex-1 text-xs py-2" style={{color:'#60a5fa'}}>📤 Share</button>
             </div>
           </div>
-          
-          <button onClick={() => setShowQR(false)} className="text-xs text-gray-500 dark:text-gray-400 mt-4 hover:text-gray-700 dark:hover:text-gray-300">
-            ✕ Close
-          </button>
+          <button onClick={() => setShowQR(false)} className="nm-btn mt-4 text-xs px-4 py-1.5" style={{color:'#7f849c'}}>✕ Close</button>
         </div>
       )}
 
       {/* Empty State */}
       {photos.length === 0 ? (
-        <div className="text-center py-32">
-          <div className="max-w-2xl mx-auto">
-            <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center">
-              <span className="text-6xl">📷</span>
-            </div>
-            <h2 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white">No Photos Yet</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-xl mb-12 leading-relaxed">
-              Share the QR code and photos will appear here in real time! Start capturing memories together.
+        <div className="text-center py-20">
+          <div className="nm-card max-w-lg mx-auto p-12">
+            <div className="nm-circle w-32 h-32 mx-auto mb-8 text-6xl">📷</div>
+            <h2 className="text-3xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
+            <p className="text-sm mb-10 leading-relaxed" style={{color:'#7f849c'}}>
+              Share the QR code and photos will appear here in real time!
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button onClick={() => setShowQR(true)} className="btn-primary px-8 py-4 text-lg">
-                📱 Show QR Code
-              </button>
-              <Link href={`/upload/${slug}`} className="btn-secondary px-8 py-4 text-lg">
-                📸 Upload First Photo
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button onClick={() => setShowQR(true)} className="nm-btn nm-btn-accent px-8 py-3 font-bold">📱 Show QR Code</button>
+              <Link href={`/upload/${slug}`} className="nm-btn px-8 py-3 font-bold" style={{color:'#7f849c'}}>📸 Upload First Photo</Link>
             </div>
           </div>
         </div>
       ) : viewMode === 'polaroid' ? (
         // ── POLAROID ──
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-950/30 to-gray-900 relative overflow-hidden">
-          {/* Enhanced background */}
-          <div className="fixed inset-0 bg-gradient-to-br from-purple-950/20 via-transparent to-cyan-950/10 pointer-events-none" />
-          <div className="fixed inset-0 grid-pattern pointer-events-none opacity-20" />
-          <div className="noise-overlay opacity-10" />
-          
-          {/* Ambient glows */}
-          <div className="glow-orb w-[700px] h-[700px] bg-purple-600/12 top-[-300px] right-[-200px] blur-3xl" />
-          <div className="glow-orb w-[600px] h-[600px] bg-cyan-600/10 bottom-[-200px] left-[-100px] blur-2xl" />
-          <div className="glow-orb w-[400px] h-[400px] bg-pink-600/8 top-1/2 left-1/3 blur-xl" />
-          
-          <div className="relative z-10 p-8 pt-8">
-            <div className="flex flex-wrap justify-center gap-12">
-              {photos.map((photo, index) => (
-                <div 
-                  key={photo.id} 
-                  className="bg-gray-900/60 backdrop-blur-xl p-6 pb-8 rounded-2xl shadow-2xl w-80 transform hover:scale-105 transition-all duration-500 border border-purple-500/20 flex flex-col group hover:shadow-3xl hover:border-purple-400/40"
-                  style={{
-                    transform: `rotate(${(index % 5 - 2) * 3}deg)`,
-                    animation: `fadeInUp 0.8s ease-out ${index * 0.15}s both`
-                  }}
-                >
-                  {/* Polaroid frame decoration */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-cyan-500/5 rounded-2xl pointer-events-none" />
-                  
-                  <div className="aspect-square overflow-hidden rounded-xl bg-gray-800/50 mb-6 group-hover:scale-105 transition-transform duration-500 border border-purple-500/10">
-                    <img 
-                      src={getPublicUrl(photo.storage_path)} 
-                      alt={`By ${photo.uploader_name}`}
-                      className="w-full h-full object-cover" 
-                      loading="lazy" 
-                    />
-                  </div>
-                  
-                  <div className="text-center flex-1">
-                    {photo.caption && (
-                      <p className="text-gray-200 text-sm italic mb-3 font-medium text-shadow">"{photo.caption}"</p>
-                    )}
-                    <p className="text-gray-400 text-sm font-medium flex items-center justify-center gap-2">
-                      <span className="text-purple-400">📷</span> {photo.uploader_name}
-                    </p>
-                  </div>
-                  
-                  <div className="mt-6 flex justify-center">
-                    <button
-                      onClick={() => downloadPhoto(photo)}
-                      className="text-sm text-purple-300 opacity-0 group-hover:opacity-100 transition hover:text-purple-200 font-medium flex items-center gap-2"
-                    >
-                      <span>⬇</span> Download
-                    </button>
-                  </div>
+        <div className="p-4">
+          <div className="flex flex-wrap justify-center gap-8">
+            {photos.map((photo, index) => (
+              <div key={photo.id} className="nm-card p-5 pb-7 w-72 group flex flex-col"
+                style={{transform:`rotate(${(index % 5 - 2) * 3}deg)`,transition:'transform 0.3s'}
+                }>
+                <div className="aspect-square overflow-hidden rounded-xl mb-4 nm-inset">
+                  <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                 </div>
-              ))}
-            </div>
+                <div className="text-center flex-1">
+                  {photo.caption && <p className="text-sm italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
+                  <p className="text-xs font-medium" style={{color:'#7f849c'}}>📷 {photo.uploader_name}</p>
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <button onClick={() => downloadPhoto(photo)}
+                    className="nm-btn text-xs px-3 py-1.5 opacity-0 group-hover:opacity-100 transition" style={{color:'#f59e0b'}}>⬇ Download</button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ) : (
         // ── MASONRY GRID ──
-        <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-6 lg:gap-8 space-y-6 lg:space-y-8 p-6 lg:p-8">
+        <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 p-4">
           {photos.map((photo, index) => (
-            <div 
-              key={photo.id} 
-              className={`break-inside-avoid rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 group relative hover:shadow-2xl transition-all duration-300 ${
-                newPhotoId === photo.id ? 'ring-4 ring-purple-400 ring-opacity-60 animate-pulse' : ''
+            <div key={photo.id}
+              className={`nm-card break-inside-avoid overflow-hidden group relative ${
+                newPhotoId === photo.id ? 'ring-2 ring-[#f59e0b]' : ''
               }`}
-              style={{ 
-                animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`,
-                animationDelay: newPhotoId === photo.id ? '0s' : `${index * 0.1}s`
-              }}
+              style={{animation:`fadeInUp 0.6s ease-out ${index * 0.1}s both`}}
             >
-              <img 
-                src={getPublicUrl(photo.storage_path)} 
-                alt={`By ${photo.uploader_name}`}
-                className="w-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                loading="lazy" 
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5">
-                {photo.caption && <p className="text-white text-sm italic mb-3 font-medium drop-shadow-lg">"{photo.caption}"</p>}
+              <div className="overflow-hidden rounded-[14px]">
+                <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`}
+                  className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw" />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
+                {photo.caption && <p className="text-xs italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
                 <div className="flex justify-between items-center">
-                  <p className="text-white text-sm font-semibold drop-shadow-lg">{photo.uploader_name}</p>
-                  <button 
-                    onClick={() => downloadPhoto(photo)} 
-                    className="text-white text-sm bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105"
-                  >
-                    ⬇
-                  </button>
+                  <p className="text-xs font-semibold" style={{color:'#e2e8f0'}}>{photo.uploader_name}</p>
+                  <button onClick={() => downloadPhoto(photo)} className="nm-circle w-7 h-7 text-xs" style={{color:'#f59e0b'}}>⬇</button>
                 </div>
               </div>
-              
-              {/* New photo indicator */}
               {newPhotoId === photo.id && (
-                <div className="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-bounce">
-                  NEW!
-                </div>
+                <div className="absolute top-2 right-2 nm-badge text-xs animate-bounce" style={{color:'#f59e0b'}}>NEW!</div>
               )}
             </div>
           ))}

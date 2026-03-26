@@ -35,88 +35,53 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-amber-900 to-gray-900 flex items-center justify-center px-4">
-      {/* Background effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-md">
-        {/* Glow backdrop */}
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-amber-500/20 via-rose-500/10 to-amber-500/20 blur-xl pointer-events-none" />
-
-        <div className="relative bg-gray-800/50 backdrop-blur-md rounded-2xl p-8 border border-amber-500/20">
+    <div className="nm-page flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        {/* Card */}
+        <div className="nm-card p-8">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-amber-500/30">
-              📷
-            </div>
+            <div className="nm-circle w-16 h-16 text-2xl">📷</div>
           </div>
 
-          <h1 className="text-2xl font-bold text-center mb-1 text-white">
+          <h1 className="text-2xl font-bold text-center mb-1" style={{color:'#e2e8f0'}}>
             {isSignUp ? 'Create Account' : 'Welcome Back'}
           </h1>
-          <p className="text-gray-400 text-sm text-center mb-6">
+          <p className="text-sm text-center mb-6" style={{color:'#7f849c'}}>
             {isSignUp ? 'Start capturing memories today' : 'Sign in to your Memento dashboard'}
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Email</label>
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)} 
-                required 
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
-              />
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Email</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="nm-input" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)} 
-                required 
-                placeholder="••••••••" 
-                minLength={6}
-                className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
-              />
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Password</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" minLength={6} className="nm-input" />
             </div>
             {isSignUp && (
               <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5">Mobile Number</label>
-                <input 
-                  type="tel" 
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)} 
-                  placeholder="+968 96095692"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
-                />
+                <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Mobile Number</label>
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+968 96095692" className="nm-input" />
               </div>
             )}
 
             {error && (
-              <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 p-3 rounded-lg">
+              <div className="nm-inset p-3 flex items-center gap-2 text-sm" style={{color:'#f87171'}}>
                 <span>⚠️</span> {error}
               </div>
             )}
             {message && (
-              <div className="flex items-center gap-2 text-green-400 text-sm bg-green-500/10 border border-green-500/20 p-3 rounded-lg">
+              <div className="nm-inset p-3 flex items-center gap-2 text-sm" style={{color:'#4ade80'}}>
                 <span>✅</span> {message}
               </div>
             )}
 
-            <button 
-              type="submit" 
-              className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
-              disabled={loading}
-            >
+            <button type="submit" disabled={loading} className="nm-btn nm-btn-accent w-full py-3 text-sm font-bold disabled:opacity-50">
               {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin" />
                   Please wait…
                 </span>
               ) : isSignUp ? 'Create Account' : 'Sign In'}
@@ -125,30 +90,24 @@ export default function AuthPage() {
 
           {!isSignUp && (
             <div className="text-center mt-4">
-              <Link href="/auth/reset" className="text-amber-400 text-sm hover:text-amber-300 transition-colors">
+              <Link href="/auth/reset" className="text-sm transition-colors" style={{color:'#f59e0b'}}>
                 Forgot your password?
               </Link>
             </div>
           )}
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-gray-800 px-3 text-xs text-gray-400">or</span>
-            </div>
-          </div>
+          <div className="nm-divider" />
 
-          <p className="text-sm text-center text-gray-400">
+          <p className="text-sm text-center" style={{color:'#7f849c'}}>
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button
-              onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
-              className="text-amber-400 font-semibold hover:text-amber-300 transition-colors"
-            >
+            <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }} className="font-semibold transition-colors" style={{color:'#f59e0b'}}>
               {isSignUp ? 'Sign In' : 'Sign Up'}
             </button>
           </p>
+        </div>
+
+        <div className="text-center mt-6">
+          <Link href="/" className="text-xs transition-colors" style={{color:'#4a4f6a'}}>← Back to Home</Link>
         </div>
       </div>
     </div>

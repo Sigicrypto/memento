@@ -128,158 +128,82 @@ export default function DashboardPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      <div className="nm-page flex items-center justify-center">
+        <div className="nm-circle w-14 h-14">
+          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-amber-900 to-gray-900">
-      {/* Background effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="mb-8 rounded-2xl bg-gray-800/50 backdrop-blur-md border border-amber-500/20 p-6 sm:p-8 shadow-xl">
+    <div className="nm-page">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Header */}
+        <div className="nm-card p-6 sm:p-8 mb-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-3">
-                Host Dashboard
-              </div>
+              <div className="nm-badge mb-3">● Host Dashboard</div>
               <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-3xl font-bold text-white">My Events</h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                  plan === 'FREE' ? 'bg-gray-500/10 text-gray-400 border-gray-500/20' :
-                  plan === 'PLUS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                  plan === 'PREMIUM' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                  'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                }`}>
-                  {plan} PLAN
-                </span>
+                <h1 className="text-3xl font-bold" style={{color:'#e2e8f0'}}>My Events</h1>
+                <span className="nm-badge">{plan}</span>
               </div>
-              <p className="text-gray-400 text-sm">{events.length} event{events.length !== 1 ? 's' : ''}</p>
+              <p className="text-sm" style={{color:'#7f849c'}}>{events.length} event{events.length !== 1 ? 's' : ''}</p>
             </div>
-            <Link href="/create" className="px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-rose-600 transition-all">
-              ✨ Create New
-            </Link>
+            <Link href="/create" className="nm-btn nm-btn-accent px-5 py-2.5 text-sm font-bold">✨ Create New</Link>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className="text-lg font-semibold text-white">Your walls</h2>
-            <p className="text-xs text-gray-400">Manage sharing links, downloads, and moderation.</p>
-          </div>
+        <div className="mb-5">
+          <h2 className="text-lg font-semibold mb-1" style={{color:'#e2e8f0'}}>Your walls</h2>
+          <p className="text-xs" style={{color:'#7f849c'}}>Manage sharing links, downloads, and moderation.</p>
         </div>
 
         {events.length === 0 ? (
-          <div className="bg-gray-800/50 backdrop-blur-md rounded-2xl p-16 text-center border border-amber-500/20">
+          <div className="nm-card p-16 text-center">
             <div className="text-5xl mb-4">🎈</div>
-            <h2 className="text-xl font-bold text-white mb-2">No Events Yet</h2>
-            <p className="text-gray-400 text-sm mb-8">
-              Create your first photo wall and start collecting memories!
-            </p>
-            <Link href="/create" className="px-6 py-3 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-rose-600 transition-all">
-              Create Your First Wall
-            </Link>
+            <h2 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>No Events Yet</h2>
+            <p className="text-sm mb-8" style={{color:'#7f849c'}}>Create your first photo wall and start collecting memories!</p>
+            <Link href="/create" className="nm-btn nm-btn-accent px-6 py-3 font-bold">Create Your First Wall</Link>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
             {events.map((event) => (
-              <div key={event.id} className="bg-gray-800/50 backdrop-blur-md rounded-xl border border-gray-700 hover:border-amber-500/30 transition-all group">
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white group-hover:text-amber-400 transition">
-                        {event.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <p className="text-gray-500 text-[10px]">
-                          {new Date(event.created_at).toLocaleDateString()}
-                        </p>
-                        <span className="text-gray-600">•</span>
-                        <p className="text-amber-400 text-[10px] font-semibold">
-                          📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/dashboard/edit/${event.id}`} className="text-gray-400 hover:text-amber-400 transition text-sm p-1">
-                        ⚙️
-                      </Link>
-                      <button onClick={() => handleDelete(event.id)}
-                        className="text-gray-400 hover:text-red-400 transition text-sm p-1">
-                        🗑️
-                      </button>
+              <div key={event.id} className="nm-card p-4 group">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-lg font-semibold transition-colors group-hover:text-[#f59e0b]" style={{color:'#e2e8f0'}}>
+                      {event.name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-[10px]" style={{color:'#7f849c'}}>{new Date(event.created_at).toLocaleDateString()}</p>
+                      <span style={{color:'#4a4f6a'}}>•</span>
+                      <p className="text-[10px] font-semibold" style={{color:'#f59e0b'}}>📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Link href={`/wall/${event.slug}`}
-                      className="flex-1 text-center text-xs font-medium py-2 px-3 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">
-                      🖼️ Wall
-                    </Link>
-                    <Link href={`/upload/${event.slug}`}
-                      className="flex-1 text-center text-xs font-medium py-2 px-3 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition">
-                      📱 Upload
-                    </Link>
-                    <Link href={`/moderate/${event.slug}`}
-                      className="flex-1 text-center text-xs font-medium py-2 px-3 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition">
-                      🛡️ Moderate
-                    </Link>
+                  <div className="flex items-center gap-1">
+                    <Link href={`/dashboard/edit/${event.id}`} className="nm-circle w-8 h-8 text-sm">⚙️</Link>
+                    <button onClick={() => handleDelete(event.id)} className="nm-circle w-8 h-8 text-sm">🗑️</button>
                   </div>
-                  
-                  {/* Enhanced Sharing Options */}
-                  <div className="mt-4 pt-4 border-t border-gray-700">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-medium text-gray-400">Sharing Options</span>
-                    </div>
-                    <div className="flex gap-2 flex-wrap">
-                      <button
-                        onClick={() => downloadPrintablePDF(event)}
-                        className="flex-1 text-center text-xs font-medium py-2 px-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition"
-                      >
-                        📄 PDF Guide
-                      </button>
-                      <button
-                        onClick={() => {
-                          const newSlug = prompt('Enter new slug:', event.slug);
-                          if (newSlug && newSlug !== event.slug) {
-                            updateSlug(event.id, newSlug);
-                          }
-                        }}
-                        className="flex-1 text-center text-xs font-medium py-2 px-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition"
-                      >
-                        ✏️ Edit Slug
-                      </button>
-                      <button
-                        onClick={() => {
-                          const uploadUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`;
-                          navigator.clipboard.writeText(uploadUrl);
-                          alert('Upload link copied!');
-                        }}
-                        className="flex-1 text-center text-xs font-medium py-2 px-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition"
-                      >
-                        📋 Copy Link
-                      </button>
-                    </div>
-                    
-                    {/* Custom Domain Display */}
-                    {event.custom_domain && (
-                      <div className="mt-3 text-xs text-gray-400">
-                        <span className="font-medium">Custom Domain:</span> {event.custom_domain}
-                      </div>
-                    )}
-                    
-                    {/* Upload URL Display */}
-                    <div className="mt-2 p-2 bg-gray-700/50 rounded-lg">
-                      <p className="text-xs text-gray-400 font-mono break-all">
-                        {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
-                      </p>
-                    </div>
+                </div>
+                <div className="flex gap-2 flex-wrap mb-3">
+                  <Link href={`/wall/${event.slug}`} className="nm-btn flex-1 text-center text-xs py-2 px-3" style={{color:'#f59e0b'}}>🖼️ Wall</Link>
+                  <Link href={`/upload/${event.slug}`} className="nm-btn flex-1 text-center text-xs py-2 px-3" style={{color:'#f472b6'}}>📱 Upload</Link>
+                  <Link href={`/moderate/${event.slug}`} className="nm-btn flex-1 text-center text-xs py-2 px-3" style={{color:'#a78bfa'}}>🛡️ Moderate</Link>
+                </div>
+
+                {/* Sharing Options */}
+                <div className="nm-inset p-3">
+                  <p className="text-[10px] font-semibold mb-2" style={{color:'#7f849c'}}>Sharing Options</p>
+                  <div className="flex gap-2 flex-wrap mb-2">
+                    <button onClick={() => downloadPrintablePDF(event)} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#4ade80'}}>📄 PDF</button>
+                    <button onClick={() => { const s = prompt('New slug:', event.slug); if (s && s !== event.slug) updateSlug(event.id, s); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#60a5fa'}}>✏️ Slug</button>
+                    <button onClick={() => { const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`; navigator.clipboard.writeText(url); alert('Copied!'); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#a78bfa'}}>📋 Copy</button>
                   </div>
+                  {event.custom_domain && <p className="text-[10px] mb-1" style={{color:'#7f849c'}}><span className="font-medium">Domain:</span> {event.custom_domain}</p>}
+                  <p className="text-[10px] font-mono break-all" style={{color:'#4a4f6a'}}>
+                    {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
+                  </p>
                 </div>
               </div>
             ))}

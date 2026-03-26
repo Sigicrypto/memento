@@ -76,93 +76,48 @@ export default function SystemAdminPage() {
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background Effects */}
-      <div className="fixed inset-0 aurora-bg pointer-events-none" />
-      <div className="fixed inset-0 grid-pattern pointer-events-none" />
+    <div className="nm-page flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-3 mb-6 justify-center">
+            <div className="nm-circle w-10 h-10 font-bold text-lg" style={{color:'#f59e0b'}}>M</div>
+            <span className="text-2xl font-bold" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Memento</span>
+          </Link>
+          <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>System Access</h1>
+          <p style={{color:'#7f849c'}}>Administrator authentication required</p>
+        </div>
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
-        <div className="max-w-md w-full">
-          {/* Logo and Header */}
-          <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center text-white font-bold">
-                M
-              </div>
-              <span className="text-2xl font-bold gradient-text">Memento</span>
-            </Link>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">System Access</h1>
-            <p className="text-gray-600 dark:text-gray-400">Administrator authentication required</p>
-          </div>
-
-          {/* Login Form */}
-          <div className="card">
-            <form onSubmit={handleLogin} className="space-y-6">
-              {error && (
-                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
-                  {error}
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Administrator Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input"
-                  placeholder="system@memento.com"
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Access Code
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input"
-                  placeholder="Enter system access code"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary w-full py-3"
-              >
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
-                ) : (
-                  '🔐 Access System'
-                )}
-              </button>
-            </form>
-
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Return to main site?
-              </p>
-              <Link href="/" className="btn-secondary text-sm">
-                🏠 Home
-              </Link>
+        <div className="nm-card p-8">
+          <form onSubmit={handleLogin} className="space-y-5">
+            {error && (
+              <div className="nm-inset p-3 text-sm" style={{color:'#f87171'}}>{error}</div>
+            )}
+            <div>
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Administrator Email</label>
+              <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                className="nm-input" placeholder="system@memento.com" required />
             </div>
-          </div>
+            <div>
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Access Code</label>
+              <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                className="nm-input" placeholder="Enter system access code" required />
+            </div>
+            <button type="submit" disabled={loading} className="nm-btn nm-btn-accent w-full py-3 font-bold">
+              {loading
+                ? <div className="w-5 h-5 border-2 rounded-full animate-spin mx-auto" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+                : '🔐 Access System'}
+            </button>
+          </form>
 
-          {/* Security Notice */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-red-500 dark:text-red-400 font-medium">
-              ⚠️ Authorized personnel only. Access is logged and monitored.
-            </p>
+          <div className="mt-6 pt-6 text-center">
+            <div className="nm-divider mb-6" />
+            <p className="text-xs mb-3" style={{color:'#7f849c'}}>Return to main site?</p>
+            <Link href="/" className="nm-btn px-6 py-2 text-sm" style={{color:'#7f849c'}}>🏠 Home</Link>
           </div>
+        </div>
+
+        <div className="mt-6 text-center">
+          <p className="text-xs font-medium" style={{color:'#f87171'}}>⚠️ Authorized personnel only. Access is logged and monitored.</p>
         </div>
       </div>
     </div>

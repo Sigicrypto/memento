@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "../components/ThemeProvider";
 import MainContent from "@/components/MainContent";
+import SocialFloat from "@/components/SocialFloat";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
             <MainContent>
               {children}
             </MainContent>
+            <SocialFloat />
           </div>
         </ThemeProvider>
       </body>

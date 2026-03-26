@@ -60,76 +60,69 @@ function CheckoutContent() {
     }, 3000);
   };
 
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (authLoading) return (
+    <div className="nm-page flex items-center justify-center">
+      <div className="nm-circle w-14 h-14">
+        <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+      </div>
+    </div>
+  );
 
   return (
-    <div className="aurora-bg min-h-[90vh] flex items-center justify-center px-4">
-      <div className="relative z-10 w-full max-w-md">
-        <div className="card relative !p-10 text-center">
+    <div className="nm-page flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="nm-card p-10 text-center">
           {status === 'IDLE' && (
             <>
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                💳
+              <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">💳</div>
+              <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Checkout</h1>
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <span className="nm-badge" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',color:'#1e2235',boxShadow:'none'}}>One-time</span>
+                <span className="nm-badge">{regionLabel} price</span>
               </div>
-              <h1 className="text-2xl font-bold mb-2">Checkout</h1>
-              <div className="flex items-center justify-center gap-3 mb-8">
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white uppercase tracking-wider shadow-md">
-                  One-time
-                </span>
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-white/10 border border-white/20 text-white/90">
-                  {regionLabel} price
-                </span>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 text-sm mb-8">
-                You are buying <span className="text-primary-light font-bold">{planLabel}</span>.
+              <p className="text-sm mb-6" style={{color:'#7f849c'}}>
+                You are buying <span className="font-bold" style={{color:'#f59e0b'}}>{planLabel}</span>.
               </p>
-              
-              <div className="bg-white/10 border border-white/15 p-4 rounded-xl mb-8 text-left">
+
+              <div className="nm-inset p-4 mb-8 text-left rounded-2xl">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-600 dark:text-gray-200">Memento {planLabel}</span>
-                  <span className="text-white font-bold">Demo checkout</span>
+                  <span style={{color:'#7f849c'}}>Memento {planLabel}</span>
+                  <span className="font-bold text-xs" style={{color:'#4a4f6a'}}>Demo checkout</span>
                 </div>
-                <div className="border-t border-white/15 my-2 pt-2 flex justify-between font-bold">
-                  <span>Total Due</span>
-                  <span className="text-primary-light">{priceDisplay}</span>
+                <div className="nm-divider my-2" />
+                <div className="flex justify-between font-bold">
+                  <span style={{color:'#e2e8f0'}}>Total Due</span>
+                  <span style={{color:'#f59e0b'}}>{priceDisplay}</span>
                 </div>
-                <div className="text-gray-500 dark:text-gray-300 text-xs mt-2">
-                  Pay once today. Your wall remains available for Signature duration.
-                </div>
+                <p className="text-xs mt-2" style={{color:'#4a4f6a'}}>Pay once. Your wall remains available for Signature duration.</p>
               </div>
 
-              <button 
-                onClick={handlePayment}
-                className="btn-primary w-full py-4 text-lg shadow-xl shadow-primary/20"
-              >
+              <button onClick={handlePayment} className="nm-btn nm-btn-accent w-full py-4 text-base font-bold mb-4">
                 Confirm Mock Payment
               </button>
-              <Link href="/pricing" className="block mt-4 text-xs text-gray-500 dark:text-gray-400 hover:text-white transition">
-                Cancel and go back
-              </Link>
+              <Link href="/pricing" className="text-xs" style={{color:'#4a4f6a'}}>Cancel and go back</Link>
             </>
           )}
 
           {status === 'PROCESSING' && (
             <div className="py-10">
-              <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-6" />
-              <h2 className="text-xl font-bold mb-2">Processing Payment...</h2>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Please do not refresh the page.</p>
+              <div className="nm-circle w-16 h-16 mx-auto mb-6">
+                <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+              </div>
+              <h2 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>Processing Payment...</h2>
+              <p className="text-sm" style={{color:'#7f849c'}}>Please do not refresh the page.</p>
             </div>
           )}
 
           {status === 'SUCCESS' && (
             <div className="py-10">
-              <div className="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-lg shadow-green-500/20">
-                ✅
-              </div>
-              <h2 className="text-2xl font-bold mb-2 text-white">Upgrade Successful!</h2>
-              <p className="text-gray-600 dark:text-gray-300 text-sm mb-8">
-                Your account has been upgraded to **{planLabel}**.
-                Redirecting you to the dashboard...
+              <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✅</div>
+              <h2 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upgrade Successful!</h2>
+              <p className="text-sm mb-8" style={{color:'#7f849c'}}>
+                Your account has been upgraded to {planLabel}. Redirecting...
               </p>
-              <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                <div className="bg-green-500 h-full w-full transition-all duration-500" />
+              <div className="nm-inset h-2 rounded-full overflow-hidden">
+                <div className="h-full w-full transition-all duration-500" style={{background:'linear-gradient(90deg,#f59e0b,#f472b6)'}} />
               </div>
             </div>
           )}
@@ -141,7 +134,13 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={
+      <div className="nm-page flex items-center justify-center">
+        <div className="nm-circle w-14 h-14">
+          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+        </div>
+      </div>
+    }>
       <CheckoutContent />
     </Suspense>
   );

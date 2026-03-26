@@ -211,56 +211,54 @@ export default function AdminPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+      <div className="nm-page flex items-center justify-center">
+        <div className="nm-circle w-14 h-14">
+          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+        </div>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="card text-center">
+      <div className="nm-page flex items-center justify-center px-4">
+        <div className="nm-card text-center p-10">
           <p className="text-xl mb-4">🚫 Access Denied</p>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">You don't have admin privileges.</p>
-          <Link href="/" className="btn-primary">Go Home</Link>
+          <p className="text-sm mb-6" style={{color:'#7f849c'}}>You don't have admin privileges.</p>
+          <Link href="/" className="nm-btn nm-btn-accent px-6 py-2.5 font-bold">Go Home</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background Effects */}
-      <div className="fixed inset-0 aurora-bg pointer-events-none" />
-      <div className="fixed inset-0 grid-pattern pointer-events-none" />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="nm-page px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-3xl">🔐</span>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+        <div className="nm-card p-6 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <span className="text-3xl">🔐</span>
+              <h1 className="text-3xl font-bold" style={{color:'#e2e8f0'}}>Admin Dashboard</h1>
+            </div>
+            <p style={{color:'#7f849c'}}>Manage users, events, and view platform analytics</p>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">Manage users, events, and view platform analytics</p>
+          <Link href="/dashboard" className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>📊 My Dashboard</Link>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700">
+        <div className="nm-inset p-1.5 rounded-2xl flex gap-1 mb-8 max-w-sm">
           {[
-            { id: 'overview', label: '📊 Overview', icon: '📊' },
-            { id: 'users', label: '👥 Users', icon: '👥' },
-            { id: 'events', label: '🎉 Events', icon: '🎉' },
+            { id: 'overview', label: '📊 Overview' },
+            { id: 'users', label: '👥 Users' },
+            { id: 'events', label: '🎉 Events' },
           ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`px-6 py-3 text-sm font-medium transition-all border-b-2 -mb-[1px] ${
-                activeTab === tab.id
-                  ? 'border-purple-500 text-purple-600 dark:text-purple-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-            >
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)}
+              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition"
+              style={{
+                background: activeTab === tab.id ? 'linear-gradient(135deg,#f59e0b,#f472b6)' : 'transparent',
+                color: activeTab === tab.id ? '#1e2235' : '#7f849c'
+              }}>
               {tab.label}
             </button>
           ))}
@@ -268,41 +266,30 @@ export default function AdminPage() {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-8">
-            {/* Stats Cards */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'Total Users', value: stats.totalUsers, icon: '👤', color: 'blue' },
-                { label: 'Total Events', value: stats.totalEvents, icon: '🎉', color: 'purple' },
-                { label: 'Total Photos', value: stats.totalPhotos, icon: '📸', color: 'pink' },
-                { label: 'Active Today', value: stats.activeToday, icon: '⚡', color: 'green' },
+                { label: 'Total Users', value: stats.totalUsers, icon: '👤' },
+                { label: 'Total Events', value: stats.totalEvents, icon: '🎉' },
+                { label: 'Total Photos', value: stats.totalPhotos, icon: '📸' },
+                { label: 'Active Today', value: stats.activeToday, icon: '⚡' },
               ].map((stat) => (
-                <div key={stat.label} className="card !p-6">
+                <div key={stat.label} className="nm-card p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-3xl">{stat.icon}</span>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full bg-${stat.color}-100 dark:bg-${stat.color}-900/20 text-${stat.color}-600 dark:text-${stat.color}-400`}>
-                      +{Math.floor(Math.random() * 10 + 1)}%
-                    </span>
+                    <div className="nm-circle w-12 h-12 text-2xl">{stat.icon}</div>
+                    <span className="nm-badge text-xs">Live</span>
                   </div>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value.toLocaleString()}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+                  <p className="text-3xl font-bold" style={{color:'#e2e8f0'}}>{stat.value.toLocaleString()}</p>
+                  <p className="text-sm mt-1" style={{color:'#7f849c'}}>{stat.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Quick Actions */}
-            <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+            <div className="nm-card p-6">
+              <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Quick Actions</h3>
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => setActiveTab('users')} className="btn-secondary text-sm">
-                  👥 View All Users
-                </button>
-                <button onClick={() => setActiveTab('events')} className="btn-secondary text-sm">
-                  🎉 View All Events
-                </button>
-                <Link href="/dashboard" className="btn-secondary text-sm">
-                  📊 My Dashboard
-                </Link>
+                <button onClick={() => setActiveTab('users')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>👥 View Users</button>
+                <button onClick={() => setActiveTab('events')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>🎉 View Events</button>
               </div>
             </div>
           </div>
@@ -310,51 +297,27 @@ export default function AdminPage() {
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                All Users ({users.length})
-              </h2>
-            </div>
-            
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold" style={{color:'#e2e8f0'}}>All Users ({users.length})</h2>
             {users.length === 0 ? (
-              <div className="card text-center !p-12">
-                <p className="text-gray-500 dark:text-gray-400">No users found</p>
-              </div>
+              <div className="nm-card text-center p-12" style={{color:'#7f849c'}}>No users found</div>
             ) : (
-              <div className="grid gap-4">
-                {users.map((user) => (
-                  <div key={user.id} className="card flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-bold">
-                        {user.email.charAt(0).toUpperCase()}
-                      </div>
+              <div className="grid gap-3">
+                {users.map((u) => (
+                  <div key={u.id} className="nm-card p-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="nm-circle w-10 h-10 font-bold" style={{color:'#f59e0b'}}>{u.email.charAt(0).toUpperCase()}</div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{user.email}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Joined {new Date(user.created_at).toLocaleDateString()} • 
-                          <span className="text-purple-600 dark:text-purple-400 ml-1">
-                            {user.events_count} event{user.events_count !== 1 ? 's' : ''}
-                          </span>
+                        <p className="font-medium text-sm" style={{color:'#e2e8f0'}}>{u.email}</p>
+                        <p className="text-xs" style={{color:'#7f849c'}}>
+                          Joined {new Date(u.created_at).toLocaleDateString()} &bull;
+                          <span className="ml-1" style={{color:'#f59e0b'}}>{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        user.plan === 'FREE' ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400' :
-                        user.plan === 'PLUS' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
-                        user.plan === 'PREMIUM' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' :
-                        'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                      }`}>
-                        {user.plan || 'FREE'}
-                      </span>
-                      <button 
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
-                        title="Delete User"
-                      >
-                        🗑️
-                      </button>
+                      <span className="nm-badge text-xs">{u.plan || 'FREE'}</span>
+                      <button onClick={() => handleDeleteUser(u.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
                     </div>
                   </div>
                 ))}
@@ -365,58 +328,28 @@ export default function AdminPage() {
 
         {/* Events Tab */}
         {activeTab === 'events' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                All Events ({events.length})
-              </h2>
-            </div>
-            
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold" style={{color:'#e2e8f0'}}>All Events ({events.length})</h2>
             {events.length === 0 ? (
-              <div className="card text-center !p-12">
-                <p className="text-gray-500 dark:text-gray-400">No events found</p>
-              </div>
+              <div className="nm-card text-center p-12" style={{color:'#7f849c'}}>No events found</div>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid gap-3">
                 {events.map((event) => (
-                  <div key={event.id} className="card">
+                  <div key={event.id} className="nm-card p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{event.name}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Created by {event.owner_email} on {new Date(event.created_at).toLocaleDateString()}
+                        <h3 className="font-semibold" style={{color:'#e2e8f0'}}>{event.name}</h3>
+                        <p className="text-xs" style={{color:'#7f849c'}}>
+                          By {event.owner_email} on {new Date(event.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <button 
-                        onClick={() => handleDeleteEvent(event.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
-                        title="Delete Event"
-                      >
-                        🗑️
-                      </button>
+                      <button onClick={() => handleDeleteEvent(event.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
                     </div>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="text-purple-600 dark:text-purple-400">
-                        📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}
-                      </span>
-                      <Link 
-                        href={`/wall/${event.slug}`} 
-                        className="text-cyan-600 dark:text-cyan-400 hover:underline"
-                      >
-                        🖼️ View Wall
-                      </Link>
-                      <Link 
-                        href={`/upload/${event.slug}`} 
-                        className="text-cyan-600 dark:text-cyan-400 hover:underline"
-                      >
-                        📱 Upload
-                      </Link>
-                      <Link 
-                        href={`/moderate/${event.slug}`} 
-                        className="text-cyan-600 dark:text-cyan-400 hover:underline"
-                      >
-                        🛡️ Moderate
-                      </Link>
+                    <div className="flex flex-wrap items-center gap-3 text-xs">
+                      <span className="nm-badge">📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</span>
+                      <Link href={`/wall/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#f59e0b'}}>🖼️ Wall</Link>
+                      <Link href={`/upload/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#7f849c'}}>📱 Upload</Link>
+                      <Link href={`/moderate/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#7f849c'}}>🛡️ Moderate</Link>
                     </div>
                   </div>
                 ))}

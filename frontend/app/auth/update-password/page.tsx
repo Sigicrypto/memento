@@ -60,82 +60,37 @@ function UpdatePasswordContent() {
   };
 
   return (
-    <div className="aurora-bg min-h-[90vh] flex items-center justify-center px-4">
-      <div className="relative z-10 w-full max-w-md">
-        {/* Glow backdrop */}
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/20 via-accent/10 to-accent2/20 blur-xl pointer-events-none" />
-        
-        {/* Form container */}
-        <div className="relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+    <div className="nm-page flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="nm-card p-8">
           <div className="text-center mb-8">
-            <Link href="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-6">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
-              Back to Home
-            </Link>
-            <h1 className="text-3xl font-bold text-white mb-2">Update Password</h1>
-            <p className="text-white/70">Enter your new password</p>
+            <div className="nm-circle w-16 h-16 mx-auto mb-4 text-2xl">🔑</div>
+            <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Update Password</h1>
+            <p style={{color:'#7f849c'}}>Enter your new password</p>
           </div>
 
-          {message && (
-            <div className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
-              <p className="text-green-300 text-center">{message}</p>
-            </div>
-          )}
+          {message && <div className="nm-inset p-4 mb-6 text-center text-sm" style={{color:'#4ade80'}}>{message}</div>}
+          {error && <div className="nm-inset p-4 mb-6 text-center text-sm" style={{color:'#f87171'}}>{error}</div>}
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-              <p className="text-red-300 text-center">{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
-                New Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
-                placeholder="Enter new password"
-              />
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>New Password</label>
+              <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                required minLength={6} placeholder="Enter new password" className="nm-input" />
             </div>
-
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-white/80 mb-2">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all"
-                placeholder="Confirm new password"
-              />
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Confirm Password</label>
+              <input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                required minLength={6} placeholder="Confirm new password" className="nm-input" />
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-primary to-accent text-white font-semibold rounded-lg hover:from-primary/90 hover:to-accent/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="submit" disabled={loading} className="nm-btn nm-btn-accent w-full py-3 font-bold disabled:opacity-50">
               {loading ? 'Updating...' : 'Update Password'}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <Link href="/auth" className="text-primary hover:text-primary/80 transition-colors">
-              Back to Sign In
-            </Link>
+          <div className="nm-divider" />
+          <div className="text-center">
+            <Link href="/auth" className="text-sm" style={{color:'#f59e0b'}}>← Back to Sign In</Link>
           </div>
         </div>
       </div>
@@ -146,8 +101,10 @@ function UpdatePasswordContent() {
 export default function UpdatePasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="nm-page flex items-center justify-center">
+        <div className="nm-circle w-14 h-14">
+          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+        </div>
       </div>
     }>
       <UpdatePasswordContent />

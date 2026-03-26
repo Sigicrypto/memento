@@ -291,11 +291,11 @@ export default function UploadPage() {
   // Not found
   if (error === 'Event not found.') {
     return (
-      <div className="aurora-bg min-h-[85vh] flex items-center justify-center px-4">
-        <div className="relative z-10 card max-w-sm text-center !p-10">
+      <div className="nm-page flex items-center justify-center px-4">
+        <div className="nm-card max-w-sm text-center p-10">
           <div className="text-5xl mb-4">😢</div>
-          <h1 className="text-xl font-bold mb-2">Event Not Found</h1>
-          <p className="text-[#a09080] text-sm">This link doesn't seem to be valid.</p>
+          <h1 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>Event Not Found</h1>
+          <p className="text-sm" style={{color:'#7f849c'}}>This link doesn't seem to be valid.</p>
         </div>
       </div>
     );
@@ -304,23 +304,18 @@ export default function UploadPage() {
   // Password gate
   if (!unlocked) {
     return (
-      <div className="aurora-bg min-h-[85vh] flex items-center justify-center px-4">
-        <div className="relative z-10 w-full max-w-sm">
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/15 to-accent/10 blur-xl pointer-events-none" />
-          <div className="card relative !p-8 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[rgba(245,158,11,0.15)] border border-[rgba(245,158,11,0.25)] flex items-center justify-center text-3xl mx-auto mb-4 glow-purple">
-              🔒
-            </div>
-            <h1 className="text-xl font-bold mb-1 text-[#f5f0e8]">{eventName || 'Private Event'}</h1>
-            <p className="text-[#a09080] text-sm mb-6">Enter the password to upload photos.</p>
+      <div className="nm-page flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          <div className="nm-card p-8 text-center">
+            <div className="nm-circle w-16 h-16 mx-auto mb-4 text-3xl">🔒</div>
+            <h1 className="text-xl font-bold mb-1" style={{color:'#e2e8f0'}}>{eventName || 'Private Event'}</h1>
+            <p className="text-sm mb-6" style={{color:'#7f849c'}}>Enter the password to upload photos.</p>
             <form onSubmit={handleUnlock} className="space-y-3">
-              <input type="password" className="input text-center" value={passwordInput}
+              <input type="password" className="nm-input text-center" value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 placeholder="Enter password…" autoFocus required />
-              {passwordError && (
-                <p className="text-[#f472b6] text-sm">{passwordError}</p>
-              )}
-              <button type="submit" className="btn-primary w-full">Unlock</button>
+              {passwordError && <p className="text-sm mt-1" style={{color:'#f472b6'}}>{passwordError}</p>}
+              <button type="submit" className="nm-btn nm-btn-accent w-full py-3 font-bold">Unlock</button>
             </form>
           </div>
         </div>
@@ -330,110 +325,93 @@ export default function UploadPage() {
 
   // Upload form
   return (
-    <div className="aurora-bg min-h-[100vh] flex flex-col items-center px-4 pt-20 pb-10 text-[#f5f0e8] font-sans dark">
-      <div className="w-full max-w-md flex flex-col items-center">
-        <div className="w-full mb-4 rounded-2xl border border-[rgba(245,158,11,0.25)] bg-[rgba(245,158,11,0.08)] backdrop-blur-xl px-4 py-3 text-center">
-          <p className="text-xs uppercase tracking-wider text-[#fcd34d]/90 font-semibold mb-1">Live Upload</p>
-          <h2 className="text-lg font-bold text-[#f5f0e8] truncate">{eventName || 'Loading event...'}</h2>
+    <div className="nm-page min-h-screen flex flex-col items-center px-4 pt-10 pb-10">
+      <div className="w-full max-w-md flex flex-col items-center gap-4">
+
+        {/* Event Header */}
+        <div className="nm-card w-full px-4 py-3 text-center">
+          <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{color:'#f59e0b'}}>Live Upload</p>
+          <h2 className="text-lg font-bold truncate" style={{color:'#e2e8f0'}}>{eventName || 'Loading event...'}</h2>
         </div>
-        
-        {/* Connection Status Indicator */}
-        <div className="w-full mb-4">
-          <div className={`flex items-center justify-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
-            navigator.onLine 
-              ? 'bg-[rgba(245,158,11,0.20)] text-[#f59e0b] border border-[rgba(245,158,11,0.30)]' 
-              : 'bg-[rgba(244,114,182,0.20)] text-[#f472b6] border border-[rgba(244,114,182,0.30)]'
-          }`}>
-            <span className={`w-2 h-2 rounded-full ${navigator.onLine ? 'bg-[#f59e0b]' : 'bg-[#f472b6]'} animate-pulse`} />
-            {navigator.onLine ? '🟢 Online' : '📴 Offline - Photos will upload when connected'}
+
+        {/* Connection Status */}
+        <div className="nm-badge flex items-center gap-2 self-center">
+          <span className="w-2 h-2 rounded-full animate-pulse" style={{background: navigator.onLine ? '#4ade80' : '#f472b6'}} />
+          <span style={{color: navigator.onLine ? '#4ade80' : '#f472b6'}}>
+            {navigator.onLine ? 'Online' : 'Offline – will upload when connected'}
+          </span>
+        </div>
+
+        {/* Upload Trigger Card */}
+        <div className="nm-card w-full p-8 text-center">
+          <h3 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload your photo or video</h3>
+          <p className="text-sm mb-8 leading-relaxed" style={{color:'#7f849c'}}>Pick your best moments and post them to the live wall.</p>
+          <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" id="photo-upload" required />
+          <label htmlFor="photo-upload" className="nm-circle w-20 h-20 mx-auto cursor-pointer hover:scale-105 transition-transform" style={{color:'#f59e0b'}}>
+            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
+          </label>
+        </div>
+
+        {/* Details & Submit */}
+        {previews.length > 0 && !uploading && (
+          <div className="nm-card w-full p-6 space-y-4">
+            <h4 className="font-bold" style={{color:'#e2e8f0'}}>Add Details (Optional)</h4>
+            <div>
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>
+                Your Name
+                {typeof window !== 'undefined' && localStorage.getItem(GUEST_NAME_KEY) && (
+                  <span className="ml-2 text-xs" style={{color:'#4ade80'}}>✓ Remembered</span>
+                )}
+              </label>
+              <input type="text" className="nm-input" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)} placeholder="e.g. Uncle Bob" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Message</label>
+              <textarea className="nm-input" style={{resize:'none'}} value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="What a beautiful day!" rows={2} />
+            </div>
+            <button onClick={() => uploadFiles(files)} className="nm-btn nm-btn-accent w-full py-3 font-bold">
+              📤 Post to Wall
+            </button>
           </div>
-        </div>
-        
-        {/* The White Prompt Card (Standard high contrast shape) */}
+        )}
 
-        <div className="w-full bg-[#faf7f2] dark:bg-[#1a1230]/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl text-center mb-8 border border-[rgba(245,158,11,0.15)] transform transition hover:scale-[1.01]">
-          <h3 className="text-xl font-extrabold text-[#0a0600] dark:text-[#f5f0e8] mb-2">Upload your first photo or video</h3>
-          <p className="text-[#5c4e38] dark:text-[#a09080] text-sm mb-10 leading-relaxed">Pick your best moments and post them to the live wall instantly.</p>
-
-          <form onSubmit={handleUpload} className="space-y-4">
-            {/* Hidden Input */}
-            <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange}
-              className="hidden" id="photo-upload" required />
-
-            {/* Large Circle Trigger Icon */}
-            <label htmlFor="photo-upload" className="w-16 h-16 bg-[#faf7f2] dark:bg-[#1a1230] border border-[rgba(245,158,11,0.20)] rounded-full flex items-center justify-center mx-auto shadow-lg hover:shadow-xl hover:scale-105 transition cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-[#0a0600] dark:text-[#f5f0e8]">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-              </svg>
-            </label>
-          </form>
-        </div>
-
-        {/* Uploading & Previews section (floating above or placed inline) */}
-        <div className="w-full max-w-sm space-y-4">
-          
-          {previews.length > 0 && !uploading && (
-            <div className="bg-[#faf7f2] dark:bg-[#1a1230]/95 backdrop-blur-xl rounded-3xl p-6 shadow-xl space-y-4 text-[#0a0600] dark:text-[#f5f0e8] transform transition border border-[rgba(245,158,11,0.20)]">
-              <h4 className="font-bold text-lg">Add Details (Optional)</h4>
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 mb-1.5">
-                  Your Name
-                  {localStorage.getItem(GUEST_NAME_KEY) && (
-                    <span className="ml-2 text-green-500 text-xs">✓ Remembered</span>
-                  )}
-                </label>
-                <input 
-                  type="text" 
-                  className="w-full bg-[#f8f4ee] dark:bg-[#130f22] border border-[rgba(245,158,11,0.20)] text-[#0a0600] dark:text-[#f5f0e8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#f59e0b]" 
-                  value={uploaderName} 
-                  onChange={(e) => setUploaderName(e.target.value)} 
-                  placeholder="e.g. Uncle Bob" 
-                />
+        {/* Previews */}
+        {previews.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 w-full">
+            {previews.map((prev, idx) => (
+              <div key={idx} className="nm-card overflow-hidden aspect-square rounded-[14px]">
+                {files[idx]?.type.startsWith('video/') ? (
+                  <video src={prev} className="w-full h-full object-cover" controls playsInline />
+                ) : (
+                  <img src={prev} alt="Preview" className="w-full h-full object-cover" />
+                )}
               </div>
-              <div>
-                <label className="block text-xs font-semibold text-[#5c4e38] dark:text-[#a09080] mb-1.5">Message</label>
-                <textarea className="w-full bg-[#f8f4ee] dark:bg-[#130f22] border border-[rgba(245,158,11,0.20)] text-[#0a0600] dark:text-[#f5f0e8] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#f59e0b]" value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="What a beautiful day!" rows={2} />
-              </div>
-              <button onClick={() => uploadFiles(files)} className="w-full bg-gradient-to-r from-[#f59e0b] to-[#f472b6] hover:from-[#f97316] hover:to-[#ec4899] text-[#0a0600] font-bold py-3 rounded-xl shadow-lg transition-all transform active:scale-95">
-                📤 Post to Wall
-              </button>
-            </div>
-          )}
+            ))}
+          </div>
+        )}
 
-          {previews.length > 0 && (
+        {/* Progress */}
+        {uploadProgress > 0 && (
+          <div className="nm-inset w-full h-2 rounded-full overflow-hidden">
+            <div className="h-full rounded-full transition-all duration-500"
+              style={{width:`${uploadProgress}%`, background:'linear-gradient(90deg,#f59e0b,#f472b6)'}} />
+          </div>
+        )}
 
-            <div className="grid grid-cols-2 gap-3">
-              {previews.map((prev, idx) => (
-                <div key={idx} className="rounded-xl overflow-hidden border border-[rgba(245,158,11,0.30)] aspect-square relative shadow-md">
-                  {files[idx]?.type.startsWith('video/') ? (
-                    <video src={prev} className="w-full h-full object-cover" controls playsInline />
-                  ) : (
-                    <img src={prev} alt="Preview" className="w-full h-full object-cover" />
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Error / Success */}
+        {error && error !== 'Event not found.' && (
+          <div className="nm-inset w-full p-3 flex items-center gap-2 text-sm" style={{color:'#f472b6'}}>
+            <span>⚠️</span> {error}
+          </div>
+        )}
+        {success && (
+          <div className="nm-inset w-full p-3 flex items-center gap-2 text-sm" style={{color:'#4ade80'}}>
+            <span>✅</span> Uploaded! Redirecting to your photos...
+          </div>
+        )}
 
-          {uploadProgress > 0 && (
-            <div className="w-full bg-[#130f22] rounded-full h-2 overflow-hidden shadow-inner">
-              <div className="bg-gradient-to-r from-[#f59e0b] to-[#f472b6] h-2 rounded-full transition-all duration-500"
-                style={{ width: `${uploadProgress}%` }} />
-            </div>
-          )}
-
-          {error && error !== 'Event not found.' && (
-            <div className="flex items-center gap-2 text-[#f472b6] text-sm bg-[rgba(244,114,182,0.10)] border border-[rgba(244,114,182,0.20)] p-3 rounded-xl shadow-sm">
-              <span>⚠️</span> {error}
-            </div>
-          )}
-          {success && (
-            <div className="flex items-center gap-2 text-[#f59e0b] text-sm bg-[rgba(245,158,11,0.10)] border border-[rgba(245,158,11,0.20)] p-3 rounded-xl shadow-sm">
-              <span>✅</span> Uploaded successfully! Redirecting to your photos...
-            </div>
-          )}
-        </div>
-        
       </div>
     </div>
   );
