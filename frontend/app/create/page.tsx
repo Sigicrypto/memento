@@ -68,16 +68,16 @@ export default function CreateEventPage() {
   // ── Success: show QR ──
   if (createdSlug) {
     return (
-      <div className="nm-page flex items-center justify-center px-4 py-10">
+      <div className="nm-page flex items-center justify-center px-4 py-10 pb-32">
         <div className="w-full max-w-lg">
-          <div className="nm-card p-10 text-center">
+          <div className="nm-card p-6 md:p-10 text-center">
             <div className="nm-badge mx-auto mb-5">✨ Wall Created!</div>
             <div className="text-5xl mb-4">🎉</div>
             <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Wall Ready!</h1>
             <p className="text-sm mb-8" style={{color:'#7f849c'}}>Share this QR code with your guests</p>
 
-            <div className="nm-inset p-5 inline-block mx-auto mb-6 rounded-2xl">
-              <QRCodeSVG value={uploadUrl} size={200} bgColor="#1e2235" fgColor="#e2e8f0" />
+            <div className="nm-inset p-4 md:p-5 inline-block mx-auto mb-6 rounded-2xl">
+              <QRCodeSVG value={uploadUrl} size={180} bgColor="#1e2235" fgColor="#e2e8f0" />
             </div>
             <div style={{display:'none'}}>
               <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
@@ -110,17 +110,17 @@ export default function CreateEventPage() {
 
   // ── Form ──
   return (
-    <div className="nm-page flex items-center justify-center px-4 py-10">
+    <div className="nm-page flex items-center justify-center px-4 py-10 pb-32">
       <div className="w-full max-w-lg">
-        <div className="nm-card p-10">
+        <div className="nm-card p-6 md:p-10">
           <div className="flex justify-center mb-4">
             <div className="nm-circle w-14 h-14 text-2xl">🎉</div>
           </div>
           <div className="text-center mb-5">
             <span className="nm-badge">Launch your event wall</span>
           </div>
-          <h1 className="text-3xl font-bold text-center mb-1" style={{color:'#e2e8f0'}}>Create a Photo Wall</h1>
-          <p className="text-sm text-center mb-6" style={{color:'#7f849c'}}>
+          <h1 className="text-2xl md:text-3xl font-bold text-center mb-1" style={{color:'#e2e8f0'}}>Create a Photo Wall</h1>
+          <p className="text-xs md:text-sm text-center mb-6 leading-relaxed" style={{color:'#7f849c'}}>
             Name your event and get a QR code guests can scan to share photos.
           </p>
 
@@ -131,13 +131,13 @@ export default function CreateEventPage() {
           )}
 
           <form onSubmit={handleCreate} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Event Name</label>
-              <input type="text" className="nm-input" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Sarah & Tom's Wedding" />
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold" style={{color:'#7f849c'}}>Event Name</label>
+              <input type="text" className="nm-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="My Awesome Party…" required autoFocus />
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold" style={{color:'#7f849c'}}>Custom Link (URL)</label>
                 {plan === 'FREE' && (
                   <Link href="/pricing" className="text-[9px] font-bold" style={{color:'#f59e0b'}}>✨ UPGRADE</Link>
@@ -152,8 +152,8 @@ export default function CreateEventPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Guest Password <span style={{color:'#4a4f6a'}}>(optional)</span></label>
+            <div className="space-y-1">
+              <label className="block text-xs font-semibold" style={{color:'#7f849c'}}>Guest Password <span style={{color:'#4a4f6a'}}>(optional)</span></label>
               <input type="password" className="nm-input" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for open access…" />
             </div>
 
