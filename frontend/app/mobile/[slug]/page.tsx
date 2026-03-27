@@ -58,14 +58,12 @@ export default function MobileUploadPage() {
     if (!eventId) return;
 
     const fetchPhotos = async () => {
-      // If uploader name exists, filter by it, otherwise show all event photos
       let query = supabase
         .from('photos')
         .select('*')
         .eq('event_id', eventId)
         .order('created_at', { ascending: false });
       
-      // Only filter by uploader name if it exists and is not empty
       if (uploaderName && uploaderName.trim()) {
         query = query.eq('uploader_name', uploaderName.trim());
       }
@@ -90,7 +88,6 @@ export default function MobileUploadPage() {
         event: 'INSERT', schema: 'public', table: 'photos'
       }, (payload) => {
         const newPhoto = payload.new as Photo;
-        // Show photo if it matches event AND (no name filter OR matches uploader name)
         if (newPhoto.event_id === eventId) {
           if (!uploaderName || !uploaderName.trim() || newPhoto.uploader_name === uploaderName.trim()) {
             setPhotos((prev) => {
@@ -127,12 +124,15 @@ export default function MobileUploadPage() {
 
   return (
     <div className="nm-page pb-24">
-      {/* Header */}
-      <div className="nm-card mx-4 mt-4 p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-xl font-bold" style={{color:'#e2e8f0'}}>{eventName}</h1>
-            <p className="text-sm" style={{color:'#7f849c'}}>
+      {/* Header — mt-12 pushes it clear of the top nav */}
+          <div className="nm-card mx-4 pt-20 pb-4 px-4">
+          <div className="flex items-center justify-between mb-3">
+          <div className="space-y-1">
+           <div className="space-y-1">
+            <h1 className="text-xl font-bold leading-tight" style={{color:'#e2e8f0'}}>
+              {eventName}
+            </h1>
+            <p className="text-sm leading-relaxed" style={{color:'#7f849c'}}>
               {uploaderName ? `Photos by: ${uploaderName}` : 'All Event Photos'}
             </p>
           </div>
@@ -141,7 +141,7 @@ export default function MobileUploadPage() {
             {realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Connecting...'}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-3">
           <input type="text" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)}
             placeholder="Enter your name to filter..." className="nm-input flex-1 text-sm py-2" />
           <button onClick={() => { localStorage.setItem('memento_guest_name', uploaderName); window.location.reload(); }}
@@ -150,15 +150,15 @@ export default function MobileUploadPage() {
       </div>
 
       {successMessage && (
-        <div className="mx-4 mt-3">
+        <div className="mx-4 mt-4">
           <div className="nm-inset p-3 text-center text-sm font-medium" style={{color:'#4ade80'}}>
             ✅ {successMessage}
           </div>
         </div>
       )}
 
-      {/* Photos Grid */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      {/* Photos Grid — pt-10 pushes it down a bit more */}
+      <div className="max-w-4xl mx-auto px-4 pt-6 pb-10">
         {photos.length === 0 ? (
           <div className="text-center py-12">
             <div className="nm-circle w-20 h-20 mx-auto mb-4 text-3xl">📸</div>

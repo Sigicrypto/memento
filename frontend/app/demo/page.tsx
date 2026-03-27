@@ -58,10 +58,10 @@ export default function DemoPage() {
       </div>
 
       {/* Demo Content */}
-      <div className="px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2" style={{color:'#e2e8f0'}}>Memento Live Demo</h1>
+      <div className="px-4 pt-40">
+        <div className="max-w-7xl mx-auto mb-8 px-4">
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 px-4" style={{color:'#e2e8f0'}}>Memento Live Demo</h1>
             <p className="text-sm mb-4" style={{color:'#7f849c'}}>Experience a live photo wall in action</p>
             <div className="flex justify-center gap-2">
               <span className="nm-badge flex items-center gap-1.5" style={{color:'#4ade80'}}>
@@ -72,7 +72,7 @@ export default function DemoPage() {
           </div>
 
           {/* View Mode Controls */}
-          <div className="flex justify-center gap-2 mb-8">
+          <div className="flex justify-center gap-2">
             {(['grid','polaroid','slideshow'] as const).map((mode) => (
               <button key={mode} onClick={() => setViewMode(mode)}
                 className="nm-btn px-4 py-2 text-sm capitalize"
@@ -86,12 +86,15 @@ export default function DemoPage() {
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Grid View */}
-          {viewMode === 'grid' && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {demoPhotos.map((photo) => (
-                <div key={photo.id} className="nm-card group relative aspect-square overflow-hidden hover:scale-105 transition-transform"
+        {/* Grid View */}
+        {viewMode === 'grid' && (
+          <div className="flex justify-center">
+            <div className="max-w-6xl w-full">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                {demoPhotos.map((photo) => (
+                <div key={photo.id} className="nm-card group relative aspect-square overflow-hidden hover:scale-105 transition-transform w-full max-w-[240px]"
                   style={{animationDelay:`${photo.delay}s`}}>
                   <div className="flex flex-col items-center justify-center h-full p-4">
                     <span className="text-4xl mb-2">{photo.emoji}</span>
@@ -100,14 +103,18 @@ export default function DemoPage() {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Polaroid View */}
-          {viewMode === 'polaroid' && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {demoPhotos.map((photo, index) => (
-                <div key={photo.id} className="relative"
+        {/* Polaroid View */}
+        {viewMode === 'polaroid' && (
+          <div className="flex justify-center">
+            <div className="max-w-6xl w-full">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                {demoPhotos.map((photo, index) => (
+                <div key={photo.id} className="relative w-full max-w-[240px]"
                   style={{animation:`float 3s ease-in-out infinite`, animationDelay:`${index * 0.5}s`}}>
                   <div className="nm-card p-3 transform rotate-3 hover:rotate-0 transition-transform">
                     <div className="nm-inset aspect-square rounded-xl flex items-center justify-center mb-2">
@@ -117,12 +124,15 @@ export default function DemoPage() {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Slideshow View */}
-          {viewMode === 'slideshow' && (
-            <div className="max-w-4xl mx-auto">
+        {/* Slideshow View */}
+        {viewMode === 'slideshow' && (
+          <div className="flex justify-center">
+            <div className="max-w-4xl w-full">
               <div className="nm-card relative overflow-hidden" style={{aspectRatio:'16/9'}}>
                 <div className="flex items-center justify-center h-full">
                   <span className="text-8xl">{demoPhotos[currentSlide].emoji}</span>
@@ -146,15 +156,15 @@ export default function DemoPage() {
                 ))}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          <div className="mt-12 text-center">
+        <div className="mt-12 text-center max-w-7xl mx-auto">
             <div className="nm-badge mx-auto inline-flex items-center gap-2">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
               </svg>
               Simulating live uploads every 8 seconds...
-            </div>
           </div>
         </div>
       </div>

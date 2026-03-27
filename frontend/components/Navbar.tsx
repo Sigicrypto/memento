@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
@@ -55,7 +54,6 @@ export default function Navbar() {
           </span>
         </Link>
         <div className="flex items-center gap-3">
-          <ThemeToggle />
           {user && (
             <Link
               href="/dashboard"

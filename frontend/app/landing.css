@@ -623,7 +623,7 @@ body:has(.gcard:hover) .cursor-ring {
 .currency-toggle:hover { background: rgba(245,158,11,0.15); }
 
 .price-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem; margin-top: 2rem; text-align: left;
 }
 .price-card .gcard-inner { padding: 2.5rem 2rem; }
@@ -639,8 +639,8 @@ body:has(.gcard:hover) .cursor-ring {
   margin-bottom: 1rem;
 }
 .price-name { font-size: 1.1rem; font-weight: 600; color: var(--text1); margin-bottom: 0.75rem; }
-.price-amount { display: flex; align-items: baseline; gap: 2px; margin-bottom: 0.25rem; }
-.price-sym { font-size: 1.2rem; font-weight: 500; color: var(--text2); }
+.price-amount { display: flex; align-items: baseline; gap: 2px; margin-bottom: 0.25rem; line-height: 1; }
+.price-sym { font-size: 1.2rem; font-weight: 500; color: var(--text2); align-self: flex-end; margin-bottom: 0.1rem; }
 .price-val { font-size: 2.8rem; font-weight: 700; color: var(--text1); letter-spacing: -0.02em; }
 .price-period { font-size: 0.75rem; color: var(--text3); display: block; margin-bottom: 1.5rem; }
 .price-btn {
@@ -727,8 +727,8 @@ body:has(.gcard:hover) .cursor-ring {
 
 /* ═══ WHATSAPP BUTTON ═══ */
 .wa-fab {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 600;
-  width: 56px; height: 56px; border-radius: 50%;
+  position: fixed; bottom: 2rem; right: 6rem; z-index: 600;
+  width: 40px; height: 40px; border-radius: 50%;
   background: #25d366;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 25px rgba(37,211,102,0.4), 0 0 40px rgba(37,211,102,0.15);
@@ -740,7 +740,7 @@ body:has(.gcard:hover) .cursor-ring {
   transform: scale(1.12);
   box-shadow: 0 10px 35px rgba(37,211,102,0.55), 0 0 60px rgba(37,211,102,0.2);
 }
-.wa-fab svg { width: 28px; height: 28px; fill: #fff; }
+.wa-fab svg { width: 20px; height: 20px; fill: #fff; }
 .wa-fab::after {
   content: 'Chat with us';
   position: absolute; right: calc(100% + 12px); left: auto; top: 50%; transform: translateY(-50%);
@@ -757,6 +757,10 @@ body:has(.gcard:hover) .cursor-ring {
   transform: translateY(-50%) translateX(0);
 }
 @keyframes wa-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes social-bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
@@ -784,6 +788,10 @@ body:has(.gcard:hover) .cursor-ring {
 }
 
 /* ═══ RESPONSIVE ═══ */
+@media (max-width: 1024px) {
+  .price-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+}
+
 @media (max-width: 768px) {
   .lp-nav { padding: 0.8rem 1.5rem; }
   .nav-mid { display: none; }
@@ -797,12 +805,12 @@ body:has(.gcard:hover) .cursor-ring {
   .feat-big { grid-column: span 1; }
   .steps { grid-template-columns: 1fr; }
   .steps-line { display: none; }
-  .price-grid { grid-template-columns: 1fr; }
+  .price-grid { grid-template-columns: 1fr; gap: 1rem; }
   .footer-top { flex-direction: column; gap: 2rem; }
   .footer-cols { gap: 2rem; }
   .stats { flex-wrap: wrap; }
   .stat { min-width: 50%; border-right: none; }
-  .wa-fab { width: 48px; height: 48px; bottom: 1.5rem; right: 1.5rem; }
-  .wa-fab svg { width: 24px; height: 24px; }
+  .wa-fab { width: 36px; height: 36px; bottom: 1.5rem; right: 5rem; }
+  .wa-fab svg { width: 20px; height: 20px; }
   .wa-fab::after { display: none; }
 }

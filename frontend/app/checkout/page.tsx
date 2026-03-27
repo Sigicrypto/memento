@@ -9,6 +9,20 @@ import Link from 'next/link';
 type Region = 'IN' | 'GLOBAL';
 const REGION_COOKIE = 'livewall_region';
 
+const PLAN_PRICES: Record<string, { IN: string; GLOBAL: string }> = {
+  FREE:        { IN: '₹0',      GLOBAL: '$0' },
+  STARTER:     { IN: '₹2,500',  GLOBAL: '$30' },
+  PRO:         { IN: '₹5,000',  GLOBAL: '$60' },
+  PREMIUM:     { IN: '₹7,500',  GLOBAL: '$90' },
+  'WHITE LABEL': { IN: '₹10,000', GLOBAL: '$120' },
+  'WHITE_LABEL': { IN: '₹10,000', GLOBAL: '$120' },
+};
+
+const PLAN_DISPLAY_NAMES: Record<string, string> = {
+  FREE: 'Free', STARTER: 'Starter', PRO: 'Pro', PREMIUM: 'Premium',
+  'WHITE LABEL': 'White Label', 'WHITE_LABEL': 'White Label',
+};
+
 function readRegionCookie(): Region {
   if (typeof document === 'undefined') return 'GLOBAL';
   const match = document.cookie.match(new RegExp(`(^| )${REGION_COOKIE}=([^;]+)`));
@@ -18,7 +32,7 @@ function readRegionCookie(): Region {
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
-  const planName = searchParams.get('plan') || 'SIGNATURE';
+  const planName = searchParams.get('plan') || 'PRO';
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   
@@ -29,35 +43,88 @@ function CheckoutContent() {
     setRegion(readRegionCookie());
   }, []);
 
-  const planLabel = planName === 'SIGNATURE' ? 'Signature' : planName;
-  const priceDisplay = region === 'IN' ? '5000 INR' : '60 USD';
+  const planKey = planName.toUpperCase();
+  const planLabel = PLAN_DISPLAY_NAMES[planKey] || planName;
+  const prices = PLAN_PRICES[planKey] || { IN: '₹5,000', GLOBAL: '$60' };
+  const priceDisplay = region === 'IN' ? prices.IN : prices.GLOBAL;
   const regionLabel = region === 'IN' ? 'India' : 'Global';
 
   const handlePayment = async () => {
     setStatus('PROCESSING');
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    if (user) {
-      // Update user metadata to reflect new plan
-      const { error } = await supabase.auth.updateUser({
-        data: { plan_type: planName }
+    try {
+      const res = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: planKey,
+          region,
+          userId: user?.id,
+          userEmail: user?.email,
+        }),
       });
-      
-      if (error) {
-        alert("Mock Payment Failed: " + error.message);
+      const data = await res.json();
+
+      // ── Stripe: redirect to hosted checkout ──
+      if (data.gateway === 'stripe' && data.sessionUrl) {
+        window.location.href = data.sessionUrl;
+        return;
+      }
+
+      // ── Razorpay: open modal ──
+      if (data.gateway === 'razorpay') {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error('Razorpay script failed'));
+          document.head.appendChild(s);
+        });
+        const rzp = new (window as any).Razorpay({
+          key: data.key,
+          amount: data.amount,
+          currency: data.currency,
+          name: 'Memento',
+          description: `${planLabel} Plan`,
+          order_id: data.orderId,
+          handler: async (response: any) => {
+            const verifyRes = await fetch('/api/payment/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                plan: planKey,
+                userId: user?.id,
+              }),
+            });
+            if (verifyRes.ok) {
+              setStatus('SUCCESS');
+              setTimeout(() => router.push('/dashboard'), 3000);
+            } else {
+              setStatus('IDLE');
+              alert('Payment verification failed. Contact support.');
+            }
+          },
+          prefill: { email: user?.email || '' },
+          theme: { color: '#f59e0b' },
+        });
+        rzp.open();
         setStatus('IDLE');
         return;
       }
+
+      // ── Mock fallback (no keys configured) ──
+      await new Promise(r => setTimeout(r, 2000));
+      if (user) {
+        await supabase.auth.updateUser({ data: { plan_type: planName } });
+      }
+      setStatus('SUCCESS');
+      setTimeout(() => router.push('/dashboard'), 3000);
+    } catch {
+      setStatus('IDLE');
+      alert('Payment failed. Please try again.');
     }
-    
-    setStatus('SUCCESS');
-    
-    // Redirect after success
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 3000);
   };
 
   if (authLoading) return (
@@ -94,11 +161,11 @@ function CheckoutContent() {
                   <span style={{color:'#e2e8f0'}}>Total Due</span>
                   <span style={{color:'#f59e0b'}}>{priceDisplay}</span>
                 </div>
-                <p className="text-xs mt-2" style={{color:'#4a4f6a'}}>Pay once. Your wall remains available for Signature duration.</p>
+                <p className="text-xs mt-2" style={{color:'#4a4f6a'}}>One-time payment. No subscriptions, no recurring charges.</p>
               </div>
 
               <button onClick={handlePayment} className="nm-btn nm-btn-accent w-full py-4 text-base font-bold mb-4">
-                Confirm Mock Payment
+                {region === 'IN' ? '🇮🇳 Pay with Razorpay' : '🌐 Pay with Stripe'}
               </button>
               <Link href="/pricing" className="text-xs" style={{color:'#4a4f6a'}}>Cancel and go back</Link>
             </>

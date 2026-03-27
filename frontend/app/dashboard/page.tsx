@@ -20,6 +20,10 @@ export default function DashboardPage() {
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmDialog, setConfirmDialog] = useState<{open: boolean; message: string; onConfirm: () => void}>({open: false, message: '', onConfirm: () => {}});
+
+  const showConfirm = (message: string, onConfirm: () => void) => setConfirmDialog({open: true, message, onConfirm});
+  const closeConfirm = () => setConfirmDialog(prev => ({...prev, open: false}));
 
   useEffect(() => {
     if (authLoading) return;
@@ -45,10 +49,12 @@ export default function DashboardPage() {
     fetchEvents();
   }, [user, authLoading, router]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this event and all its photos?')) return;
-    await supabase.from('events').delete().eq('id', id);
-    setEvents((prev) => prev.filter((e) => e.id !== id));
+  const handleDelete = (id: string) => {
+    showConfirm('Delete this event and all its photos?', async () => {
+      await supabase.from('events').delete().eq('id', id);
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+      closeConfirm();
+    });
   };
 
   const downloadPrintablePDF = async (event: Event) => {
@@ -97,7 +103,7 @@ export default function DashboardPage() {
   };
 
   const updateSlug = async (eventId: string, newSlug: string) => {
-    if (!confirm('Update the event slug? This will change all sharing links.')) return;
+    if (!newSlug) return;
     
     try {
       const { error } = await supabase
@@ -138,6 +144,19 @@ export default function DashboardPage() {
 
   return (
     <div className="nm-page">
+      {/* Confirm Dialog */}
+      {confirmDialog.open && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center px-4" style={{background:'rgba(14,18,40,0.7)', backdropFilter:'blur(4px)'}}>
+          <div className="nm-card p-8 max-w-sm w-full text-center">
+            <div className="text-3xl mb-4">⚠️</div>
+            <p className="text-sm mb-6" style={{color:'#e2e8f0'}}>{confirmDialog.message}</p>
+            <div className="flex gap-3">
+              <button onClick={closeConfirm} className="nm-btn flex-1 py-2.5 text-sm">Cancel</button>
+              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-2.5 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Header */}
         <div className="nm-card p-6 sm:p-8 mb-8">

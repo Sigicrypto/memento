@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "../components/ThemeProvider";
 import MainContent from "@/components/MainContent";
 import SocialFloat from "@/components/SocialFloat";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,6 +31,7 @@ export default function RootLayout({
             <MainContent>
               {children}
             </MainContent>
+            <WhatsAppFloat />
             <SocialFloat />
           </div>
         </ThemeProvider>

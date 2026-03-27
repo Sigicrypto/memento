@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
+import { useRef } from 'react';
 import Link from 'next/link';
 
 function generateSlug(name: string): string {
@@ -52,6 +53,7 @@ export default function CreateEventPage() {
 
   const uploadUrl = createdSlug
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${createdSlug}` : '';
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
   if (authLoading) {
     return (
@@ -77,6 +79,9 @@ export default function CreateEventPage() {
             <div className="nm-inset p-5 inline-block mx-auto mb-6 rounded-2xl">
               <QRCodeSVG value={uploadUrl} size={200} bgColor="#1e2235" fgColor="#e2e8f0" />
             </div>
+            <div style={{display:'none'}}>
+              <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
+            </div>
 
             <p className="text-xs mb-6 break-all font-mono" style={{color:'#7f849c'}}>{uploadUrl}</p>
 
@@ -85,20 +90,8 @@ export default function CreateEventPage() {
                 📋 Copy Link
               </button>
               <button onClick={() => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const size = 400;
-                canvas.width = size; canvas.height = size;
-                if (!ctx) return;
-                ctx.fillStyle = '#1e2235'; ctx.fillRect(0, 0, size, size);
-                ctx.fillStyle = '#e2e8f0';
-                const cellSize = 10; const modules = 37;
-                for (let i = 0; i < modules; i++) for (let j = 0; j < modules; j++) {
-                  if ((i + j) % 2 === 0 || (i < 7 && j < 7) || (i > modules - 8 && j < 7) || (i < 7 && j > modules - 8))
-                    ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
-                }
-                ctx.fillStyle = '#f59e0b'; ctx.font = '16px Arial'; ctx.textAlign = 'center';
-                ctx.fillText(`Memento: ${createdSlug}`, size/2, size - 20);
+                const canvas = qrCanvasRef.current;
+                if (!canvas) return;
                 canvas.toBlob((blob) => {
                   if (blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `memento-${createdSlug}-qr.png`; a.click(); URL.revokeObjectURL(url); }
                 });
