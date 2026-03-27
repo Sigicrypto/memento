@@ -125,10 +125,9 @@ export default function MobileUploadPage() {
   return (
     <div className="nm-page pb-24">
       {/* Header — mt-12 pushes it clear of the top nav */}
-          <div className="nm-card mx-4 pt-20 pb-4 px-4">
-          <div className="flex items-center justify-between mb-3">
+      <div className="nm-card mx-4 pt-20 pb-4 px-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="space-y-1">
-           <div className="space-y-1">
             <h1 className="text-xl font-bold leading-tight" style={{color:'#e2e8f0'}}>
               {eventName}
             </h1>
