@@ -386,7 +386,8 @@ export default function WallPage() {
   };
 
   const uploadUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/upload/${slug}` : '';
+    ? `${window.location.protocol}//${window.location.host}/upload/${slug}`
+    : '';
 
   if (eventExpired) {
     return (
