@@ -258,7 +258,7 @@ export default function UploadPage() {
       
       // Redirect to mobile page after successful upload
       setTimeout(() => {
-        window.location.href = `/mobile/${slug}`;
+        window.location.href = `/wall/${slug}`;
       }, 2000);
     }
 
