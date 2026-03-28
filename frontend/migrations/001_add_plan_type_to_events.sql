@@ -1,0 +1,2 @@
+ALTER TABLE events
+ADD COLUMN plan_type TEXT DEFAULT 'FREE';

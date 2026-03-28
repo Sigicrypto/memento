@@ -11,6 +11,7 @@ interface Photo {
   uploader_name: string;
   caption?: string;
   created_at: string;
+  approved: boolean;
 }
 
 export default function ModeratePage() {
@@ -22,6 +23,7 @@ export default function ModeratePage() {
   const [eventName, setEventName] = useState('');
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('pending');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,8 +51,13 @@ export default function ModeratePage() {
     return data.publicUrl;
   };
 
-  const deletePhoto = async (photo: Photo) => {
-    if (!confirm('Delete this photo permanently?')) return;
+  const approvePhoto = async (photoId: string) => {
+    await supabase.from('photos').update({ approved: true }).eq('id', photoId);
+    setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, approved: true } : p));
+  };
+
+  const rejectPhoto = async (photo: Photo) => {
+    if (!confirm('Reject and delete this photo permanently?')) return;
     await supabase.storage.from('photos').remove([photo.storage_path]);
     await supabase.from('photos').delete().eq('id', photo.id);
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
@@ -67,27 +74,32 @@ export default function ModeratePage() {
   }
 
   return (
-    <div className="nm-page">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="nm-card p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="nm-page px-4 py-12 pb-40">
+      <div className="max-w-5xl mx-auto">
+        <div className="nm-card p-8 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>🛡️ Moderate: {eventName}</h1>
-            <p className="text-sm mt-1" style={{color:'#7f849c'}}>{photos.length} photo{photos.length !== 1 ? 's' : ''} — hover to delete</p>
+            <p className="text-sm mt-1" style={{color:'#7f849c'}}>{photos.filter(p => !p.approved).length} pending photos</p>
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setFilter('pending')} className={`nm-btn text-xs px-3 py-1 ${filter === 'pending' ? 'nm-btn-accent' : ''}`}>Pending</button>
+              <button onClick={() => setFilter('approved')} className={`nm-btn text-xs px-3 py-1 ${filter === 'approved' ? 'nm-btn-accent' : ''}`}>Approved</button>
+              <button onClick={() => setFilter('all')} className={`nm-btn text-xs px-3 py-1 ${filter === 'all' ? 'nm-btn-accent' : ''}`}>All</button>
+            </div>
           </div>
-          <button onClick={() => router.push(`/wall/${slug}`)} className="nm-btn px-4 py-2 font-semibold">
+          <button onClick={() => router.push(`/wall/${slug}`)} className="nm-btn px-4 py-3 text-xs font-bold">
             ← Back to Wall
           </button>
         </div>
 
-        {photos.length === 0 ? (
+        {photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved).length === 0 ? (
           <div className="nm-card p-16 text-center">
             <div className="text-5xl mb-4">✅</div>
             <p style={{color:'#7f849c'}}>No photos to moderate.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {photos.map((photo) => (
-              <div key={photo.id} className="nm-card overflow-hidden group relative">
+            {photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved).map((photo) => (
+              <div key={photo.id} className={`nm-card overflow-hidden group relative ${!photo.approved ? 'ring-2 ring-yellow-500' : ''}`}>
                 <div className="overflow-hidden rounded-[14px]">
                   <img src={getPublicUrl(photo.storage_path)} alt="" className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
@@ -96,10 +108,10 @@ export default function ModeratePage() {
                     <p className="font-semibold">{photo.uploader_name}</p>
                     {photo.caption && <p className="italic mt-0.5 text-[10px]" style={{color:'#7f849c'}}>{photo.caption}</p>}
                   </div>
-                  <button onClick={() => deletePhoto(photo)}
-                    className="nm-btn w-full text-xs py-2" style={{color:'#f87171',background:'rgba(248,113,113,0.15)'}}>
-                    🗑️ Delete
-                  </button>
+                  <div className="flex gap-2">
+                    {!photo.approved && <button onClick={() => approvePhoto(photo.id)} className="nm-btn flex-1 text-xs py-2" style={{color:'#4ade80',background:'rgba(74,222,128,0.15)'}}>Approve</button>}
+                    <button onClick={() => rejectPhoto(photo)} className="nm-btn flex-1 text-xs py-2" style={{color:'#f87171',background:'rgba(248,113,113,0.15)'}}>Reject</button>
+                  </div>
                 </div>
               </div>
             ))}

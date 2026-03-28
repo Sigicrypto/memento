@@ -76,15 +76,15 @@ export default function SystemAdminPage() {
   };
 
   return (
-    <div className="nm-page flex items-center justify-center px-4 py-12">
+    <div className="nm-page flex items-center justify-center px-4 py-12 pb-40">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 mb-6 justify-center">
+        <div className="text-center mb-6">
+          <Link href="/" className="inline-flex items-center gap-3 mb-4 justify-center">
             <div className="nm-circle w-10 h-10 font-bold text-lg" style={{color:'#f59e0b'}}>M</div>
-            <span className="text-2xl font-bold" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Memento</span>
+            <span className="text-xl font-bold" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Memento</span>
           </Link>
-          <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>System Access</h1>
-          <p style={{color:'#7f849c'}}>Administrator authentication required</p>
+          <h1 className="text-2xl font-bold mb-1" style={{color:'#e2e8f0'}}>System Access</h1>
+          <p className="text-sm" style={{color:'#7f849c'}}>Administrator authentication required</p>
         </div>
 
         <div className="nm-card p-8">

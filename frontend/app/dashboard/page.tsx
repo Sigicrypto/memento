@@ -143,33 +143,33 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="nm-page">
+    <div className="nm-page px-4 py-12 pb-40">
       {/* Confirm Dialog */}
       {confirmDialog.open && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center px-4" style={{background:'rgba(14,18,40,0.7)', backdropFilter:'blur(4px)'}}>
-          <div className="nm-card p-8 max-w-sm w-full text-center">
+          <div className="nm-card p-8 max-w-md w-full text-center">
             <div className="text-3xl mb-4">⚠️</div>
             <p className="text-sm mb-6" style={{color:'#e2e8f0'}}>{confirmDialog.message}</p>
             <div className="flex gap-3">
-              <button onClick={closeConfirm} className="nm-btn flex-1 py-2.5 text-sm">Cancel</button>
-              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-2.5 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
+              <button onClick={closeConfirm} className="nm-btn flex-1 py-3 text-sm">Cancel</button>
+              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-3 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
             </div>
           </div>
         </div>
       )}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="nm-card p-6 sm:p-8 mb-8">
+        <div className="nm-card p-8 mb-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="nm-badge mb-3">● Host Dashboard</div>
+              <div className="nm-badge mb-3 text-[10px]">● Host Dashboard</div>
               <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-3xl font-bold" style={{color:'#e2e8f0'}}>My Events</h1>
-                <span className="nm-badge">{plan}</span>
+                <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>My Events</h1>
+                <span className="nm-badge text-[10px]">{plan}</span>
               </div>
               <p className="text-sm" style={{color:'#7f849c'}}>{events.length} event{events.length !== 1 ? 's' : ''}</p>
             </div>
-            <Link href="/create" className="nm-btn nm-btn-accent px-5 py-2.5 text-sm font-bold">✨ Create New</Link>
+            <Link href="/create" className="nm-btn nm-btn-accent px-5 py-3 text-sm font-bold">✨ Create New</Link>
           </div>
         </div>
 
@@ -179,11 +179,11 @@ export default function DashboardPage() {
         </div>
 
         {events.length === 0 ? (
-          <div className="nm-card p-16 text-center">
-            <div className="text-5xl mb-4">🎈</div>
+        <div className="nm-card p-12 text-center">
+            <div className="text-3xl mb-4">🎈</div>
             <h2 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>No Events Yet</h2>
-            <p className="text-sm mb-8" style={{color:'#7f849c'}}>Create your first photo wall and start collecting memories!</p>
-            <Link href="/create" className="nm-btn nm-btn-accent px-6 py-3 font-bold">Create Your First Wall</Link>
+            <p className="text-sm mb-6" style={{color:'#7f849c'}}>Create your first photo wall and start collecting memories!</p>
+            <Link href="/create" className="nm-btn nm-btn-accent px-6 py-3 text-sm font-bold">Create Your First Wall</Link>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">

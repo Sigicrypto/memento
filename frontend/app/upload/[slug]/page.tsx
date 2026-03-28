@@ -24,6 +24,7 @@ export default function UploadPage() {
   const [eventName, setEventName] = useState('');
   const [eventId, setEventId] = useState<string | null>(null);
   const [eventPlan, setEventPlan] = useState<string>('FREE');
+  const [safetyFilterEnabled, setSafetyFilterEnabled] = useState(false);
   
   const [eventPassword, setEventPassword] = useState<string | null>(null);
   const [unlocked, setUnlocked] = useState(false);
@@ -42,12 +43,13 @@ export default function UploadPage() {
   useEffect(() => {
     const fetchEvent = async () => {
       const { data, error } = await supabase.from('events')
-        .select('id, name, password').eq('slug', slug).single();
+        .select('id, name, password, plan_type, enable_safety_filter').eq('slug', slug).single();
       if (error || !data) { setError('Event not found.'); return; }
       setEventName(data.name);
       setEventId(data.id);
       setEventPassword(data.password ?? null);
-      setEventPlan('FREE'); // Default to FREE since plan_type doesn't exist
+      setEventPlan(data.plan_type || 'FREE');
+      setSafetyFilterEnabled(data.enable_safety_filter || false);
       if (!data.password) setUnlocked(true);
     };
     fetchEvent();
@@ -176,6 +178,8 @@ export default function UploadPage() {
       storage_path: filePath,
       uploader_name: name || 'Guest',
       caption: caption || null,
+      media_type: file.type.startsWith('video/') ? 'video' : 'image',
+      approved: !safetyFilterEnabled,
     });
     
     if (dbError) throw dbError;
@@ -325,17 +329,17 @@ export default function UploadPage() {
 
   // Upload form
   return (
-    <div className="nm-page min-h-screen flex flex-col items-center px-4 pt-10 pb-10">
+    <div className="nm-page min-h-screen flex flex-col items-center px-4 py-12 pb-40">
       <div className="w-full max-w-md flex flex-col items-center gap-4">
 
         {/* Event Header */}
-        <div className="nm-card w-full px-4 py-3 text-center">
-          <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{color:'#f59e0b'}}>Live Upload</p>
-          <h2 className="text-lg font-bold truncate" style={{color:'#e2e8f0'}}>{eventName || 'Loading event...'}</h2>
+        <div className="nm-card w-full px-6 py-4 text-center">
+          <p className="text-[10px] uppercase tracking-widest font-semibold mb-1" style={{color:'#f59e0b'}}>Live Upload</p>
+          <h2 className="text-2xl font-bold truncate" style={{color:'#e2e8f0'}}>{eventName || 'Loading event...'}</h2>
         </div>
 
         {/* Connection Status */}
-        <div className="nm-badge flex items-center gap-2 self-center">
+        <div className="nm-badge flex items-center gap-2 self-center text-[10px]">
           <span className="w-2 h-2 rounded-full animate-pulse" style={{background: navigator.onLine ? '#4ade80' : '#f472b6'}} />
           <span style={{color: navigator.onLine ? '#4ade80' : '#f472b6'}}>
             {navigator.onLine ? 'Online' : 'Offline – will upload when connected'}
@@ -345,7 +349,7 @@ export default function UploadPage() {
         {/* Upload Trigger Card */}
         <div className="nm-card w-full p-8 text-center">
           <h3 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload your photo or video</h3>
-          <p className="text-sm mb-8 leading-relaxed" style={{color:'#7f849c'}}>Pick your best moments and post them to the live wall.</p>
+          <p className="text-sm mb-6 leading-relaxed" style={{color:'#7f849c'}}>Pick your best moments and post them to the live wall.</p>
           <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" id="photo-upload" required />
           <label htmlFor="photo-upload" className="nm-circle w-20 h-20 mx-auto cursor-pointer hover:scale-105 transition-transform" style={{color:'#f59e0b'}}>
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">

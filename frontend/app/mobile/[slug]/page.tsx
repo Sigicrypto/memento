@@ -14,17 +14,61 @@ interface Photo {
   event_id: string;
 }
 
+interface Event {
+  id: string;
+  name: string;
+  enable_smart_privacy?: boolean;
+  plan_type?: string;
+}
+
 export default function MobileUploadPage() {
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
 
-  const [eventName, setEventName] = useState('');
-  const [eventId, setEventId] = useState<string | null>(null);
+  const [event, setEvent] = useState<Event | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [uploaderName, setUploaderName] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
+  const [selfieFile, setSelfieFile] = useState<File | null>(null);
+  const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [matchedPhotoIds, setMatchedPhotoIds] = useState<string[] | null>(null);
+
+  const handleFindMyPhotos = async () => {
+    if (!selfieFile || !event) return;
+
+    setIsSearching(true);
+    try {
+      // 1. Upload selfie to a temporary location
+      const selfiePath = `selfies/${event.id}-${Date.now()}`;
+      const { error: uploadError } = await supabase.storage.from('photos').upload(selfiePath, selfieFile);
+      if (uploadError) throw uploadError;
+
+      // 2. Get public URL
+      const { data: urlData } = supabase.storage.from('photos').getPublicUrl(selfiePath);
+      const imageUrl = urlData.publicUrl;
+
+      // 3. Invoke edge function
+      const { data, error: functionError } = await supabase.functions.invoke('find-my-photos', {
+        body: { eventId: event.id, imageUrl },
+      });
+
+      if (functionError) throw functionError;
+
+      setMatchedPhotoIds(data.photoIds || []);
+
+      // 4. Clean up the uploaded selfie
+      await supabase.storage.from('photos').remove([selfiePath]);
+
+    } catch (error: any) {
+      console.error('Error finding photos:', error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   // Load cached guest name
   useEffect(() => {
@@ -39,7 +83,7 @@ export default function MobileUploadPage() {
     const fetchEvent = async () => {
       const { data, error } = await supabase
         .from('events')
-        .select('id, name')
+        .select('id, name, enable_smart_privacy, plan_type')
         .eq('slug', slug)
         .single();
 
@@ -47,24 +91,25 @@ export default function MobileUploadPage() {
         router.push('/404');
         return;
       }
-      setEventName(data.name);
-      setEventId(data.id);
+      setEvent(data as Event);
     };
     fetchEvent();
   }, [slug, router]);
 
   // Fetch photos + realtime
   useEffect(() => {
-    if (!eventId) return;
+    if (!event?.id) return;
 
     const fetchPhotos = async () => {
       let query = supabase
         .from('photos')
         .select('*')
-        .eq('event_id', eventId)
+        .eq('event_id', event.id)
         .order('created_at', { ascending: false });
       
-      if (uploaderName && uploaderName.trim()) {
+      if (matchedPhotoIds) {
+        query = query.in('id', matchedPhotoIds);
+      } else if (uploaderName && uploaderName.trim()) {
         query = query.eq('uploader_name', uploaderName.trim());
       }
       
@@ -83,12 +128,12 @@ export default function MobileUploadPage() {
     fetchPhotos();
 
     const channel = supabase
-      .channel(`user-photos-${eventId}`)
+      .channel(`user-photos-${event.id}`)
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'photos'
       }, (payload) => {
         const newPhoto = payload.new as Photo;
-        if (newPhoto.event_id === eventId) {
+        if (newPhoto.event_id === event.id) {
           if (!uploaderName || !uploaderName.trim() || newPhoto.uploader_name === uploaderName.trim()) {
             setPhotos((prev) => {
               if (prev.some(p => p.id === newPhoto.id)) return prev;
@@ -105,7 +150,7 @@ export default function MobileUploadPage() {
       });
 
     return () => { supabase.removeChannel(channel); };
-  }, [eventId, uploaderName]);
+  }, [event, uploaderName]);
 
   const getPublicUrl = (path: string) => {
     const { data } = supabase.storage.from('photos').getPublicUrl(path);
@@ -113,6 +158,11 @@ export default function MobileUploadPage() {
   };
 
   const downloadPhoto = async (photo: Photo) => {
+    if (event?.enable_smart_privacy && matchedPhotoIds && !matchedPhotoIds.includes(photo.id)) {
+      alert("This photo hasn't been matched to your selfie. You can only download matched photos.");
+      return;
+    }
+
     const url = getPublicUrl(photo.storage_path);
     const res = await fetch(url);
     const blob = await res.blob();
@@ -129,7 +179,7 @@ export default function MobileUploadPage() {
         <div className="flex items-center justify-between mb-3">
           <div className="space-y-1">
             <h1 className="text-xl font-bold leading-tight" style={{color:'#e2e8f0'}}>
-              {eventName}
+              {event?.name}
             </h1>
             <p className="text-sm leading-relaxed" style={{color:'#7f849c'}}>
               {uploaderName ? `Photos by: ${uploaderName}` : 'All Event Photos'}
@@ -147,6 +197,23 @@ export default function MobileUploadPage() {
             className="nm-btn nm-btn-accent px-4 py-2 text-sm font-semibold">Filter</button>
         </div>
       </div>
+
+      {event?.enable_smart_privacy && (event.plan_type === 'Premium' || event.plan_type === 'White Label') && (
+        <div className="mx-4 mt-4 nm-card p-4">
+          <h2 className="text-lg font-bold text-center mb-2" style={{color:'#e2e8f0'}}>Find My Photos</h2>
+          <p className="text-sm text-center mb-4" style={{color:'#7f849c'}}>Upload a selfie to find photos you're in.</p>
+          <input type="file" accept="image/*" onChange={(e) => { setSelfieFile(e.target.files?.[0] || null); setSelfiePreview(URL.createObjectURL(e.target.files?.[0]!)); }} className="hidden" id="selfie-upload" />
+          <label htmlFor="selfie-upload" className="nm-btn w-full text-center py-3">Upload Selfie</label>
+          {selfiePreview && (
+            <div className="mt-4 text-center">
+              <img src={selfiePreview} alt="Selfie preview" className="w-32 h-32 object-cover rounded-lg mx-auto mb-4" />
+              <button onClick={handleFindMyPhotos} className="nm-btn nm-btn-accent px-6 py-2" disabled={isSearching}>
+                {isSearching ? 'Searching...' : 'Find My Photos'}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {successMessage && (
         <div className="mx-4 mt-4">

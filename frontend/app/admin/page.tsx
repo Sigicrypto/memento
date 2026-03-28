@@ -239,31 +239,31 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="nm-page px-4 sm:px-6 lg:px-8 py-10">
+    <div className="nm-page px-4 py-12 pb-40">
       {/* Confirm Dialog */}
       {confirmDialog.open && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center px-4" style={{background:'rgba(14,18,40,0.7)', backdropFilter:'blur(4px)'}}>
-          <div className="nm-card p-8 max-w-sm w-full text-center">
+          <div className="nm-card p-8 max-w-md w-full text-center">
             <div className="text-3xl mb-4">⚠️</div>
             <p className="text-sm mb-6" style={{color:'#e2e8f0'}}>{confirmDialog.message}</p>
             <div className="flex gap-3">
-              <button onClick={closeConfirm} className="nm-btn flex-1 py-2.5 text-sm">Cancel</button>
-              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-2.5 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
+              <button onClick={closeConfirm} className="nm-btn flex-1 py-3 text-sm">Cancel</button>
+              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-3 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
             </div>
           </div>
         </div>
       )}
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="nm-card p-6 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="nm-card p-8 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <span className="text-3xl">🔐</span>
-              <h1 className="text-3xl font-bold" style={{color:'#e2e8f0'}}>Admin Dashboard</h1>
+              <span className="text-2xl">🔐</span>
+              <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>Admin Dashboard</h1>
             </div>
-            <p style={{color:'#7f849c'}}>Manage users, events, and view platform analytics</p>
+            <p className="text-sm" style={{color:'#7f849c'}}>Manage users, events, and view platform analytics</p>
           </div>
-          <Link href="/dashboard" className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>📊 My Dashboard</Link>
+          <Link href="/dashboard" className="nm-btn px-5 py-3 text-xs" style={{color:'#7f849c'}}>📊 My Dashboard</Link>
         </div>
 
         {/* Navigation Tabs */}
@@ -310,6 +310,9 @@ export default function AdminPage() {
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => setActiveTab('users')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>👥 View Users</button>
                 <button onClick={() => setActiveTab('events')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>🎉 View Events</button>
+                <Link href="/admin/analytics" className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>📊 View Analytics</Link>
+                <Link href="/admin/branding" className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>🎨 Branding</Link>
+                <Link href="/create" className="nm-btn nm-btn-accent px-5 py-2.5 text-sm">✨ Create New Event</Link>
               </div>
             </div>
           </div>
@@ -370,6 +373,7 @@ export default function AdminPage() {
                       <Link href={`/wall/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#f59e0b'}}>🖼️ Wall</Link>
                       <Link href={`/upload/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#7f849c'}}>📱 Upload</Link>
                       <Link href={`/moderate/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#7f849c'}}>🛡️ Moderate</Link>
+                      <Link href={`/admin/edit-event/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#818cf8'}}>✏️ Edit</Link>
                     </div>
                   </div>
                 ))}

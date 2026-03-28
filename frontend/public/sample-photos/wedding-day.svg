@@ -1,0 +1,45 @@
+<!-- Sample Photo 2 - Wedding -->
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF8DC;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5DEB3;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="arch">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#E6E6FA;stop-opacity:0.7" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bg)" />
+  
+  <!-- Wedding Arch -->
+  <path d="M 100 250 Q 200 100 300 250" stroke="#8B4513" stroke-width="8" fill="none" />
+  <path d="M 100 250 Q 200 100 300 250" stroke="#FFB6C1" stroke-width="4" fill="none" />
+  
+  <!-- Flowers on Arch -->
+  <circle cx="150" cy="180" r="8" fill="#FF69B4" />
+  <circle cx="200" cy="140" r="8" fill="#FFB6C1" />
+  <circle cx="250" cy="180" r="8" fill="#FF69B4" />
+  
+  <!-- Bride and Groom Silhouettes -->
+  <ellipse cx="180" cy="240" rx="15" ry="25" fill="#2F4F4F" />
+  <circle cx="180" cy="210" r="10" fill="#2F4F4F" />
+  
+  <ellipse cx="220" cy="240" rx="12" ry="25" fill="#2F4F4F" />
+  <circle cx="220" cy="210" r="10" fill="#2F4F4F" />
+  <!-- Veil -->
+  <path d="M 210 210 Q 200 180 190 210" stroke="#FFFFFF" stroke-width="2" fill="url(#arch)" opacity="0.7" />
+  
+  <!-- Hearts -->
+  <path d="M 120 120 C 120 110, 100 110, 100 120 C 100 110, 80 110, 80 120 Q 80 130, 100 150 Q 120 130, 120 120 Z" fill="#FF69B4" opacity="0.8" />
+  <path d="M 320 100 C 320 90, 300 90, 300 100 C 300 90, 280 90, 280 100 Q 280 110, 300 130 Q 320 110, 320 100 Z" fill="#FF69B4" opacity="0.8" />
+  
+  <!-- Ring -->
+  <circle cx="200" cy="260" r="8" stroke="#FFD700" stroke-width="3" fill="none" />
+  <circle cx="200" cy="260" r="2" fill="#FFD700" />
+  
+  <!-- Text -->
+  <text x="200" y="290" text-anchor="middle" fill="#8B4513" font-family="Arial" font-size="16" font-weight="bold">Wedding Day!</text>
+</svg>

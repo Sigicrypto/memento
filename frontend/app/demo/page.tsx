@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import '../landing.css';
+import { useAuth } from '@/hooks/useAuth';
 
 // Demo photos with different themes
 const demoPhotos = [
@@ -18,6 +18,7 @@ const demoPhotos = [
 ];
 
 export default function DemoPage() {
+  const { user } = useAuth();
   const [viewMode, setViewMode] = useState<'grid' | 'polaroid' | 'slideshow'>('grid');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -44,21 +45,32 @@ export default function DemoPage() {
   return (
     <div className="nm-page pb-12">
       {/* Header */}
-      <div className="nm-card mx-4 mt-4 p-4 mb-8">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2 text-sm transition-colors" style={{color:'#7f849c'}}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to Memento
-          </Link>
-          <div className="flex items-center gap-4">
-            <span className="nm-badge"><span style={{color:'#f59e0b'}}>{photoCount}+</span> photos • Live Demo</span>
-            <Link href="/create" className="nm-btn nm-btn-accent px-4 py-2 text-sm font-bold">Create Your Wall</Link>
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[#1e2235]/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <Link href="/" className="flex items-center gap-2 font-bold text-xl" style={{color: '#e2e8f0'}}>
+              <span className="nm-circle w-10 h-10 text-lg">📷</span>
+              <span>Memento</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              {user ? (
+                <>
+                  <Link href="/admin" className="nm-btn px-4 py-2 text-sm">Dashboard</Link>
+                  <button onClick={() => {}} className="nm-btn px-4 py-2 text-sm">Sign Out</button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth" className="nm-btn px-4 py-2 text-sm">Sign In</Link>
+                  <Link href="/create" className="nm-btn nm-btn-accent px-4 py-2 text-sm font-bold">Create a Wall</Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Demo Content */}
-      <div className="px-4 pt-40">
+      <div className="px-4 pt-28">
         <div className="max-w-7xl mx-auto mb-8 px-4">
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold mb-2 px-4" style={{color:'#e2e8f0'}}>Memento Live Demo</h1>

@@ -6,6 +6,8 @@ import { ThemeProvider } from "../components/ThemeProvider";
 import MainContent from "@/components/MainContent";
 import SocialFloat from "@/components/SocialFloat";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import CustomCursor from "@/components/CustomCursor";
+import "../styles/cursor.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className}>
-      <body className="min-h-screen w-full antialiased transition-colors duration-300">
+      <body className="min-h-screen w-full antialiased transition-colors duration-300" suppressHydrationWarning={true}>
         <ThemeProvider>
           <div className="min-h-screen w-full flex flex-col">
             <Navbar />
@@ -34,6 +36,7 @@ export default function RootLayout({
             <WhatsAppFloat />
             <SocialFloat />
           </div>
+          <CustomCursor />
         </ThemeProvider>
       </body>
     </html>

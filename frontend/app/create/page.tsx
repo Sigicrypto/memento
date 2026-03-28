@@ -68,22 +68,23 @@ export default function CreateEventPage() {
   // ── Success: show QR ──
   if (createdSlug) {
     return (
-      <div className="nm-page flex items-center justify-center px-4 py-10 pb-32">
-        <div className="w-full max-w-lg">
-          <div className="nm-card p-6 md:p-10 text-center">
-            <div className="nm-badge mx-auto mb-5">✨ Wall Created!</div>
-            <div className="text-5xl mb-4">🎉</div>
-            <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Wall Ready!</h1>
-            <p className="text-sm mb-8" style={{color:'#7f849c'}}>Share this QR code with your guests</p>
+    <div className="nm-page flex items-center justify-center px-4 py-12 pb-40">
+        <div className="w-full max-w-md">
+          <div className="nm-card p-8 text-center">
+            <div className="nm-badge mx-auto mb-4 text-[10px]">✨ Wall Created!</div>
+            <div className="text-3xl mb-3">🎉</div>
+            <h1 className="text-2xl font-bold mb-1" style={{color:'#e2e8f0'}}>Wall Ready!</h1>
+            <p className="text-sm mb-6" style={{color:'#7f849c'}}>Share this QR code with your guests</p>
 
-            <div className="nm-inset p-4 md:p-5 inline-block mx-auto mb-6 rounded-2xl">
-              <QRCodeSVG value={uploadUrl} size={180} bgColor="#1e2235" fgColor="#e2e8f0" />
+            <div className="nm-inset p-4 inline-block mx-auto mb-6 rounded-2xl">
+              <QRCodeSVG value={uploadUrl} size={160} bgColor="#1e2235" fgColor="#e2e8f0" />
             </div>
             <div style={{display:'none'}}>
               <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
             </div>
 
-            <p className="text-xs mb-6 break-all font-mono" style={{color:'#7f849c'}}>{uploadUrl}</p>
+            <p className="text-[10px] mb-6 break-all font-mono" style={{color:'#7f849c'}}>{uploadUrl}</p>
+
 
             <div className="flex flex-col gap-3">
               <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="nm-btn w-full py-3">
@@ -110,66 +111,92 @@ export default function CreateEventPage() {
 
   // ── Form ──
   return (
-    <div className="nm-page flex items-center justify-center px-4 py-10 pb-32">
-      <div className="w-full max-w-lg">
-        <div className="nm-card p-6 md:p-10">
-          <div className="flex justify-center mb-4">
-            <div className="nm-circle w-14 h-14 text-2xl">🎉</div>
+    <div className="nm-page flex items-center justify-center px-4 py-12 pb-40">
+      <div className="w-full max-w-md">
+        <div className="nm-card p-8">
+          <div className="flex justify-center mb-6">
+            <div className="nm-circle w-16 h-16 text-2xl">🎉</div>
           </div>
-          <div className="text-center mb-5">
-            <span className="nm-badge">Launch your event wall</span>
+          <div className="text-center mb-4">
+            <span className="nm-badge px-4 py-1 text-[10px]">Launch your event wall</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold text-center mb-1" style={{color:'#e2e8f0'}}>Create a Photo Wall</h1>
-          <p className="text-xs md:text-sm text-center mb-6 leading-relaxed" style={{color:'#7f849c'}}>
+          <h1 className="text-2xl font-bold text-center mb-2" style={{color:'#e2e8f0'}}>Create a Photo Wall</h1>
+          <p className="text-sm text-center mb-6 leading-relaxed max-w-xs mx-auto" style={{color:'#7f849c'}}>
             Name your event and get a QR code guests can scan to share photos.
           </p>
 
+          {/* Sample Photo Gallery */}
+          <div className="mb-8">
+            <p className="text-xs text-center mb-4" style={{color:'#7f849c'}}>Sample Event Photos</p>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="nm-inset p-1 rounded-lg">
+                <img src="/sample-photos/birthday-party.jpg" alt="Birthday Party" className="w-full h-16 object-cover rounded" />
+              </div>
+              <div className="nm-inset p-1 rounded-lg">
+                <img src="/sample-photos/wedding-day.jpg" alt="Wedding" className="w-full h-16 object-cover rounded" />
+              </div>
+              <div className="nm-inset p-1 rounded-lg">
+                <img src="/sample-photos/corporate-event.jpg" alt="Corporate Event" className="w-full h-16 object-cover rounded" />
+              </div>
+              <div className="nm-inset p-1 rounded-lg">
+                <img src="/sample-photos/graduation-day.jpg" alt="Graduation" className="w-full h-16 object-cover rounded" />
+              </div>
+              <div className="nm-inset p-1 rounded-lg">
+                <img src="/sample-photos/family-reunion.jpg" alt="Family Reunion" className="w-full h-16 object-cover rounded" />
+              </div>
+              <div className="nm-inset p-1 rounded-lg">
+                <img src="/sample-photos/music-festival.jpg" alt="Music Festival" className="w-full h-16 object-cover rounded" />
+              </div>
+            </div>
+          </div>
+
           {!user && (
-            <div className="nm-inset p-3 mb-4 flex items-center gap-2 text-sm" style={{color:'#f59e0b'}}>
-              <span>🔐</span> <a href="/auth" className="underline font-medium">Sign in</a> to create a wall.
+            <div className="nm-inset p-4 mb-8 flex items-center justify-center gap-3 text-sm" style={{color:'#f59e0b'}}>
+              <span className="text-lg">🔐</span> <a href="/auth" className="underline font-bold hover:text-amber-300 transition-colors">Sign in</a> to create a wall.
             </div>
           )}
 
-          <form onSubmit={handleCreate} className="space-y-5">
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold" style={{color:'#7f849c'}}>Event Name</label>
-              <input type="text" className="nm-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="My Awesome Party…" required autoFocus />
+          <form onSubmit={handleCreate} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold ml-1" style={{color:'#e2e8f0'}}>Event Name</label>
+              <input type="text" className="nm-input py-3 text-sm" value={name} onChange={(e) => setName(e.target.value)} placeholder="My Awesome Party…" required autoFocus />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold" style={{color:'#7f849c'}}>Custom Link (URL)</label>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-xs font-semibold" style={{color:'#e2e8f0'}}>Custom Link (URL)</label>
                 {plan === 'FREE' && (
-                  <Link href="/pricing" className="text-[9px] font-bold" style={{color:'#f59e0b'}}>✨ UPGRADE</Link>
+                  <Link href="/pricing" className="text-xs font-bold px-3 py-1.5 rounded-full" style={{color:'#f59e0b',background:'rgba(245,158,11,0.1)'}}>✨ UPGRADE</Link>
                 )}
               </div>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style={{color:'#7f849c'}}>/upload/</span>
-                <input type="text" className={`nm-input !pl-16 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'#7f849c'}}>/upload/</span>
+                <input type="text" className={`nm-input py-3 text-sm !pl-20 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   value={customSlug} disabled={plan === 'FREE'}
                   onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   placeholder={plan === 'FREE' ? 'Auto-generated' : 'my-cool-party'} />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold" style={{color:'#7f849c'}}>Guest Password <span style={{color:'#4a4f6a'}}>(optional)</span></label>
-              <input type="password" className="nm-input" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for open access…" />
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold ml-1" style={{color:'#e2e8f0'}}>Guest Password <span style={{color:'#7f849c',fontWeight:'400'}}>(optional)</span></label>
+              <input type="password" className="nm-input py-3 text-sm" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for open access…" />
             </div>
 
             {error && (
-              <div className="nm-inset p-3 flex items-center gap-2 text-sm" style={{color:'#f472b6'}}>
-                <span>⚠️</span> {error}
+              <div className="nm-inset p-4 flex items-center gap-3 text-sm" style={{color:'#f472b6'}}>
+                <span>⚠️</span>
+                <span>{error}</span>
               </div>
             )}
 
-            <button type="submit" className="nm-btn nm-btn-accent w-full py-3 font-bold" disabled={loading || !user}>
+            <button type="submit" className="nm-btn nm-btn-accent w-full py-4 font-bold text-lg shadow-xl mt-4 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" disabled={loading || !user}>
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin" />
-                  Creating…
+                  <span className="w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                  Creating Wall…
                 </span>
-              ) : '✨ Create Wall'}
+              ) : '✨ Create Photo Wall'}
             </button>
           </form>
         </div>

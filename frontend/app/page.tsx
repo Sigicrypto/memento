@@ -8,40 +8,8 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [currency, setCurrency] = useState({ showINR: false });
   const [showingINR, setShowingINR] = useState(false);
-  const cursorRef = useRef<HTMLDivElement>(null);
-  const cursorRingRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    let trailTimer = 0;
-    let lastTrailTime = 0;
-    const onMove = (e: MouseEvent) => {
-      mx = e.clientX; my = e.clientY;
-      const now = Date.now();
-      if (now - lastTrailTime > 50) { // Throttle trail creation
-        trailTimer++;
-        if (trailTimer % 5 === 0) { // Reduce frequency further
-          const t = document.createElement('div');
-          t.className = 'cursor-trail';
-          const size = 4 + Math.random() * 4; // Smaller trails
-          t.style.cssText = `left:${mx}px;top:${my}px;width:${size}px;height:${size}px;`;
-          document.body.appendChild(t);
-          setTimeout(() => t.remove(), 400); // Shorter lifetime
-        }
-        lastTrailTime = now;
-      }
-    };
-    window.addEventListener('mousemove', onMove);
-    let raf: number;
-    const loop = () => {
-      rx += (mx - rx) * 0.15; // Slightly faster following
-      ry += (my - ry) * 0.15;
-      if (cursorRef.current) { cursorRef.current.style.left = `${mx}px`; cursorRef.current.style.top = `${my}px`; }
-      if (cursorRingRef.current) { cursorRingRef.current.style.left = `${rx}px`; cursorRingRef.current.style.top = `${ry}px`; }
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-
     const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -71,7 +39,7 @@ export default function LandingPage() {
       if (isIndia) setShowingINR(true);
     })();
 
-    return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); obs.disconnect(); };
+    return () => { window.removeEventListener('scroll', onScroll); obs.disconnect(); };
   }, []);
 
   const Free = "0";
@@ -83,8 +51,6 @@ export default function LandingPage() {
 
   return (
       <div className="lp pt-[calc(96px+env(safe-area-inset-top))]">
-        <div className="cursor-dot" ref={cursorRef} />
-      <div className="cursor-ring" ref={cursorRingRef} />
 
       <div className="orbs">
         <div className="orb orb1" />
@@ -145,10 +111,10 @@ export default function LandingPage() {
               </div>
               <div className="phone-grid">
                 {[
-                  { src: '/api/placeholder/150/150?text=Photo+1', alt: 'Guest photo' },
-                  { src: '/api/placeholder/150/150?text=Photo+2', alt: 'Guest photo' },
-                  { src: '/api/placeholder/150/150?text=Photo+3', alt: 'Guest photo' },
-                  { src: '/api/placeholder/150/150?text=Photo+4', alt: 'Guest photo' }
+                  { src: '/landing-hero/photo1.jpg', alt: 'Guest photo 1' },
+                  { src: '/landing-hero/photo2.jpg', alt: 'Guest photo 2' },
+                  { src: '/landing-hero/photo3.jpg', alt: 'Guest photo 3' },
+                  { src: '/landing-hero/photo4.jpg', alt: 'Guest photo 4' }
                 ].map((img, i) => (
                   <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(245,158,11,${0.15 + i*0.05}), rgba(244,114,182,${0.1 + i*0.05}))`, animationDelay: `${0.8 + i * 0.2}s` }}>
                     <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
@@ -172,12 +138,12 @@ export default function LandingPage() {
               </div>
               <div className="phone-grid">
                 {[
-                  { src: '/api/placeholder/150/150?text=Wedding+1', alt: 'Wedding photo' },
-                  { src: '/api/placeholder/150/150?text=Wedding+2', alt: 'Wedding photo' },
-                  { src: '/api/placeholder/150/150?text=Wedding+3', alt: 'Wedding photo' },
-                  { src: '/api/placeholder/150/150?text=Wedding+4', alt: 'Wedding photo' },
-                  { src: '/api/placeholder/150/150?text=Wedding+5', alt: 'Wedding photo' },
-                  { src: '/api/placeholder/150/150?text=Wedding+6', alt: 'Wedding photo' }
+                  { src: '/landing-hero/photo5.jpg', alt: 'Wedding photo 1' },
+                  { src: '/landing-hero/photo6.jpg', alt: 'Wedding photo 2' },
+                  { src: '/landing-hero/photo7.jpg', alt: 'Wedding photo 3' },
+                  { src: '/landing-hero/photo8.jpg', alt: 'Wedding photo 4' },
+                  { src: '/landing-hero/photo9.jpg', alt: 'Wedding photo 5' },
+                  { src: '/landing-hero/photo10.jpg', alt: 'Wedding photo 6' }
                 ].map((img, i) => (
                   <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(${200+i*10},${100+i*15},${50+i*20},0.3), rgba(244,114,182,0.15))`, animationDelay: `${0.5 + i * 0.15}s` }}>
                     <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
@@ -198,8 +164,8 @@ export default function LandingPage() {
               <p className="phone-scan-text">Scan to join the live wall</p>
               <div className="phone-grid" style={{ marginTop: '0.75rem' }}>
                 {[
-                  { src: '/api/placeholder/150/150?text=Guest+1', alt: 'Guest photo' },
-                  { src: '/api/placeholder/150/150?text=Guest+2', alt: 'Guest photo' }
+                  { src: '/landing-hero/photo11.jpg', alt: 'Guest photo 1' },
+                  { src: '/landing-hero/photo12.jpg', alt: 'Guest photo 2' }
                 ].map((img, i) => (
                   <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(252,211,77,0.2), rgba(245,158,11,0.15))`, animationDelay: `${1.2 + i * 0.2}s` }}>
                     <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
@@ -404,9 +370,9 @@ export default function LandingPage() {
 
       {/* PRICING */}
       <section id="pricing" className="sec">
-        <span className="kicker reveal">5 Tiers • One-time Payment</span>
+        <span className="kicker reveal">4 Tiers • One-time Payment</span>
         <h2 className="sec-h2 reveal">Pricing That <span className="gradient-text">Grows With You</span></h2>
-        <p className="sec-sub reveal">Start free, upgrade when you're ready. No subscriptions, no hidden fees.</p>
+        <p className="sec-sub reveal">Choose your perfect plan. No subscriptions, no hidden fees.</p>
 
         {currency.showINR && (
           <button className="currency-toggle reveal" onClick={() => setShowingINR(!showingINR)}>
@@ -416,69 +382,133 @@ export default function LandingPage() {
 
         <div className="price-grid">
           {[
-            { name: 'Free', price: Free, features: ['Up to 100 photos', 'QR Upload', 'Basic live wall', 'Memento watermark', 'No downloads'], badge: '🎯 Try It Free', popular: false },
-            { name: 'Starter', price: Starter, features: ['Unlimited photos', 'Download ZIP', 'Guest downloads', 'Basic customization'], badge: '', popular: false },
-            { name: 'Pro', price: Pro, features: ['Live slideshow mode', 'Photo moderation', 'Password protection', 'Remove watermark'], badge: '💎 Sweet Spot', popular: true },
-            { name: 'Premium', price: Premium, features: ['Video uploads', 'Google Drive sync', 'AI moderation', 'Luxury themes'], badge: '', popular: false },
+            { 
+              name: 'Starter', 
+              price: Starter, 
+              emoji: '🟢',
+              description: 'Perfect for small, simple events',
+              features: [
+                'Unlimited high-resolution photos',
+                'Ultra-fast uploads worldwide',
+                'Live Slideshow Wall',
+                'Download all photos as ZIP',
+                'Guests can download photos',
+                'QR Code Access for uploads',
+                'Password-protected gallery',
+                '1 Month Storage',
+                'Up to 150 guests'
+              ], 
+              tagline: 'Simple, fast, and reliable photo sharing for your event.',
+              popular: false 
+            },
+            { 
+              name: 'Plus', 
+              price: Pro, 
+              emoji: '🔵',
+              description: 'For interactive and lively events',
+              features: [
+                'Everything in Starter +',
+                '🎥 Video uploads',
+                '🖼️ Polaroid-style Wall layout',
+                '❤️ Live reactions on photos',
+                '📺 Slideshow TV Mode',
+                '🎨 Custom styling (match your theme)',
+                '🔔 Notifications on uploads',
+                '🛡️ Automatic safety filter',
+                '🕒 Expiring gallery option',
+                '📘 Photo Book (PDF – Beta)',
+                '3 Months Storage',
+                'Up to 300 guests'
+              ], 
+              tagline: 'Bring your event to life with interactive features your guests will love.',
+              popular: true 
+            },
+            { 
+              name: 'Premium', 
+              price: Premium, 
+              emoji: '🟣',
+              description: 'For weddings, luxury events & full experience',
+              features: [
+                'Everything in Plus +',
+                '🤖 AI Auto Album (best shots selection)',
+                '🔒 Smart Privacy Downloads (guests only download photos they\'re in)',
+                '💧 Watermark control',
+                '📊 Download analytics',
+                '👤 Face grouping (Beta)',
+                '☁️ Google Drive sync',
+                '🎯 Advanced moderation controls',
+                '📁 Multiple event walls',
+                '🚀 Priority processing',
+                '6 Months Storage',
+                'Up to 500 guests (or unlimited)'
+              ], 
+              tagline: 'A premium, intelligent photo experience with privacy and control.',
+              popular: false 
+            },
+            { 
+              name: 'White Label', 
+              price: WhiteLabel, 
+              emoji: '🟡',
+              description: 'For agencies, photographers & businesses',
+              features: [
+                'Everything in Premium +',
+                '🔥 White Label Features:',
+                'Full branding removal (your platform, your identity)',
+                'Custom domain (e.g. photos.yourbrand.com)',
+                'Upload your own logo & brand colors',
+                'Multi-event dashboard',
+                'Client access panels',
+                'Resell rights 💰',
+                'API / Zapier integrations',
+                'Advanced analytics dashboard',
+                'Priority support'
+              ], 
+              tagline: 'Launch your own branded photo-sharing platform and serve unlimited clients.',
+              popular: false 
+            }
           ].map((p, i) => (
             <div key={i} className={`gcard price-card ${p.popular ? 'popular' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
               <div className="gcard-border" />
               <div className="gcard-inner">
-                {p.popular && <span className="popular-tag">Most Popular</span>}
-                <p className="price-name">{p.name}</p>
+                {p.popular && <span className="popular-tag">⭐ Most Popular</span>}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">{p.emoji}</span>
+                  <p className="price-name">{p.name}</p>
+                </div>
+                <p className="text-white/70 text-sm mb-3">{p.description}</p>
                 <div className="price-amount">
                   <span className="price-sym">{Sym}</span>
                   <span className="price-val">{p.price}</span>
                 </div>
                 <span className="price-period">one-time payment</span>
                 <Link href="/pricing" className={`price-btn ${p.popular ? 'filled' : ''}`}>
-                  {p.name === 'Free' ? 'Start Free' : p.name === 'White Label' ? 'Contact Sales' : `Get ${p.name}`}
+                  {p.name === 'White Label' ? 'Contact Sales' : `Get ${p.name}`}
                 </Link>
                 <div className="price-divider" />
-                {p.features.map((f, j) => (
-                  <div key={j} className="price-feat">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                    {f}
-                  </div>
-                ))}
+                <div className="space-y-2">
+                  {p.features.map((f, j) => (
+                    <div key={j} className={`price-feat ${f.startsWith('Everything in') ? 'font-semibold text-amber-400' : ''}`}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                      {f}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/10">
+                  <p className="text-xs text-white/60 italic">💬 {p.tagline}</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* White Label Section */}
-      <div className="flex justify-center mt-12 px-4">
-        <div className="gcard price-card reveal" style={{ animationDelay: '0.4s', maxWidth: '400px', width: '100%' }}>
-          <div className="gcard-border" />
-          <div className="gcard-inner text-center">
-                        <p className="price-name">White Label</p>
-            <div className="price-amount" style={{justifyContent: 'center'}}>
-              <span className="price-sym">{Sym}</span>
-              <span className="price-val">{WhiteLabel}</span>
-            </div>
-            <span className="price-period">one-time payment</span>
-            <Link href="/pricing" className="price-btn">
-              Contact Sales
-            </Link>
-            <div className="price-divider" />
-            {['No Memento branding', 'Custom domain', 'Full brand control', 'Bulk events'].map((f, j) => (
-              <div key={j} className="price-feat">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                {f}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* CTA */}
       <section className="cta-sec reveal">
         <div className="cta-glow" />
         <h2 className="cta-h2">Ready to capture<br /><span className="gradient-text">every moment?</span></h2>
-        <p className="cta-p">Start for free. No credit card required. Your wall is live in under a minute.</p>
+        <p className="cta-p">Start with just ₹2,500. Your wall is live in under a minute.</p>
         <Link href="/create" className="btn-glow btn-lg">
-          <span>Create Your Wall — It&apos;s Free</span>
+          <span>Create Your Wall — Start at ₹2,500</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </Link>
       </section>

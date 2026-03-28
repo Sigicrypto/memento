@@ -60,8 +60,12 @@ interface Photo {
   created_at: string;
   caption?: string;
   event_id: string;
+  media_type?: 'image' | 'video';
+  reaction_count?: number;
+  approved?: boolean;
+  is_best_shot?: boolean;
+  watermark_url?: string;
 }
-
 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow';
 
@@ -70,6 +74,9 @@ export default function WallPage() {
   const slug = params.slug as string;
 
   const [eventName, setEventName] = useState('');
+  const [theme, setTheme] = useState({ primary: '#f59e0b', secondary: '#f472b6' });
+  const [brand, setBrand] = useState<{ logoUrl: string | null, colors: { primary: string, secondary: string } | null }>({ logoUrl: null, colors: null });
+  const [eventExpired, setEventExpired] = useState(false);
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [notFound, setNotFound] = useState(false);
@@ -80,6 +87,7 @@ export default function WallPage() {
   const pollingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const [moderationMode, setModerationMode] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(false);
+  const [showBestShots, setShowBestShots] = useState(false);
   const [newPhotoId, setNewPhotoId] = useState<string | null>(null);
 
   // Slideshow state
@@ -99,12 +107,11 @@ export default function WallPage() {
       
       console.log('📡 Polling for new photos...');
       
-      const { data, error } = await supabase
-        .from('photos')
-        .select('*')
-        .eq('event_id', eventId)
-        .order('created_at', { ascending: false })
-        .limit(20); // Get latest 20 photos
+      let query = supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
+      if (moderationMode) {
+        query = query.eq('approved', true);
+      }
+      const { data, error } = await query;
       
       if (error) {
         console.error('❌ Polling error:', error);
@@ -115,22 +122,26 @@ export default function WallPage() {
         console.log(`📸 Polling found ${data.length} photos`);
         
         setPhotos(prev => {
-          const newPhotos = data.filter(photo => 
-            !prev.some(p => p.id === photo.id)
-          );
-          
+          const currentPhotoIds = new Set(prev.map(p => p.id));
+          const newPhotos = data.filter((photo: Photo) => !currentPhotoIds.has(photo.id));
+
           if (newPhotos.length > 0) {
             console.log(`✨ Adding ${newPhotos.length} new photos to wall`);
             
-            // Trigger confetti for new photos in polling mode too
             if (!moderationMode) {
               setNewPhotoId(newPhotos[0].id);
               setConfettiTrigger(true);
               setTimeout(() => setConfettiTrigger(false), 100);
             }
           }
+
+          // Also update reaction counts for existing photos
+          const updatedPhotos = prev.map(oldPhoto => {
+            const newData = data.find((p: Photo) => p.id === oldPhoto.id);
+            return newData ? { ...oldPhoto, reaction_count: newData.reaction_count } : oldPhoto;
+          });
           
-          return [...newPhotos, ...prev].slice(0, 100);
+          return [...newPhotos, ...updatedPhotos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 100);
         });
       }
     }, 2000); // Poll every 2 seconds (more aggressive)
@@ -149,13 +160,32 @@ export default function WallPage() {
     const fetchEvent = async () => {
       const { data, error } = await supabase
         .from('events')
-        .select('id, name')
+        .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id')
         .eq('slug', slug)
         .single();
 
       if (error || !data) { setNotFound(true); return; }
       setEventName(data.name);
       setEventId(data.id);
+      if (data.theme_primary_color && data.theme_secondary_color) {
+        setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
+      }
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        setEventExpired(true);
+      }
+      if (data.enable_safety_filter) {
+        setModerationMode(true);
+      }
+
+      // Fetch owner's branding
+      const { data: ownerData } = await supabase.auth.admin.getUserById(data.owner_id);
+      const owner = ownerData.user;
+      if (owner?.user_metadata?.plan_tier === 'white_label') {
+        setBrand({
+          logoUrl: owner.user_metadata.brand_logo_url || null,
+          colors: owner.user_metadata.brand_colors || null,
+        });
+      }
     };
     fetchEvent();
   }, [slug]);
@@ -165,12 +195,17 @@ export default function WallPage() {
     if (!eventId) return;
 
     const fetchPhotos = async () => {
-      const { data } = await supabase
-        .from('photos')
-        .select('*')
-        .eq('event_id', eventId)
-        .order('created_at', { ascending: true });
-      if (data) setPhotos(data);
+      let query = supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
+      if (moderationMode) {
+        query = query.eq('approved', true);
+      }
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching photos with reactions:', error);
+      } else if (data) {
+        setPhotos(data as Photo[]);
+      }
     };
     fetchPhotos();
 
@@ -254,17 +289,78 @@ export default function WallPage() {
   }, [eventId]);
 
 
+  const displayedPhotos = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
+
   // Slideshow auto-advance
   useEffect(() => {
-    if (viewMode === 'slideshow' && photos.length > 1) {
+    if (viewMode === 'slideshow' && displayedPhotos.length > 1) {
       slideshowTimer.current = setInterval(() => {
-        setSlideIndex((i) => (i + 1) % photos.length);
+        setSlideIndex((i) => (i + 1) % displayedPhotos.length);
       }, 5000);
     }
     return () => {
       if (slideshowTimer.current) clearInterval(slideshowTimer.current);
     };
-  }, [viewMode, photos.length]);
+  }, [viewMode, displayedPhotos.length]);
+
+  const nextSlide = useCallback(() => setSlideIndex((i) => (i + 1) % displayedPhotos.length), [displayedPhotos.length]);
+  const prevSlide = useCallback(() => setSlideIndex((i) => (i - 1 + displayedPhotos.length) % displayedPhotos.length), [displayedPhotos.length]);
+
+  const handleLike = async (photoId: string) => {
+    const guestId = localStorage.getItem('memento_guest_id') || `guest_${Date.now()}`;
+    localStorage.setItem('memento_guest_id', guestId);
+
+    // Optimistically update UI
+    setPhotos(prevPhotos => 
+      prevPhotos.map(p => 
+        p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p
+      )
+    );
+
+    const { error } = await supabase.from('reactions').insert({ 
+      photo_id: photoId, 
+      guest_id: guestId 
+    });
+
+    if (error) {
+      console.error('Error liking photo:', error);
+      // Revert optimistic update on error
+      setPhotos(prevPhotos => 
+        prevPhotos.map(p => 
+          p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) - 1 } : p
+        )
+      );
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: html2canvas } = await import('html2canvas');
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const photoElements = Array.from(document.querySelectorAll('.photo-for-pdf'));
+
+    if (photoElements.length === 0) {
+      alert('No photos to create a PDF.');
+      return;
+    }
+
+    for (let i = 0; i < photoElements.length; i++) {
+      const element = photoElements[i] as HTMLElement;
+      const canvas = await html2canvas(element);
+      const imgData = canvas.toDataURL('image/png');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      if (i > 0) {
+        pdf.addPage();
+      }
+      pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
+    }
+
+    pdf.save(`${slug}-photobook.pdf`);
+  };
 
   const getPublicUrl = (path: string) => {
     const { data } = supabase.storage.from('photos').getPublicUrl(path);
@@ -272,6 +368,14 @@ export default function WallPage() {
   };
 
   const downloadPhoto = async (photo: Photo) => {
+    const guestId = localStorage.getItem('memento_guest_id') || `guest_${Date.now()}`;
+    localStorage.setItem('memento_guest_id', guestId);
+
+    await supabase.from('downloads').insert({ 
+      photo_id: photo.id, 
+      guest_id: guestId 
+    });
+
     const url = getPublicUrl(photo.storage_path);
     const res = await fetch(url);
     const blob = await res.blob();
@@ -284,8 +388,18 @@ export default function WallPage() {
   const uploadUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/upload/${slug}` : '';
 
-  const nextSlide = useCallback(() => setSlideIndex((i) => (i + 1) % photos.length), [photos.length]);
-  const prevSlide = useCallback(() => setSlideIndex((i) => (i - 1 + photos.length) % photos.length), [photos.length]);
+  if (eventExpired) {
+    return (
+      <div className="nm-page flex items-center justify-center px-4">
+        <div className="nm-card max-w-md text-center p-10">
+          <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">🕒</div>
+          <h1 className="text-2xl font-bold mb-3" style={{color:'#e2e8f0'}}>This event has expired</h1>
+          <p className="mb-6" style={{color:'#7f849c'}}>The photo wall for this event is no longer available.</p>
+          <Link href="/" className="nm-btn nm-btn-accent px-6 py-3 font-bold">🏠 Go Home</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (notFound) {
     return (
@@ -302,13 +416,13 @@ export default function WallPage() {
 
   // ── SLIDESHOW MODE (fullscreen) ────────────────────────
   if (viewMode === 'slideshow') {
-    const current = photos[slideIndex];
+    const current = displayedPhotos[slideIndex];
     return (
       <div className="fixed inset-0 z-50 flex flex-col" style={{background:'#14182a'}}>
         <div className="flex items-center justify-between px-6 py-4">
           <h1 className="font-bold text-lg" style={{color:'#e2e8f0'}}>{eventName}</h1>
           <div className="flex gap-3 items-center">
-            <span className="nm-badge">{slideIndex + 1} / {photos.length}</span>
+            <span className="nm-badge">{slideIndex + 1} / {displayedPhotos.length}</span>
             <button onClick={() => { setViewMode('polaroid'); if (slideshowTimer.current) clearInterval(slideshowTimer.current); }}
               className="nm-btn px-3 py-1 text-sm" style={{color:'#7f849c'}}>✕ Exit</button>
           </div>
@@ -316,9 +430,11 @@ export default function WallPage() {
 
         {current && (
           <div className="flex-1 relative flex items-center justify-center px-16 overflow-hidden">
-            <img key={current.id} src={getPublicUrl(current.storage_path)} alt=""
-              className="max-h-full max-w-full object-contain rounded-xl"
-              style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
+            {current.media_type === 'video' ? (
+              <video key={current.id} src={getPublicUrl(current.storage_path)} controls autoPlay loop playsInline className="max-h-full max-w-full object-contain rounded-xl" style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
+            ) : (
+              <img key={current.id} src={getPublicUrl(current.storage_path)} alt="" className="max-h-full max-w-full object-contain rounded-xl" style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
+            )}
             {(current.caption || current.uploader_name) && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center nm-card px-6 py-3">
                 {current.caption && <p className="text-sm italic mb-1" style={{color:'#e2e8f0'}}>&#34;{current.caption}&#34;</p>}
@@ -328,14 +444,18 @@ export default function WallPage() {
           </div>
         )}
 
-        <button onClick={prevSlide} className="nm-circle w-12 h-12 absolute left-4 top-1/2 -translate-y-1/2 text-2xl" style={{color:'#f59e0b'}}>‹</button>
-        <button onClick={nextSlide} className="nm-circle w-12 h-12 absolute right-4 top-1/2 -translate-y-1/2 text-2xl" style={{color:'#f59e0b'}}>›</button>
+        <button onClick={prevSlide} className="nm-circle w-12 h-12 absolute left-4 top-1/2 -translate-y-1/2 text-2xl" style={{color: 'var(--theme-primary)'}}>‹</button>
+        <button onClick={nextSlide} className="nm-circle w-12 h-12 absolute right-4 top-1/2 -translate-y-1/2 text-2xl" style={{color: 'var(--theme-primary)'}}>›</button>
 
         <div className="flex gap-2 px-6 py-3 overflow-x-auto">
-          {photos.map((p, i) => (
+          {displayedPhotos.map((p, i) => (
             <button key={p.id} onClick={() => setSlideIndex(i)}
               className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition ${i === slideIndex ? 'ring-2 ring-[#f59e0b]' : 'opacity-50'}`}>
-              <img src={getPublicUrl(p.storage_path)} alt="" className="w-full h-full object-cover" />
+              {p.media_type === 'video' ? (
+                <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
+              ) : (
+                <img src={getPublicUrl(p.storage_path)} alt="" className="w-full h-full object-cover" />
+              )}
             </button>
           ))}
         </div>
@@ -347,11 +467,14 @@ export default function WallPage() {
 
   // ── NORMAL VIEWS ───────────────────────────────────────────────
   return (
-    <div className="nm-page px-4 sm:px-6 lg:px-8 py-8">
+    <div className="nm-page px-4 sm:px-6 lg:px-8 py-8" style={{
+      '--theme-primary': brand.colors?.primary || theme.primary,
+      '--theme-secondary': brand.colors?.secondary || theme.secondary
+    } as React.CSSProperties}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="nm-card p-6 mb-8">
-          <div className="nm-badge mb-4">Live Wall Experience</div>
+          {brand.logoUrl ? <img src={brand.logoUrl} alt="Brand Logo" className="h-12 mb-4" /> : <div className="nm-badge mb-4">Live Wall Experience</div>}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex-1">
               <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight" style={{color:'#e2e8f0'}}>
@@ -359,7 +482,7 @@ export default function WallPage() {
               </h1>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="nm-badge flex items-center gap-2">
-                  📸 {photos.length} photo{photos.length !== 1 ? 's' : ''}
+                  📸 {displayedPhotos.length} photo{displayedPhotos.length !== 1 ? 's' : ''}
                   <span className={`w-2 h-2 rounded-full ${
                     realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' :
                     realtimeStatus === 'polling' ? 'bg-yellow-400 animate-pulse' :
@@ -377,7 +500,7 @@ export default function WallPage() {
                   <button key={mode} onClick={() => { setViewMode(mode); if (mode === 'slideshow') setSlideIndex(0); }}
                     className="px-3 py-2 text-xs font-medium rounded-lg transition"
                     style={{
-                      background: viewMode === mode ? 'linear-gradient(135deg,#f59e0b,#f472b6)' : 'transparent',
+                      background: viewMode === mode ? `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` : 'transparent',
                       color: viewMode === mode ? '#1e2235' : '#7f849c'
                     }}>
                     {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : '▶ Slideshow'}
@@ -393,7 +516,10 @@ export default function WallPage() {
                 {showQR ? 'Hide QR' : '📱 QR'}
               </button>
               <Link href={`/upload/${slug}`} className="nm-btn nm-btn-accent px-4 py-2 text-xs font-bold">📸 Upload</Link>
-              <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#f472b6'}}>📱 My Photos</Link>
+              <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: 'var(--theme-secondary)'}}>📱 My Photos</Link>
+              <Link href={`/wall/${slug}/tv`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#818cf8'}}>📺 TV Mode</Link>
+              <button onClick={handleDownloadPdf} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#a78bfa'}}>📘 Download PDF</button>
+              <button onClick={() => setShowBestShots(!showBestShots)} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: showBestShots ? 'var(--theme-primary)' : '#7f849c'}}>{showBestShots ? '🏆 Best Shots' : 'All Photos'}</button>
             </div>
           </div>
         </div>
@@ -409,14 +535,14 @@ export default function WallPage() {
           
           {/* Enhanced Sharing Options */}
           <div className="space-y-3">
-            <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="nm-btn w-full py-2.5 text-sm" style={{color:'#f59e0b'}}>
+            <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="nm-btn w-full py-2.5 text-sm" style={{color: 'var(--theme-primary)'}}>
               📋 Copy Link
             </button>
             <div className="flex gap-2">
               <button onClick={() => {
                 const printWindow = window.open('', '_blank');
                 if (printWindow) {
-                  printWindow.document.write(`<html><head><title>${eventName}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:40px}h1{color:#333;margin-bottom:30px}.url{font-family:monospace;background:#f5f5f5;padding:10px;border-radius:5px;margin:20px auto;max-width:400px}@media print{body{padding:20px}}</style></head><body><h1>${eventName}</h1><h2>Scan to Upload Photos</h2><div class="url">${uploadUrl}</div><script>window.onload=()=>window.print();<\/script></body></html>`);
+                  printWindow.document.write(`<html><head><title>${eventName}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:40px}h1{color:#333;margin-bottom:30px}.url{font-family:monospace;background:#f5f5f5;padding:10px;border-radius:5px;margin:20px auto;max-width:400px}@media print{body{padding:20px}}</style></head><body><h1>${eventName}</h1><h2>Scan to Upload Photos</h2><div class="url">${uploadUrl}</div><script>window.onload=()=>window.print();</script></body></html>`);
                   printWindow.document.close();
                 }
               }} className="nm-btn flex-1 text-xs py-2" style={{color:'#4ade80'}}>📄 Print</button>
@@ -431,7 +557,7 @@ export default function WallPage() {
       )}
 
       {/* Empty State */}
-      {photos.length === 0 ? (
+      {displayedPhotos.length === 0 ? (
         <div className="text-center py-20">
           <div className="nm-card max-w-lg mx-auto p-12">
             <div className="nm-circle w-32 h-32 mx-auto mb-8 text-6xl">📷</div>
@@ -449,21 +575,29 @@ export default function WallPage() {
         // ── POLAROID ──
         <div className="p-4">
           <div className="flex flex-wrap justify-center gap-8">
-            {photos.map((photo, index) => (
-              <div key={photo.id} className="nm-card p-5 pb-7 w-72 group flex flex-col"
+            {displayedPhotos.map((photo, index) => (
+              <div key={photo.id} className="nm-card p-5 pb-7 w-72 group flex flex-col photo-for-pdf"
                 style={{transform:`rotate(${(index % 5 - 2) * 3}deg)`,transition:'transform 0.3s'}
                 }>
-                <div className="aspect-square overflow-hidden rounded-xl mb-4 nm-inset">
-                  <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                <div className="aspect-square overflow-hidden rounded-xl mb-4 nm-inset relative">
+                  {photo.media_type === 'video' ? (
+                    <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" controls playsInline loop muted />
+                  ) : (
+                    <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                  )}
+                  {photo.watermark_url && <img src={photo.watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />}
                 </div>
                 <div className="text-center flex-1">
                   {photo.caption && <p className="text-sm italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
                   <p className="text-xs font-medium" style={{color:'#7f849c'}}>📷 {photo.uploader_name}</p>
                 </div>
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex justify-between items-center">
+                  <button onClick={() => handleLike(photo.id)}
+                    className="nm-btn text-xs px-3 py-1.5 flex items-center gap-1.5" style={{color: 'var(--theme-secondary)'}}>
+                    ❤️ <span className="font-bold">{photo.reaction_count || 0}</span>
+                  </button>
                   <button onClick={() => downloadPhoto(photo)}
-                    className="nm-btn text-xs px-3 py-1.5 opacity-0 group-hover:opacity-100 transition" style={{color:'#f59e0b'}}>⬇ Download</button>
+                    className="nm-btn text-xs px-3 py-1.5 opacity-0 group-hover:opacity-100 transition" style={{color: 'var(--theme-primary)'}}>⬇ Download</button>
                 </div>
               </div>
             ))}
@@ -472,28 +606,33 @@ export default function WallPage() {
       ) : (
         // ── MASONRY GRID ──
         <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 p-4">
-          {photos.map((photo, index) => (
+          {displayedPhotos.map((photo, index) => (
             <div key={photo.id}
-              className={`nm-card break-inside-avoid overflow-hidden group relative ${
+              className={`nm-card break-inside-avoid overflow-hidden group relative photo-for-pdf ${
                 newPhotoId === photo.id ? 'ring-2 ring-[#f59e0b]' : ''
               }`}
               style={{animation:`fadeInUp 0.6s ease-out ${index * 0.1}s both`}}
             >
-              <div className="overflow-hidden rounded-[14px]">
-                <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`}
-                  className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw" />
+              <div className="overflow-hidden rounded-[14px] relative">
+                {photo.media_type === 'video' ? (
+                  <video src={getPublicUrl(photo.storage_path)} className="w-full object-cover" controls playsInline loop muted />
+                ) : (
+                  <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`} className="w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw" />
+                )}
+                {photos[0]?.watermark_url && <img src={photos[0].watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
                 {photo.caption && <p className="text-xs italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
                 <div className="flex justify-between items-center">
                   <p className="text-xs font-semibold" style={{color:'#e2e8f0'}}>{photo.uploader_name}</p>
-                  <button onClick={() => downloadPhoto(photo)} className="nm-circle w-7 h-7 text-xs" style={{color:'#f59e0b'}}>⬇</button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handleLike(photo.id)} className="nm-btn text-xs px-2 py-1 flex items-center gap-1" style={{color: 'var(--theme-secondary)'}}>❤️ {photo.reaction_count || 0}</button>
+                    <button onClick={() => downloadPhoto(photo)} className="nm-circle w-7 h-7 text-xs" style={{color: 'var(--theme-primary)'}}>⬇</button>
+                  </div>
                 </div>
               </div>
               {newPhotoId === photo.id && (
-                <div className="absolute top-2 right-2 nm-badge text-xs animate-bounce" style={{color:'#f59e0b'}}>NEW!</div>
+                <div className="absolute top-2 right-2 nm-badge text-xs animate-bounce" style={{color: 'var(--theme-primary)'}}>NEW!</div>
               )}
             </div>
           ))}

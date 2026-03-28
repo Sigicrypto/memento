@@ -1,0 +1,2 @@
+ALTER TABLE photos
+ADD COLUMN is_best_shot BOOLEAN DEFAULT FALSE;

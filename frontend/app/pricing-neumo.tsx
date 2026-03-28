@@ -14,46 +14,39 @@ type Plan = {
 
 const PLANS: Plan[] = [
   {
-    name: 'Free',
-    priceIN: '₹0',
-    priceGlobal: '$0',
-    features: [
-      { label: 'Up to 100 photos', included: true },
-      { label: 'QR Upload', included: true },
-      { label: 'Basic live wall', included: true },
-      { label: 'Memento watermark', included: true },
-      { label: 'No downloads', included: false },
-      { label: 'Storage: 48 hours', included: true },
-      { label: 'No moderation', included: false },
-    ],
-  },
-  {
     name: 'Starter',
     priceIN: '₹2,500',
     priceGlobal: '$30',
     features: [
-      { label: 'Unlimited photos', included: true },
-      { label: 'Download ZIP', included: true },
-      { label: 'Guest downloads', included: true },
-      { label: 'Basic customization', included: true },
-      { label: 'QR code designs', included: true },
-      { label: 'Storage: 30 days', included: true },
-      { label: 'Memento watermark', included: true },
+      { label: 'Unlimited high-resolution photos', included: true },
+      { label: 'Ultra-fast uploads worldwide', included: true },
+      { label: 'Live Slideshow Wall', included: true },
+      { label: 'Download all photos as ZIP', included: true },
+      { label: 'Guests can download photos', included: true },
+      { label: 'QR Code Access for uploads', included: true },
+      { label: 'Password-protected gallery', included: true },
+      { label: '1 Month Storage', included: true },
+      { label: 'Up to 150 guests', included: true },
     ],
   },
   {
-    name: 'Pro',
+    name: 'Plus',
     priceIN: '₹5,000',
     priceGlobal: '$60',
     highlight: true,
     features: [
-      { label: 'Live slideshow mode', included: true },
-      { label: 'Photo moderation', included: true },
-      { label: 'Password protection', included: true },
-      { label: 'Remove watermark', included: true },
-      { label: 'Multiple QR variants', included: true },
-      { label: 'Storage: 3 months', included: true },
-      { label: 'Extended customization', included: true },
+      { label: 'Everything in Starter +', included: true },
+      { label: '🎥 Video uploads', included: true },
+      { label: '🖼️ Polaroid-style Wall layout', included: true },
+      { label: '❤️ Live reactions on photos', included: true },
+      { label: '📺 Slideshow TV Mode', included: true },
+      { label: '🎨 Custom styling (match your theme)', included: true },
+      { label: '🔔 Notifications on uploads', included: true },
+      { label: '🛡️ Automatic safety filter', included: true },
+      { label: '🕒 Expiring gallery option', included: true },
+      { label: '📘 Photo Book (PDF – Beta)', included: true },
+      { label: '3 Months Storage', included: true },
+      { label: 'Up to 300 guests', included: true },
     ],
   },
   {
@@ -61,13 +54,18 @@ const PLANS: Plan[] = [
     priceIN: '₹7,500',
     priceGlobal: '$90',
     features: [
-      { label: 'Video uploads', included: true },
-      { label: 'Google Drive sync', included: true },
-      { label: 'AI moderation', included: true },
-      { label: 'Upload notifications', included: true },
-      { label: 'Luxury themes', included: true },
-      { label: 'Multiple albums', included: true },
-      { label: 'Storage: 6 months', included: true },
+      { label: 'Everything in Plus +', included: true },
+      { label: '🤖 AI Auto Album (best shots selection)', included: true },
+      { label: '🔒 Smart Privacy Downloads (guests only download photos they\'re in)', included: true },
+      { label: '💧 Watermark control', included: true },
+      { label: '📊 Download analytics', included: true },
+      { label: '👤 Face grouping (Beta)', included: true },
+      { label: '☁️ Google Drive sync', included: true },
+      { label: '🎯 Advanced moderation controls', included: true },
+      { label: '📁 Multiple event walls', included: true },
+      { label: '🚀 Priority processing', included: true },
+      { label: '6 Months Storage', included: true },
+      { label: 'Up to 500 guests (or unlimited)', included: true },
     ],
   },
   {
@@ -75,12 +73,16 @@ const PLANS: Plan[] = [
     priceIN: '₹10,000',
     priceGlobal: '$120',
     features: [
-      { label: 'No Memento branding', included: true },
-      { label: 'Custom domain', included: true },
-      { label: 'Full brand control', included: true },
-      { label: 'Embed in client sites', included: true },
-      { label: 'Admin dashboard', included: true },
-      { label: 'Bulk event creation', included: true },
+      { label: 'Everything in Premium +', included: true },
+      { label: '🔥 White Label Features:', included: true },
+      { label: 'Full branding removal (your platform, your identity)', included: true },
+      { label: 'Custom domain (e.g. photos.yourbrand.com)', included: true },
+      { label: 'Upload your own logo & brand colors', included: true },
+      { label: 'Multi-event dashboard', included: true },
+      { label: 'Client access panels', included: true },
+      { label: 'Resell rights 💰', included: true },
+      { label: 'API / Zapier integrations', included: true },
+      { label: 'Advanced analytics dashboard', included: true },
       { label: 'Priority support', included: true },
     ],
   },
@@ -110,18 +112,18 @@ export default async function PricingPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-amber-500/20 text-amber-400 mb-6">
-            5 Tiers • One-time Payment
+            4 Tiers • One-time Payment
           </div>
           <h1 className="text-5xl font-bold text-gray-200 mb-4">
             Pricing That Grows With You
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Start free, upgrade when you're ready. No subscriptions, no hidden fees.
+            Choose your perfect plan. No subscriptions, no hidden fees.
           </p>
         </div>
 
         {/* Pricing Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
           {PLANS.map((plan, idx) => {
             const price = region === 'IN' ? plan.priceIN : plan.priceGlobal;
@@ -137,11 +139,6 @@ export default async function PricingPage() {
                   {plan.highlight && (
                     <div className="text-center text-sm text-amber-400 mb-2 font-semibold">
                       💎 Sweet Spot
-                    </div>
-                  )}
-                  {plan.name === 'Free' && (
-                    <div className="text-center text-sm text-green-400 mb-2 font-semibold">
-                      🎯 Try It Free
                     </div>
                   )}
                   {plan.name === 'White Label' && (
@@ -179,12 +176,10 @@ export default async function PricingPage() {
                   className={`mt-6 text-center py-3 rounded-lg font-semibold transition ${
                     plan.highlight
                       ? 'bg-gradient-to-r from-amber-500 to-pink-500 text-white hover:shadow-lg'
-                      : plan.name === 'Free'
-                      ? 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30'
                       : 'neumo-btn neumo-btn-dark text-gray-200'
                   }`}
                 >
-                  {plan.name === 'Free' ? 'Start Free' : plan.name === 'White Label' ? 'Contact Sales' : 'Get Started'}
+                  {plan.name === 'White Label' ? 'Contact Sales' : 'Get Started'}
                 </Link>
               </div>
             );
@@ -201,17 +196,15 @@ export default async function PricingPage() {
               <thead>
                 <tr className="border-b border-gray-700">
                   <th className="text-left p-4 text-gray-400">Feature</th>
-                  <th className="text-center p-4 text-gray-200">Free</th>
-                  <th className="text-center p-4 text-gray-200">₹2,500</th>
-                  <th className="text-center p-4 text-amber-400">₹5,000</th>
-                  <th className="text-center p-4 text-gray-200">₹7,500</th>
-                  <th className="text-center p-4 text-purple-400">₹10,000</th>
+                  <th className="text-center p-4 text-green-400">🟢 Starter</th>
+                  <th className="text-center p-4 text-blue-400">🔵 Plus</th>
+                  <th className="text-center p-4 text-purple-400">🟣 Premium</th>
+                  <th className="text-center p-4 text-yellow-400">🟡 White Label</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b border-gray-800">
-                  <td className="p-4 text-gray-300">Photo Upload</td>
-                  <td className="text-center p-4">✅</td>
+                  <td className="p-4 text-gray-300">Unlimited Photos</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
@@ -219,24 +212,21 @@ export default async function PricingPage() {
                 </tr>
                 <tr className="border-b border-gray-800">
                   <td className="p-4 text-gray-300">Download ZIP</td>
-                  <td className="text-center p-4 text-red-400">❌</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                 </tr>
                 <tr className="border-b border-gray-800">
-                  <td className="p-4 text-gray-300">Watermark</td>
+                  <td className="p-4 text-gray-300">Guest Downloads</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
-                  <td className="text-center p-4 text-green-400">❌</td>
-                  <td className="text-center p-4 text-green-400">❌</td>
-                  <td className="text-center p-4 text-green-400">❌</td>
+                  <td className="text-center p-4">✅</td>
+                  <td className="text-center p-4">✅</td>
                 </tr>
                 <tr className="border-b border-gray-800">
                   <td className="p-4 text-gray-300">Live Slideshow</td>
-                  <td className="text-center p-4 text-red-400">❌</td>
-                  <td className="text-center p-4 text-red-400">❌</td>
+                  <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
@@ -244,22 +234,19 @@ export default async function PricingPage() {
                 <tr className="border-b border-gray-800">
                   <td className="p-4 text-gray-300">Video Uploads</td>
                   <td className="text-center p-4 text-red-400">❌</td>
-                  <td className="text-center p-4 text-red-400">❌</td>
-                  <td className="text-center p-4 text-red-400">❌</td>
+                  <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                   <td className="text-center p-4">✅</td>
                 </tr>
                 <tr className="border-b border-gray-800">
                   <td className="p-4 text-gray-300">Storage</td>
-                  <td className="text-center p-4">2 days</td>
-                  <td className="text-center p-4">30 days</td>
+                  <td className="text-center p-4">1 month</td>
                   <td className="text-center p-4">3 months</td>
                   <td className="text-center p-4">6 months</td>
-                  <td className="text-center p-4">1 year</td>
+                  <td className="text-center p-4">6 months</td>
                 </tr>
                 <tr>
                   <td className="p-4 text-gray-300">White Label</td>
-                  <td className="text-center p-4 text-red-400">❌</td>
                   <td className="text-center p-4 text-red-400">❌</td>
                   <td className="text-center p-4 text-red-400">❌</td>
                   <td className="text-center p-4 text-red-400">❌</td>
@@ -282,9 +269,9 @@ export default async function PricingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/create"
-                className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition"
+                className="bg-gradient-to-r from-amber-500 to-pink-500 text-white px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition"
               >
-                Start Free Event
+                Start at ₹2,500
               </Link>
               <Link
                 href="/demo"

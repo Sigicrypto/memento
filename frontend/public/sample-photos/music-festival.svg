@@ -1,0 +1,79 @@
+<!-- Sample Photo 6 - Music Festival -->
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stage" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4B0082;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B008B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="lights">
+      <stop offset="0%" style="stop-color:#FFFF00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.3" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="#1C1C1C" />
+  
+  <!-- Stage -->
+  <rect x="50" y="180" width="300" height="80" fill="url(#stage)" />
+  
+  <!-- Stage Lights -->
+  <circle cx="100" cy="50" r="30" fill="url(#lights)" opacity="0.8" />
+  <circle cx="200" cy="40" r="35" fill="url(#lights)" opacity="0.8" />
+  <circle cx="300" cy="50" r="30" fill="url(#lights)" opacity="0.8" />
+  
+  <!-- Light Beams -->
+  <polygon points="100,80 70,180 130,180" fill="#FFFF00" opacity="0.3" />
+  <polygon points="200,75 160,180 240,180" fill="#FFA500" opacity="0.3" />
+  <polygon points="300,80 270,180 330,180" fill="#FFFF00" opacity="0.3" />
+  
+  <!-- Speakers -->
+  <rect x="70" y="120" width="40" height="60" fill="#2F2F2F" />
+  <circle cx="90" cy="140" r="12" fill="#1C1C1C" />
+  <circle cx="90" cy="160" r="12" fill="#1C1C1C" />
+  
+  <rect x="290" y="120" width="40" height="60" fill="#2F2F2F" />
+  <circle cx="310" cy="140" r="12" fill="#1C1C1C" />
+  <circle cx="310" cy="160" r="12" fill="#1C1C1C" />
+  
+  <!-- Microphone Stands -->
+  <rect x="148" y="160" width="4" height="40" fill="#696969" />
+  <ellipse cx="150" cy="160" rx="6" ry="10" fill="#2F2F2F" />
+  
+  <rect x="248" y="160" width="4" height="40" fill="#696969" />
+  <ellipse cx="250" cy="160" rx="6" ry="10" fill="#2F2F2F" />
+  
+  <!-- Crowd (silhouettes) -->
+  <ellipse cx="60" cy="270" rx="8" ry="15" fill="#4B0082" />
+  <circle cx="60" cy="250" r="5" fill="#4B0082" />
+  
+  <ellipse cx="100" cy="275" rx="8" ry="15" fill="#8B008B" />
+  <circle cx="100" cy="255" r="5" fill="#8B008B" />
+  
+  <ellipse cx="140" cy="270" rx="8" ry="15" fill="#4B0082" />
+  <circle cx="140" cy="250" r="5" fill="#4B0082" />
+  
+  <ellipse cx="180" cy="275" rx="8" ry="15" fill="#8B008B" />
+  <circle cx="180" cy="255" r="5" fill="#8B008B" />
+  
+  <ellipse cx="220" cy="270" rx="8" ry="15" fill="#4B0082" />
+  <circle cx="220" cy="250" r="5" fill="#4B0082" />
+  
+  <ellipse cx="260" cy="275" rx="8" ry="15" fill="#8B008B" />
+  <circle cx="260" cy="255" r="5" fill="#8B008B" />
+  
+  <ellipse cx="300" cy="270" rx="8" ry="15" fill="#4B0082" />
+  <circle cx="300" cy="250" r="5" fill="#4B0082" />
+  
+  <ellipse cx="340" cy="275" rx="8" ry="15" fill="#8B008B" />
+  <circle cx="340" cy="255" r="5" fill="#8B008B" />
+  
+  <!-- Music Notes -->
+  <text x="120" y="100" fill="#FFD700" font-size="20">♪</text>
+  <text x="280" y="90" fill="#FFA500" font-size="24">♫</text>
+  <text x="200" y="110" fill="#FFFF00" font-size="18">♪</text>
+  
+  <!-- Text -->
+  <text x="200" y="290" text-anchor="middle" fill="#FFFFFF" font-family="Arial" font-size="16" font-weight="bold">Music Festival!</text>
+</svg>

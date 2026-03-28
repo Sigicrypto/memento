@@ -138,7 +138,7 @@ function CheckoutContent() {
   return (
     <div className="nm-page flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="nm-card p-10 text-center">
+        <div className="nm-card p-8 text-center">
           {status === 'IDLE' && (
             <>
               <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">💳</div>

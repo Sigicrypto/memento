@@ -2,6 +2,18 @@
 @import "tailwindcss";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
 
+/* Hide default cursor globally */
+* {
+  cursor: none !important;
+}
+
+/* Show default cursor on mobile/tablet */
+@media (max-width: 1024px) {
+  * {
+    cursor: auto !important;
+  }
+}
+
 @theme {
   --color-primary: #f59e0b;
   --color-primary-light: #fcd34d;
@@ -59,6 +71,22 @@
   --shadow-card-hover: 10px 10px 20px var(--nm-dark), -10px -10px 20px var(--nm-light),
     0 0 0 1px rgba(245, 158, 11, 0.10);
   --shadow-inset: inset 6px 6px 12px var(--nm-dark), inset -6px -6px 12px var(--nm-light);
+
+  /* Colors used globally (from landing.css) */
+  --amber: #f59e0b;
+  --rose: #f472b6;
+  --gold: #fcd34d;
+}
+
+@media (min-width: 1025px) {
+  .dark body,
+  .dark a,
+  .dark button,
+  .dark .nm-btn,
+  .dark .nm-circle,
+  .dark .nm-card {
+    cursor: none !important;
+  }
 }
 
 * {
@@ -297,7 +325,33 @@ body {
   border-radius: 18px;
   box-shadow: 8px 8px 16px #14182a, -8px -8px 16px #252c46;
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  --mx: 50%;
+  --my: 50%;
 }
+.nm-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(400px circle at var(--mx) var(--my), rgba(245,158,11,0.06), transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.nm-card:hover::before { opacity: 1; }
+.nm-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 18px;
+  border: 1px solid rgba(245,158,11,0.06);
+  pointer-events: none;
+  transition: border-color 0.4s;
+  z-index: 1;
+}
+.nm-card:hover::after { border-color: rgba(245,158,11,0.12); }
+
 .nm-card:hover {
   box-shadow: 10px 10px 20px #14182a, -10px -10px 20px #252c46;
   transform: translateY(-3px);
@@ -563,6 +617,61 @@ textarea.input {
 
 .dark .text-gray-400 {
   color: #7a7080 !important;
+}
+
+/* ── FLOATING ACTION BUTTONS ── */
+.wa-fab {
+  position: fixed; bottom: 2rem; right: 6rem; z-index: 600;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #25d366;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 25px rgba(37,211,102,0.4), 0 0 40px rgba(37,211,102,0.15);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+  animation: wa-bounce 3s ease-in-out infinite;
+}
+.wa-fab:hover {
+  transform: scale(1.12);
+  box-shadow: 0 10px 35px rgba(37,211,102,0.55), 0 0 60px rgba(37,211,102,0.2);
+}
+.wa-fab svg { width: 22px; height: 22px; fill: #fff; }
+.wa-fab::after {
+  content: 'Chat with us';
+  position: absolute; right: calc(100% + 12px); left: auto; top: 50%; transform: translateY(-50%);
+  background: rgba(23, 27, 46, 0.95); color: #e2e8f0;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  padding: 0.5rem 1rem; border-radius: 10px;
+  border: 1px solid rgba(245,158,11,0.15);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: translateY(-50%) translateX(4px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.wa-fab:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.wa-ping {
+  position: absolute; inset: -4px;
+  border-radius: 50%;
+  border: 2px solid #25d366;
+  animation: wa-ping-anim 2s ease-out infinite;
+}
+
+@keyframes wa-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes wa-ping-anim {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes social-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
 /* ═══════════════════════════════════════════════════

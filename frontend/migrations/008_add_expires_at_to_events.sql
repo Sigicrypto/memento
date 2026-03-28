@@ -1,0 +1,2 @@
+ALTER TABLE events
+ADD COLUMN expires_at TIMESTAMPTZ;

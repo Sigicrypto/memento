@@ -1,0 +1,2 @@
+ALTER TABLE events
+ADD COLUMN enable_ai_album BOOLEAN DEFAULT FALSE;

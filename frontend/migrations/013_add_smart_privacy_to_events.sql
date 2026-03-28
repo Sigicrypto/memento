@@ -1,0 +1,2 @@
+ALTER TABLE events
+ADD COLUMN enable_smart_privacy BOOLEAN DEFAULT FALSE;

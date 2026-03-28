@@ -1,0 +1,2 @@
+ALTER TABLE events
+ADD COLUMN enable_safety_filter BOOLEAN DEFAULT FALSE;
