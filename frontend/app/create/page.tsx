@@ -52,7 +52,7 @@ export default function CreateEventPage() {
   };
 
   const uploadUrl = createdSlug
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${createdSlug}` : '';
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/mobile/${createdSlug}` : '';
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
   if (authLoading) {
@@ -170,7 +170,7 @@ export default function CreateEventPage() {
                 )}
               </div>
               <div className="relative">
-                <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'#7f849c'}}>/upload/</span>
+                <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'#7f849c'}}>/mobile/</span>
                 <input type="text" className={`nm-input py-3 text-sm !pl-20 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   value={customSlug} disabled={plan === 'FREE'}
                   onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
