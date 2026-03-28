@@ -386,7 +386,7 @@ export default function WallPage() {
   };
 
   const uploadUrl = typeof window !== 'undefined'
-    ? `${window.location.protocol}//${window.location.host}/upload/${slug}`
+    ? `${window.location.protocol}//${window.location.host}/mobile/${slug}`
     : '';
 
   if (eventExpired) {
@@ -516,8 +516,7 @@ export default function WallPage() {
               <button onClick={() => setShowQR(!showQR)} className="nm-btn px-3 py-2 text-xs" style={{color:'#7f849c'}}>
                 {showQR ? 'Hide QR' : '📱 QR'}
               </button>
-              <Link href={`/upload/${slug}`} className="nm-btn nm-btn-accent px-4 py-2 text-xs font-bold">📸 Upload</Link>
-              <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: 'var(--theme-secondary)'}}>📱 My Photos</Link>
+                            <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: 'var(--theme-secondary)'}}>📱 My Photos</Link>
               <Link href={`/wall/${slug}/tv`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#818cf8'}}>📺 TV Mode</Link>
               <button onClick={handleDownloadPdf} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#a78bfa'}}>📘 Download PDF</button>
               <button onClick={() => setShowBestShots(!showBestShots)} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: showBestShots ? 'var(--theme-primary)' : '#7f849c'}}>{showBestShots ? '🏆 Best Shots' : 'All Photos'}</button>
