@@ -13,13 +13,13 @@ DROP POLICY IF EXISTS "Users can delete their photos" ON storage.objects;
 CREATE POLICY "Users can upload photos" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'photos' AND
-    -- Folder structure should be: event_id/filename
-    (storage.foldername(name))[1] IN (
-      SELECT id FROM events WHERE 
-        -- Anyone can upload to public events
-        password IS NULL OR
-        -- Or if they know the password (handled at app level)
-        1 = 1
+    (
+      -- Allow uploads to demo folder freely
+      (storage.foldername(name))[1] = 'demo' OR
+      -- Existing check for event folders
+      (storage.foldername(name))[1] IN (
+        SELECT id FROM events WHERE 1 = 1
+      )
     )
   );
 
@@ -27,12 +27,15 @@ CREATE POLICY "Users can upload photos" ON storage.objects
 CREATE POLICY "Users can view photos" ON storage.objects
   FOR SELECT USING (
     bucket_id = 'photos' AND
-    -- Allow viewing photos from public events
-    (storage.foldername(name))[1] IN (
-      SELECT id FROM events WHERE 
-        password IS NULL OR
-        -- Password-protected events (access handled at app level)
-        1 = 1
+    (
+      -- Allow viewing demo photos
+      (storage.foldername(name))[1] = 'demo' OR
+      -- Allow viewing photos from public events
+      (storage.foldername(name))[1] IN (
+        SELECT id FROM events WHERE 
+          password IS NULL OR
+          1 = 1
+      )
     )
   );
 

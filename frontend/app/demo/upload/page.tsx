@@ -14,6 +14,7 @@ function UploadContent() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -72,40 +73,53 @@ function UploadContent() {
       });
     });
 
-    for (const file of allFiles) {
-      const type = file.type.startsWith('video') ? 'video' : 'image';
-      const fileExt = file.name.split('.').pop();
-      const fileName = `demo/${demoId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-      
-      const { data, error } = await supabase.storage
-        .from('photos')
-        .upload(fileName, file);
-
-      if (!error && data) {
-        const { data: { publicUrl } } = supabase.storage
+    try {
+      for (const file of allFiles) {
+        const type = file.type.startsWith('video') ? 'video' : 'image';
+        const fileExt = file.name.split('.').pop();
+        const fileName = `demo/${demoId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        console.log(`Uploading ${fileName}...`);
+        const { data, uploadError } = await supabase.storage
           .from('photos')
-          .getPublicUrl(data.path);
+          .upload(fileName, file) as any;
 
-        await channel.send({
-          type: 'broadcast',
-          event: 'NEW_UPLOAD',
-          payload: {
-            id: Date.now() + Math.random(),
-            url: publicUrl,
-            type: type,
-            caption: type === 'video' ? 'Awesome Video!' : 'Great Photo!',
-            uploader: 'Demo Guest'
-          }
-        });
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw new Error(uploadError.message || 'Upload failed');
+        }
+
+        if (data) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('photos')
+            .getPublicUrl(data.path);
+
+          console.log(`Broadcasting URL: ${publicUrl}`);
+          await channel.send({
+            type: 'broadcast',
+            event: 'NEW_UPLOAD',
+            payload: {
+              id: Date.now() + Math.random(),
+              url: publicUrl,
+              type: type,
+              caption: type === 'video' ? 'Awesome Video!' : 'Great Photo!',
+              uploader: 'Demo Guest'
+            }
+          });
+        }
+        
+        uploadedCount++;
+        setProgress(Math.round((uploadedCount / allFiles.length) * 100));
       }
-      
-      uploadedCount++;
-      setProgress(Math.round((uploadedCount / allFiles.length) * 100));
-    }
 
-    setUploading(false);
-    setSuccess(true);
-    supabase.removeChannel(channel);
+      setSuccess(true);
+    } catch (err: any) {
+      console.error('Final upload error:', err);
+      setError(err.message || 'An unexpected error occurred during upload.');
+    } finally {
+      setUploading(false);
+      supabase.removeChannel(channel);
+    }
   };
 
   if (success) {
@@ -114,8 +128,21 @@ function UploadContent() {
         <div className="nm-circle w-20 h-20 mb-6 text-4xl">✅</div>
         <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Complete!</h1>
         <p className="text-sm mb-8" style={{color:'#7f849c'}}>Check out the live wall to see your memories.</p>
-        <button onClick={() => { setSuccess(false); setPhotos([]); setVideos([]); }} className="nm-btn px-6 py-3 font-bold">
+        <button onClick={() => { setSuccess(false); setError(null); setPhotos([]); setVideos([]); }} className="nm-btn px-6 py-3 font-bold">
           Upload More
+        </button>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="nm-page flex flex-col items-center justify-center p-6 text-center">
+        <div className="nm-circle w-20 h-20 mb-6 text-4xl">❌</div>
+        <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Failed</h1>
+        <p className="text-sm mb-8" style={{color:'#7f849c'}}>{error}</p>
+        <button onClick={() => { setError(null); setUploading(false); }} className="nm-btn px-6 py-3 font-bold">
+          Try Again
         </button>
       </div>
     );
