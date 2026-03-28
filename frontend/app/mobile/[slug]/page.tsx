@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
@@ -277,7 +277,11 @@ export default function MobilePage() {
           <div className="grid grid-cols-2 gap-2">
             {photos.map((photo) => (
               <div key={photo.id} className="relative group">
-                <img src={getPublicUrl(photo.storage_path)} className="w-full h-auto object-cover rounded-lg" />
+                {photo.media_type === 'video' ? (
+                  <video src={getPublicUrl(photo.storage_path)} className="w-full h-auto object-cover rounded-lg" controls playsInline loop muted />
+                ) : (
+                  <img src={getPublicUrl(photo.storage_path)} className="w-full h-auto object-cover rounded-lg" />
+                )}
               </div>
             ))}
           </div>
@@ -290,6 +294,18 @@ export default function MobilePage() {
           <Link href={`/wall/${slug}`} className="nm-btn flex-1 py-3 font-semibold text-center w-full">🖼️ Back to Full Event Wall</Link>
         </div>
       </div>
+
+      {/* Status Messages */}
+      {error && (
+        <div className="fixed top-4 left-4 right-4 nm-card p-4 text-center text-red-400 z-50">
+          {error}
+        </div>
+      )}
+      {successMessage && (
+        <div className="fixed top-4 left-4 right-4 nm-card p-4 text-center text-green-400 z-50">
+          {successMessage}
+        </div>
+      )}
     </div>
   );
 }

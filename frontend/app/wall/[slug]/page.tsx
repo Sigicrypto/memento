@@ -567,7 +567,7 @@ export default function WallPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button onClick={() => setShowQR(true)} className="nm-btn nm-btn-accent px-8 py-3 font-bold">📱 Show QR Code</button>
-              <Link href={`/upload/${slug}`} className="nm-btn px-8 py-3 font-bold" style={{color:'#7f849c'}}>📸 Upload First Photo</Link>
+              <Link href={`/mobile/${slug}`} className="nm-btn px-8 py-3 font-bold" style={{color:'#7f849c'}}>📸 Upload First Photo</Link>
             </div>
           </div>
         </div>
