@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import Link from 'next/link';
 import '@/app/globals.css';
 
 function UploadContent() {
@@ -15,6 +14,7 @@ function UploadContent() {
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>('');
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -62,31 +62,50 @@ function UploadContent() {
     if (photos.length === 0 && videos.length === 0) return;
     setUploading(true);
     setProgress(0);
+    setError(null);
+    setStatus('Initializing...');
 
     const allFiles = [...photos, ...videos];
     let uploadedCount = 0;
-
     const channel = supabase.channel(`demo-${demoId}`);
-    await new Promise<void>((resolve) => {
-      channel.subscribe((status) => {
-        if (status === 'SUBSCRIBED') resolve();
-      });
-    });
 
     try {
+      // 1. Try to connect to realtime (with a 5s timeout)
+      setStatus('Connecting to Wall...');
+      await Promise.race([
+        new Promise<void>((resolve) => {
+          channel.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+              console.log('Realtime subscribed');
+              resolve();
+            }
+          });
+        }),
+        new Promise<void>((resolve) => setTimeout(() => {
+          console.warn('Realtime connection timeout, proceeding with upload anyway');
+          resolve();
+        }, 5000))
+      ]);
+
+      // 2. Loop through and upload files
       for (const file of allFiles) {
         const type = file.type.startsWith('video') ? 'video' : 'image';
-        const fileExt = file.name.split('.').pop();
+        const fileExt = file.name.split('.').pop() || (type === 'video' ? 'mp4' : 'jpg');
         const fileName = `demo/${demoId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
         
+        setStatus(`Uploading ${type} ${uploadedCount + 1}/${allFiles.length}...`);
         console.log(`Uploading ${fileName}...`);
-        const { data, uploadError } = await supabase.storage
+        
+        const { data, error: uploadError } = await supabase.storage
           .from('photos')
-          .upload(fileName, file) as any;
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
         if (uploadError) {
-          console.error('Upload error:', uploadError);
-          throw new Error(uploadError.message || 'Upload failed');
+          console.error('Upload Error:', uploadError);
+          throw new Error(uploadError.message || `Failed to upload ${type}`);
         }
 
         if (data) {
@@ -94,7 +113,9 @@ function UploadContent() {
             .from('photos')
             .getPublicUrl(data.path);
 
-          console.log(`Broadcasting URL: ${publicUrl}`);
+          setStatus(`Sending to Wall...`);
+          console.log(`Broadcasting public URL: ${publicUrl}`);
+          
           await channel.send({
             type: 'broadcast',
             event: 'NEW_UPLOAD',
@@ -105,19 +126,21 @@ function UploadContent() {
               caption: type === 'video' ? 'Awesome Video!' : 'Great Photo!',
               uploader: 'Demo Guest'
             }
-          });
+          }).catch(err => console.error('Broadcast failed:', err));
         }
         
         uploadedCount++;
         setProgress(Math.round((uploadedCount / allFiles.length) * 100));
       }
 
+      setStatus('Finalizing...');
       setSuccess(true);
     } catch (err: any) {
-      console.error('Final upload error:', err);
-      setError(err.message || 'An unexpected error occurred during upload.');
-    } finally {
+      console.error('Upload Process Failed:', err);
+      setError(err.message || 'An unexpected error occurred during the upload process.');
       setUploading(false);
+    } finally {
+      // We don't setUploading(false) here because we want to maintain the success/error screen
       supabase.removeChannel(channel);
     }
   };
@@ -128,7 +151,7 @@ function UploadContent() {
         <div className="nm-circle w-20 h-20 mb-6 text-4xl">✅</div>
         <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Complete!</h1>
         <p className="text-sm mb-8" style={{color:'#7f849c'}}>Check out the live wall to see your memories.</p>
-        <button onClick={() => { setSuccess(false); setError(null); setPhotos([]); setVideos([]); }} className="nm-btn px-6 py-3 font-bold">
+        <button onClick={() => { setSuccess(false); setPhotos([]); setVideos([]); setError(null); }} className="nm-btn px-6 py-3 font-bold">
           Upload More
         </button>
       </div>
@@ -140,8 +163,9 @@ function UploadContent() {
       <div className="nm-page flex flex-col items-center justify-center p-6 text-center">
         <div className="nm-circle w-20 h-20 mb-6 text-4xl">❌</div>
         <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Failed</h1>
-        <p className="text-sm mb-8" style={{color:'#7f849c'}}>{error}</p>
-        <button onClick={() => { setError(null); setUploading(false); }} className="nm-btn px-6 py-3 font-bold">
+        <p className="text-sm px-4 mb-4" style={{color:'#fca5a5'}}>{error}</p>
+        <p className="text-xs mb-8" style={{color:'#7f849c'}}>Check your connection and try again.</p>
+        <button onClick={() => { setError(null); setUploading(false); setProgress(0); }} className="nm-btn px-6 py-3 font-bold">
           Try Again
         </button>
       </div>
@@ -160,7 +184,7 @@ function UploadContent() {
         <div className="nm-card p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Photos ({photos.length}/5)</h2>
-            {photos.length < 5 && (
+            {!uploading && photos.length < 5 && (
               <button onClick={() => photoInputRef.current?.click()} className="nm-btn px-3 py-1.5 text-xs text-[#f59e0b] font-bold">
                 + Add Photo
               </button>
@@ -177,9 +201,11 @@ function UploadContent() {
               {photos.map((p, i) => (
                 <div key={i} className="relative aspect-square rounded-lg overflow-hidden nm-inset">
                   <img src={URL.createObjectURL(p)} alt="preview" className="w-full h-full object-cover" />
-                  <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg">
-                    ×
-                  </button>
+                  {!uploading && (
+                    <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg">
+                      ×
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -189,7 +215,7 @@ function UploadContent() {
         <div className="nm-card p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Video ({videos.length}/1)</h2>
-            {videos.length === 0 && (
+            {!uploading && videos.length === 0 && (
               <button onClick={() => videoInputRef.current?.click()} className="nm-btn px-3 py-1.5 text-xs text-[#f59e0b] font-bold">
                 + Add Video
               </button>
@@ -204,9 +230,11 @@ function UploadContent() {
           ) : (
             <div className="relative aspect-video rounded-lg overflow-hidden nm-inset">
               <video src={URL.createObjectURL(videos[0])} className="w-full h-full object-cover" controls />
-              <button onClick={removeVideo} className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10">
-                ×
-              </button>
+              {!uploading && (
+                <button onClick={removeVideo} className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm shadow-lg z-10">
+                  ×
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -214,6 +242,9 @@ function UploadContent() {
         {(photos.length > 0 || videos.length > 0) && (
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#14182a]/90 backdrop-blur-md z-50">
             <div className="max-w-md mx-auto">
+              <div className="text-center mb-2">
+                <span className="text-xs font-bold" style={{color:'#f59e0b'}}>{status}</span>
+              </div>
               <button 
                 onClick={handleUpload} 
                 className="nm-btn nm-btn-accent w-full py-4 font-bold text-lg"
