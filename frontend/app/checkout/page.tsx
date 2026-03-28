@@ -100,7 +100,7 @@ function CheckoutContent() {
             });
             if (verifyRes.ok) {
               setStatus('SUCCESS');
-              setTimeout(() => router.push('/dashboard'), 3000);
+              setTimeout(() => router.push('/create'), 3000);
             } else {
               setStatus('IDLE');
               alert('Payment verification failed. Contact support.');
@@ -120,7 +120,7 @@ function CheckoutContent() {
         await supabase.auth.updateUser({ data: { plan_type: planName } });
       }
       setStatus('SUCCESS');
-      setTimeout(() => router.push('/dashboard'), 3000);
+      setTimeout(() => router.push('/create'), 3000);
     } catch {
       setStatus('IDLE');
       alert('Payment failed. Please try again.');

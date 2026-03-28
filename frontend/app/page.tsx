@@ -71,7 +71,7 @@ export default function LandingPage() {
           <Link href="#how">How it works</Link>
           <Link href="#pricing">Pricing</Link>
         </div>
-        <Link href="/create" className="nav-btn">
+        <Link href="/pricing" className="nav-btn">
           Get Started
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </Link>
@@ -79,10 +79,7 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section className="hero pt-16 md:pt-20">
-        <div className="hero-badge reveal">
-          <span className="pulse-dot" />
-          Free for your first event
-        </div>
+
         <h1 className="hero-h1 reveal leading-tight md:leading-[1.1]">
           Your Event.
           <br />
@@ -92,7 +89,7 @@ export default function LandingPage() {
           Guests scan a QR code, snap photos, and watch them appear live on a stunning wall. No app needed.
         </p>
         <div className="hero-btns reveal">
-          <Link href="/create" className="btn-glow">
+          <Link href="/pricing" className="btn-glow">
             <span>Create Your Wall</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </Link>
@@ -183,7 +180,7 @@ export default function LandingPage() {
           { val: '∞', label: 'Photos per wall' },
           { val: '0s', label: 'App install time' },
           { val: '<3s', label: 'Upload speed' },
-          { val: '100%', label: 'Free to start' },
+          { val: '0', label: 'Hidden fees' },
         ].map((s, i) => (
           <div key={i} className="stat">
             <span className="stat-val">{s.val}</span>
@@ -507,7 +504,7 @@ export default function LandingPage() {
         <div className="cta-glow" />
         <h2 className="cta-h2">Ready to capture<br /><span className="gradient-text">every moment?</span></h2>
         <p className="cta-p">Start with just ₹2,500. Your wall is live in under a minute.</p>
-        <Link href="/create" className="btn-glow btn-lg">
+        <Link href="/pricing" className="btn-glow btn-lg">
           <span>Create Your Wall — Start at ₹2,500</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </Link>
