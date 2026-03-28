@@ -87,17 +87,6 @@ export default function UploadPage() {
     return () => window.removeEventListener('online', handleOnline);
   }, [eventId]);
 
-  // AUTO-CLICK CAMERA ON UNLOCK
-  useEffect(() => {
-    if (unlocked) {
-      setTimeout(() => {
-        const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-        if (input) {
-          input.click();
-        }
-      }, 500);
-    }
-  }, [unlocked]);
 
 
   // Convert HEIC to JPG fallback
