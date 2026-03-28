@@ -28,16 +28,17 @@ export default function DemoPage() {
   const [demoId, setDemoId] = useState<string>('');
   const [photos, setPhotos] = useState<any[]>(initialDemoPhotos);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [isConnected, setIsConnected] = useState(false);
 
   // Initialize demo ID and timer
   useEffect(() => {
-    const newDemoId = Date.now().toString(36) + Math.random().toString(36).substring(7);
+    const newDemoId = Date.now().toString(36).slice(-4) + Math.random().toString(36).substring(7, 10);
     setDemoId(newDemoId);
 
     const timerInterval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          window.location.reload(); // Refresh when time is up
+          window.location.reload(); 
           return 0;
         }
         return prev - 1;
@@ -51,12 +52,15 @@ export default function DemoPage() {
   useEffect(() => {
     if (!demoId) return;
 
+    console.log(`[Wall] Subscribing to: demo-${demoId}`);
     const channel = supabase.channel(`demo-${demoId}`);
+    
     channel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
+      console.log('[Wall] Broadcast received:', payload);
       const data = payload.payload;
       setPhotos(prev => {
         const newPhoto = {
-          id: data.id,
+          id: data.id || Date.now(),
           url: data.url,
           type: data.type,
           caption: data.caption,
@@ -65,7 +69,12 @@ export default function DemoPage() {
         };
         return [newPhoto, ...prev];
       });
-    }).subscribe();
+    });
+
+    channel.subscribe((status) => {
+      console.log(`[Wall] Subscription status: ${status}`);
+      setIsConnected(status === 'SUBSCRIBED');
+    });
 
     return () => {
       supabase.removeChannel(channel);
@@ -87,7 +96,13 @@ export default function DemoPage() {
   const seconds = timeLeft % 60;
 
   return (
-    <div className="nm-page pb-12 min-h-screen">
+    <div className="nm-page pb-12 min-h-screen relative">
+      {/* Debug Info Overlay */}
+      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-3 bg-[#14182a]/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 shadow-2xl">
+        <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_10px_#4ade80]' : 'bg-red-500 shadow-[0_0_10px_#f87171]'}`} />
+        <span className="text-[10px] uppercase tracking-widest font-bold text-white/50">Wall ID: <span className="text-white">{demoId}</span></span>
+      </div>
+
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#1e2235]/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,7 +114,7 @@ export default function DemoPage() {
             <div className="flex items-center gap-4">
               {user ? (
                 <>
-                  <Link href="/admin" className="nm-btn px-4 py-2 text-sm">Dashboard</Link>
+                  <Link href="/dashboard" className="nm-btn px-4 py-2 text-sm">Dashboard</Link>
                 </>
               ) : (
                 <>
@@ -120,10 +135,11 @@ export default function DemoPage() {
             <p className="text-sm mb-4" style={{color:'#7f849c'}}>Scan the QR code to post to this wall right now!</p>
             <div className="flex justify-center items-center gap-4 mb-6">
               <span className="nm-badge flex items-center gap-1.5" style={{color:'#4ade80'}}>
-                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>LIVE
+                <span className={`w-2 h-2 ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'} rounded-full`}></span>
+                {isConnected ? 'WALL ACTIVE' : 'CONNECTING...'}
               </span>
               <span className="nm-badge" style={{color:'#f472b6'}}>
-                Demo resets in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+                Resets in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
               </span>
             </div>
             
@@ -154,8 +170,8 @@ export default function DemoPage() {
           <div className="flex justify-center">
             <div className="max-w-6xl w-full">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-                {photos.map((photo) => (
-                <div key={photo.id} className="nm-card group relative aspect-square overflow-hidden hover:scale-105 transition-transform w-full max-w-[240px]"
+                {photos.map((photo, i) => (
+                <div key={photo.id || i} className="nm-card group relative aspect-square overflow-hidden hover:scale-105 transition-transform w-full max-w-[240px]"
                   style={{animationDelay:`${photo.delay}s`}}>
                   <div className="flex flex-col items-center justify-center h-full p-2 relative z-10">
                     {photo.url ? (
@@ -185,7 +201,7 @@ export default function DemoPage() {
             <div className="max-w-6xl w-full">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
                 {photos.map((photo, index) => (
-                <div key={photo.id} className="relative w-full max-w-[240px]"
+                <div key={photo.id || index} className="relative w-full max-w-[240px]"
                   style={{animation:`float 3s ease-in-out infinite`, animationDelay:`${index * 0.5}s`}}>
                   <div className="nm-card p-3 transform rotate-3 hover:rotate-0 transition-transform">
                     <div className="nm-inset aspect-square rounded-xl flex items-center justify-center mb-2 overflow-hidden relative">
