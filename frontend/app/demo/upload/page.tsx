@@ -1,9 +1,84 @@
 "use client";
 
 import { useState, useRef, Suspense, useEffect } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import '@/app/globals.css';
+
+const MAX_IMAGES = 5;
+const MAX_VIDEOS = 1;
+const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']);
+const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4']);
+const ACCEPTED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']);
+const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4']);
+
+function getFileExtension(fileName: string) {
+  return fileName.split('.').pop()?.toLowerCase() || '';
+}
+
+function isAcceptedImage(file: File) {
+  return ACCEPTED_IMAGE_TYPES.has(file.type) || ACCEPTED_IMAGE_EXTENSIONS.has(getFileExtension(file.name));
+}
+
+function isAcceptedVideo(file: File) {
+  return ACCEPTED_VIDEO_TYPES.has(file.type) || ACCEPTED_VIDEO_EXTENSIONS.has(getFileExtension(file.name));
+}
+
+async function loadImageFromFile(file: File) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const imageUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(imageUrl);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(imageUrl);
+      reject(new Error('Unable to read image for compression.'));
+    };
+    image.src = imageUrl;
+  });
+}
+
+async function compressDemoImage(file: File) {
+  const extension = getFileExtension(file.name);
+  if (extension === 'heic' || extension === 'heif') {
+    return file;
+  }
+
+  try {
+    const image = await loadImageFromFile(file);
+    const maxDimension = 1600;
+    const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.width * scale));
+    canvas.height = Math.max(1, Math.round(image.height * scale));
+    const context = canvas.getContext('2d');
+
+    if (!context) {
+      return file;
+    }
+
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, outputType, 0.82);
+    });
+
+    if (!blob || blob.size >= file.size) {
+      return file;
+    }
+
+    const nextExtension = outputType === 'image/png' ? 'png' : 'jpg';
+    const nextName = file.name.replace(/\.[^.]+$/, `.${nextExtension}`);
+    return new File([blob], nextName, { type: outputType, lastModified: Date.now() });
+  } catch {
+    return file;
+  }
+}
 
 function UploadContent() {
   const searchParams = useSearchParams();
@@ -14,6 +89,7 @@ function UploadContent() {
   const [progress, setProgress] = useState(0);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
   const [lastUrl, setLastUrl] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -23,11 +99,14 @@ function UploadContent() {
   // Monitor connection to the wall
   useEffect(() => {
     if (!demoId) return;
-    const channel = supabase.channel(`demo-status-${demoId}`);
+
+    const channel = supabase.channel(`demo-${demoId}-status-check`);
     channel.subscribe((status) => {
       setIsConnected(status === 'SUBSCRIBED');
     });
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [demoId]);
 
   if (!demoId) {
@@ -43,22 +122,38 @@ function UploadContent() {
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const spaceLeft = 5 - photos.length;
-      if (newFiles.length > spaceLeft) {
-        alert(`You can only add ${spaceLeft} more photo(s).`);
+      const nextFiles = Array.from(e.target.files).filter(isAcceptedImage);
+      if (nextFiles.length !== e.target.files.length) {
+        setValidationMessage('Demo upload supports JPG, PNG, and HEIC images only.');
+      } else {
+        setValidationMessage(null);
       }
-      setPhotos((prev) => [...prev, ...newFiles.slice(0, spaceLeft)]);
+
+      const spaceLeft = MAX_IMAGES - photos.length;
+      if (spaceLeft <= 0) {
+        setValidationMessage(`You can upload a maximum of ${MAX_IMAGES} images in demo mode.`);
+      } else {
+        if (nextFiles.length > spaceLeft) {
+          setValidationMessage(`You can upload only ${MAX_IMAGES} images in demo mode.`);
+        }
+        setPhotos((prev) => [...prev, ...nextFiles.slice(0, spaceLeft)]);
+      }
     }
     if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
   const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      if (videos.length >= 1) {
-        alert("You can only upload 1 video.");
+      if (!isAcceptedVideo(e.target.files[0])) {
+        setValidationMessage('Demo upload supports MP4 video only.');
+        if (videoInputRef.current) videoInputRef.current.value = '';
         return;
       }
+      if (videos.length >= MAX_VIDEOS) {
+        setValidationMessage(`You can upload only ${MAX_VIDEOS} video in demo mode.`);
+        return;
+      }
+      setValidationMessage(null);
       setVideos([e.target.files[0]]);
     }
     if (videoInputRef.current) videoInputRef.current.value = '';
@@ -71,46 +166,56 @@ function UploadContent() {
   const removeVideo = () => setVideos([]);
 
   const handleUpload = async () => {
+    if (!demoId) {
+      setError('Demo session not found. Reload the Demo Wall and try again.');
+      return;
+    }
     if (photos.length === 0 && videos.length === 0) return;
+
     setUploading(true);
-    setProgress(5); // Jump to 5% immediately
+    setProgress(5);
     setError(null);
-    setStatus('Initializing...');
+    setValidationMessage(null);
+    setStatus('Preparing files...');
 
     const allFiles = [...photos, ...videos];
     let uploadedCount = 0;
-    const channel = supabase.channel(`demo-${demoId}`);
+    const broadcastChannel = supabase.channel(`demo-upload-${demoId}-${Date.now()}`);
 
     try {
-      // 1. Try to connect to realtime (with a 5s timeout)
       setStatus('Connecting to Wall...');
-      await Promise.race([
-        new Promise<void>((resolve) => {
-          channel.subscribe((status) => {
-            if (status === 'SUBSCRIBED') resolve();
-          });
-        }),
-        new Promise<void>((resolve) => setTimeout(resolve, 3000))
-      ]);
+      const subStatus = await new Promise<string>((resolve) => {
+        broadcastChannel.subscribe((status) => {
+          if (status === 'SUBSCRIBED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            resolve(status);
+          }
+        });
+        setTimeout(() => resolve('TIMEOUT'), 5000);
+      });
+
+      if (subStatus !== 'SUBSCRIBED') {
+        setStatus('Connection is slow. Uploading anyway...');
+      }
 
       setProgress(10);
 
-      // 2. Loop through and upload files
       for (const file of allFiles) {
         const type = file.type.startsWith('video') ? 'video' : 'image';
-        const fileExt = file.name.split('.').pop() || (type === 'video' ? 'mp4' : 'jpg');
-        const fileName = `demo/${demoId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-        
-        setStatus(`Uploading ${type} ${uploadedCount + 1}/${allFiles.length}...`);
-        
-        // Minor progress bump during upload start
-        setProgress(prev => Math.min(prev + 5, 90));
+        const preparedFile = type === 'image' ? await compressDemoImage(file) : file;
+        const fileExt = getFileExtension(preparedFile.name) || (type === 'video' ? 'mp4' : 'jpg');
+        const fileName = `demo/${demoId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${fileExt}`;
 
+        setStatus(`Uploading ${type} ${uploadedCount + 1}/${allFiles.length}...`);
         const { data, error: uploadError } = await supabase.storage
           .from('photos')
-          .upload(fileName, file);
+          .upload(fileName, preparedFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        if (uploadError) throw new Error(uploadError.message || `Failed to upload ${type}`);
+        if (uploadError) {
+          throw new Error(`Upload failed: ${uploadError.message}`);
+        }
 
         if (data) {
           const { data: { publicUrl } } = supabase.storage
@@ -118,52 +223,123 @@ function UploadContent() {
             .getPublicUrl(data.path);
 
           setLastUrl(publicUrl);
-          setStatus(`Syncing with Wall...`);
-          
-          await channel.send({
+          setStatus('Syncing with wall...');
+
+          const payload: DemoMedia = {
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            url: publicUrl,
+            type: type,
+            caption: type === 'video' ? 'Live Video from Demo!' : 'Live Photo from Demo!',
+            uploader: 'Demo Guest',
+            createdAt: Date.now(),
+          };
+
+          upsertDemoPhoto(demoId, payload);
+
+          const broadcastResp = await broadcastChannel.send({
             type: 'broadcast',
             event: 'NEW_UPLOAD',
-            payload: {
-              id: Date.now() + Math.random(),
-              url: publicUrl,
-              type: type,
-              caption: type === 'video' ? 'Awesome Video!' : 'Great Photo!',
-              uploader: 'Demo Guest'
-            }
+            payload: payload
           });
+
+          if (broadcastResp !== 'ok') {
+            setStatus('Uploaded. Live wall sync may take a moment.');
+          }
         }
-        
+
         uploadedCount++;
         setProgress(Math.round(10 + (uploadedCount / allFiles.length) * 85));
       }
 
       setStatus('Success!');
       setProgress(100);
-      setTimeout(() => setSuccess(true), 500);
+      setUploading(false);
+      setPhotos([]);
+      setVideos([]);
+      setTimeout(() => setSuccess(true), 300);
     } catch (err: any) {
-      console.error('Process Error:', err);
-      setError(err.message || 'An unexpected error occurred.');
+      setUploading(false);
+      setError(err.message || 'Upload failed. Please try again on a better connection.');
     } finally {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(broadcastChannel);
     }
   };
 
   if (success) {
     return (
-      <div className="nm-page flex flex-col items-center justify-center p-6 text-center">
-        <div className="nm-circle w-20 h-20 mb-6 text-4xl">✅</div>
-        <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Complete!</h1>
-        <p className="text-sm mb-4" style={{color:'#7f849c'}}>Your photo is now live on the wall.</p>
-        
-        {lastUrl && (
-          <a href={lastUrl} target="_blank" className="text-xs mb-8 block underline" style={{color:'#f59e0b'}}>
-            View Uploaded File
-          </a>
-        )}
+      <div className="nm-page min-h-screen py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✅</div>
+            <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Complete!</h1>
+            <p className="text-sm mb-6" style={{color:'#7f849c'}}>Your photo is now live on the wall.</p>
+          </div>
 
-        <button onClick={() => { setSuccess(false); setPhotos([]); setVideos([]); setError(null); setProgress(0); }} className="nm-btn px-6 py-3 font-bold">
-          Upload More
-        </button>
+          {/* View Options */}
+          <div className="text-center mb-8">
+            <h2 className="text-xl font-bold mb-4" style={{color:'#e2e8f0'}}>View Your Photo on the Wall</h2>
+            <div className="flex justify-center gap-2 mb-6 flex-wrap">
+              <Link href={`/demo?id=${demoId}`} className="nm-btn nm-btn-accent px-6 py-3 font-bold">
+                🖼️ Open Live Wall
+              </Link>
+              <Link href={`/demo?id=${demoId}#grid`} className="nm-btn px-4 py-3 text-sm">
+                📱 Grid View
+              </Link>
+              <Link href={`/demo?id=${demoId}#polaroid`} className="nm-btn px-4 py-3 text-sm">
+                📸 Polaroid View
+              </Link>
+              <Link href={`/demo?id=${demoId}#slideshow`} className="nm-btn px-4 py-3 text-sm">
+                🎬 Slideshow
+              </Link>
+            </div>
+          </div>
+
+          {/* Uploaded File Preview */}
+          {lastUrl && (
+            <div className="text-center mb-8">
+              <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Your Upload</h3>
+              <div className="nm-card p-4 inline-block">
+                {lastUrl.includes('video') ? (
+                  <video src={lastUrl} className="max-w-sm max-h-64 rounded-lg" controls playsInline />
+                ) : (
+                  <img src={lastUrl} className="max-w-sm max-h-64 rounded-lg" alt="Your upload" />
+                )}
+              </div>
+              <div className="mt-4">
+                <a href={lastUrl} target="_blank" className="nm-btn px-4 py-2 text-sm">
+                  🔗 View Full Size
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Upload More Options */}
+          <div className="text-center">
+            <div className="nm-card p-6 inline-block">
+              <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Share More Photos</h3>
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={() => { 
+                    setSuccess(false); 
+                    setError(null); 
+                    setValidationMessage(null);
+                    setProgress(0); 
+                    setStatus(''); 
+                    setUploading(false);
+                    setPhotos([]);
+                    setVideos([]);
+                  }} 
+                  className="nm-btn nm-btn-accent px-6 py-3 font-bold"
+                >
+                  ➕ Add More Photos
+                </button>
+                <Link href={`/demo?id=${demoId}`} className="nm-btn px-4 py-2 text-sm">
+                  🏠 Back to Wall
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -183,7 +359,6 @@ function UploadContent() {
 
   return (
     <div className="nm-page min-h-screen py-8 px-4 flex flex-col items-center">
-      {/* Target ID Debug Indicator */}
       <div className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-[#14182a]/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/5 shadow-xl">
         <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_8px_#4ade80]' : 'bg-red-500'}`} />
         <span className="text-[10px] font-bold text-white/40 uppercase tracking-tighter">Syncing: <span className="text-[#f59e0b]">{demoId}</span></span>
@@ -196,16 +371,20 @@ function UploadContent() {
           <p className="text-sm mt-1" style={{color:'#7f849c'}}>Share to the live wall!</p>
         </div>
 
+        {validationMessage && (
+          <div className="nm-card px-4 py-3 mb-4 text-sm text-center" style={{color:'#fbbf24'}}>{validationMessage}</div>
+        )}
+
         <div className="nm-card p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Photos ({photos.length}/5)</h2>
-            {!uploading && photos.length < 5 && (
+            <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Photos ({photos.length}/{MAX_IMAGES})</h2>
+            {!uploading && photos.length < MAX_IMAGES && (
               <button onClick={() => photoInputRef.current?.click()} className="nm-btn px-3 py-1.5 text-xs text-[#f59e0b] font-bold">
                 + Add Photo
               </button>
             )}
           </div>
-          <input type="file" accept="image/*" multiple ref={photoInputRef} onChange={handlePhotoSelect} className="hidden" />
+          <input type="file" accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic,image/heif" multiple ref={photoInputRef} onChange={handlePhotoSelect} className="hidden" />
           
           {photos.length === 0 ? (
             <div className="nm-inset p-8 text-center rounded-xl border-dashed border-2" style={{borderColor: '#252c46'}}>
@@ -229,14 +408,14 @@ function UploadContent() {
 
         <div className="nm-card p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Video ({videos.length}/1)</h2>
+            <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Video ({videos.length}/{MAX_VIDEOS})</h2>
             {!uploading && videos.length === 0 && (
               <button onClick={() => videoInputRef.current?.click()} className="nm-btn px-3 py-1.5 text-xs text-[#f59e0b] font-bold">
                 + Add Video
               </button>
             )}
           </div>
-          <input type="file" accept="video/*" ref={videoInputRef} onChange={handleVideoSelect} className="hidden" />
+          <input type="file" accept=".mp4,video/mp4" ref={videoInputRef} onChange={handleVideoSelect} className="hidden" />
 
           {videos.length === 0 ? (
             <div className="nm-inset p-8 text-center rounded-xl border-dashed border-2" style={{borderColor: '#252c46'}}>

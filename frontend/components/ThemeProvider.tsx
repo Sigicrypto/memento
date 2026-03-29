@@ -47,10 +47,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  // Prevent flash of incorrect theme
-  if (!mounted) {
-    return <div style={{ visibility: 'hidden' }}>{children}</div>;
-  }
+  // Allow SSR to render the default theme (dark) to prevent layout shifts
+  // Client-side theme switching will happen after hydration without hiding the content
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

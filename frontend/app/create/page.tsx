@@ -25,15 +25,22 @@ export default function CreateEventPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) { router.push('/auth'); return; }
+    console.log("[create] user:", user?.id);
+    console.log("[create] name:", name);
+    console.log("[create] customSlug:", customSlug);
+    
+    if (!user) { console.log("[create] no user, redirecting to auth"); router.push('/auth'); return; }
     setLoading(true);
     setError('');
 
     const slug = customSlug.trim() || generateSlug(name);
+    console.log("[create] final slug:", slug);
     
     // If custom slug provided, check if it's already taken
     if (customSlug) {
-      const { data: existing } = await supabase.from('events').select('id').eq('slug', slug).single();
+      console.log("[create] checking custom slug availability");
+      const { data: existing, error: checkError } = await supabase.from('events').select('id').eq('slug', slug).single();
+      console.log("[create] slug check result:", { existing, checkError });
       if (existing) {
         setError('This custom link is already taken. Please try another.');
         setLoading(false);
@@ -41,13 +48,21 @@ export default function CreateEventPage() {
       }
     }
 
+    console.log("[create] inserting event:", { name, slug, owner_id: user.id });
     const { error: dbError } = await supabase.from('events').insert({
       name, slug, owner_id: user.id, created_at: new Date().toISOString(),
       password: password || null,
     });
 
+    console.log("[create] insert error:", dbError);
     if (dbError) { setError(dbError.message); setLoading(false); return; }
+    
     setCreatedSlug(slug);
+    console.log("[create] created slug:", slug);
+    const uploadUrl = createdSlug
+      ? `${typeof window !== 'undefined' ? window.location.origin : ''}/mobile/${createdSlug}` : '';
+    console.log("[create] upload URL:", uploadUrl);
+    
     setLoading(false);
   };
 

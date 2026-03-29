@@ -11,8 +11,8 @@ export default function MainContent({ children }: { children: React.ReactNode })
     setMounted(true);
   }, []);
   
-  // Prevent hydration mismatch by using consistent initial state
-  const isLanding = mounted ? pathname === '/' : false;
+  // Use pathname directly to ensure server and client render the same layout
+  const isLanding = pathname === '/';
 
   return (
     <main className={`flex-1 w-full ${isLanding ? '' : 'pt-20'}`}>

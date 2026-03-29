@@ -89,6 +89,8 @@ export default function WallPage() {
   const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [showBestShots, setShowBestShots] = useState(false);
   const [newPhotoId, setNewPhotoId] = useState<string | null>(null);
+  const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
@@ -158,15 +160,25 @@ export default function WallPage() {
   // Fetch event info
   useEffect(() => {
     const fetchEvent = async () => {
+      console.log("[wall] fetching event for slug:", slug);
+      setLoading(true);
+      setErrorStatus(null);
       const { data, error } = await supabase
         .from('events')
         .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id')
         .eq('slug', slug)
         .single();
 
-      if (error || !data) { setNotFound(true); return; }
+      console.log("[wall] event fetch result:", { data, error });
+      if (error || !data) { 
+        console.log("[wall] event not found, setting notFound");
+        setNotFound(true); 
+        setLoading(false);
+        return; 
+      }
       setEventName(data.name);
       setEventId(data.id);
+      console.log("[wall] event loaded:", { id: data.id, name: data.name });
       if (data.theme_primary_color && data.theme_secondary_color) {
         setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
       }
@@ -178,14 +190,20 @@ export default function WallPage() {
       }
 
       // Fetch owner's branding
-      const { data: ownerData } = await supabase.auth.admin.getUserById(data.owner_id);
-      const owner = ownerData.user;
-      if (owner?.user_metadata?.plan_tier === 'white_label') {
-        setBrand({
-          logoUrl: owner.user_metadata.brand_logo_url || null,
-          colors: owner.user_metadata.brand_colors || null,
-        });
+      try {
+        const { data: ownerData } = await supabase.auth.admin.getUserById(data.owner_id);
+        const owner = ownerData?.user;
+        if (owner?.user_metadata?.plan_tier === 'white_label') {
+          setBrand({
+            logoUrl: owner.user_metadata.brand_logo_url || null,
+            colors: owner.user_metadata.brand_colors || null,
+          });
+        }
+      } catch (brandingErr) {
+        console.warn('Failed to fetch branding info:', brandingErr);
       }
+      
+      setLoading(false);
     };
     fetchEvent();
   }, [slug]);
@@ -195,16 +213,21 @@ export default function WallPage() {
     if (!eventId) return;
 
     const fetchPhotos = async () => {
+      console.log("[wall] fetching photos for eventId:", eventId);
+      console.log("[wall] moderation mode:", moderationMode);
       let query = supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
       if (moderationMode) {
         query = query.eq('approved', true);
       }
       const { data, error } = await query;
 
+      console.log("[wall] photos fetch result:", { data: data?.length || 0, error });
       if (error) {
-        console.error('Error fetching photos with reactions:', error);
+        console.error('[wall] Error fetching photos with reactions:', error);
+        setErrorStatus(`Database Error: ${error.message}. Please check if the 'get_photos_with_reactions' RPC is created.`);
       } else if (data) {
         setPhotos(data as Photo[]);
+        console.log("[wall] photos loaded:", data.length, "items");
       }
     };
     fetchPhotos();
@@ -218,7 +241,7 @@ export default function WallPage() {
           table: 'photos'
         },
         (payload) => {
-          console.log('New photo received:', payload.new);
+          console.log('[wall] New photo received via realtime:', payload.new);
           const newPhoto = payload.new as Photo;
           
           // Filter on client side to ensure we only get photos for this event
@@ -226,10 +249,10 @@ export default function WallPage() {
             setPhotos((prev) => {
               // Check if photo already exists
               if (prev.some(p => p.id === newPhoto.id)) {
-                console.log('Photo already exists, skipping');
+                console.log('[wall] Photo already exists, skipping');
                 return prev;
               }
-              console.log('Adding new photo to wall');
+              console.log('[wall] Adding new photo to wall:', newPhoto.id);
               return [...prev, newPhoto];
             });
             
@@ -240,7 +263,7 @@ export default function WallPage() {
               setTimeout(() => setConfettiTrigger(false), 100);
             }
           } else {
-            console.log('Photo not for this event, ignoring');
+            console.log('[wall] Photo not for this event, ignoring');
           }
         }
       )
@@ -251,7 +274,7 @@ export default function WallPage() {
           table: 'photos'
         },
         (payload) => {
-          console.log('Photo deleted:', payload.old);
+          console.log('[wall] Photo deleted via realtime:', payload.old);
           const oldPhoto = payload.old as Photo;
           
           // Filter on client side
@@ -262,13 +285,13 @@ export default function WallPage() {
       )
       .subscribe((status) => {
         setRealtimeStatus(status);
-        console.log(`Realtime subscription status [${eventId}]:`, status);
+        console.log(`[wall] Realtime subscription status [${eventId}]:`, status);
         
         if (status === 'SUBSCRIBED') {
-          console.log('✅ Successfully subscribed to real-time updates');
+          console.log('[wall] ✅ Successfully subscribed to real-time updates');
           stopPolling(); // Stop polling if WebSocket works
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          console.error('❌ Realtime subscription failed, falling back to polling');
+          console.error('[wall] ❌ Realtime subscription failed, falling back to polling');
           startPolling(); // Start polling as fallback
         }
       });
@@ -276,7 +299,7 @@ export default function WallPage() {
     // Start polling as backup if WebSocket doesn't connect within 3 seconds
     const fallbackTimer = setTimeout(() => {
       if (realtimeStatus === 'connecting') {
-        console.log('⚠️ WebSocket taking too long, starting polling immediately');
+        console.log('[wall] ⚠️ WebSocket taking too long, starting polling immediately');
         startPolling();
       }
     }, 3000);
@@ -388,6 +411,33 @@ export default function WallPage() {
   const uploadUrl = typeof window !== 'undefined'
     ? `${window.location.protocol}//${window.location.host}/mobile/${slug}`
     : '';
+
+  if (loading) {
+    return (
+      <div className="nm-page flex items-center justify-center">
+        <div className="text-center">
+          <div className="nm-circle w-16 h-16 border-4 border-[#f59e0b] border-t-transparent animate-spin rounded-full mb-4"></div>
+          <p className="text-[#7f849c] font-medium animate-pulse">Entering the Wall...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorStatus) {
+    return (
+      <div className="nm-page flex items-center justify-center px-4">
+        <div className="nm-card max-w-lg text-center p-10">
+          <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">⚠️</div>
+          <h1 className="text-2xl font-bold mb-3" style={{color:'#e2e8f0'}}>System Error</h1>
+          <p className="mb-6 text-sm" style={{color:'#fca5a5'}}>{errorStatus}</p>
+          <div className="flex flex-col gap-3">
+            <button onClick={() => window.location.reload()} className="nm-btn nm-btn-accent px-6 py-3 font-bold">🔄 Retry Connection</button>
+            <Link href="/" className="nm-btn px-6 py-3 text-sm" style={{color:'#7f849c'}}>🏠 Go Home</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (eventExpired) {
     return (

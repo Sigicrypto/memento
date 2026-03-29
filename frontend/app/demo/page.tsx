@@ -5,85 +5,134 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { QRCodeSVG } from 'qrcode.react';
+import {
+  clearDemoData,
+  DemoMedia,
+  getDemoPhotosKey,
+  getDemoTimeLeft,
+  getOrCreateDemoExpiry,
+  getOrCreateDemoId,
+  readDemoPhotos,
+  writeDemoPhotos,
+} from '@/lib/demoWall';
 
-// Demo photos with different themes
-const initialDemoPhotos = [
-  { id: 1, emoji: '🎓', caption: 'Graduation Day', uploader: 'Alex Chen', delay: 0.1 },
-  { id: 2, emoji: '🌸', caption: 'Spring Wedding', uploader: 'Sarah M.', delay: 0.3 },
-  { id: 3, emoji: '🎂', caption: 'Birthday Surprise', uploader: 'Mike R.', delay: 0.5 },
-  { id: 4, emoji: '🏖️', caption: 'Beach Party', uploader: 'Lisa K.', delay: 0.7 },
-  { id: 5, emoji: '🎊', caption: 'New Year Eve', uploader: 'Tom H.', delay: 0.9 },
-  { id: 6, emoji: '💐', caption: 'Anniversary', uploader: 'Emma L.', delay: 1.1 },
-  { id: 7, emoji: '🥂', caption: 'Corporate Event', uploader: 'David P.', delay: 1.3 },
-  { id: 8, emoji: '🎉', caption: 'Baby Shower', uploader: 'Rachel S.', delay: 1.5 },
-  { id: 9, emoji: '✨', caption: 'Festival Fun', uploader: 'Chris M.', delay: 1.7 },
-];
+type ViewMode = 'grid' | 'polaroid' | 'slideshow';
+
+function isViewMode(value: string): value is ViewMode {
+  return value === 'grid' || value === 'polaroid' || value === 'slideshow';
+}
+
+function mergeDemoMedia(items: DemoMedia[], incoming: DemoMedia) {
+  return [incoming, ...items.filter((item) => item.id !== incoming.id && item.url !== incoming.url)];
+}
 
 export default function DemoPage() {
   const { user } = useAuth();
-  const [viewMode, setViewMode] = useState<'grid' | 'polaroid' | 'slideshow'>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  
   const [demoId, setDemoId] = useState<string>('');
-  const [photos, setPhotos] = useState<any[]>(initialDemoPhotos);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const [photos, setPhotos] = useState<DemoMedia[]>([]);
+  const [timeLeft, setTimeLeft] = useState(300);
   const [isConnected, setIsConnected] = useState(false);
+  const [uploadUrl, setUploadUrl] = useState('');
 
-  // Initialize demo ID and timer
   useEffect(() => {
-    const newDemoId = Date.now().toString(36).slice(-4) + Math.random().toString(36).substring(7, 10);
-    setDemoId(newDemoId);
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (isViewMode(hash)) {
+        setViewMode(hash);
+      }
+    };
 
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    const newDemoId = getOrCreateDemoId(new URLSearchParams(window.location.search).get('id'));
+    const expiryAt = getOrCreateDemoExpiry(newDemoId);
+    const syncCountdown = () => {
+      const remainingSeconds = Math.ceil(getDemoTimeLeft(newDemoId) / 1000);
+      setTimeLeft(remainingSeconds);
+      if (remainingSeconds <= 0) {
+        clearDemoData(newDemoId);
+        window.location.href = '/demo';
+      }
+    };
+
+    setDemoId(newDemoId);
+    setPhotos(readDemoPhotos(newDemoId));
+    setTimeLeft(Math.max(0, Math.ceil((expiryAt - Date.now()) / 1000)));
+    syncCountdown();
     const timerInterval = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          window.location.reload(); 
-          return 0;
-        }
-        return prev - 1;
-      });
+      syncCountdown();
     }, 1000);
 
     return () => clearInterval(timerInterval);
   }, []);
 
-  // Listen to live uploads
   useEffect(() => {
     if (!demoId) return;
 
-    console.log(`[Wall] Subscribing to: demo-${demoId}`);
+    const syncFromStorage = () => {
+      setPhotos(readDemoPhotos(demoId));
+    };
+
+    syncFromStorage();
+
+    const handleStorage = (event: StorageEvent) => {
+      if (!event.key || event.key === getDemoPhotosKey(demoId)) {
+        syncFromStorage();
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+
     const channel = supabase.channel(`demo-${demoId}`);
-    
+
     channel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
-      console.log('[Wall] Broadcast received:', payload);
-      const data = payload.payload;
+      const data = payload.payload as Partial<DemoMedia>;
+      if (!data.url || !data.type) {
+        return;
+      }
+      const mediaUrl = data.url;
+      const mediaType: DemoMedia['type'] = data.type === 'video' ? 'video' : 'image';
+
       setPhotos(prev => {
-        const newPhoto = {
-          id: data.id || Date.now(),
-          url: data.url,
-          type: data.type,
-          caption: data.caption,
-          uploader: data.uploader,
-          delay: 0.1
+        const newPhoto: DemoMedia = {
+          id: String(data.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+          url: mediaUrl,
+          type: mediaType,
+          caption: data.caption || '',
+          uploader: data.uploader || 'Demo Guest',
+          createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
         };
-        return [newPhoto, ...prev];
+        const updatedPhotos = mergeDemoMedia(prev, newPhoto);
+        writeDemoPhotos(demoId, updatedPhotos);
+        return updatedPhotos;
       });
     });
 
     channel.subscribe((status) => {
-      console.log(`[Wall] Subscription status: ${status}`);
       setIsConnected(status === 'SUBSCRIBED');
     });
 
     return () => {
+      window.removeEventListener('storage', handleStorage);
       supabase.removeChannel(channel);
     };
   }, [demoId]);
 
-  // Slideshow auto-play
   useEffect(() => {
-    if (viewMode === 'slideshow' && isPlaying) {
+    if (photos.length > 0 && currentSlide >= photos.length) {
+      setCurrentSlide(0);
+    }
+  }, [currentSlide, photos.length]);
+
+  useEffect(() => {
+    if (viewMode === 'slideshow' && isPlaying && photos.length > 1) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % photos.length);
       }, 3000);
@@ -91,7 +140,12 @@ export default function DemoPage() {
     }
   }, [viewMode, isPlaying, photos.length]);
 
-  const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/demo/upload?id=${demoId}` : '';
+  useEffect(() => {
+    if (demoId) {
+      setUploadUrl(`${window.location.origin}/demo/upload?id=${demoId}`);
+    }
+  }, [demoId]);
+
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
@@ -151,7 +205,10 @@ export default function DemoPage() {
           {/* View Mode Controls */}
           <div className="flex justify-center gap-2">
             {(['grid','polaroid','slideshow'] as const).map((mode) => (
-              <button key={mode} onClick={() => setViewMode(mode)}
+              <button key={mode} onClick={() => {
+                setViewMode(mode);
+                window.location.hash = mode;
+              }}
                 className="nm-btn px-4 py-2 text-sm capitalize"
                 style={{
                   color: viewMode === mode ? '#f59e0b' : '#7f849c',
@@ -169,28 +226,34 @@ export default function DemoPage() {
         {viewMode === 'grid' && (
           <div className="flex justify-center">
             <div className="max-w-6xl w-full">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-                {photos.map((photo, i) => (
-                <div key={photo.id || i} className="nm-card group relative aspect-square overflow-hidden hover:scale-105 transition-transform w-full max-w-[240px]"
-                  style={{animationDelay:`${photo.delay}s`}}>
-                  <div className="flex flex-col items-center justify-center h-full p-2 relative z-10">
-                    {photo.url ? (
-                      photo.type === 'video' ? (
-                        <video src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity" autoPlay muted loop playsInline />
-                      ) : (
-                        <img src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity" alt="Upload" />
-                      )
-                    ) : (
-                      <span className="text-4xl mb-2 z-10">{photo.emoji}</span>
-                    )}
-                    <div className="z-10 bg-[#1e2235]/60 backdrop-blur-md p-2 rounded-lg mt-auto mb-2 text-center w-full">
-                      <p className="text-sm font-medium truncate" style={{color:'#e2e8f0'}}>{photo.caption}</p>
-                      <p className="text-xs mt-1 truncate" style={{color:'#7f849c'}}>by {photo.uploader}</p>
+              {photos.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="nm-circle w-20 h-20 mx-auto mb-6 text-5xl">📷</div>
+                  <h2 className="text-2xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
+                  <p className="text-sm mb-6" style={{color:'#7f849c'}}>Scan the QR code above to upload the first photo!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                  {photos.map((photo, i) => (
+                  <div key={photo.id || i} className="nm-card group relative aspect-square overflow-hidden hover:scale-105 transition-transform w-full max-w-[240px]"
+                    style={{animationDelay:`${i * 0.12}s`}}>
+                    <div className="flex flex-col items-center justify-center h-full p-2 relative z-10">
+                      {photo.url ? (
+                        photo.type === 'video' ? (
+                          <video src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity" autoPlay muted loop playsInline preload="metadata" />
+                        ) : (
+                          <img src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity" alt="Upload" loading="lazy" />
+                        )
+                      ) : null}
+                      <div className="z-10 bg-[#1e2235]/60 backdrop-blur-md p-2 rounded-lg mt-auto mb-2 text-center w-full">
+                        <p className="text-sm font-medium truncate" style={{color:'#e2e8f0'}}>{photo.caption}</p>
+                        <p className="text-xs mt-1 truncate" style={{color:'#7f849c'}}>by {photo.uploader}</p>
+                      </div>
                     </div>
                   </div>
+                ))}
                 </div>
-              ))}
-              </div>
+              )}
             </div>
           </div>
         )}
@@ -199,65 +262,84 @@ export default function DemoPage() {
         {viewMode === 'polaroid' && (
           <div className="flex justify-center">
             <div className="max-w-6xl w-full">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-                {photos.map((photo, index) => (
-                <div key={photo.id || index} className="relative w-full max-w-[240px]"
-                  style={{animation:`float 3s ease-in-out infinite`, animationDelay:`${index * 0.5}s`}}>
-                  <div className="nm-card p-3 transform rotate-3 hover:rotate-0 transition-transform">
-                    <div className="nm-inset aspect-square rounded-xl flex items-center justify-center mb-2 overflow-hidden relative">
-                      {photo.url ? (
-                        photo.type === 'video' ? (
-                          <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
-                        ) : (
-                          <img src={photo.url} className="w-full h-full object-cover" alt="Upload" />
-                        )
-                      ) : (
-                         <span className="text-5xl">{photo.emoji}</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-center font-medium" style={{color:'#e2e8f0'}}>{photo.caption}</p>
-                  </div>
+              {photos.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="nm-circle w-20 h-20 mx-auto mb-6 text-5xl">📷</div>
+                  <h2 className="text-2xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
+                  <p className="text-sm mb-6" style={{color:'#7f849c'}}>Scan the QR code above to upload the first photo!</p>
                 </div>
-              ))}
-              </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                  {photos.map((photo, index) => (
+                  <div key={photo.id || index} className="relative w-full max-w-[240px]"
+                    style={{animation:`float 3s ease-in-out infinite`, animationDelay:`${index * 0.5}s`}}>
+                    <div className="nm-card p-3 transform rotate-3 hover:rotate-0 transition-transform">
+                      <div className="nm-inset aspect-square rounded-xl flex items-center justify-center mb-2 overflow-hidden relative">
+                        {photo.url ? (
+                          photo.type === 'video' ? (
+                            <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
+                          ) : (
+                            <img src={photo.url} className="w-full h-full object-cover" alt="Upload" loading="lazy" />
+                          )
+                        ) : null}
+                      </div>
+                      <p className="text-xs text-center font-medium" style={{color:'#e2e8f0'}}>{photo.caption}</p>
+                    </div>
+                  </div>
+                ))}
+                </div>
+              )}
             </div>
           </div>
         )}
 
         {/* Slideshow View */}
-        {viewMode === 'slideshow' && photos.length > 0 && (
+        {viewMode === 'slideshow' && (
           <div className="flex justify-center">
             <div className="max-w-4xl w-full">
-              <div className="nm-card relative overflow-hidden" style={{aspectRatio:'16/9'}}>
-                <div className="flex items-center justify-center h-full relative">
-                  {photos[currentSlide].url ? (
-                    photos[currentSlide].type === 'video' ? (
-                      <video src={photos[currentSlide].url} className="w-full h-full object-contain absolute" autoPlay muted loop playsInline />
-                    ) : (
-                      <img src={photos[currentSlide].url} className="w-full h-full object-contain absolute" alt="Upload" />
-                    )
-                  ) : (
-                     <span className="text-8xl">{photos[currentSlide].emoji}</span>
-                  )}
+              {photos.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="nm-circle w-20 h-20 mx-auto mb-6 text-5xl">📷</div>
+                  <h2 className="text-2xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
+                  <p className="text-sm mb-6" style={{color:'#7f849c'}}>Scan the QR code above to upload the first photo!</p>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 z-10" style={{background:'linear-gradient(to top, #14182a, transparent)'}}>
-                  <h3 className="text-xl font-semibold drop-shadow-lg" style={{color:'#e2e8f0'}}>{photos[currentSlide].caption}</h3>
-                  <p className="text-sm drop-shadow-md" style={{color:'#f59e0b'}}>by {photos[currentSlide].uploader}</p>
-                </div>
-                <button onClick={() => setIsPlaying(!isPlaying)}
-                  className="nm-circle w-12 h-12 absolute bottom-6 right-6 z-20" style={{color:'#e2e8f0'}}>
-                  {isPlaying
-                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>}
-                </button>
-              </div>
-              <div className="flex justify-center gap-2 mt-4 flex-wrap px-4">
-                {photos.map((_, index) => (
-                  <button key={index} onClick={() => setCurrentSlide(index)}
-                    className="w-2 h-2 rounded-full transition-all flex-shrink-0"
-                    style={{background: index === currentSlide ? '#f59e0b' : '#252c46'}} />
-                ))}
-              </div>
+              ) : (
+                <>
+                  <div
+                    className="nm-card relative overflow-hidden"
+                    style={{aspectRatio:'16/9'}}
+                    onMouseEnter={() => setIsPlaying(false)}
+                    onTouchStart={() => setIsPlaying(false)}
+                  >
+                    <div className="flex items-center justify-center h-full relative">
+                      {photos[currentSlide].url ? (
+                        photos[currentSlide].type === 'video' ? (
+                          <video src={photos[currentSlide].url} className="w-full h-full object-contain absolute transition-opacity duration-300" autoPlay muted loop playsInline preload="metadata" />
+                        ) : (
+                          <img src={photos[currentSlide].url} className="w-full h-full object-contain absolute transition-opacity duration-300" alt="Upload" />
+                        )
+                      ) : null}
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 z-10" style={{background:'linear-gradient(to top, #14182a, transparent)'}}>
+                      <h3 className="text-xl font-semibold drop-shadow-lg" style={{color:'#e2e8f0'}}>{photos[currentSlide].caption}</h3>
+                      <p className="text-sm drop-shadow-md" style={{color:'#f59e0b'}}>by {photos[currentSlide].uploader}</p>
+                    </div>
+                    <button onClick={() => setIsPlaying(!isPlaying)}
+                      className="nm-circle w-12 h-12 absolute bottom-6 right-6 z-20" style={{color:'#e2e8f0'}}>
+                      {isPlaying
+                        ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>}
+                    </button>
+                  </div>
+                  <div className="flex justify-center gap-2 mt-4 flex-wrap px-4">
+                    {photos.map((_, index) => (
+                      <button key={index} onClick={() => setCurrentSlide(index)}
+                        className="w-2 h-2 rounded-full transition-all flex-shrink-0"
+                        style={{background: index === currentSlide ? '#f59e0b' : '#252c46'}} />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

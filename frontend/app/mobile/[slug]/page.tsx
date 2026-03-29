@@ -80,17 +80,21 @@ export default function MobilePage() {
   // Fetch event info
   useEffect(() => {
     const fetchEvent = async () => {
+      console.log("[mobile] fetching event for slug:", slug);
       const { data, error } = await supabase
         .from('events')
         .select('id, name, enable_smart_privacy, plan_type, enable_safety_filter')
         .eq('slug', slug)
         .single();
 
+      console.log("[mobile] event fetch result:", { data, error });
       if (error || !data) {
+        console.log("[mobile] event not found, redirecting to 404");
         router.push('/404');
         return;
       }
       setEvent(data as Event);
+      console.log("[mobile] event loaded:", data);
     };
     fetchEvent();
   }, [slug, router]);
@@ -148,7 +152,24 @@ export default function MobilePage() {
   };
 
   const handleUpload = async () => {
-    if (files.length === 0 || !event?.id || !guestId) return;
+    if (files.length === 0 || !event?.id || !guestId) {
+      console.error("[mobile] upload prerequisites missing", { 
+        filesCount: files.length, 
+        eventId: event?.id, 
+        guestId 
+      });
+      return;
+    }
+
+    console.log("[mobile] starting upload", {
+      event,
+      guestId,
+      files: files.map(f => ({
+        name: f.name,
+        type: f.type,
+        size: f.size
+      }))
+    });
 
     setUploading(true);
     setUploadProgress(0);
@@ -158,29 +179,40 @@ export default function MobilePage() {
       const file = files[i];
       const filePath = `${event.id}/${guestId}-${Date.now()}-${file.name}`;
       
+      console.log("[mobile] uploading file:", file.name);
+      console.log("[mobile] file path:", filePath);
+      
       const { error: uploadError } = await supabase.storage.from('photos').upload(filePath, file);
 
+      console.log("[mobile] storage upload error:", uploadError);
       if (uploadError) {
         setError(`Upload failed: ${uploadError.message}`);
         setUploading(false);
         return;
       }
 
-      const { error: dbError } = await supabase.from('photos').insert({
+      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      const photoData = {
         event_id: event.id,
         storage_path: filePath,
         uploader_name: uploaderName || 'Anonymous',
         caption: caption || null,
         guest_id: guestId,
-        media_type: file.type.startsWith('video/') ? 'video' : 'image',
+        media_type: mediaType,
         approved: !event?.enable_safety_filter,
-      });
+      };
 
+      console.log("[mobile] inserting photo metadata:", photoData);
+      const { error: dbError } = await supabase.from('photos').insert(photoData);
+
+      console.log("[mobile] db insert error:", dbError);
       if (dbError) {
         setError(`Database error: ${dbError.message}`);
         setUploading(false);
         return;
       }
+      
+      console.log("[mobile] upload success for:", file.name);
       setUploadProgress(((i + 1) / files.length) * 100);
     }
 
