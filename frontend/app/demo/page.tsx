@@ -15,6 +15,7 @@ import {
   readDemoPhotos,
   writeDemoPhotos,
 } from '@/lib/demoWall';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow';
 
@@ -90,7 +91,7 @@ export default function DemoPage() {
 
     window.addEventListener('storage', handleStorage);
 
-    const channel = supabase.channel(`demo-${demoId}`);
+    const channel = supabase.channel(`demo-wall-${demoId}`);
 
     channel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
       const data = payload.payload as Partial<DemoMedia>;
@@ -161,9 +162,8 @@ export default function DemoPage() {
       <header className="fixed top-0 left-0 right-0 z-40 bg-[#1e2235]/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl" style={{color: '#e2e8f0'}}>
-              <span className="nm-circle w-10 h-10 text-lg">📷</span>
-              <span>Memento</span>
+            <Link href="/">
+              <AnimatedLogo width={180} height={60} />
             </Link>
             <div className="flex items-center gap-4">
               {user ? (

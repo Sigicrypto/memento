@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import AnimatedLogo from '@/components/AnimatedLogo';
 import './landing.css';
 
 export default function LandingPage() {
@@ -50,7 +51,7 @@ export default function LandingPage() {
   const Sym = showingINR ? "₹" : "$";
 
   return (
-      <div className="lp pt-[calc(96px+env(safe-area-inset-top))]">
+      <div className="lp pt-[calc(140px+env(safe-area-inset-top))]">
 
       <div className="orbs">
         <div className="orb orb1" />
@@ -62,9 +63,8 @@ export default function LandingPage() {
 
       {/* NAV */}
       <nav className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
-        <Link href="/" className="nav-logo">
-          <span className="nav-logo-icon">📷</span>
-          <span className="nav-logo-text">Memento</span>
+        <Link href="/">
+          <AnimatedLogo width={220} height={80} />
         </Link>
         <div className="nav-mid">
           <Link href="#features">Features</Link>
@@ -513,10 +513,9 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="lp-footer">
         <div className="footer-top">
-          <div className="footer-brand">
-            <span className="nav-logo-icon">📷</span>
-            <span className="nav-logo-text">Memento</span>
-          </div>
+          <Link href="/">
+            <AnimatedLogo width={180} height={60} />
+          </Link>
           <div className="footer-cols">
             <div className="footer-col">
               <h4>Product</h4>

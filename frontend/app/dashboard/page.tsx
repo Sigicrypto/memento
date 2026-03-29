@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { QRCodeSVG } from 'qrcode.react';
+import { createRoot } from 'react-dom/client';
 
 interface Event {
   id: string;
@@ -58,48 +60,123 @@ export default function DashboardPage() {
   };
 
   const downloadPrintablePDF = async (event: Event) => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: html2canvas } = await import('html2canvas');
+
     const uploadUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`;
     
-    // Simple print functionality
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>${event.name} - Upload Guide</title>
-            <style>
-              body { font-family: Arial, sans-serif; text-align: center; padding: 40px; }
-              h1 { color: #333; margin-bottom: 30px; font-size: 24px; }
-              h2 { color: #666; margin-bottom: 20px; }
-              .url { font-family: monospace; background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 500px; font-size: 14px; word-break: break-all; }
-              .instructions { margin: 30px auto; max-width: 500px; text-align: left; }
-              .instructions h3 { color: #333; margin-bottom: 15px; }
-              .instructions ol { line-height: 1.6; }
-              .border { border: 2px solid #9333ea; border-radius: 10px; padding: 30px; margin: 20px auto; max-width: 600px; }
-              @media print { body { padding: 20px; } .border { margin: 0; } }
-            </style>
-          </head>
-          <body>
-            <div class="border">
-              <h1>${event.name}</h1>
-              <h2>Scan to Upload Photos</h2>
-              <div class="url">${uploadUrl}</div>
-              <div class="instructions">
-                <h3>How to Upload:</h3>
-                <ol>
-                  <li>Open your phone camera</li>
-                  <li>Point at the QR code on the wall</li>
-                  <li>Tap the link that appears</li>
-                  <li>Upload your photos!</li>
-                </ol>
-              </div>
-            </div>
-            <script>window.onload = () => window.print();</script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+    // Create a temporary container for the PDF content
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    document.body.appendChild(container);
+
+    // Render the Tabletop Sign Template
+    const root = createRoot(container);
+    
+    const TabletopTemplate = () => (
+      <div id="tabletop-sign" style={{
+        width: '1122px', // A4 Landscape at 96 DPI
+        height: '794px',
+        background: '#09090b',
+        color: '#f4f4f5',
+        display: 'flex',
+        padding: '0',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        overflow: 'hidden',
+        position: 'relative'
+      }}>
+        {/* Background Ambient Glows */}
+        <div style={{position:'absolute', top:'-100px', left:'-100px', width:'400px', height:'400px', background:'radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%)', filter:'blur(50px)'}}></div>
+        <div style={{position:'absolute', bottom:'-100px', right:'-100px', width:'500px', height:'500px', background:'radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%)', filter:'blur(60px)'}}></div>
+
+        {/* Vertical Center Fold Line (Visual indicator for host) */}
+        <div style={{position:'absolute', left:'50%', top:'10%', bottom:'10%', width:'1px', background:'rgba(255,255,255,0.05)', borderLeft:'1px dashed rgba(255,255,255,0.2)'}}></div>
+        
+        {/* Left Side - Instructions (Back of the stand) */}
+        <div style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center', padding:'60px', borderRight:'1px solid rgba(255,255,255,0.03)'}}>
+           <div style={{display:'inline-flex', padding:'8px 16px', borderRadius:'100px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', fontSize:'12px', fontWeight:'700', color:'#a1a1aa', marginBottom:'24px', alignSelf:'flex-start'}}>
+             STEP-BY-STEP GUIDE
+           </div>
+           <h2 style={{fontSize:'36px', fontWeight:'800', marginBottom:'40px', background:'linear-gradient(135deg, #fff 0%, #a1a1aa 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent'}}>Capture every angle 📸</h2>
+           <div style={{display:'flex', flexDirection:'column', gap:'32px'}}>
+             {[
+               { i: '1', t: 'Scan', d: 'Point your camera at the QR code on the front.' },
+               { i: '2', t: 'Upload', d: 'Select your favorite photos or videos.' },
+               { i: '3', t: 'See it live', d: 'Watch as your moments hit the big screen!' }
+             ].map((step) => (
+               <div key={step.i} style={{display:'flex', gap:'20px', alignItems:'flex-start'}}>
+                 <div style={{width:'40px', height:'40px', borderRadius:'12px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px', fontWeight:'800', color:'#9333ea', flexShrink:0}}>{step.i}</div>
+                 <div>
+                   <h4 style={{fontSize:'18px', fontWeight:'700', marginBottom:'4px', color:'#fff'}}>{step.t}</h4>
+                   <p style={{fontSize:'14px', color:'#a1a1aa', lineHeight:'1.5'}}>{step.d}</p>
+                 </div>
+               </div>
+             ))}
+           </div>
+           <div style={{marginTop:'auto', fontSize:'12px', color:'#71717a'}}>
+             No apps to download. Pure magic. <span style={{color:'#9333ea', marginLeft:'8px'}}>memento.events</span>
+           </div>
+        </div>
+
+        {/* Right Side - Call to Action (Front of the stand) */}
+        <div style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px', textAlign:'center'}}>
+           <div style={{width:'100%', maxWidth:'400px'}}>
+             <div style={{marginBottom:'24px'}}>
+               <span style={{fontSize:'12px', fontWeight:'700', letterSpacing:'2px', color:'#9333ea', textTransform:'uppercase'}}>Welcome to</span>
+               <h1 style={{fontSize:'48px', fontWeight:'800', marginTop:'8px', marginBottom:'40px', wordBreak:'break-word'}}>{event.name}</h1>
+             </div>
+             
+             {/* QR Code Container */}
+             <div style={{
+               background: '#fff',
+               padding: '24px',
+               borderRadius: '32px',
+               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+               display: 'inline-block',
+               marginBottom: '32px',
+               position: 'relative'
+             }}>
+               <QRCodeSVG value={uploadUrl} size={240} level="H" />
+             </div>
+
+             <div style={{fontSize:'20px', fontWeight:'700', color:'#fff', marginBottom:'12px'}}>Scan to Upload</div>
+             <div style={{fontSize:'14px', fontFamily:'monospace', color:'#71717a', background:'rgba(255,255,255,0.03)', padding:'8px 16px', borderRadius:'100px', display:'inline-block'}}>
+               {uploadUrl.replace(/https?:\/\//, '')}
+             </div>
+           </div>
+        </div>
+      </div>
+    );
+
+    // Wait a moment for the content to render
+    setTimeout(async () => {
+      try {
+        const element = document.getElementById('tabletop-sign');
+        if (!element) throw new Error('Template not found');
+        
+        const canvas = await html2canvas(element, { 
+          scale: 3, // Higher resolution
+          useCORS: true,
+          backgroundColor: '#09090b'
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`${event.slug}-tabletop-sign.pdf`);
+      } catch (err) {
+        console.error('PDF Generation failed:', err);
+        alert('Failed to generate PDF. Check console for details.');
+      } finally {
+        root.unmount();
+        document.body.removeChild(container);
+      }
+    }, 1000);
   };
 
   const updateSlug = async (eventId: string, newSlug: string) => {

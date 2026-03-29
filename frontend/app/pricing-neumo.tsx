@@ -57,7 +57,7 @@ const PLANS: Plan[] = [
       { label: 'Everything in Plus +', included: true },
       { label: '🤖 AI Auto Album (best shots selection)', included: true },
       { label: '🔒 Smart Privacy Downloads (guests only download photos they\'re in)', included: true },
-      { label: '💧 Watermark control', included: true },
+      { label: '💧 Branding-free experience', included: true },
       { label: '📊 Download analytics', included: true },
       { label: '👤 Face grouping (Beta)', included: true },
       { label: '☁️ Google Drive sync', included: true },
@@ -75,6 +75,7 @@ const PLANS: Plan[] = [
     features: [
       { label: 'Everything in Premium +', included: true },
       { label: '🔥 White Label Features:', included: true },
+      { label: '💧 Watermark control (own branding)', included: true },
       { label: 'Full branding removal (your platform, your identity)', included: true },
       { label: 'Custom domain (e.g. photos.yourbrand.com)', included: true },
       { label: 'Upload your own logo & brand colors', included: true },
@@ -245,8 +246,15 @@ export default async function PricingPage() {
                   <td className="text-center p-4">6 months</td>
                   <td className="text-center p-4">6 months</td>
                 </tr>
-                <tr>
-                  <td className="p-4 text-gray-300">White Label</td>
+                <tr className="border-b border-gray-800">
+                  <td className="p-4 text-gray-300">Clean Wall (No Watermark)</td>
+                  <td className="text-center p-4 text-red-400">❌</td>
+                  <td className="text-center p-4 text-red-400">❌</td>
+                  <td className="text-center p-4">✅</td>
+                  <td className="text-center p-4">✅</td>
+                </tr>
+                <tr className="border-b border-gray-800">
+                  <td className="p-4 text-gray-300">Custom Branding (Own Logo)</td>
                   <td className="text-center p-4 text-red-400">❌</td>
                   <td className="text-center p-4 text-red-400">❌</td>
                   <td className="text-center p-4 text-red-400">❌</td>

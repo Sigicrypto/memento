@@ -100,7 +100,7 @@ function UploadContent() {
   useEffect(() => {
     if (!demoId) return;
 
-    const channel = supabase.channel(`demo-${demoId}-status-check`);
+    const channel = supabase.channel(`demo-wall-${demoId}`);
     channel.subscribe((status) => {
       setIsConnected(status === 'SUBSCRIBED');
     });
@@ -180,7 +180,7 @@ function UploadContent() {
 
     const allFiles = [...photos, ...videos];
     let uploadedCount = 0;
-    const broadcastChannel = supabase.channel(`demo-upload-${demoId}-${Date.now()}`);
+    const broadcastChannel = supabase.channel(`demo-wall-${demoId}`);
 
     try {
       setStatus('Connecting to Wall...');

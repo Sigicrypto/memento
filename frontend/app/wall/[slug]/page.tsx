@@ -79,6 +79,7 @@ export default function WallPage() {
   const [eventExpired, setEventExpired] = useState(false);
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [planTier, setPlanTier] = useState<string>('STARTER');
   const [notFound, setNotFound] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
@@ -165,7 +166,7 @@ export default function WallPage() {
       setErrorStatus(null);
       const { data, error } = await supabase
         .from('events')
-        .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id')
+        .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id, plan_type')
         .eq('slug', slug)
         .single();
 
@@ -178,6 +179,7 @@ export default function WallPage() {
       }
       setEventName(data.name);
       setEventId(data.id);
+      setPlanTier(data.plan_type || 'STARTER');
       console.log("[wall] event loaded:", { id: data.id, name: data.name });
       if (data.theme_primary_color && data.theme_secondary_color) {
         setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
@@ -635,7 +637,15 @@ export default function WallPage() {
                   ) : (
                     <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                   )}
-                  {photo.watermark_url && <img src={photo.watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />}
+                  {/* Tiered Watermark Logic */}
+                  {planTier === 'WHITE_LABEL' && photo.watermark_url && (
+                    <img src={photo.watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
+                  )}
+                  {(planTier === 'STARTER' || planTier === 'PLUS' || planTier === 'FREE') && (
+                    <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
+                      Memento
+                    </div>
+                  )}
                 </div>
                 <div className="text-center flex-1">
                   {photo.caption && <p className="text-sm italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
@@ -669,7 +679,15 @@ export default function WallPage() {
                 ) : (
                   <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`} className="w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw" />
                 )}
-                {photos[0]?.watermark_url && <img src={photos[0].watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />}
+                {/* Tiered Watermark Logic */}
+                {planTier === 'WHITE_LABEL' && photos[0]?.watermark_url && (
+                  <img src={photos[0].watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
+                )}
+                {(planTier === 'STARTER' || planTier === 'PLUS' || planTier === 'FREE') && (
+                  <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
+                    Memento
+                  </div>
+                )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
                 {photo.caption && <p className="text-xs italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
