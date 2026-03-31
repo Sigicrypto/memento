@@ -196,6 +196,39 @@ export default function DemoPage() {
     };
   }, [demoId]);
 
+  // Polling fallback: re-fetch demo_uploads every 5s in case realtime is delayed
+  useEffect(() => {
+    if (!demoId) return;
+    const poll = async () => {
+      const { data } = await supabase
+        .from('demo_uploads')
+        .select('*')
+        .eq('demo_id', demoId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (!data?.length) return;
+      setPhotos(prev => {
+        let updated = [...prev];
+        for (const row of data) {
+          const incoming: DemoMedia = {
+            id: row.id,
+            url: row.url,
+            type: row.type === 'video' ? 'video' : 'image',
+            caption: row.caption || '',
+            uploader: row.uploader || 'Demo Guest',
+            createdAt: new Date(row.created_at).getTime(),
+          };
+          updated = mergeDemoMedia(updated, incoming);
+        }
+        writeDemoPhotos(demoId, updated);
+        return updated;
+      });
+    };
+    poll(); // immediate on mount
+    const interval = setInterval(poll, 5000);
+    return () => clearInterval(interval);
+  }, [demoId]);
+
   useEffect(() => {
     if (photos.length > 0 && currentSlide >= photos.length) setCurrentSlide(0);
   }, [currentSlide, photos.length]);
