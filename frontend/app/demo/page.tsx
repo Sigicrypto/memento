@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -14,8 +14,70 @@ import {
   getOrCreateDemoId,
   readDemoPhotos,
   writeDemoPhotos,
+  upsertDemoPhoto,
 } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import './landing.css';
+
+// Upload constants
+const MAX_IMAGES = 5;
+const MAX_VIDEOS = 1;
+const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']);
+const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4']);
+const ACCEPTED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']);
+const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4']);
+
+function getFileExtension(fileName: string) {
+  return fileName.split('.').pop()?.toLowerCase() || '';
+}
+function isAcceptedImage(file: File) {
+  return ACCEPTED_IMAGE_TYPES.has(file.type) || ACCEPTED_IMAGE_EXTENSIONS.has(getFileExtension(file.name));
+}
+function isAcceptedVideo(file: File) {
+  return ACCEPTED_VIDEO_TYPES.has(file.type) || ACCEPTED_VIDEO_EXTENSIONS.has(getFileExtension(file.name));
+}
+async function compressDemoImage(file: File): Promise<File> {
+  if (file.type === 'image/heic' || file.type === 'image/heif') {
+    return file;
+  }
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) return file;
+    const image = new Image();
+    image.src = URL.createObjectURL(file);
+    await new Promise((resolve) => {
+      image.onload = resolve;
+    });
+    const MAX_WIDTH = 1920;
+    const MAX_HEIGHT = 1080;
+    let width = image.width;
+    let height = image.height;
+    if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+      const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, outputType, 0.92);
+    });
+    if (!blob || blob.size >= file.size) return file;
+    const nextExtension = outputType === 'image/png' ? 'png' : 'jpg';
+    const nextName = file.name.replace(/\.[^.]+$/, `.${nextExtension}`);
+    return new File([blob], nextName, { type: outputType, lastModified: Date.now() });
+  } catch {
+    return file;
+  }
+}
+async function broadcastUpload(demoId: string, payload: DemoMedia) {
+  const channel = supabase.channel(`demo-${demoId}`);
+  await channel.send({ type: 'broadcast', event: 'NEW_UPLOAD', payload });
+  supabase.removeChannel(channel);
+}
 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow';
 
@@ -37,6 +99,17 @@ export default function DemoPage() {
   const [timeLeft, setTimeLeft] = useState(300);
   const [isConnected, setIsConnected] = useState(false);
   const [uploadUrl, setUploadUrl] = useState('');
+  
+  // Upload states
+  const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
+  const [uploadVideos, setUploadVideos] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -147,6 +220,118 @@ export default function DemoPage() {
     }
   }, [demoId]);
 
+  // Upload handlers
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validPhotos = files.filter(isAcceptedImage);
+    const invalidFiles = files.filter(f => !isAcceptedImage(f));
+    
+    if (invalidFiles.length > 0) {
+      setValidationMessage(`Invalid files: ${invalidFiles.map(f => f.name).join(', ')}`);
+      setTimeout(() => setValidationMessage(null), 5000);
+      return;
+    }
+    
+    const totalPhotos = uploadPhotos.length + validPhotos.length;
+    if (totalPhotos > MAX_IMAGES) {
+      setValidationMessage(`Maximum ${MAX_IMAGES} photos allowed`);
+      setTimeout(() => setValidationMessage(null), 5000);
+      return;
+    }
+    
+    setUploadPhotos(prev => [...prev, ...validPhotos]);
+    setUploadError(null);
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validVideos = files.filter(isAcceptedVideo);
+    const invalidFiles = files.filter(f => !isAcceptedVideo(f));
+    
+    if (invalidFiles.length > 0) {
+      setValidationMessage(`Invalid video format: ${invalidFiles.map(f => f.name).join(', ')}`);
+      setTimeout(() => setValidationMessage(null), 5000);
+      return;
+    }
+    
+    if (uploadVideos.length + validVideos.length > MAX_VIDEOS) {
+      setValidationMessage(`Maximum ${MAX_VIDEOS} video allowed`);
+      setTimeout(() => setValidationMessage(null), 5000);
+      return;
+    }
+    
+    setUploadVideos(prev => [...prev, ...validVideos]);
+    setUploadError(null);
+  };
+
+  const removePhoto = (index: number) => {
+    setUploadPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeVideo = (index: number) => {
+    setUploadVideos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpload = async () => {
+    if (uploadPhotos.length === 0 && uploadVideos.length === 0) {
+      setUploadError('Please select at least one photo or video');
+      return;
+    }
+
+    setUploading(true);
+    setUploadError(null);
+    setUploadProgress(0);
+
+    try {
+      const allFiles = [...uploadPhotos, ...uploadVideos];
+      let uploadedCount = 0;
+
+      for (const file of allFiles) {
+        const type = file.type.startsWith('video/') ? 'video' : 'image';
+        const fileName = `${demoId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${type === 'video' ? 'mp4' : 'jpg'}`;
+        
+        const preparedFile = type === 'image' ? await compressDemoImage(file) : file;
+        
+        setUploadProgress(Math.round((uploadedCount / allFiles.length) * 50));
+        
+        const { data, error } = await supabase.storage
+          .from('photos')
+          .upload(fileName, preparedFile);
+
+        if (error) throw error;
+
+        if (data) {
+          const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(data.path);
+          
+          const payload: DemoMedia = {
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            url: publicUrl,
+            type,
+            caption: type === 'video' ? '🎥 Live Video from Demo!' : '📸 Live Photo from Demo!',
+            uploader: 'Demo Guest',
+            createdAt: Date.now(),
+          };
+
+          upsertDemoPhoto(demoId, payload);
+          await broadcastUpload(demoId, payload);
+        }
+
+        uploadedCount++;
+        setUploadProgress(Math.round(50 + (uploadedCount / allFiles.length) * 45));
+      }
+
+      setUploadProgress(100);
+      setUploading(false);
+      setUploadPhotos([]);
+      setUploadVideos([]);
+      setUploadSuccess(true);
+      setTimeout(() => setUploadSuccess(false), 3000);
+    } catch (err: any) {
+      setUploading(false);
+      setUploadError(err.message || 'Upload failed. Please try again.');
+    }
+  };
+
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
@@ -200,6 +385,149 @@ export default function DemoPage() {
             <div className="bg-white p-4 rounded-xl mx-auto shadow-[0_0_20px_rgba(245,158,11,0.2)] inline-block">
               {uploadUrl ? <QRCodeSVG value={uploadUrl} size={150} level="M" /> : <div style={{width:150,height:150}}/>}
             </div>
+          </div>
+
+          {/* Upload Section */}
+          <div className="w-full max-w-md mx-auto mb-8">
+            {validationMessage && (
+              <div className="gcard mb-4" style={{ background: 'rgba(251,191,36,0.12)' }}>
+                <div className="gcard-inner py-3 text-center">
+                  <p className="text-sm font-semibold" style={{ color: '#d97706' }}>{validationMessage}</p>
+                </div>
+              </div>
+            )}
+
+            {uploadSuccess && (
+              <div className="gcard mb-4" style={{ background: 'rgba(34,197,94,0.12)' }}>
+                <div className="gcard-inner py-3 text-center">
+                  <p className="text-sm font-semibold" style={{ color: '#16a34a' }}>🎉 Uploaded successfully!</p>
+                </div>
+              </div>
+            )}
+
+            {uploadError && (
+              <div className="gcard mb-4" style={{ background: 'rgba(239,68,68,0.12)' }}>
+                <div className="gcard-inner py-3 text-center">
+                  <p className="text-sm font-semibold" style={{ color: '#dc2626' }}>{uploadError}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Photos Card */}
+            <div className="gcard mb-4">
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-bold text-base" style={{ color: 'var(--text1)' }}>
+                    Photos
+                    <span className="ml-2 text-sm font-normal" style={{ color: 'var(--text3)' }}>({uploadPhotos.length}/{MAX_IMAGES})</span>
+                  </h2>
+                  {!uploading && uploadPhotos.length < MAX_IMAGES && (
+                    <button onClick={() => photoInputRef.current?.click()} className="btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}>
+                      + Add
+                    </button>
+                  )}
+                </div>
+                <input type="file" accept=".jpg,.jpeg,.png,.heic,.heif,image/jpeg,image/png,image/heic,image/heif" multiple ref={photoInputRef} onChange={handlePhotoSelect} className="hidden" />
+
+                {uploadPhotos.length === 0 ? (
+                  <button
+                    onClick={() => photoInputRef.current?.click()}
+                    className="w-full py-10 rounded-2xl text-center transition-all"
+                    style={{ background: 'rgba(245,158,11,0.06)', border: '2px dashed rgba(245,158,11,0.35)' }}
+                  >
+                    <span className="text-3xl block mb-2">🖼️</span>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--amber)' }}>Tap to select photos</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text3)' }}>JPG, PNG, HEIC · Max {MAX_IMAGES}</p>
+                  </button>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2">
+                    {uploadPhotos.map((p, i) => (
+                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden" style={{ boxShadow: '0 4px 12px rgba(30,41,59,0.08)' }}>
+                        <img src={URL.createObjectURL(p)} alt="preview" className="w-full h-full object-cover" />
+                        {!uploading && (
+                          <button onClick={() => removePhoto(i)} className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white" style={{ background: '#ef4444' }}>×</button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Videos Card */}
+            <div className="gcard mb-4">
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-bold text-base" style={{ color: 'var(--text1)' }}>
+                    Video
+                    <span className="ml-2 text-sm font-normal" style={{ color: 'var(--text3)' }}>({uploadVideos.length}/{MAX_VIDEOS})</span>
+                  </h2>
+                  {!uploading && uploadVideos.length < MAX_VIDEOS && (
+                    <button onClick={() => videoInputRef.current?.click()} className="btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}>
+                      + Add
+                    </button>
+                  )}
+                </div>
+                <input type="file" accept=".mp4,video/mp4" ref={videoInputRef} onChange={handleVideoSelect} className="hidden" />
+
+                {uploadVideos.length === 0 ? (
+                  <button
+                    onClick={() => videoInputRef.current?.click()}
+                    className="w-full py-10 rounded-2xl text-center transition-all"
+                    style={{ background: 'rgba(245,158,11,0.06)', border: '2px dashed rgba(245,158,11,0.35)' }}
+                  >
+                    <span className="text-3xl block mb-2">🎥</span>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--amber)' }}>Tap to select video</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text3)' }}>MP4 · Max {MAX_VIDEOS}</p>
+                  </button>
+                ) : (
+                  <div className="space-y-2">
+                    {uploadVideos.map((v, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'rgba(30,41,59,0.04)' }}>
+                        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0" style={{ background: '#000' }}>
+                          <video src={URL.createObjectURL(v)} className="w-full h-full object-cover" muted />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate" style={{ color: 'var(--text1)' }}>{v.name}</p>
+                          <p className="text-xs" style={{ color: 'var(--text3)' }}>{(v.size / 1024 / 1024).toFixed(1)} MB</p>
+                        </div>
+                        {!uploading && (
+                          <button onClick={() => removeVideo(i)} className="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white flex-shrink-0" style={{ background: '#ef4444' }}>×</button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Upload Progress */}
+            {uploading && (
+              <div className="gcard mb-4">
+                <div className="gcard-border" />
+                <div className="gcard-inner py-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium" style={{ color: 'var(--text1)' }}>Uploading...</span>
+                    <span className="text-sm font-bold" style={{ color: 'var(--amber)' }}>{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(30,41,59,0.1)' }}>
+                    <div className="h-full transition-all duration-300 ease-out rounded-full" style={{ width: `${uploadProgress}%`, background: 'linear-gradient(90deg, #f59e0b, #fcd34d)' }} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Upload Button */}
+            <button
+              onClick={handleUpload}
+              disabled={uploading || (uploadPhotos.length === 0 && uploadVideos.length === 0)}
+              className="btn-glow w-full"
+              style={{ opacity: uploading || (uploadPhotos.length === 0 && uploadVideos.length === 0) ? 0.6 : 1 }}
+            >
+              <span>{uploading ? 'Uploading...' : '📸 Share to Live Wall'}</span>
+            </button>
           </div>
 
           {/* View Mode Controls */}

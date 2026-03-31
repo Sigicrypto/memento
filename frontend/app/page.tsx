@@ -132,7 +132,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
   useEffect(() => {
     if (demoId) {
-      setUploadUrl(`${window.location.origin}/demo/upload?id=${demoId}`);
+      setUploadUrl(`${window.location.origin}/demo?id=${demoId}`);
     }
   }, [demoId]);
 
