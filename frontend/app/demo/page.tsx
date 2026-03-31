@@ -241,7 +241,7 @@ export default function DemoPage() {
       });
     };
     poll(); // immediate on mount
-    const interval = setInterval(poll, 5000);
+    const interval = setInterval(poll, 2000); // poll every 2s
     return () => clearInterval(interval);
   }, [demoId]);
 
@@ -350,6 +350,40 @@ export default function DemoPage() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
+  // Debug: manual refresh function
+  const manualRefresh = async () => {
+    console.log('[DEMO WALL] Manual refresh triggered');
+    if (!demoId) return;
+    const { data, error } = await supabase
+      .from('demo_uploads')
+      .select('*')
+      .eq('demo_id', demoId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    console.log('[DEMO WALL] Manual refresh result:', { data, error });
+    if (!data?.length) {
+      console.log('[DEMO WALL] No data found in manual refresh');
+      return;
+    }
+    console.log('[DEMO WALL] Manual refresh found', data.length, 'rows');
+    setPhotos(prev => {
+      let updated = [...prev];
+      for (const row of data) {
+        const incoming: DemoMedia = {
+          id: row.id,
+          url: row.url,
+          type: row.type === 'video' ? 'video' : 'image',
+          caption: row.caption || '',
+          uploader: row.uploader || 'Demo Guest',
+          createdAt: new Date(row.created_at).getTime(),
+        };
+        updated = mergeDemoMedia(updated, incoming);
+      }
+      writeDemoPhotos(demoId, updated);
+      return updated;
+    });
+  };
+
   const EmptyState = () => (
     <div className="text-center py-20 reveal visible">
       <div className="feat-icon mx-auto mb-6" style={{ width: 72, height: 72, fontSize: '2rem' }}>📷</div>
@@ -389,9 +423,14 @@ export default function DemoPage() {
         <span className="hero-badge" style={{ gap: 8 }}>
           <span className={`pulse-dot ${isConnected ? '' : 'opacity-40'}`}
             style={{ background: isConnected ? '#4ade80' : '#f87171' }} />
-          <span style={{ color: isConnected ? '#16a34a' : '#dc2626', fontSize: '0.75rem' }}>
-            Wall {isConnected ? 'Live' : 'Connecting'} · {demoId}
+          <span className="text-xs font-bold tracking-widest uppercase"
+            style={{ color: isConnected ? '#16a34a' : '#dc2626' }}>
+            {isConnected ? 'Wall Live' : 'Connecting...'}
           </span>
+          <span className="text-xs font-bold" style={{ color: 'var(--amber)' }}>· {photos.length} photos</span>
+          <button onClick={manualRefresh} className="text-xs font-bold" style={{ color: 'var(--text3)', padding: '2px 6px', background: 'rgba(30,41,59,0.1)', borderRadius: '4px' }}>
+            🔄 Refresh
+          </button>
         </span>
       </div>
 
