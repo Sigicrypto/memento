@@ -70,15 +70,15 @@ export default function AnalyticsPage() {
           <Link href="/admin" className="nm-btn text-sm">← Back to Admin</Link>
         </div>
         <div className="nm-card p-8 mb-8">
-          <h1 className="text-2xl font-bold mb-2" style={{color: '#e2e8f0'}}>Download Analytics</h1>
-          <p className="text-sm" style={{color:'#7f849c'}}>Total Downloads: {totalDownloads}</p>
+          <h1 className="text-2xl font-bold mb-2" style={{color: 'var(--text1)'}}>Download Analytics</h1>
+          <p className="text-sm" style={{color:'var(--text2)'}}>Total Downloads: {totalDownloads}</p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {stats.map(stat => (
             <div key={stat.photo_id} className="nm-card p-4 text-center">
               <img src={getPublicUrl(stat.storage_path)} alt="Photo" className="w-full h-auto object-cover rounded-lg mb-2" />
-              <p className="text-lg font-bold" style={{color: '#e2e8f0'}}>{stat.download_count}</p>
-              <p className="text-xs" style={{color: '#7f849c'}}>Downloads</p>
+              <p className="text-lg font-bold" style={{color: 'var(--text1)'}}>{stat.download_count}</p>
+              <p className="text-xs" style={{color: 'var(--text2)'}}>Downloads</p>
             </div>
           ))}
         </div>
@@ -86,3 +86,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+

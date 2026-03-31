@@ -159,7 +159,7 @@ export default function DemoPage() {
       </div>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#1e2235]/80 backdrop-blur-sm">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-[var(--surface)]/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <Link href="/">
@@ -173,7 +173,7 @@ export default function DemoPage() {
               ) : (
                 <>
                   <Link href="/auth" className="nm-btn px-4 py-2 text-sm">Sign In</Link>
-                  <Link href="/pricing" className="nm-btn nm-btn-accent px-4 py-2 text-sm font-bold">Create a Wall</Link>
+                  <Link href="/#pricing" className="nm-btn nm-btn-accent px-4 py-2 text-sm font-bold">Create a Wall</Link>
                 </>
               )}
             </div>
@@ -185,8 +185,8 @@ export default function DemoPage() {
       <div className="px-4 pt-28">
         <div className="max-w-7xl mx-auto mb-8 px-4 flex flex-col items-center">
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 px-4" style={{color:'#e2e8f0'}}>Memento Live Demo</h1>
-            <p className="text-sm mb-4" style={{color:'#7f849c'}}>Scan the QR code to post to this wall right now!</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2 px-4" style={{color:'var(--text1)'}}>Memento Live Demo</h1>
+            <p className="text-sm mb-4" style={{color:'var(--text2)'}}>Scan the QR code to post to this wall right now!</p>
             <div className="flex justify-center items-center gap-4 mb-6">
               <span className="nm-badge flex items-center gap-1.5" style={{color:'#4ade80'}}>
                 <span className={`w-2 h-2 ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-400'} rounded-full`}></span>
@@ -211,7 +211,7 @@ export default function DemoPage() {
               }}
                 className="nm-btn px-4 py-2 text-sm capitalize"
                 style={{
-                  color: viewMode === mode ? '#f59e0b' : '#7f849c',
+                  color: viewMode === mode ? '#f59e0b' : 'var(--text2)',
                   boxShadow: viewMode === mode
                     ? 'inset 4px 4px 8px #14182a, inset -4px -4px 8px #252c46'
                     : '6px 6px 12px #14182a, -6px -6px 12px #252c46',
@@ -229,8 +229,8 @@ export default function DemoPage() {
               {photos.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="nm-circle w-20 h-20 mx-auto mb-6 text-5xl">📷</div>
-                  <h2 className="text-2xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
-                  <p className="text-sm mb-6" style={{color:'#7f849c'}}>Scan the QR code above to upload the first photo!</p>
+                  <h2 className="text-2xl font-bold mb-4" style={{color:'var(--text1)'}}>No Photos Yet</h2>
+                  <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Scan the QR code above to upload the first photo!</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
@@ -240,14 +240,14 @@ export default function DemoPage() {
                     <div className="flex flex-col items-center justify-center h-full p-2 relative z-10">
                       {photo.url ? (
                         photo.type === 'video' ? (
-                          <video src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity" autoPlay muted loop playsInline preload="metadata" />
+                          <video src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40" autoPlay muted loop playsInline preload="metadata" />
                         ) : (
                           <img src={photo.url} className="w-full h-full object-cover absolute inset-0 z-0 opacity-40 group-hover:opacity-100 transition-opacity" alt="Upload" loading="lazy" />
                         )
                       ) : null}
-                      <div className="z-10 bg-[#1e2235]/60 backdrop-blur-md p-2 rounded-lg mt-auto mb-2 text-center w-full">
-                        <p className="text-sm font-medium truncate" style={{color:'#e2e8f0'}}>{photo.caption}</p>
-                        <p className="text-xs mt-1 truncate" style={{color:'#7f849c'}}>by {photo.uploader}</p>
+                      <div className="z-10 bg-[var(--surface)]/60 backdrop-blur-md p-2 rounded-lg mt-auto mb-2 text-center w-full">
+                        <p className="text-sm font-medium truncate" style={{color:'var(--text1)'}}>{photo.caption}</p>
+                        <p className="text-xs mt-1 truncate" style={{color:'var(--text2)'}}>by {photo.uploader}</p>
                       </div>
                     </div>
                   </div>
@@ -265,8 +265,8 @@ export default function DemoPage() {
               {photos.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="nm-circle w-20 h-20 mx-auto mb-6 text-5xl">📷</div>
-                  <h2 className="text-2xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
-                  <p className="text-sm mb-6" style={{color:'#7f849c'}}>Scan the QR code above to upload the first photo!</p>
+                  <h2 className="text-2xl font-bold mb-4" style={{color:'var(--text1)'}}>No Photos Yet</h2>
+                  <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Scan the QR code above to upload the first photo!</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
@@ -283,7 +283,7 @@ export default function DemoPage() {
                           )
                         ) : null}
                       </div>
-                      <p className="text-xs text-center font-medium" style={{color:'#e2e8f0'}}>{photo.caption}</p>
+                      <p className="text-xs text-center font-medium" style={{color:'var(--text1)'}}>{photo.caption}</p>
                     </div>
                   </div>
                 ))}
@@ -300,8 +300,8 @@ export default function DemoPage() {
               {photos.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="nm-circle w-20 h-20 mx-auto mb-6 text-5xl">📷</div>
-                  <h2 className="text-2xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
-                  <p className="text-sm mb-6" style={{color:'#7f849c'}}>Scan the QR code above to upload the first photo!</p>
+                  <h2 className="text-2xl font-bold mb-4" style={{color:'var(--text1)'}}>No Photos Yet</h2>
+                  <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Scan the QR code above to upload the first photo!</p>
                 </div>
               ) : (
                 <>
@@ -321,11 +321,11 @@ export default function DemoPage() {
                       ) : null}
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-6 z-10" style={{background:'linear-gradient(to top, #14182a, transparent)'}}>
-                      <h3 className="text-xl font-semibold drop-shadow-lg" style={{color:'#e2e8f0'}}>{photos[currentSlide].caption}</h3>
+                      <h3 className="text-xl font-semibold drop-shadow-lg" style={{color:'var(--text1)'}}>{photos[currentSlide].caption}</h3>
                       <p className="text-sm drop-shadow-md" style={{color:'#f59e0b'}}>by {photos[currentSlide].uploader}</p>
                     </div>
                     <button onClick={() => setIsPlaying(!isPlaying)}
-                      className="nm-circle w-12 h-12 absolute bottom-6 right-6 z-20" style={{color:'#e2e8f0'}}>
+                      className="nm-circle w-12 h-12 absolute bottom-6 right-6 z-20" style={{color:'var(--text1)'}}>
                       {isPlaying
                         ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                         : <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>}
@@ -354,3 +354,4 @@ export default function DemoPage() {
     </div>
   );
 }
+

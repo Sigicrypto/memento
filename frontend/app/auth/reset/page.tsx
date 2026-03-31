@@ -42,8 +42,8 @@ export default function ResetPasswordPage() {
         <div className="nm-card p-8">
           <div className="text-center mb-8">
             <div className="nm-circle w-16 h-16 mx-auto mb-4 text-2xl">🔐</div>
-            <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Reset Password</h1>
-            <p style={{color:'#7f849c'}}>Enter your email to receive a reset link</p>
+            <h1 className="text-3xl font-bold mb-2" style={{color:'var(--text1)'}}>Reset Password</h1>
+            <p style={{color:'var(--text2)'}}>Enter your email to receive a reset link</p>
           </div>
 
           {message && (
@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Email Address</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Email Address</label>
               <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 required placeholder="Enter your email" className="nm-input" />
             </div>
@@ -73,3 +73,4 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+

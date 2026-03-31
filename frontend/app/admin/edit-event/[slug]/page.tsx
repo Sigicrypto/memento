@@ -136,28 +136,28 @@ export default function EditEventPage() {
           <Link href="/admin?tab=events" className="nm-btn text-sm">← Back to Events</Link>
         </div>
         <div className="nm-card p-8">
-          <h1 className="text-2xl font-bold mb-6" style={{color: '#e2e8f0'}}>Edit Event: {event?.name}</h1>
+          <h1 className="text-2xl font-bold mb-6" style={{color: 'var(--text1)'}}>Edit Event: {event?.name}</h1>
           <form onSubmit={handleUpdate} className="space-y-6">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Event Name</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Event Name</label>
               <input type="text" value={name} onChange={e => setName(e.target.value)} className="nm-input" />
             </div>
             {/* Branding - White Label Only */}
             <div className={`p-4 rounded-2xl ${event?.plan_type === 'WHITE_LABEL' ? 'nm-inset' : 'opacity-50 grayscale pointer-events-none'}`}>
               <div className="flex items-center justify-between mb-4">
-                <label className="text-xs font-bold uppercase tracking-widest" style={{color:'#7f849c'}}>🎨 Custom Branding</label>
+                <label className="text-xs font-bold uppercase tracking-widest" style={{color:'var(--text2)'}}>🎨 Custom Branding</label>
                 {event?.plan_type !== 'WHITE_LABEL' && <span className="nm-badge text-[10px] bg-amber-500/20 text-amber-500">Upgrade to White Label</span>}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-semibold mb-2" style={{color:'#7f849c'}}>Primary Color</label>
+                  <label className="block text-[10px] font-semibold mb-2" style={{color:'var(--text2)'}}>Primary Color</label>
                   <div className="flex items-center gap-2 nm-input p-2">
                     <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8" disabled={event?.plan_type !== 'WHITE_LABEL'} />
                     <span className="text-xs">{primaryColor}</span>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-semibold mb-2" style={{color:'#7f849c'}}>Secondary Color</label>
+                  <label className="block text-[10px] font-semibold mb-2" style={{color:'var(--text2)'}}>Secondary Color</label>
                   <div className="flex items-center gap-2 nm-input p-2">
                     <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8" disabled={event?.plan_type !== 'WHITE_LABEL'} />
                     <span className="text-xs">{secondaryColor}</span>
@@ -168,7 +168,7 @@ export default function EditEventPage() {
 
             <div className={`p-4 rounded-2xl ${event?.plan_type === 'WHITE_LABEL' ? 'nm-inset' : 'opacity-50 grayscale pointer-events-none'}`}>
               <div className="flex items-center justify-between mb-4">
-                <label className="text-xs font-bold uppercase tracking-widest" style={{color:'#7f849c'}}>💧 Custom Watermark</label>
+                <label className="text-xs font-bold uppercase tracking-widest" style={{color:'var(--text2)'}}>💧 Custom Watermark</label>
                 {event?.plan_type !== 'WHITE_LABEL' && <span className="nm-badge text-[10px] bg-amber-500/20 text-amber-500">Locked</span>}
               </div>
               <input type="file" accept="image/png, image/jpeg" onChange={(e) => setWatermarkFile(e.target.files?.[0] || null)} className="nm-input text-xs" disabled={event?.plan_type !== 'WHITE_LABEL'} />
@@ -176,19 +176,19 @@ export default function EditEventPage() {
             </div>
             <div>
               <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'#e2e8f0'}}>🛡️ Automatic Safety Filter</span>
+                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>🛡️ Automatic Safety Filter</span>
                 <div onClick={() => setEnableSafetyFilter(!enableSafetyFilter)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${enableSafetyFilter ? 'bg-green-400' : 'bg-gray-600'}`}>
                   <span className={`w-5 h-5 bg-white rounded-full transition-transform ${enableSafetyFilter ? 'translate-x-6' : 'translate-x-1'}`} />
                 </div>
               </label>
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Expiration Date</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Expiration Date</label>
               <input type="date" value={expiresAt || ''} onChange={e => setExpiresAt(e.target.value)} className="nm-input" />
             </div>
             <div>
               <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'#e2e8f0'}}>🤖 AI Auto Album</span>
+                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>🤖 AI Auto Album</span>
                 <div onClick={() => setEnableAiAlbum(!enableAiAlbum)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${enableAiAlbum ? 'bg-green-400' : 'bg-gray-600'}`}>
                   <span className={`w-5 h-5 bg-white rounded-full transition-transform ${enableAiAlbum ? 'translate-x-6' : 'translate-x-1'}`} />
                 </div>
@@ -196,7 +196,7 @@ export default function EditEventPage() {
             </div>
             <div>
               <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'#e2e8f0'}}>🔒 Smart Privacy Downloads</span>
+                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>🔒 Smart Privacy Downloads</span>
                 <div onClick={() => setEnableSmartPrivacy(!enableSmartPrivacy)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${enableSmartPrivacy ? 'bg-green-400' : 'bg-gray-600'}`}>
                   <span className={`w-5 h-5 bg-white rounded-full transition-transform ${enableSmartPrivacy ? 'translate-x-6' : 'translate-x-1'}`} />
                 </div>
@@ -204,7 +204,7 @@ export default function EditEventPage() {
             </div>
             <div>
               <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'#e2e8f0'}}>☁️ Google Drive Sync</span>
+                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>☁️ Google Drive Sync</span>
                 <div onClick={() => setGoogleDriveSync(!googleDriveSync)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${googleDriveSync ? 'bg-green-400' : 'bg-gray-600'}`}>
                   <span className={`w-5 h-5 bg-white rounded-full transition-transform ${googleDriveSync ? 'translate-x-6' : 'translate-x-1'}`} />
                 </div>

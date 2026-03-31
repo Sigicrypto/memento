@@ -77,23 +77,23 @@ export default function BrandingPage() {
           <Link href="/admin" className="nm-btn text-sm">← Back to Admin</Link>
         </div>
         <div className="nm-card p-8">
-          <h1 className="text-2xl font-bold mb-6" style={{color: '#e2e8f0'}}>White-Label Branding</h1>
+          <h1 className="text-2xl font-bold mb-6" style={{color: 'var(--text1)'}}>White-Label Branding</h1>
           <form onSubmit={handleUpdate} className="space-y-6">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Brand Logo</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Brand Logo</label>
               <input type="file" accept="image/png, image/jpeg" onChange={(e) => setBrandLogoFile(e.target.files?.[0] || null)} className="nm-input" />
               {brandLogoPreview && <img src={brandLogoPreview} alt="Logo preview" className="w-32 h-auto object-contain mt-4" />}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Primary Color</label>
+                <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Primary Color</label>
                 <div className="flex items-center gap-2 nm-input p-2">
                   <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8" />
                   <span>{primaryColor}</span>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Secondary Color</label>
+                <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Secondary Color</label>
                 <div className="flex items-center gap-2 nm-input p-2">
                   <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8" />
                   <span>{secondaryColor}</span>
@@ -109,3 +109,4 @@ export default function BrandingPage() {
     </div>
   );
 }
+

@@ -83,8 +83,8 @@ export default function SystemAdminPage() {
             <div className="nm-circle w-10 h-10 font-bold text-lg" style={{color:'#f59e0b'}}>M</div>
             <span className="text-xl font-bold" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Memento</span>
           </Link>
-          <h1 className="text-2xl font-bold mb-1" style={{color:'#e2e8f0'}}>System Access</h1>
-          <p className="text-sm" style={{color:'#7f849c'}}>Administrator authentication required</p>
+          <h1 className="text-2xl font-bold mb-1" style={{color:'var(--text1)'}}>System Access</h1>
+          <p className="text-sm" style={{color:'var(--text2)'}}>Administrator authentication required</p>
         </div>
 
         <div className="nm-card p-8">
@@ -93,12 +93,12 @@ export default function SystemAdminPage() {
               <div className="nm-inset p-3 text-sm" style={{color:'#f87171'}}>{error}</div>
             )}
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Administrator Email</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Administrator Email</label>
               <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 className="nm-input" placeholder="system@memento.com" required />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Access Code</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Access Code</label>
               <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 className="nm-input" placeholder="Enter system access code" required />
             </div>
@@ -111,8 +111,8 @@ export default function SystemAdminPage() {
 
           <div className="mt-6 pt-6 text-center">
             <div className="nm-divider mb-6" />
-            <p className="text-xs mb-3" style={{color:'#7f849c'}}>Return to main site?</p>
-            <Link href="/" className="nm-btn px-6 py-2 text-sm" style={{color:'#7f849c'}}>🏠 Home</Link>
+            <p className="text-xs mb-3" style={{color:'var(--text2)'}}>Return to main site?</p>
+            <Link href="/" className="nm-btn px-6 py-2 text-sm" style={{color:'var(--text2)'}}>🏠 Home</Link>
           </div>
         </div>
 
@@ -123,3 +123,4 @@ export default function SystemAdminPage() {
     </div>
   );
 }
+

@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 // Confetti animation component
 const Confetti = ({ trigger }: { trigger: boolean }) => {
@@ -67,7 +69,7 @@ interface Photo {
   watermark_url?: string;
 }
 
-type ViewMode = 'grid' | 'polaroid' | 'slideshow';
+type ViewMode = 'grid' | 'polaroid' | 'slideshow' | 'album';
 
 export default function WallPage() {
   const params = useParams();
@@ -92,6 +94,9 @@ export default function WallPage() {
   const [newPhotoId, setNewPhotoId] = useState<string | null>(null);
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [musicTrack, setMusicTrack] = useState<string | null>(null);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
@@ -166,7 +171,7 @@ export default function WallPage() {
       setErrorStatus(null);
       const { data, error } = await supabase
         .from('events')
-        .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id, plan_type')
+        .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id, plan_type, music_track')
         .eq('slug', slug)
         .single();
 
@@ -189,6 +194,9 @@ export default function WallPage() {
       }
       if (data.enable_safety_filter) {
         setModerationMode(true);
+      }
+      if (data.music_track && data.music_track !== 'none') {
+        setMusicTrack(data.music_track);
       }
 
       // Fetch owner's branding
@@ -387,6 +395,48 @@ export default function WallPage() {
     pdf.save(`${slug}-photobook.pdf`);
   };
 
+  const handleDownloadZip = async () => {
+    if (displayedPhotos.length === 0) {
+      alert('No photos to download.');
+      return;
+    }
+    
+    // Notify user since this takes time
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-bounce';
+    toast.innerText = 'Packaging Wall into ZIP (this may take a minute)...';
+    document.body.appendChild(toast);
+
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder(`${slug}-memento-wall`);
+
+      for (let i = 0; i < displayedPhotos.length; i++) {
+        const photo = displayedPhotos[i];
+        const url = getPublicUrl(photo.storage_path);
+        
+        // Fetch image as blob
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        // Extract extension from storage path
+        const extMatch = photo.storage_path.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
+        const ext = extMatch ? extMatch[1] : (photo.media_type === 'video' ? 'mp4' : 'jpg');
+        const filename = `${photo.uploader_name.replace(/[^a-z0-9]/gi, '_')}-${i + 1}.${ext}`;
+        
+        folder?.file(filename, blob);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      saveAs(zipBlob, `${slug}-memento-wall.zip`);
+    } catch (e) {
+      console.error('Error creating ZIP:', e);
+      alert('Failed to create ZIP. Try again later.');
+    } finally {
+      document.body.removeChild(toast);
+    }
+  };
+
   const getPublicUrl = (path: string) => {
     const { data } = supabase.storage.from('photos').getPublicUrl(path);
     return data.publicUrl;
@@ -419,7 +469,7 @@ export default function WallPage() {
       <div className="nm-page flex items-center justify-center">
         <div className="text-center">
           <div className="nm-circle w-16 h-16 border-4 border-[#f59e0b] border-t-transparent animate-spin rounded-full mb-4"></div>
-          <p className="text-[#7f849c] font-medium animate-pulse">Entering the Wall...</p>
+          <p className="text-[var(--text2)] font-medium animate-pulse">Entering the Wall...</p>
         </div>
       </div>
     );
@@ -430,11 +480,11 @@ export default function WallPage() {
       <div className="nm-page flex items-center justify-center px-4">
         <div className="nm-card max-w-lg text-center p-10">
           <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">⚠️</div>
-          <h1 className="text-2xl font-bold mb-3" style={{color:'#e2e8f0'}}>System Error</h1>
+          <h1 className="text-2xl font-bold mb-3" style={{color:'var(--text1)'}}>System Error</h1>
           <p className="mb-6 text-sm" style={{color:'#fca5a5'}}>{errorStatus}</p>
           <div className="flex flex-col gap-3">
             <button onClick={() => window.location.reload()} className="nm-btn nm-btn-accent px-6 py-3 font-bold">🔄 Retry Connection</button>
-            <Link href="/" className="nm-btn px-6 py-3 text-sm" style={{color:'#7f849c'}}>🏠 Go Home</Link>
+            <Link href="/" className="nm-btn px-6 py-3 text-sm" style={{color:'var(--text2)'}}>🏠 Go Home</Link>
           </div>
         </div>
       </div>
@@ -446,8 +496,8 @@ export default function WallPage() {
       <div className="nm-page flex items-center justify-center px-4">
         <div className="nm-card max-w-md text-center p-10">
           <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">🕒</div>
-          <h1 className="text-2xl font-bold mb-3" style={{color:'#e2e8f0'}}>This event has expired</h1>
-          <p className="mb-6" style={{color:'#7f849c'}}>The photo wall for this event is no longer available.</p>
+          <h1 className="text-2xl font-bold mb-3" style={{color:'var(--text1)'}}>This event has expired</h1>
+          <p className="mb-6" style={{color:'var(--text2)'}}>The photo wall for this event is no longer available.</p>
           <Link href="/" className="nm-btn nm-btn-accent px-6 py-3 font-bold">🏠 Go Home</Link>
         </div>
       </div>
@@ -459,8 +509,8 @@ export default function WallPage() {
       <div className="nm-page flex items-center justify-center px-4">
         <div className="nm-card max-w-md text-center p-10">
           <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">😢</div>
-          <h1 className="text-2xl font-bold mb-3" style={{color:'#e2e8f0'}}>Wall Not Found</h1>
-          <p className="mb-6" style={{color:'#7f849c'}}>This event doesn't exist or has been removed.</p>
+          <h1 className="text-2xl font-bold mb-3" style={{color:'var(--text1)'}}>Wall Not Found</h1>
+          <p className="mb-6" style={{color:'var(--text2)'}}>This event doesn't exist or has been removed.</p>
           <Link href="/" className="nm-btn nm-btn-accent px-6 py-3 font-bold">🏠 Go Home</Link>
         </div>
       </div>
@@ -473,11 +523,11 @@ export default function WallPage() {
     return (
       <div className="fixed inset-0 z-50 flex flex-col" style={{background:'#14182a'}}>
         <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="font-bold text-lg" style={{color:'#e2e8f0'}}>{eventName}</h1>
+          <h1 className="font-bold text-lg" style={{color:'var(--text1)'}}>{eventName}</h1>
           <div className="flex gap-3 items-center">
             <span className="nm-badge">{slideIndex + 1} / {displayedPhotos.length}</span>
             <button onClick={() => { setViewMode('polaroid'); if (slideshowTimer.current) clearInterval(slideshowTimer.current); }}
-              className="nm-btn px-3 py-1 text-sm" style={{color:'#7f849c'}}>✕ Exit</button>
+              className="nm-btn px-3 py-1 text-sm" style={{color:'var(--text2)'}}>✕ Exit</button>
           </div>
         </div>
 
@@ -490,8 +540,8 @@ export default function WallPage() {
             )}
             {(current.caption || current.uploader_name) && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center nm-card px-6 py-3">
-                {current.caption && <p className="text-sm italic mb-1" style={{color:'#e2e8f0'}}>&#34;{current.caption}&#34;</p>}
-                <p className="text-xs" style={{color:'#7f849c'}}>— {current.uploader_name}</p>
+                {current.caption && <p className="text-sm italic mb-1" style={{color:'var(--text1)'}}>&#34;{current.caption}&#34;</p>}
+                <p className="text-xs" style={{color:'var(--text2)'}}>— {current.uploader_name}</p>
               </div>
             )}
           </div>
@@ -524,13 +574,16 @@ export default function WallPage() {
       '--theme-primary': brand.colors?.primary || theme.primary,
       '--theme-secondary': brand.colors?.secondary || theme.secondary
     } as React.CSSProperties}>
+      {musicTrack && (
+        <audio ref={audioRef} loop src={`/music/${musicTrack}.mp3`} preload="auto" />
+      )}
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="nm-card p-6 mb-8">
           {brand.logoUrl ? <img src={brand.logoUrl} alt="Brand Logo" className="h-12 mb-4" /> : <div className="nm-badge mb-4">Live Wall Experience</div>}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex-1">
-              <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight" style={{color:'#e2e8f0'}}>
+              <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight" style={{color:'var(--text1)'}}>
                 {eventName || 'Loading…'}
               </h1>
               <div className="flex flex-wrap items-center gap-3">
@@ -540,38 +593,51 @@ export default function WallPage() {
                     realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' :
                     realtimeStatus === 'polling' ? 'bg-yellow-400 animate-pulse' :
                     'bg-red-400'}`} />
-                  <span style={{color:'#7f849c'}}>
+                  <span style={{color:'var(--text2)'}}>
                     {realtimeStatus === 'SUBSCRIBED' ? '⚡ Live' : realtimeStatus === 'polling' ? '🔄 Polling' : '🟡 Connecting'}
                   </span>
                 </div>
-                <button onClick={() => window.location.reload()} className="nm-btn px-3 py-1.5 text-xs" style={{color:'#7f849c'}}>🔄 Refresh</button>
+                <button onClick={() => window.location.reload()} className="nm-btn px-3 py-1.5 text-xs" style={{color:'var(--text2)'}}>🔄 Refresh</button>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <div className="flex rounded-xl overflow-hidden nm-inset p-1">
-                {(['polaroid', 'grid', 'slideshow'] as ViewMode[]).map((mode) => (
+                {(['polaroid', 'grid', 'slideshow', 'album'] as ViewMode[]).map((mode) => (
                   <button key={mode} onClick={() => { setViewMode(mode); if (mode === 'slideshow') setSlideIndex(0); }}
                     className="px-3 py-2 text-xs font-medium rounded-lg transition"
                     style={{
                       background: viewMode === mode ? `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` : 'transparent',
-                      color: viewMode === mode ? '#1e2235' : '#7f849c'
+                      color: viewMode === mode ? 'var(--surface)' : 'var(--text2)'
                     }}>
-                    {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : '▶ Slideshow'}
+                    {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : mode === 'album' ? '📅 Auto Album' : '▶ Slideshow'}
                   </button>
                 ))}
               </div>
               <button onClick={() => setModerationMode(!moderationMode)}
                 className="nm-btn px-3 py-2 text-xs font-semibold"
-                style={{color: moderationMode ? '#f59e0b' : '#7f849c'}}>
+                style={{color: moderationMode ? '#f59e0b' : 'var(--text2)'}}>
                 {moderationMode ? '🛡️ Moderation ON' : '👁️ Auto-Show'}
               </button>
-              <button onClick={() => setShowQR(!showQR)} className="nm-btn px-3 py-2 text-xs" style={{color:'#7f849c'}}>
+              <button onClick={() => setShowQR(!showQR)} className="nm-btn px-3 py-2 text-xs" style={{color:'var(--text2)'}}>
                 {showQR ? 'Hide QR' : '📱 QR'}
               </button>
                             <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: 'var(--theme-secondary)'}}>📱 My Photos</Link>
               <Link href={`/wall/${slug}/tv`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#818cf8'}}>📺 TV Mode</Link>
+              {musicTrack && (
+                <button onClick={() => {
+                  if (audioRef.current) {
+                    if (isAudioPlaying) { audioRef.current.pause(); setIsAudioPlaying(false); } 
+                    else { audioRef.current.play().then(() => setIsAudioPlaying(true)).catch(e => console.log(e)); }
+                  }
+                }} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: isAudioPlaying ? '#4ade80' : 'var(--text2)'}}>
+                  {isAudioPlaying ? '🎵 Sound ON' : '🔇 Sound OFF'}
+                </button>
+              )}
+              {['PLUS', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier) && (
+                <button onClick={handleDownloadZip} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#fbbf24'}}>📦 Download ZIP</button>
+              )}
               <button onClick={handleDownloadPdf} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#a78bfa'}}>📘 Download PDF</button>
-              <button onClick={() => setShowBestShots(!showBestShots)} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: showBestShots ? 'var(--theme-primary)' : '#7f849c'}}>{showBestShots ? '🏆 Best Shots' : 'All Photos'}</button>
+              <button onClick={() => setShowBestShots(!showBestShots)} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: showBestShots ? 'var(--theme-primary)' : 'var(--text2)'}}>{showBestShots ? '🏆 Best Shots' : 'All Photos'}</button>
             </div>
           </div>
         </div>
@@ -579,11 +645,11 @@ export default function WallPage() {
       {/* QR Popover */}
       {showQR && (
         <div className="nm-card max-w-sm mx-auto text-center mb-8 p-8">
-          <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Share This Wall</h3>
+          <h3 className="text-lg font-semibold mb-4" style={{color:'var(--text1)'}}>Share This Wall</h3>
           <div className="nm-inset p-6 rounded-2xl inline-block mx-auto mb-4">
-            <QRCodeSVG value={uploadUrl} size={180} bgColor="#1e2235" fgColor="#e2e8f0" />
+            <QRCodeSVG value={uploadUrl} size={180} bgColor="var(--surface)" fgColor="var(--text1)" />
           </div>
-          <p className="text-xs break-all mb-4 font-mono" style={{color:'#7f849c'}}>{uploadUrl}</p>
+          <p className="text-xs break-all mb-4 font-mono" style={{color:'var(--text2)'}}>{uploadUrl}</p>
           
           {/* Enhanced Sharing Options */}
           <div className="space-y-3">
@@ -604,7 +670,7 @@ export default function WallPage() {
               }} className="nm-btn flex-1 text-xs py-2" style={{color:'#60a5fa'}}>📤 Share</button>
             </div>
           </div>
-          <button onClick={() => setShowQR(false)} className="nm-btn mt-4 text-xs px-4 py-1.5" style={{color:'#7f849c'}}>✕ Close</button>
+          <button onClick={() => setShowQR(false)} className="nm-btn mt-4 text-xs px-4 py-1.5" style={{color:'var(--text2)'}}>✕ Close</button>
         </div>
       )}
 
@@ -613,13 +679,13 @@ export default function WallPage() {
         <div className="text-center py-20">
           <div className="nm-card max-w-lg mx-auto p-12">
             <div className="nm-circle w-32 h-32 mx-auto mb-8 text-6xl">📷</div>
-            <h2 className="text-3xl font-bold mb-4" style={{color:'#e2e8f0'}}>No Photos Yet</h2>
-            <p className="text-sm mb-10 leading-relaxed" style={{color:'#7f849c'}}>
+            <h2 className="text-3xl font-bold mb-4" style={{color:'var(--text1)'}}>No Photos Yet</h2>
+            <p className="text-sm mb-10 leading-relaxed" style={{color:'var(--text2)'}}>
               Share the QR code and photos will appear here in real time!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button onClick={() => setShowQR(true)} className="nm-btn nm-btn-accent px-8 py-3 font-bold">📱 Show QR Code</button>
-              <Link href={`/mobile/${slug}`} className="nm-btn px-8 py-3 font-bold" style={{color:'#7f849c'}}>📸 Upload First Photo</Link>
+              <Link href={`/mobile/${slug}`} className="nm-btn px-8 py-3 font-bold" style={{color:'var(--text2)'}}>📸 Upload First Photo</Link>
             </div>
           </div>
         </div>
@@ -648,8 +714,8 @@ export default function WallPage() {
                   )}
                 </div>
                 <div className="text-center flex-1">
-                  {photo.caption && <p className="text-sm italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
-                  <p className="text-xs font-medium" style={{color:'#7f849c'}}>📷 {photo.uploader_name}</p>
+                  {photo.caption && <p className="text-sm italic mb-2" style={{color:'var(--text1)'}}>&#34;{photo.caption}&#34;</p>}
+                  <p className="text-xs font-medium" style={{color:'var(--text2)'}}>📷 {photo.uploader_name}</p>
                 </div>
                 <div className="mt-4 flex justify-between items-center">
                   <button onClick={() => handleLike(photo.id)}
@@ -662,6 +728,47 @@ export default function WallPage() {
               </div>
             ))}
           </div>
+        </div>
+      ) : viewMode === 'album' ? (
+        // ── AUTO ALBUM (Grouped by time segment) ──
+        <div className="p-4 space-y-12">
+          {(() => {
+            // Group photos by hour
+            const groups: { [key: string]: Photo[] } = {};
+            displayedPhotos.forEach(p => {
+              const d = new Date(p.created_at);
+              const hourLabel = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + d.toLocaleDateString();
+              if (!groups[hourLabel]) groups[hourLabel] = [];
+              groups[hourLabel].push(p);
+            });
+            
+            return Object.entries(groups).map(([timeLabel, groupPhotos]) => (
+              <div key={timeLabel} className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <h3 className="text-xl font-bold" style={{color:'var(--text1)'}}>{timeLabel}</h3>
+                  <div className="flex-1 h-px bg-slate-200/20"></div>
+                </div>
+                <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
+                  {groupPhotos.map((photo, index) => (
+                    <div key={photo.id} className="nm-card break-inside-avoid overflow-hidden group relative">
+                      <div className="overflow-hidden rounded-[14px] relative">
+                        {photo.media_type === 'video' ? (
+                          <video src={getPublicUrl(photo.storage_path)} className="w-full object-cover" controls playsInline loop muted />
+                        ) : (
+                          <img src={getPublicUrl(photo.storage_path)} alt="" className="w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        )}
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
+                        <div className="flex justify-between items-center">
+                          <p className="text-xs font-semibold" style={{color:'var(--text1)'}}>{photo.uploader_name}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       ) : (
         // ── MASONRY GRID ──
@@ -690,9 +797,9 @@ export default function WallPage() {
                 )}
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
-                {photo.caption && <p className="text-xs italic mb-2" style={{color:'#e2e8f0'}}>&#34;{photo.caption}&#34;</p>}
+                {photo.caption && <p className="text-xs italic mb-2" style={{color:'var(--text1)'}}>&#34;{photo.caption}&#34;</p>}
                 <div className="flex justify-between items-center">
-                  <p className="text-xs font-semibold" style={{color:'#e2e8f0'}}>{photo.uploader_name}</p>
+                  <p className="text-xs font-semibold" style={{color:'var(--text1)'}}>{photo.uploader_name}</p>
                   <div className="flex items-center gap-2">
                     <button onClick={() => handleLike(photo.id)} className="nm-btn text-xs px-2 py-1 flex items-center gap-1" style={{color: 'var(--theme-secondary)'}}>❤️ {photo.reaction_count || 0}</button>
                     <button onClick={() => downloadPhoto(photo)} className="nm-circle w-7 h-7 text-xs" style={{color: 'var(--theme-primary)'}}>⬇</button>

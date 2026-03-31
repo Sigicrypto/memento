@@ -38,7 +38,7 @@ export default function Navbar() {
           {user && (
             <Link
               href="/dashboard"
-              className="text-sm transition-colors"
+              className="text-base transition-colors font-medium px-2"
               style={{ color: '#7f849c' }}
               onMouseOver={(e) => (e.currentTarget.style.color = '#e2e8f0')}
               onMouseOut={(e) => (e.currentTarget.style.color = '#7f849c')}
@@ -49,13 +49,13 @@ export default function Navbar() {
           {user ? (
             <button
               onClick={signOut}
-              className="nm-btn text-xs py-2 px-4"
+              className="nm-btn text-sm py-2.5 px-5"
               style={{ color: '#7f849c' }}
             >
               Sign Out
             </button>
           ) : (
-            <Link href="/auth" className="nm-btn nm-btn-accent text-xs py-2 px-4 font-bold">
+            <Link href="/#pricing" className="nm-btn nm-btn-accent text-sm py-2.5 px-6 font-bold">
               Get Started
             </Link>
           )}

@@ -44,25 +44,25 @@ export default function AuthPage() {
             <div className="nm-circle w-16 h-16 text-2xl">📷</div>
           </div>
 
-          <h1 className="text-2xl font-bold text-center mb-1" style={{color:'#e2e8f0'}}>
+          <h1 className="text-2xl font-bold text-center mb-1" style={{color:'var(--text1)'}}>
             {isSignUp ? 'Create Account' : 'Welcome Back'}
           </h1>
-          <p className="text-sm text-center mb-6" style={{color:'#7f849c'}}>
+          <p className="text-sm text-center mb-6" style={{color:'var(--text2)'}}>
             {isSignUp ? 'Start capturing memories today' : 'Sign in to your Memento dashboard'}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Email</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Email</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="nm-input" />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Password</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Password</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" minLength={6} className="nm-input" />
             </div>
             {isSignUp && (
               <div>
-                <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Mobile Number</label>
+                <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Mobile Number</label>
                 <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+968 96095692" className="nm-input" />
               </div>
             )}
@@ -98,7 +98,7 @@ export default function AuthPage() {
 
           <div className="nm-divider" />
 
-          <p className="text-sm text-center" style={{color:'#7f849c'}}>
+          <p className="text-sm text-center" style={{color:'var(--text2)'}}>
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }} className="font-semibold transition-colors" style={{color:'#f59e0b'}}>
               {isSignUp ? 'Sign In' : 'Sign Up'}
@@ -113,3 +113,4 @@ export default function AuthPage() {
     </div>
   );
 }
+

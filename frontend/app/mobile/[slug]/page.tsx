@@ -139,14 +139,38 @@ export default function MobilePage() {
     const selectedFiles = Array.from(e.target.files || []);
     if (selectedFiles.length === 0) return;
 
-    const hasVideo = selectedFiles.some(f => f.type.startsWith('video/'));
+    // Filter invalid types
+    const validFiles = selectedFiles.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+    if (validFiles.length < selectedFiles.length) {
+      setError('Only photos and videos are allowed.');
+      return;
+    }
+
+    // Checking MB constraints to protect storage buckets
+    const MAX_IMAGE_MB = 10;
+    const MAX_VIDEO_MB = 50;
+
+    for (const file of validFiles) {
+       const isVideo = file.type.startsWith('video/');
+       const fileSizeMB = file.size / (1024 * 1024);
+       if (isVideo && fileSizeMB > MAX_VIDEO_MB) {
+         setError(`Video ${file.name} is too large. Max size is ${MAX_VIDEO_MB}MB.`);
+         return;
+       }
+       if (!isVideo && fileSizeMB > MAX_IMAGE_MB) {
+         setError(`Photo ${file.name} is too large. Max size is ${MAX_IMAGE_MB}MB.`);
+         return;
+       }
+    }
+
+    const hasVideo = validFiles.some(f => f.type.startsWith('video/'));
     if (hasVideo && event?.plan_type === 'FREE') {
       setError('Video uploads are a Premium feature.');
       return;
     }
 
-    setFiles(selectedFiles);
-    setPreviews(selectedFiles.map(f => URL.createObjectURL(f)));
+    setFiles(validFiles);
+    setPreviews(validFiles.map(f => URL.createObjectURL(f)));
     setError('');
     setSuccessMessage('');
   };
@@ -259,12 +283,12 @@ export default function MobilePage() {
   return (
     <div className="nm-page pb-40">
       <div className="nm-card mx-4 mt-12 p-4">
-        <h1 className="text-xl font-bold text-center" style={{color:'#e2e8f0'}}>{event?.name || 'Loading...'}</h1>
+        <h1 className="text-xl font-bold text-center" style={{color:'var(--text1)'}}>{event?.name || 'Loading...'}</h1>
       </div>
 
       {/* UPLOAD SECTION */}
       <div className="mx-4 mt-4 nm-card p-4">
-        <h2 className="text-lg font-bold text-center mb-2" style={{color:'#e2e8f0'}}>Upload Your Photos</h2>
+        <h2 className="text-lg font-bold text-center mb-2" style={{color:'var(--text1)'}}>Upload Your Photos</h2>
         <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" id="photo-upload" />
         <label htmlFor="photo-upload" className="nm-btn w-full text-center py-3 cursor-pointer">Select Photos/Videos</label>
         
@@ -285,8 +309,8 @@ export default function MobilePage() {
       {/* SMART PRIVACY SECTION */}
       {event?.enable_smart_privacy && (event.plan_type === 'Premium' || event.plan_type === 'White Label') && (
         <div className="mx-4 mt-4 nm-card p-4">
-          <h2 className="text-lg font-bold text-center mb-2" style={{color:'#e2e8f0'}}>Find My Photos</h2>
-          <p className="text-sm text-center mb-4" style={{color:'#7f849c'}}>Upload a selfie to find all photos you're in.</p>
+          <h2 className="text-lg font-bold text-center mb-2" style={{color:'var(--text1)'}}>Find My Photos</h2>
+          <p className="text-sm text-center mb-4" style={{color:'var(--text2)'}}>Upload a selfie to find all photos you're in.</p>
           <input type="file" accept="image/*" onChange={(e) => { setSelfieFile(e.target.files?.[0] || null); setSelfiePreview(URL.createObjectURL(e.target.files?.[0]!)); }} className="hidden" id="selfie-upload" />
           <label htmlFor="selfie-upload" className="nm-btn w-full text-center py-3">Select Selfie</label>
           {selfiePreview && (
@@ -300,10 +324,10 @@ export default function MobilePage() {
 
       {/* YOUR PHOTOS SECTION */}
       <div className="px-4 mt-6">
-        <h2 className="text-lg font-bold mb-2" style={{color:'#e2e8f0'}}>Your Uploaded Photos</h2>
+        <h2 className="text-lg font-bold mb-2" style={{color:'var(--text1)'}}>Your Uploaded Photos</h2>
         {photos.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-sm" style={{color:'#7f849c'}}>You haven't uploaded any photos yet.</p>
+            <p className="text-sm" style={{color:'var(--text2)'}}>You haven't uploaded any photos yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2">

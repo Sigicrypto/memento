@@ -207,7 +207,7 @@ export default function NeumorphicLandingPage() {
               <h4 className="text-gray-200 font-semibold mb-4">Product</h4>
               <ul className="space-y-2">
                 <li><Link href="/create" className="text-gray-400 hover:text-gray-200 text-sm">Create Wall</Link></li>
-                <li><Link href="/pricing" className="text-gray-400 hover:text-gray-200 text-sm">Pricing</Link></li>
+                <li><Link href="/#pricing" className="text-gray-400 hover:text-gray-200 text-sm">Pricing</Link></li>
                 <li><Link href="/demo" className="text-gray-400 hover:text-gray-200 text-sm">Demo</Link></li>
               </ul>
             </div>

@@ -77,7 +77,7 @@ export default function NeumorphicDashboardPage() {
             </div>
             
             <div className="flex items-center gap-4">
-              <Link href="/pricing" className="text-gray-400 hover:text-gray-200 transition-colors">Pricing</Link>
+              <Link href="/#pricing" className="text-gray-400 hover:text-gray-200 transition-colors">Pricing</Link>
               <Link href="/demo" className="text-gray-400 hover:text-gray-200 transition-colors">Demo</Link>
               <button 
                 onClick={() => { supabase.auth.signOut(); router.push('/auth-neumo'); }}

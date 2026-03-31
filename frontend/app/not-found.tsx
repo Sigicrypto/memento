@@ -17,10 +17,10 @@ export default function NotFound() {
             <div className="text-6xl mt-4">📷</div>
           </div>
 
-          <h1 className="text-3xl font-bold mb-4" style={{color:'#e2e8f0'}}>
+          <h1 className="text-3xl font-bold mb-4" style={{color:'var(--text1)'}}>
             This wall doesn't exist
           </h1>
-          <p className="text-sm mb-8" style={{color:'#7f849c'}}>
+          <p className="text-sm mb-8" style={{color:'var(--text2)'}}>
             The photo wall you're looking for might have been deleted, or the URL could be incorrect.
           </p>
 
@@ -49,3 +49,4 @@ export default function NotFound() {
     </div>
   );
 }
+

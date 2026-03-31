@@ -29,8 +29,8 @@ function SuccessContent() {
       <div className="w-full max-w-md">
         <div className="nm-card p-10 text-center">
           <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✅</div>
-          <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Payment Successful!</h1>
-          <p className="text-sm mb-2" style={{color:'#7f849c'}}>
+          <h1 className="text-2xl font-bold mb-2" style={{color:'var(--text1)'}}>Payment Successful!</h1>
+          <p className="text-sm mb-2" style={{color:'var(--text2)'}}>
             Your account has been upgraded to{' '}
             <span className="font-bold" style={{color:'#f59e0b'}}>{PLAN_DISPLAY[plan] || plan}</span>.
           </p>
@@ -60,3 +60,4 @@ export default function StripeSuccessPage() {
     </Suspense>
   );
 }
+

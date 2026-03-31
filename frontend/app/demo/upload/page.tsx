@@ -113,8 +113,8 @@ function UploadContent() {
     return (
       <div className="nm-page flex items-center justify-center p-4 text-center">
         <div className="nm-card p-8">
-          <p className="text-xl" style={{color:'#e2e8f0'}}>Invalid Demo Link</p>
-          <p className="text-sm mt-2" style={{color:'#7f849c'}}>Please scan a valid QR code.</p>
+          <p className="text-xl" style={{color:'var(--text1)'}}>Invalid Demo Link</p>
+          <p className="text-sm mt-2" style={{color:'var(--text2)'}}>Please scan a valid QR code.</p>
         </div>
       </div>
     );
@@ -271,13 +271,13 @@ function UploadContent() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✅</div>
-            <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Complete!</h1>
-            <p className="text-sm mb-6" style={{color:'#7f849c'}}>Your photo is now live on the wall.</p>
+            <h1 className="text-3xl font-bold mb-2" style={{color:'var(--text1)'}}>Upload Complete!</h1>
+            <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Your photo is now live on the wall.</p>
           </div>
 
           {/* View Options */}
           <div className="text-center mb-8">
-            <h2 className="text-xl font-bold mb-4" style={{color:'#e2e8f0'}}>View Your Photo on the Wall</h2>
+            <h2 className="text-xl font-bold mb-4" style={{color:'var(--text1)'}}>View Your Photo on the Wall</h2>
             <div className="flex justify-center gap-2 mb-6 flex-wrap">
               <Link href={`/demo?id=${demoId}`} className="nm-btn nm-btn-accent px-6 py-3 font-bold">
                 🖼️ Open Live Wall
@@ -297,7 +297,7 @@ function UploadContent() {
           {/* Uploaded File Preview */}
           {lastUrl && (
             <div className="text-center mb-8">
-              <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Your Upload</h3>
+              <h3 className="text-lg font-semibold mb-4" style={{color:'var(--text1)'}}>Your Upload</h3>
               <div className="nm-card p-4 inline-block">
                 {lastUrl.includes('video') ? (
                   <video src={lastUrl} className="max-w-sm max-h-64 rounded-lg" controls playsInline />
@@ -316,7 +316,7 @@ function UploadContent() {
           {/* Upload More Options */}
           <div className="text-center">
             <div className="nm-card p-6 inline-block">
-              <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Share More Photos</h3>
+              <h3 className="text-lg font-semibold mb-4" style={{color:'var(--text1)'}}>Share More Photos</h3>
               <div className="flex flex-col gap-3">
                 <button 
                   onClick={() => { 
@@ -348,7 +348,7 @@ function UploadContent() {
     return (
       <div className="nm-page flex flex-col items-center justify-center p-6 text-center">
         <div className="nm-circle w-20 h-20 mb-6 text-4xl">❌</div>
-        <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upload Failed</h1>
+        <h1 className="text-2xl font-bold mb-2" style={{color:'var(--text1)'}}>Upload Failed</h1>
         <p className="text-sm px-4 mb-4" style={{color:'#fca5a5'}}>{error}</p>
         <button onClick={() => { setError(null); setUploading(false); setProgress(0); }} className="nm-btn px-6 py-3 font-bold">
           Try Again
@@ -367,8 +367,8 @@ function UploadContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <span className="nm-circle w-12 h-12 mx-auto mb-4 text-2xl inline-flex items-center justify-center">📷</span>
-          <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>Demo Upload</h1>
-          <p className="text-sm mt-1" style={{color:'#7f849c'}}>Share to the live wall!</p>
+          <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>Demo Upload</h1>
+          <p className="text-sm mt-1" style={{color:'var(--text2)'}}>Share to the live wall!</p>
         </div>
 
         {validationMessage && (
@@ -377,7 +377,7 @@ function UploadContent() {
 
         <div className="nm-card p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Photos ({photos.length}/{MAX_IMAGES})</h2>
+            <h2 className="font-semibold" style={{color:'var(--text1)'}}>Photos ({photos.length}/{MAX_IMAGES})</h2>
             {!uploading && photos.length < MAX_IMAGES && (
               <button onClick={() => photoInputRef.current?.click()} className="nm-btn px-3 py-1.5 text-xs text-[#f59e0b] font-bold">
                 + Add Photo
@@ -388,7 +388,7 @@ function UploadContent() {
           
           {photos.length === 0 ? (
             <div className="nm-inset p-8 text-center rounded-xl border-dashed border-2" style={{borderColor: '#252c46'}}>
-              <p className="text-xs" style={{color:'#7f849c'}}>No photos selected</p>
+              <p className="text-xs" style={{color:'var(--text2)'}}>No photos selected</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-3">
@@ -408,7 +408,7 @@ function UploadContent() {
 
         <div className="nm-card p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-semibold" style={{color:'#e2e8f0'}}>Video ({videos.length}/{MAX_VIDEOS})</h2>
+            <h2 className="font-semibold" style={{color:'var(--text1)'}}>Video ({videos.length}/{MAX_VIDEOS})</h2>
             {!uploading && videos.length === 0 && (
               <button onClick={() => videoInputRef.current?.click()} className="nm-btn px-3 py-1.5 text-xs text-[#f59e0b] font-bold">
                 + Add Video
@@ -419,7 +419,7 @@ function UploadContent() {
 
           {videos.length === 0 ? (
             <div className="nm-inset p-8 text-center rounded-xl border-dashed border-2" style={{borderColor: '#252c46'}}>
-              <p className="text-xs" style={{color:'#7f849c'}}>No video selected</p>
+              <p className="text-xs" style={{color:'var(--text2)'}}>No video selected</p>
             </div>
           ) : (
             <div className="relative aspect-video rounded-lg overflow-hidden nm-inset">
@@ -469,3 +469,4 @@ export default function DemoUploadPage() {
     </Suspense>
   );
 }
+

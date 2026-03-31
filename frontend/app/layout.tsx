@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "../components/ThemeProvider";
@@ -8,8 +8,10 @@ import SocialFloat from "@/components/SocialFloat";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/CustomCursor";
 import "../styles/cursor.css";
+import { PostHogProvider } from "@/components/PostHogProvider";
+import CookieBanner from "@/components/CookieBanner";
 
-const inter = Inter({
+const inter = Nunito({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
@@ -25,18 +27,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={`${inter.className}`}>
       <body className="min-h-screen w-full antialiased transition-colors duration-300" suppressHydrationWarning={true}>
         <ThemeProvider>
-          <div className="min-h-screen w-full flex flex-col">
-            <Navbar />
-            <MainContent>
-              {children}
-            </MainContent>
-            <WhatsAppFloat />
-            <SocialFloat />
-          </div>
-          <CustomCursor />
+          <PostHogProvider>
+            <div className="min-h-screen w-full flex flex-col">
+              <Navbar />
+              <MainContent>
+                {children}
+              </MainContent>
+              <WhatsAppFloat />
+              <SocialFloat />
+              <CookieBanner />
+            </div>
+            <CustomCursor />
+          </PostHogProvider>
         </ThemeProvider>
       </body>
     </html>

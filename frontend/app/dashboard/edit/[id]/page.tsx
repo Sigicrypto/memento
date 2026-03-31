@@ -14,6 +14,9 @@ export default function EditEventPage() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [password, setPassword] = useState('');
+  const [theme, setTheme] = useState('light');
+  const [musicTrack, setMusicTrack] = useState('none');
+  const [planType, setPlanType] = useState('FREE');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -43,6 +46,9 @@ export default function EditEventPage() {
       setName(data.name);
       setSlug(data.slug);
       setPassword(data.password || '');
+      setTheme(data.theme || 'light');
+      setMusicTrack(data.music_track || 'none');
+      setPlanType(data.plan_type || 'FREE');
       setLoading(false);
     };
 
@@ -61,6 +67,8 @@ export default function EditEventPage() {
         name,
         slug,
         password: password || null,
+        theme,
+        music_track: musicTrack !== 'none' ? musicTrack : null,
       })
       .eq('id', id);
 
@@ -88,18 +96,18 @@ export default function EditEventPage() {
       <div className="w-full max-w-md">
         <div className="nm-card p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>Edit Event</h1>
-            <button onClick={() => router.back()} className="nm-circle w-9 h-9 text-sm" style={{color:'#7f849c'}}>✕</button>
+            <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>Edit Event</h1>
+            <button onClick={() => router.back()} className="nm-circle w-9 h-9 text-sm" style={{color:'var(--text2)'}}>✕</button>
           </div>
 
           <form onSubmit={handleUpdate} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Event Name</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Event Name</label>
               <input type="text" className="nm-input" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Custom Slug (URL)</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Custom Slug (URL)</label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style={{color:'#4a4f6a'}}>/wall/</span>
                 <input type="text" className="nm-input !pl-14" value={slug}
@@ -109,9 +117,45 @@ export default function EditEventPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Password</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Password</label>
               <input type="password" className="nm-input" value={password}
                 onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for public access" />
+            </div>
+
+            {/* Premium / Standard Features */}
+            <div className="pt-4 border-t border-slate-200/20">
+              <label className="block text-xs font-semibold mb-2 flex items-center gap-2" style={{color:'var(--text2)'}}>
+                Wall Theme
+                {['FREE', 'Starter'].includes(planType) && <span className="text-[9px] px-2 bg-amber-500/20 text-amber-600 rounded-full">Standard+</span>}
+              </label>
+              <select 
+                className="nm-input w-full" 
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                disabled={['FREE', 'Starter'].includes(planType)}
+              >
+                <option value="light">Classic Light</option>
+                <option value="dark">Cinematic Dark</option>
+                <option value="dreamy">Dreamy Glassmorphism</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold mb-2 flex items-center gap-2" style={{color:'var(--text2)'}}>
+                Slideshow Music
+                {['FREE', 'Starter', 'Standard'].includes(planType) && <span className="text-[9px] px-2 bg-amber-500/20 text-amber-600 rounded-full">Premium</span>}
+              </label>
+              <select 
+                className="nm-input w-full" 
+                value={musicTrack}
+                onChange={(e) => setMusicTrack(e.target.value)}
+                disabled={['FREE', 'Starter', 'Standard'].includes(planType)}
+              >
+                <option value="none">No Music</option>
+                <option value="lofi">Lofi Chill (Free default)</option>
+                <option value="acoustic">Acoustic Sunset</option>
+                <option value="upbeat">Upbeat Party</option>
+              </select>
             </div>
 
             {error && (

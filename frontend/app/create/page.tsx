@@ -88,17 +88,17 @@ export default function CreateEventPage() {
           <div className="nm-card p-8 text-center">
             <div className="nm-badge mx-auto mb-4 text-[10px]">✨ Wall Created!</div>
             <div className="text-3xl mb-3">🎉</div>
-            <h1 className="text-2xl font-bold mb-1" style={{color:'#e2e8f0'}}>Wall Ready!</h1>
-            <p className="text-sm mb-6" style={{color:'#7f849c'}}>Share this QR code with your guests</p>
+            <h1 className="text-2xl font-bold mb-1" style={{color:'var(--text1)'}}>Wall Ready!</h1>
+            <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Share this QR code with your guests</p>
 
             <div className="nm-inset p-4 inline-block mx-auto mb-6 rounded-2xl">
-              <QRCodeSVG value={uploadUrl} size={160} bgColor="#1e2235" fgColor="#e2e8f0" />
+              <QRCodeSVG value={uploadUrl} size={160} bgColor="var(--surface)" fgColor="var(--text1)" />
             </div>
             <div style={{display:'none'}}>
               <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
             </div>
 
-            <p className="text-[10px] mb-6 break-all font-mono" style={{color:'#7f849c'}}>{uploadUrl}</p>
+            <p className="text-[10px] mb-6 break-all font-mono" style={{color:'var(--text2)'}}>{uploadUrl}</p>
 
 
             <div className="flex flex-col gap-3">
@@ -135,14 +135,14 @@ export default function CreateEventPage() {
           <div className="text-center mb-4">
             <span className="nm-badge px-4 py-1 text-[10px]">Launch your event wall</span>
           </div>
-          <h1 className="text-2xl font-bold text-center mb-2" style={{color:'#e2e8f0'}}>Create a Photo Wall</h1>
-          <p className="text-sm text-center mb-6 leading-relaxed max-w-xs mx-auto" style={{color:'#7f849c'}}>
+          <h1 className="text-2xl font-bold text-center mb-2" style={{color:'var(--text1)'}}>Create a Photo Wall</h1>
+          <p className="text-sm text-center mb-6 leading-relaxed max-w-xs mx-auto" style={{color:'var(--text2)'}}>
             Name your event and get a QR code guests can scan to share photos.
           </p>
 
           {/* Sample Photo Gallery */}
           <div className="mb-8">
-            <p className="text-xs text-center mb-4" style={{color:'#7f849c'}}>Sample Event Photos</p>
+            <p className="text-xs text-center mb-4" style={{color:'var(--text2)'}}>Sample Event Photos</p>
             <div className="grid grid-cols-3 gap-2">
               <div className="nm-inset p-1 rounded-lg">
                 <img src="/sample-photos/birthday-party.jpg" alt="Birthday Party" className="w-full h-16 object-cover rounded" />
@@ -173,19 +173,19 @@ export default function CreateEventPage() {
 
           <form onSubmit={handleCreate} className="space-y-6">
             <div className="space-y-2">
-              <label className="block text-xs font-semibold ml-1" style={{color:'#e2e8f0'}}>Event Name</label>
+              <label className="block text-xs font-semibold ml-1" style={{color:'var(--text1)'}}>Event Name</label>
               <input type="text" className="nm-input py-3 text-sm" value={name} onChange={(e) => setName(e.target.value)} placeholder="My Awesome Party…" required autoFocus />
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center justify-between ml-1">
-                <label className="text-xs font-semibold" style={{color:'#e2e8f0'}}>Custom Link (URL)</label>
+                <label className="text-xs font-semibold" style={{color:'var(--text1)'}}>Custom Link (URL)</label>
                 {plan === 'FREE' && (
-                  <Link href="/pricing" className="text-xs font-bold px-3 py-1.5 rounded-full" style={{color:'#f59e0b',background:'rgba(245,158,11,0.1)'}}>✨ UPGRADE</Link>
+                  <Link href="/#pricing" className="text-xs font-bold px-3 py-1.5 rounded-full" style={{color:'#f59e0b',background:'rgba(245,158,11,0.1)'}}>✨ UPGRADE</Link>
                 )}
               </div>
               <div className="relative">
-                <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'#7f849c'}}>/mobile/</span>
+                <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'var(--text2)'}}>/mobile/</span>
                 <input type="text" className={`nm-input py-3 text-sm !pl-20 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   value={customSlug} disabled={plan === 'FREE'}
                   onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
@@ -194,7 +194,7 @@ export default function CreateEventPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-semibold ml-1" style={{color:'#e2e8f0'}}>Guest Password <span style={{color:'#7f849c',fontWeight:'400'}}>(optional)</span></label>
+              <label className="block text-xs font-semibold ml-1" style={{color:'var(--text1)'}}>Guest Password <span style={{color:'var(--text2)',fontWeight:'400'}}>(optional)</span></label>
               <input type="password" className="nm-input py-3 text-sm" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for open access…" />
             </div>
 
@@ -219,3 +219,4 @@ export default function CreateEventPage() {
     </div>
   );
 }
+

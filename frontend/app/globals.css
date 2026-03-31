@@ -22,60 +22,44 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   LIGHT MODE
+   LIGHT MODE — Ethereal Pastel Glassmorphism
    ═══════════════════════════════════════════════════ */
 :root {
-  --color-bg: #f5f0e8;
-  --color-surface: #faf7f2;
-  --color-card: #ffffff;
-  --color-border: rgba(180, 130, 60, 0.14);
-  --color-border-strong: rgba(180, 130, 60, 0.30);
-  --color-text: #1a1208;
-  --color-text-secondary: #5c4e38;
-  --color-muted: #e8ddd0;
-  --color-input-bg: #ffffff;
-  --color-scrollbar: rgba(180, 130, 60, 0.22);
-  --color-selection: rgba(245, 158, 11, 0.18);
+  --color-bg: #faf9fd; /* Lavender-tinted white */
+  --color-surface: rgba(255, 255, 255, 0.45);
+  --color-card: rgba(255, 255, 255, 0.65);
+  --color-border: rgba(255, 255, 255, 0.6);
+  --color-border-strong: rgba(255, 255, 255, 0.9);
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-muted: rgba(255, 255, 255, 0.2);
+  --color-input-bg: rgba(255, 255, 255, 0.6);
+  --color-scrollbar: rgba(148, 163, 184, 0.2);
+  --color-selection: rgba(244, 114, 182, 0.2);
 
-  --shadow-card: 0 2px 8px rgba(120, 80, 20, 0.08),
-    0 12px 32px -8px rgba(120, 80, 20, 0.14);
-  --shadow-card-hover: 0 4px 16px rgba(120, 80, 20, 0.12),
-    0 28px 52px -12px rgba(120, 80, 20, 0.22);
+  /* Shadows representing Glassmorphic depth */
+  --shadow-card: 0 8px 32px rgba(30, 41, 59, 0.05);
+  --shadow-card-hover: 0 12px 48px rgba(30, 41, 59, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.02);
+
+  /* Pastel Theme Colors */
+  --amber: #fbbf24;
+  --rose: #f472b6;
+  --gold: #fcd34d;
+  --color-primary: #f59e0b;
+  --color-accent: #f472b6;
 }
 
 /* ═══════════════════════════════════════════════════
-   DARK MODE — "Neumorphic Dark"
-   page:    #1e2235
-   surface: #232739
-   card:    #1e2235  (same base, shadow creates depth)
+   DARK MODE — (Alias to soft glass for compatibility if still used)
    ═══════════════════════════════════════════════════ */
 .dark {
-  --color-bg: #1e2235;
-  --color-surface: #232739;
-  --color-card: #1e2235;
-  --color-border: rgba(245, 158, 11, 0.10);
-  --color-border-strong: rgba(245, 158, 11, 0.22);
-  --color-text: #e2e8f0;
-  --color-text-secondary: #7f849c;
-  --color-muted: #2a2f47;
-  --color-input-bg: #1e2235;
-  --color-scrollbar: rgba(245, 158, 11, 0.20);
-  --color-selection: rgba(245, 158, 11, 0.18);
-
-  /* Neumorphic shadow pair */
-  --nm-light: #252c46;
-  --nm-dark: #14182a;
-  --nm-radius: 18px;
-
-  --shadow-card: 8px 8px 16px var(--nm-dark), -8px -8px 16px var(--nm-light);
-  --shadow-card-hover: 10px 10px 20px var(--nm-dark), -10px -10px 20px var(--nm-light),
-    0 0 0 1px rgba(245, 158, 11, 0.10);
-  --shadow-inset: inset 6px 6px 12px var(--nm-dark), inset -6px -6px 12px var(--nm-light);
-
-  /* Colors used globally (from landing.css) */
-  --amber: #f59e0b;
-  --rose: #f472b6;
-  --gold: #fcd34d;
+  --color-bg: #faf9fd;
+  --color-surface: rgba(255, 255, 255, 0.45);
+  --color-card: rgba(255, 255, 255, 0.65);
+  --color-border: rgba(255, 255, 255, 0.6);
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
 }
 
 @media (min-width: 1025px) {
@@ -104,7 +88,7 @@ body {
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
   line-height: 1.6;
-  font-size: 16px;
+  font-size: 18px;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -319,54 +303,36 @@ body {
   transform: translateY(-3px);
 }
 
-/* ── NM UTILITIES ── */
+/* ── GLASS UTILITIES ── */
 .nm-card {
-  background: #1e2235;
-  border-radius: 18px;
-  box-shadow: 8px 8px 16px #14182a, -8px -8px 16px #252c46;
+  background: var(--color-surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  --mx: 50%;
-  --my: 50%;
 }
-.nm-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 18px;
-  background: radial-gradient(400px circle at var(--mx) var(--my), rgba(245,158,11,0.06), transparent 40%);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-.nm-card:hover::before { opacity: 1; }
-.nm-card::after {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 18px;
-  border: 1px solid rgba(245,158,11,0.06);
-  pointer-events: none;
-  transition: border-color 0.4s;
-  z-index: 1;
-}
-.nm-card:hover::after { border-color: rgba(245,158,11,0.12); }
-
 .nm-card:hover {
-  box-shadow: 10px 10px 20px #14182a, -10px -10px 20px #252c46;
+  box-shadow: var(--shadow-card-hover);
   transform: translateY(-3px);
 }
 .nm-inset {
-  background: #1e2235;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 14px;
-  box-shadow: inset 6px 6px 12px #14182a, inset -6px -6px 12px #252c46;
+  box-shadow: var(--shadow-inset);
 }
 .nm-btn {
-  background: #1e2235;
-  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 14px;
-  box-shadow: 6px 6px 12px #14182a, -6px -6px 12px #252c46;
-  color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.04);
+  color: var(--color-text);
   cursor: pointer;
   font-weight: 600;
   padding: 0.75rem 1.75rem;
@@ -375,66 +341,75 @@ body {
   text-decoration: none;
 }
 .nm-btn:hover {
-  box-shadow: 8px 8px 16px #14182a, -8px -8px 16px #252c46;
+  box-shadow: 0 6px 16px rgba(30, 41, 59, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.8);
   transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.65);
 }
 .nm-btn:active {
-  box-shadow: inset 4px 4px 8px #14182a, inset -4px -4px 8px #252c46;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   transform: translateY(0);
 }
 .nm-btn-accent {
-  background: linear-gradient(135deg, #f59e0b, #f472b6);
-  box-shadow: 6px 6px 14px #14182a, -6px -6px 14px #252c46, 0 4px 20px rgba(245,158,11,0.30);
-  color: #1e2235;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+  color: #ffffff;
+  border: none;
 }
 .nm-btn-accent:hover {
-  box-shadow: 8px 8px 18px #14182a, -8px -8px 18px #252c46, 0 8px 28px rgba(245,158,11,0.40);
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.35);
   transform: translateY(-2px);
 }
 .nm-circle {
-  background: #1e2235;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 50%;
-  box-shadow: 6px 6px 12px #14182a, -6px -6px 12px #252c46;
+  box-shadow: 0 4px 12px rgba(30, 41, 59, 0.04);
   display: inline-flex; align-items: center; justify-content: center;
   transition: all 0.3s;
 }
 .nm-circle:hover {
-  box-shadow: 8px 8px 16px #14182a, -8px -8px 16px #252c46;
+  box-shadow: 0 8px 16px rgba(30, 41, 59, 0.08);
   transform: scale(1.05);
 }
 .nm-page {
-  background: #1e2235;
+  background: transparent;
   min-height: 100vh;
 }
 .nm-input {
-  background: #1e2235;
-  border: none;
+  background: var(--color-input-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  box-shadow: inset 5px 5px 10px #14182a, inset -5px -5px 10px #252c46;
-  color: #e2e8f0;
+  box-shadow: var(--shadow-inset);
+  color: var(--color-text);
   padding: 0.8rem 1.2rem;
   width: 100%;
   font-family: inherit;
   font-size: 0.9rem;
   outline: none;
-  transition: box-shadow 0.3s;
+  transition: all 0.3s;
 }
 .nm-input:focus {
-  box-shadow: inset 6px 6px 12px #14182a, inset -6px -6px 12px #252c46, 0 0 0 2px rgba(245,158,11,0.25);
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-inset), 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
-.nm-input::placeholder { color: #7f849c; }
+.nm-input::placeholder { color: var(--color-text-secondary); }
 .nm-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.20), transparent);
+  background: linear-gradient(90deg, transparent, rgba(200, 210, 230, 0.5), transparent);
   margin: 1.5rem 0;
 }
 .nm-badge {
-  background: #1e2235;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 100px;
-  box-shadow: 4px 4px 8px #14182a, -4px -4px 8px #252c46;
+  box-shadow: 0 2px 8px rgba(30, 41, 59, 0.05);
   padding: 4px 14px;
   font-size: 0.75rem; font-weight: 600;
-  color: #f59e0b;
+  color: var(--color-primary);
   display: inline-flex; align-items: center; gap: 6px;
 }
 

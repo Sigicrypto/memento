@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     'line_items[0][quantity]': '1',
     mode: 'payment',
     success_url: `${origin}/checkout/success?plan=${planKey}`,
-    cancel_url: `${origin}/pricing`,
+    cancel_url: `${origin}/#pricing`,
     'metadata[plan]': planKey,
     'metadata[userId]': userId || '',
   });

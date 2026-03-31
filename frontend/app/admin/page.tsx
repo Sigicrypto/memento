@@ -231,7 +231,7 @@ export default function AdminPage() {
       <div className="nm-page flex items-center justify-center px-4">
         <div className="nm-card text-center p-10">
           <p className="text-xl mb-4">🚫 Access Denied</p>
-          <p className="text-sm mb-6" style={{color:'#7f849c'}}>You don't have admin privileges.</p>
+          <p className="text-sm mb-6" style={{color:'var(--text2)'}}>You don't have admin privileges.</p>
           <Link href="/" className="nm-btn nm-btn-accent px-6 py-2.5 font-bold">Go Home</Link>
         </div>
       </div>
@@ -245,7 +245,7 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-[999] flex items-center justify-center px-4" style={{background:'rgba(14,18,40,0.7)', backdropFilter:'blur(4px)'}}>
           <div className="nm-card p-8 max-w-md w-full text-center">
             <div className="text-3xl mb-4">⚠️</div>
-            <p className="text-sm mb-6" style={{color:'#e2e8f0'}}>{confirmDialog.message}</p>
+            <p className="text-sm mb-6" style={{color:'var(--text1)'}}>{confirmDialog.message}</p>
             <div className="flex gap-3">
               <button onClick={closeConfirm} className="nm-btn flex-1 py-3 text-sm">Cancel</button>
               <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-3 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
@@ -259,11 +259,11 @@ export default function AdminPage() {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <span className="text-2xl">🔐</span>
-              <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>Admin Dashboard</h1>
+              <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>Admin Dashboard</h1>
             </div>
-            <p className="text-sm" style={{color:'#7f849c'}}>Manage users, events, and view platform analytics</p>
+            <p className="text-sm" style={{color:'var(--text2)'}}>Manage users, events, and view platform analytics</p>
           </div>
-          <Link href="/dashboard" className="nm-btn px-5 py-3 text-xs" style={{color:'#7f849c'}}>📊 My Dashboard</Link>
+          <Link href="/dashboard" className="nm-btn px-5 py-3 text-xs" style={{color:'var(--text2)'}}>📊 My Dashboard</Link>
         </div>
 
         {/* Navigation Tabs */}
@@ -277,7 +277,7 @@ export default function AdminPage() {
               className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition"
               style={{
                 background: activeTab === tab.id ? 'linear-gradient(135deg,#f59e0b,#f472b6)' : 'transparent',
-                color: activeTab === tab.id ? '#1e2235' : '#7f849c'
+                color: activeTab === tab.id ? 'var(--surface)' : 'var(--text2)'
               }}>
               {tab.label}
             </button>
@@ -299,19 +299,19 @@ export default function AdminPage() {
                     <div className="nm-circle w-12 h-12 text-2xl">{stat.icon}</div>
                     <span className="nm-badge text-xs">Live</span>
                   </div>
-                  <p className="text-3xl font-bold" style={{color:'#e2e8f0'}}>{stat.value.toLocaleString()}</p>
-                  <p className="text-sm mt-1" style={{color:'#7f849c'}}>{stat.label}</p>
+                  <p className="text-3xl font-bold" style={{color:'var(--text1)'}}>{stat.value.toLocaleString()}</p>
+                  <p className="text-sm mt-1" style={{color:'var(--text2)'}}>{stat.label}</p>
                 </div>
               ))}
             </div>
 
             <div className="nm-card p-6">
-              <h3 className="text-lg font-semibold mb-4" style={{color:'#e2e8f0'}}>Quick Actions</h3>
+              <h3 className="text-lg font-semibold mb-4" style={{color:'var(--text1)'}}>Quick Actions</h3>
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => setActiveTab('users')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>👥 View Users</button>
-                <button onClick={() => setActiveTab('events')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>🎉 View Events</button>
-                <Link href="/admin/analytics" className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>📊 View Analytics</Link>
-                <Link href="/admin/branding" className="nm-btn px-5 py-2.5 text-sm" style={{color:'#7f849c'}}>🎨 Branding</Link>
+                <button onClick={() => setActiveTab('users')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>👥 View Users</button>
+                <button onClick={() => setActiveTab('events')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>🎉 View Events</button>
+                <Link href="/admin/analytics" className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>📊 View Analytics</Link>
+                <Link href="/admin/branding" className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>🎨 Branding</Link>
                 <Link href="/create" className="nm-btn nm-btn-accent px-5 py-2.5 text-sm">✨ Create New Event</Link>
               </div>
             </div>
@@ -321,9 +321,9 @@ export default function AdminPage() {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold" style={{color:'#e2e8f0'}}>All Users ({users.length})</h2>
+            <h2 className="text-xl font-bold" style={{color:'var(--text1)'}}>All Users ({users.length})</h2>
             {users.length === 0 ? (
-              <div className="nm-card text-center p-12" style={{color:'#7f849c'}}>No users found</div>
+              <div className="nm-card text-center p-12" style={{color:'var(--text2)'}}>No users found</div>
             ) : (
               <div className="grid gap-3">
                 {users.map((u) => (
@@ -331,8 +331,8 @@ export default function AdminPage() {
                     <div className="flex items-center gap-3">
                       <div className="nm-circle w-10 h-10 font-bold" style={{color:'#f59e0b'}}>{u.email.charAt(0).toUpperCase()}</div>
                       <div>
-                        <p className="font-medium text-sm" style={{color:'#e2e8f0'}}>{u.email}</p>
-                        <p className="text-xs" style={{color:'#7f849c'}}>
+                        <p className="font-medium text-sm" style={{color:'var(--text1)'}}>{u.email}</p>
+                        <p className="text-xs" style={{color:'var(--text2)'}}>
                           Joined {new Date(u.created_at).toLocaleDateString()} &bull;
                           <span className="ml-1" style={{color:'#f59e0b'}}>{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
                         </p>
@@ -352,17 +352,17 @@ export default function AdminPage() {
         {/* Events Tab */}
         {activeTab === 'events' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-bold" style={{color:'#e2e8f0'}}>All Events ({events.length})</h2>
+            <h2 className="text-xl font-bold" style={{color:'var(--text1)'}}>All Events ({events.length})</h2>
             {events.length === 0 ? (
-              <div className="nm-card text-center p-12" style={{color:'#7f849c'}}>No events found</div>
+              <div className="nm-card text-center p-12" style={{color:'var(--text2)'}}>No events found</div>
             ) : (
               <div className="grid gap-3">
                 {events.map((event) => (
                   <div key={event.id} className="nm-card p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-semibold" style={{color:'#e2e8f0'}}>{event.name}</h3>
-                        <p className="text-xs" style={{color:'#7f849c'}}>
+                        <h3 className="font-semibold" style={{color:'var(--text1)'}}>{event.name}</h3>
+                        <p className="text-xs" style={{color:'var(--text2)'}}>
                           By {event.owner_email} on {new Date(event.created_at).toLocaleDateString()}
                         </p>
                       </div>
@@ -371,8 +371,8 @@ export default function AdminPage() {
                     <div className="flex flex-wrap items-center gap-3 text-xs">
                       <span className="nm-badge">📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</span>
                       <Link href={`/wall/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#f59e0b'}}>🖼️ Wall</Link>
-                      <Link href={`/upload/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#7f849c'}}>📱 Upload</Link>
-                      <Link href={`/moderate/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#7f849c'}}>🛡️ Moderate</Link>
+                      <Link href={`/upload/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'var(--text2)'}}>📱 Upload</Link>
+                      <Link href={`/moderate/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'var(--text2)'}}>🛡️ Moderate</Link>
                       <Link href={`/admin/edit-event/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#818cf8'}}>✏️ Edit</Link>
                     </div>
                   </div>
@@ -385,3 +385,4 @@ export default function AdminPage() {
     </div>
   );
 }
+

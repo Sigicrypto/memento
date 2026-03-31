@@ -12,6 +12,7 @@ interface Photo {
   caption?: string;
   created_at: string;
   approved: boolean;
+  media_type?: string;
 }
 
 export default function ModeratePage() {
@@ -78,8 +79,8 @@ export default function ModeratePage() {
       <div className="max-w-5xl mx-auto">
         <div className="nm-card p-8 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold" style={{color:'#e2e8f0'}}>🛡️ Moderate: {eventName}</h1>
-            <p className="text-sm mt-1" style={{color:'#7f849c'}}>{photos.filter(p => !p.approved).length} pending photos</p>
+            <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>🛡️ Moderate: {eventName}</h1>
+            <p className="text-sm mt-1" style={{color:'var(--text2)'}}>{photos.filter(p => !p.approved).length} pending photos</p>
             <div className="flex gap-2 mt-4">
               <button onClick={() => setFilter('pending')} className={`nm-btn text-xs px-3 py-1 ${filter === 'pending' ? 'nm-btn-accent' : ''}`}>Pending</button>
               <button onClick={() => setFilter('approved')} className={`nm-btn text-xs px-3 py-1 ${filter === 'approved' ? 'nm-btn-accent' : ''}`}>Approved</button>
@@ -94,19 +95,23 @@ export default function ModeratePage() {
         {photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved).length === 0 ? (
           <div className="nm-card p-16 text-center">
             <div className="text-5xl mb-4">✅</div>
-            <p style={{color:'#7f849c'}}>No photos to moderate.</p>
+            <p style={{color:'var(--text2)'}}>No photos to moderate.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved).map((photo) => (
               <div key={photo.id} className={`nm-card overflow-hidden group relative ${!photo.approved ? 'ring-2 ring-yellow-500' : ''}`}>
                 <div className="overflow-hidden rounded-[14px]">
-                  <img src={getPublicUrl(photo.storage_path)} alt="" className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" />
+                  {photo.media_type === 'video' ? (
+                     <video src={getPublicUrl(photo.storage_path)} className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" controls={false} autoPlay loop muted playsInline />
+                  ) : (
+                     <img src={getPublicUrl(photo.storage_path)} alt="" className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" />
+                  )}
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/90 via-[#14182a]/30 to-transparent opacity-0 group-hover:opacity-100 transition-all flex flex-col justify-between p-3 rounded-[18px]">
-                  <div className="text-xs" style={{color:'#e2e8f0'}}>
+                  <div className="text-xs" style={{color:'var(--text1)'}}>
                     <p className="font-semibold">{photo.uploader_name}</p>
-                    {photo.caption && <p className="italic mt-0.5 text-[10px]" style={{color:'#7f849c'}}>{photo.caption}</p>}
+                    {photo.caption && <p className="italic mt-0.5 text-[10px]" style={{color:'var(--text2)'}}>{photo.caption}</p>}
                   </div>
                   <div className="flex gap-2">
                     {!photo.approved && <button onClick={() => approvePhoto(photo.id)} className="nm-btn flex-1 text-xs py-2" style={{color:'#4ade80',background:'rgba(74,222,128,0.15)'}}>Approve</button>}

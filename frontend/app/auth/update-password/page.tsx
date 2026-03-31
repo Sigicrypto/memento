@@ -65,8 +65,8 @@ function UpdatePasswordContent() {
         <div className="nm-card p-8">
           <div className="text-center mb-8">
             <div className="nm-circle w-16 h-16 mx-auto mb-4 text-2xl">🔑</div>
-            <h1 className="text-3xl font-bold mb-2" style={{color:'#e2e8f0'}}>Update Password</h1>
-            <p style={{color:'#7f849c'}}>Enter your new password</p>
+            <h1 className="text-3xl font-bold mb-2" style={{color:'var(--text1)'}}>Update Password</h1>
+            <p style={{color:'var(--text2)'}}>Enter your new password</p>
           </div>
 
           {message && <div className="nm-inset p-4 mb-6 text-center text-sm" style={{color:'#4ade80'}}>{message}</div>}
@@ -74,12 +74,12 @@ function UpdatePasswordContent() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>New Password</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>New Password</label>
               <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 required minLength={6} placeholder="Enter new password" className="nm-input" />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'#7f849c'}}>Confirm Password</label>
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Confirm Password</label>
               <input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                 required minLength={6} placeholder="Confirm new password" className="nm-input" />
             </div>
@@ -111,3 +111,4 @@ export default function UpdatePasswordPage() {
     </Suspense>
   );
 }
+

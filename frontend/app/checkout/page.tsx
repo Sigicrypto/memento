@@ -142,23 +142,23 @@ function CheckoutContent() {
           {status === 'IDLE' && (
             <>
               <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">💳</div>
-              <h1 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Checkout</h1>
+              <h1 className="text-2xl font-bold mb-2" style={{color:'var(--text1)'}}>Checkout</h1>
               <div className="flex items-center justify-center gap-3 mb-6">
-                <span className="nm-badge" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',color:'#1e2235',boxShadow:'none'}}>One-time</span>
+                <span className="nm-badge" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',color:'var(--surface)',boxShadow:'none'}}>One-time</span>
                 <span className="nm-badge">{regionLabel} price</span>
               </div>
-              <p className="text-sm mb-6" style={{color:'#7f849c'}}>
+              <p className="text-sm mb-6" style={{color:'var(--text2)'}}>
                 You are buying <span className="font-bold" style={{color:'#f59e0b'}}>{planLabel}</span>.
               </p>
 
               <div className="nm-inset p-4 mb-8 text-left rounded-2xl">
                 <div className="flex justify-between text-sm mb-2">
-                  <span style={{color:'#7f849c'}}>Memento {planLabel}</span>
+                  <span style={{color:'var(--text2)'}}>Memento {planLabel}</span>
                   <span className="font-bold text-xs" style={{color:'#4a4f6a'}}>Demo checkout</span>
                 </div>
                 <div className="nm-divider my-2" />
                 <div className="flex justify-between font-bold">
-                  <span style={{color:'#e2e8f0'}}>Total Due</span>
+                  <span style={{color:'var(--text1)'}}>Total Due</span>
                   <span style={{color:'#f59e0b'}}>{priceDisplay}</span>
                 </div>
                 <p className="text-xs mt-2" style={{color:'#4a4f6a'}}>One-time payment. No subscriptions, no recurring charges.</p>
@@ -167,7 +167,7 @@ function CheckoutContent() {
               <button onClick={handlePayment} className="nm-btn nm-btn-accent w-full py-4 text-base font-bold mb-4">
                 {region === 'IN' ? '🇮🇳 Pay with Razorpay' : '🌐 Pay with Stripe'}
               </button>
-              <Link href="/pricing" className="text-xs" style={{color:'#4a4f6a'}}>Cancel and go back</Link>
+              <Link href="/#pricing" className="text-xs" style={{color:'#4a4f6a'}}>Cancel and go back</Link>
             </>
           )}
 
@@ -176,16 +176,16 @@ function CheckoutContent() {
               <div className="nm-circle w-16 h-16 mx-auto mb-6">
                 <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
               </div>
-              <h2 className="text-xl font-bold mb-2" style={{color:'#e2e8f0'}}>Processing Payment...</h2>
-              <p className="text-sm" style={{color:'#7f849c'}}>Please do not refresh the page.</p>
+              <h2 className="text-xl font-bold mb-2" style={{color:'var(--text1)'}}>Processing Payment...</h2>
+              <p className="text-sm" style={{color:'var(--text2)'}}>Please do not refresh the page.</p>
             </div>
           )}
 
           {status === 'SUCCESS' && (
             <div className="py-10">
               <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✅</div>
-              <h2 className="text-2xl font-bold mb-2" style={{color:'#e2e8f0'}}>Upgrade Successful!</h2>
-              <p className="text-sm mb-8" style={{color:'#7f849c'}}>
+              <h2 className="text-2xl font-bold mb-2" style={{color:'var(--text1)'}}>Upgrade Successful!</h2>
+              <p className="text-sm mb-8" style={{color:'var(--text2)'}}>
                 Your account has been upgraded to {planLabel}. Redirecting...
               </p>
               <div className="nm-inset h-2 rounded-full overflow-hidden">
@@ -212,3 +212,4 @@ export default function CheckoutPage() {
     </Suspense>
   );
 }
+
