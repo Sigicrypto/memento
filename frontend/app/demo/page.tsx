@@ -207,6 +207,7 @@ export default function DemoPage() {
 
   // Polling fallback: re-fetch demo_uploads every 5s in case realtime is delayed
   useEffect(() => {
+    console.log('[DEMO WALL] Starting polling for demo_id:', demoId);
     if (!demoId) return;
     const poll = async () => {
       console.log('[DEMO WALL] Polling demo_uploads for demo_id:', demoId);
@@ -217,7 +218,11 @@ export default function DemoPage() {
         .order('created_at', { ascending: false })
         .limit(20);
       console.log('[DEMO WALL] Poll result:', { data, error });
-      if (!data?.length) return;
+      if (!data?.length) {
+        console.log('[DEMO WALL] No data found in poll');
+        return;
+      }
+      console.log('[DEMO WALL] Found', data.length, 'rows in poll');
       setPhotos(prev => {
         let updated = [...prev];
         for (const row of data) {
