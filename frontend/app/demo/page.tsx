@@ -153,14 +153,20 @@ export default function DemoPage() {
     };
 
     // Primary: postgres_changes on demo_uploads (reliable cross-device)
+    console.log('[DEMO WALL] Setting up postgres_changes for demo_id:', demoId);
     const dbChannel = supabase
       .channel(`demo-db-${demoId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'demo_uploads', filter: `demo_id=eq.${demoId}` },
         (payload) => {
+          console.log('[DEMO WALL] Received postgres_changes payload:', payload);
           const row = payload.new as { id: string; url: string; type: string; caption: string; uploader: string; created_at: string };
-          if (!row.url || !row.type) return;
+          if (!row.url || !row.type) {
+            console.log('[DEMO WALL] Invalid payload - missing url or type');
+            return;
+          }
+          console.log('[DEMO WALL] Adding photo to wall:', row);
           addPhoto({
             id: row.id,
             url: row.url,
@@ -171,7 +177,10 @@ export default function DemoPage() {
           });
         }
       )
-      .subscribe((status) => setIsConnected(status === 'SUBSCRIBED'));
+      .subscribe((status) => {
+        console.log('[DEMO WALL] postgres_changes subscription status:', status);
+        setIsConnected(status === 'SUBSCRIBED');
+      });
 
     // Fallback: broadcast (same-browser backup)
     const bcastChannel = supabase.channel(getDemoChannelName(demoId));
@@ -200,12 +209,14 @@ export default function DemoPage() {
   useEffect(() => {
     if (!demoId) return;
     const poll = async () => {
-      const { data } = await supabase
+      console.log('[DEMO WALL] Polling demo_uploads for demo_id:', demoId);
+      const { data, error } = await supabase
         .from('demo_uploads')
         .select('*')
         .eq('demo_id', demoId)
         .order('created_at', { ascending: false })
         .limit(20);
+      console.log('[DEMO WALL] Poll result:', { data, error });
       if (!data?.length) return;
       setPhotos(prev => {
         let updated = [...prev];
