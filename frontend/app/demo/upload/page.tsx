@@ -176,13 +176,19 @@ function UploadContent() {
           const caption = type === 'video' ? '🎥 Live Video!' : '📸 Live Photo!';
 
           // Primary: insert into DB → triggers reliable postgres_changes on wall
-          await supabase.from('demo_uploads').insert({
+          console.log('[DEMO UPLOAD] Inserting into demo_uploads:', { demo_id: demoId, url: publicUrl, type, caption });
+          const { error: insertError } = await supabase.from('demo_uploads').insert({
             demo_id: demoId,
             url: publicUrl,
             type,
             caption,
             uploader: 'Demo Guest',
           });
+          if (insertError) {
+            console.error('[DEMO UPLOAD] Database insert failed:', insertError);
+            throw new Error(`Database insert failed: ${insertError.message}`);
+          }
+          console.log('[DEMO UPLOAD] Database insert successful');
 
           const payload: DemoMedia = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
