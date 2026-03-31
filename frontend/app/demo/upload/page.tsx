@@ -173,15 +173,27 @@ function UploadContent() {
           setLastUrl(publicUrl);
           setStatus('Sending to wall...');
 
+          const caption = type === 'video' ? '🎥 Live Video!' : '📸 Live Photo!';
+
+          // Primary: insert into DB → triggers reliable postgres_changes on wall
+          await supabase.from('demo_uploads').insert({
+            demo_id: demoId,
+            url: publicUrl,
+            type,
+            caption,
+            uploader: 'Demo Guest',
+          });
+
           const payload: DemoMedia = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
             url: publicUrl,
             type,
-            caption: type === 'video' ? '🎥 Live Video!' : '📸 Live Photo!',
+            caption,
             uploader: 'Demo Guest',
             createdAt: Date.now(),
           };
 
+          // Fallback: localStorage + broadcast (same-browser and backup path)
           upsertDemoPhoto(demoId, payload);
           await broadcastUpload(demoId, payload);
         }

@@ -144,34 +144,55 @@ export default function DemoPage() {
     };
     window.addEventListener('storage', handleStorage);
 
-    // ✅ FIX: now uses getDemoChannelName() — matches broadcastUpload()
-    const channel = supabase.channel(getDemoChannelName(demoId));
+    const addPhoto = (newPhoto: DemoMedia) => {
+      setPhotos(prev => {
+        const updatedPhotos = mergeDemoMedia(prev, newPhoto);
+        writeDemoPhotos(demoId, updatedPhotos);
+        return updatedPhotos;
+      });
+    };
 
-    channel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
+    // Primary: postgres_changes on demo_uploads (reliable cross-device)
+    const dbChannel = supabase
+      .channel(`demo-db-${demoId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'demo_uploads', filter: `demo_id=eq.${demoId}` },
+        (payload) => {
+          const row = payload.new as { id: string; url: string; type: string; caption: string; uploader: string; created_at: string };
+          if (!row.url || !row.type) return;
+          addPhoto({
+            id: row.id,
+            url: row.url,
+            type: row.type === 'video' ? 'video' : 'image',
+            caption: row.caption || '',
+            uploader: row.uploader || 'Demo Guest',
+            createdAt: new Date(row.created_at).getTime(),
+          });
+        }
+      )
+      .subscribe((status) => setIsConnected(status === 'SUBSCRIBED'));
+
+    // Fallback: broadcast (same-browser backup)
+    const bcastChannel = supabase.channel(getDemoChannelName(demoId));
+    bcastChannel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
       const data = payload.payload as Partial<DemoMedia>;
       if (!data.url || !data.type) return;
-
-      const newPhoto: DemoMedia = {
+      addPhoto({
         id: String(data.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
         url: data.url,
         type: data.type === 'video' ? 'video' : 'image',
         caption: data.caption || '',
         uploader: data.uploader || 'Demo Guest',
         createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
-      };
-
-      setPhotos(prev => {
-        const updatedPhotos = mergeDemoMedia(prev, newPhoto);
-        writeDemoPhotos(demoId, updatedPhotos);
-        return updatedPhotos;
       });
     });
-
-    channel.subscribe((status) => setIsConnected(status === 'SUBSCRIBED'));
+    bcastChannel.subscribe();
 
     return () => {
       window.removeEventListener('storage', handleStorage);
-      supabase.removeChannel(channel);
+      supabase.removeChannel(dbChannel);
+      supabase.removeChannel(bcastChannel);
     };
   }, [demoId]);
 
