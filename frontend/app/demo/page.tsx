@@ -17,7 +17,7 @@ import {
   upsertDemoPhoto,
 } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
-import './landing.css';
+import '../landing.css';
 
 // Upload constants
 const MAX_IMAGES = 5;
