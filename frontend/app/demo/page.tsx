@@ -395,6 +395,11 @@ export default function DemoPage() {
   return (
     <div className="lp pb-12 min-h-screen">
 
+      {/* Debug indicator - remove after fixing */}
+      <div className="fixed top-4 right-4 z-50 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
+        DEBUG v2.0
+      </div>
+
       {/* NAV — same as landing */}
       <nav className="lp-nav scrolled">
         <Link href="/">
