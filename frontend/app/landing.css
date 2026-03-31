@@ -542,6 +542,13 @@
   font-size: 1.25rem;
 }
 
+.btn-glow.w-full,
+.btn-outline.w-full {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
 .btn-outline {
   display: inline-flex;
   align-items: center;
