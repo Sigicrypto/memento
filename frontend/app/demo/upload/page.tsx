@@ -65,7 +65,7 @@ async function broadcastUpload(demoId: string, payload: DemoMedia) {
   }
 }
 
-export default function DemoUploadPage() {
+function DemoUploadContent() {
   const searchParams = useSearchParams();
   const demoId = searchParams.get('id') || '';
   const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
@@ -421,5 +421,13 @@ export default function DemoUploadPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DemoUploadPage() {
+  return (
+    <Suspense fallback={<div className="lp min-h-screen flex items-center justify-center"><span style={{ color: 'var(--text2)' }}>Loading...</span></div>}>
+      <DemoUploadContent />
+    </Suspense>
   );
 }
