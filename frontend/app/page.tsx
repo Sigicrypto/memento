@@ -74,10 +74,9 @@ export default function LandingPage() {
     return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); obs.disconnect(); };
   }, []);
 
-  const Starter = showingINR ? "2,500" : "30";
-  const Standard = showingINR ? "5,000" : "60";
-  const Premium = showingINR ? "7,500" : "90";
-  const WhiteLabel = showingINR ? "10,000" : "120";
+  const Plus = showingINR ? "1,249" : "14.95";
+  const Premium = showingINR ? "2,499" : "29.95";
+  const Signature = showingINR ? "4,169" : "49.95";
   const Sym = showingINR ? "₹" : "$";
 
   return (
@@ -415,10 +414,9 @@ export default function LandingPage() {
 
         <div className="price-grid">
           {[
-            { name: 'Starter', slug: 'STARTER', price: Starter, features: ['Collect guest photos instantly', 'Live photo wall', 'Unlimited uploads', 'Download all photos as ZIP', '1 Month Storage', 'Up to 150 guests'], popular: false },
-            { name: 'Standard', slug: 'STANDARD', price: Standard, features: ['Everything in Starter +', 'Auto album creation', 'Custom wall theme', 'Simple analytics', 'Slideshow TV Mode', 'Live reactions', '3 Months Storage', 'Up to 300 guests'], popular: true },
-            { name: 'Premium', slug: 'PREMIUM', price: Premium, features: ['Everything in Standard +', 'Music slideshow', 'Expiring galleries', 'Priority support', 'Advanced privacy options', 'Google Drive sync', '6 Months Storage', 'Unlimited guests'], popular: false },
-            { name: 'White Label', slug: 'WHITE_LABEL', price: WhiteLabel, features: ['Everything in Premium +', 'Full branding removal', 'Custom domain', 'Partner resell rights', 'Client management', 'Training & Priority Setup'], popular: false },
+            { name: 'Plus', price: Plus, features: ['Unlimited photos', 'Ultra-fast uploads', 'Live Slideshow', 'Download as ZIP', 'E2E Encryption'], popular: false },
+            { name: 'Premium', price: Premium, features: ['Video uploads', 'Google Drive Sync', 'Safety Filter', 'All Plus features'], popular: true },
+            { name: 'Signature', price: Signature, features: ['1 Year access', 'Unlimited walls', 'Zapier & FTP', 'All Premium features'], popular: false },
           ].map((p, i) => (
             <div key={i} className={`gcard price-card ${p.popular ? 'popular' : ''} reveal`} style={{ animationDelay: `${i * 0.1}s` }}>
               <div className="gcard-border" />
@@ -429,9 +427,9 @@ export default function LandingPage() {
                   <span className="price-sym">{Sym}</span>
                   <span className="price-val">{p.price}</span>
                 </div>
-                <span className="price-period">one-time per event</span>
-                <Link href={`/checkout?plan=${p.slug}`} className={`price-btn ${p.popular ? 'filled' : ''}`}>
-                  {p.name === 'White Label' ? 'Contact Sales' : 'Get Started'}
+                <span className="price-period">one-time payment</span>
+                <Link href="/pricing" className={`price-btn ${p.popular ? 'filled' : ''}`}>
+                  Get {p.name}
                 </Link>
                 <div className="price-divider" />
                 {p.features.map((f, j) => (
