@@ -15,7 +15,6 @@ const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4']);
 const ACCEPTED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']);
 const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4']);
 
-// MUST match getDemoChannelName() in demo/page.tsx
 const getDemoChannelName = (demoId: string) => `demo-${demoId}`;
 
 function getFileExtension(fileName: string) {
@@ -81,6 +80,8 @@ function DemoUploadContent() {
   const [totalUploaded, setTotalUploaded] = useState(0);
   const [uploaderName, setUploaderName] = useState('');
   const [comment, setComment] = useState('');
+  const [photoDragOver, setPhotoDragOver] = useState(false);
+  const [videoDragOver, setVideoDragOver] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -88,13 +89,15 @@ function DemoUploadContent() {
     if (!demoId) return;
     const channel = supabase.channel(getDemoChannelName(demoId));
     channel.subscribe((status) => setIsConnected(status === 'SUBSCRIBED'));
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [demoId]);
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    processPhotoFiles(files);
+  };
+
+  const processPhotoFiles = (files: File[]) => {
     const validPhotos = files.filter(isAcceptedImage);
     const invalidFiles = files.filter(f => !isAcceptedImage(f));
     if (invalidFiles.length > 0) {
@@ -108,6 +111,10 @@ function DemoUploadContent() {
 
   const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    processVideoFiles(files);
+  };
+
+  const processVideoFiles = (files: File[]) => {
     const validVideos = files.filter(isAcceptedVideo);
     const invalidFiles = files.filter(f => !isAcceptedVideo(f));
     if (invalidFiles.length > 0) {
@@ -121,15 +128,27 @@ function DemoUploadContent() {
     }
   };
 
+  const handlePhotoDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setPhotoDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    processPhotoFiles(files);
+  };
+
+  const handleVideoDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setVideoDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    processVideoFiles(files);
+  };
+
   const removePhoto = (index: number) => {
     setUploadPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
-  const removeVideo = () => {
-    setUploadVideos([]);
-  };
+  const removeVideo = () => setUploadVideos([]);
 
-  const uploadFile = async (file: File, type: 'image' | 'video'): Promise<string> => {
+  const uploadFile = async (file: File): Promise<string> => {
     const fileName = `${demoId}/${Date.now()}-${file.name}`;
     const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, file);
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
@@ -143,26 +162,26 @@ function DemoUploadContent() {
     setProgress(0);
     setError(null);
     setUploadSuccess(false);
-    setStatus('Uploading...');
+    setStatus('Preparing…');
     try {
       const totalFiles = uploadPhotos.length + uploadVideos.length;
       let uploaded = 0;
       const uploadPromises: Promise<string>[] = [];
       for (const photo of uploadPhotos) {
         const compressed = await compressDemoImage(photo);
-        uploadPromises.push(uploadFile(compressed, 'image'));
+        uploadPromises.push(uploadFile(compressed));
       }
       for (const video of uploadVideos) {
-        uploadPromises.push(uploadFile(video, 'video'));
+        uploadPromises.push(uploadFile(video));
       }
       const urls = await Promise.all(uploadPromises);
       for (const url of urls) {
         uploaded++;
         setProgress(Math.round((uploaded / totalFiles) * 100));
-        setStatus(`Uploading ${uploaded}/${totalFiles}...`);
+        setStatus(`Uploading ${uploaded} of ${totalFiles}…`);
         await new Promise(r => setTimeout(r, 200));
       }
-      setStatus('Sending to wall...');
+      setStatus('Sending to wall…');
       const uploader = uploaderName.trim() || 'Demo Guest';
       for (let i = 0; i < urls.length; i++) {
         const publicUrl = urls[i];
@@ -195,7 +214,7 @@ function DemoUploadContent() {
       setUploadSuccess(true);
       if (photoInputRef.current) photoInputRef.current.value = '';
       if (videoInputRef.current) videoInputRef.current.value = '';
-      setTimeout(() => setUploadSuccess(false), 4000);
+      setTimeout(() => setUploadSuccess(false), 5000);
     } catch (err: any) {
       setError(err.message || 'Upload failed. Please try again.');
       setStatus('');
@@ -208,197 +227,704 @@ function DemoUploadContent() {
   const totalFiles = uploadPhotos.length + uploadVideos.length;
 
   return (
-    <div className="lp min-h-screen pb-16">
-      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
-      <div className="grain" />
+    <>
+      {/* ── Inline styles that extend landing.css ───────────────────────── */}
+      <style>{`
+        /* ── Upload-specific tokens ── */
+        :root {
+          --upload-radius: 20px;
+          --upload-zone-bg: rgba(30,41,59,0.04);
+          --upload-zone-border: rgba(100,116,139,0.18);
+          --upload-zone-hover: rgba(245,158,11,0.08);
+          --upload-zone-hover-border: rgba(245,158,11,0.45);
+          --input-bg: rgba(255,255,255,0.55);
+          --input-border: rgba(100,116,139,0.18);
+          --input-focus-border: rgba(245,158,11,0.55);
+          --success-bg: linear-gradient(135deg,rgba(34,197,94,0.12),rgba(16,185,129,0.07));
+          --success-border: rgba(34,197,94,0.28);
+          --error-bg: rgba(239,68,68,0.08);
+          --error-border: rgba(239,68,68,0.25);
+        }
 
-      {/* NAV */}
-      <nav className="lp-nav scrolled">
-        <Link href="/">
-          <AnimatedLogo width={150} height={50} />
-        </Link>
-        <span className="hero-badge" style={{ gap: 6 }}>
-          <span className={`pulse-dot`} style={{ background: isConnected ? '#4ade80' : '#f87171' }} />
-          <span className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: isConnected ? '#16a34a' : '#ef4444' }}>
-            {isConnected ? 'Live' : 'Offline'}
-          </span>
-          {totalUploaded > 0 && (
-            <span className="text-xs font-bold" style={{ color: 'var(--amber)' }}>· {totalUploaded} sent ✓</span>
-          )}
-        </span>
-      </nav>
+        /* ── Page shell ── */
+        .upload-page {
+          min-height: 100dvh;
+          padding-bottom: env(safe-area-inset-bottom, 32px);
+          padding-left: env(safe-area-inset-left, 0px);
+          padding-right: env(safe-area-inset-right, 0px);
+        }
 
-      <div className="px-4 pt-28 flex flex-col items-center">
-        {/* Header */}
-        <div className="text-center mb-8 reveal visible" style={{ maxWidth: 480, width: '100%' }}>
-          <span className="kicker">Demo Wall</span>
-          <h1 className="hero-h1" style={{ fontSize: 'clamp(1.8rem, 6vw, 3rem)', marginBottom: '0.5rem' }}>Share the Moment</h1>
-          <p className="hero-sub" style={{ fontSize: '1rem' }}>Upload photos or a video to the live wall</p>
+        /* ── Content wrapper ── */
+        .upload-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 7rem 1rem 3rem;
+          width: 100%;
+          max-width: 520px;
+          margin: 0 auto;
+          gap: 1.25rem;
+        }
+
+        /* ── Page header ── */
+        .upload-header {
+          text-align: center;
+          width: 100%;
+          margin-bottom: 0.5rem;
+        }
+        .upload-header .hero-h1 {
+          font-size: clamp(1.75rem,5.5vw,2.6rem);
+          line-height: 1.15;
+          margin-bottom: 0.5rem;
+        }
+        .upload-header .hero-sub {
+          font-size: 0.975rem;
+          margin-bottom: 0;
+        }
+
+        /* ── Status badge (nav area) ── */
+        .upload-status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 14px 5px 10px;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          border: 1.5px solid;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          transition: all 0.3s ease;
+        }
+        .upload-status-pill.live {
+          background: rgba(34,197,94,0.1);
+          border-color: rgba(34,197,94,0.3);
+          color: #16a34a;
+        }
+        .upload-status-pill.offline {
+          background: rgba(239,68,68,0.08);
+          border-color: rgba(239,68,68,0.25);
+          color: #dc2626;
+        }
+        .upload-sent-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 12px;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          background: rgba(245,158,11,0.12);
+          border: 1.5px solid rgba(245,158,11,0.3);
+          color: var(--amber, #f59e0b);
+        }
+
+        /* ── Glass cards (already have gcard styles from landing.css) ── */
+        .upload-section {
+          width: 100%;
+        }
+        .upload-section .gcard-inner {
+          padding: 1.5rem;
+        }
+
+        /* ── Section label inside card ── */
+        .upload-section-label {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+        }
+        .upload-section-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text1, #0f172a);
+        }
+        .upload-section-title .emoji {
+          font-size: 1rem;
+        }
+        .upload-count-pill {
+          padding: 3px 10px;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          transition: all 0.25s ease;
+        }
+        .upload-count-pill.empty {
+          background: rgba(100,116,139,0.1);
+          color: var(--text3, #94a3b8);
+        }
+        .upload-count-pill.filled {
+          background: rgba(34,197,94,0.14);
+          color: #16a34a;
+        }
+
+        /* ── Inputs ── */
+        .upload-input {
+          width: 100%;
+          padding: 13px 16px;
+          border-radius: 14px;
+          font-size: 0.9rem;
+          outline: none;
+          transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+          background: var(--input-bg);
+          border: 1.5px solid var(--input-border);
+          color: var(--text1, #0f172a);
+          -webkit-appearance: none;
+        }
+        .upload-input::placeholder { color: var(--text3, #94a3b8); }
+        .upload-input:focus {
+          border-color: var(--input-focus-border);
+          background: rgba(255,255,255,0.7);
+          box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+        }
+        .upload-input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .upload-textarea {
+          resize: none;
+          min-height: 80px;
+        }
+        .upload-label {
+          display: block;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--text3, #94a3b8);
+          margin-bottom: 8px;
+        }
+        .char-count {
+          text-align: right;
+          font-size: 0.7rem;
+          color: var(--text3, #94a3b8);
+          margin-top: 5px;
+        }
+
+        /* ── Drop zone ── */
+        .upload-drop-zone {
+          width: 100%;
+          padding: 2rem 1rem;
+          border-radius: var(--upload-radius);
+          border: 2px dashed var(--upload-zone-border);
+          background: var(--upload-zone-bg);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          cursor: pointer;
+          transition: all 0.22s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .upload-drop-zone:hover,
+        .upload-drop-zone.drag-over {
+          border-color: var(--upload-zone-hover-border);
+          background: var(--upload-zone-hover);
+        }
+        .upload-drop-zone:active { transform: scale(0.985); }
+        .upload-drop-zone.disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+        .drop-zone-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.4rem;
+          background: linear-gradient(135deg,rgba(245,158,11,0.15),rgba(244,114,182,0.1));
+          border: 1.5px solid rgba(245,158,11,0.2);
+        }
+        .drop-zone-text {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text2, #334155);
+        }
+        .drop-zone-hint {
+          font-size: 0.72rem;
+          color: var(--text3, #94a3b8);
+        }
+
+        /* ── Photo preview grid ── */
+        .photo-preview-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .photo-preview-item {
+          position: relative;
+          aspect-ratio: 1;
+          border-radius: 14px;
+          overflow: hidden;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .photo-preview-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .photo-remove-btn {
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #fff;
+          background: rgba(15,23,42,0.65);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          border: none;
+          cursor: pointer;
+          transition: background 0.18s, transform 0.18s;
+          -webkit-tap-highlight-color: transparent;
+          opacity: 0;
+        }
+        .photo-preview-item:hover .photo-remove-btn,
+        .photo-preview-item:focus-within .photo-remove-btn {
+          opacity: 1;
+        }
+        /* Always visible on touch devices */
+        @media (hover: none) {
+          .photo-remove-btn { opacity: 1; }
+        }
+        .photo-remove-btn:hover { background: rgba(239,68,68,0.85); transform: scale(1.1); }
+
+        /* ── Video preview ── */
+        .video-preview-wrap {
+          position: relative;
+          aspect-ratio: 16/9;
+          border-radius: 16px;
+          overflow: hidden;
+          margin-bottom: 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        .video-preview-wrap video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .video-remove-btn {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1rem;
+          font-weight: 700;
+          color: #fff;
+          background: rgba(15,23,42,0.6);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: none;
+          cursor: pointer;
+          transition: background 0.18s;
+        }
+        .video-remove-btn:hover { background: rgba(239,68,68,0.85); }
+
+        /* ── Progress bar ── */
+        .upload-progress-wrap {
+          width: 100%;
+          padding: 0 2px;
+        }
+        .upload-progress-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.78rem;
+          color: var(--text3, #94a3b8);
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+        .upload-progress-track {
+          width: 100%;
+          height: 6px;
+          border-radius: 999px;
+          background: rgba(100,116,139,0.15);
+          overflow: hidden;
+        }
+        .upload-progress-fill {
+          height: 100%;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #f59e0b, #f472b6, #3b82f6);
+          background-size: 200% 100%;
+          transition: width 0.35s cubic-bezier(.22,1,.36,1);
+          animation: shimmer 1.8s linear infinite;
+        }
+        @keyframes shimmer {
+          0% { background-position: 200% center; }
+          100% { background-position: -200% center; }
+        }
+
+        /* ── Success banner ── */
+        .upload-success {
+          width: 100%;
+          padding: 1.25rem 1.5rem;
+          border-radius: 20px;
+          text-align: center;
+          background: var(--success-bg);
+          border: 1.5px solid var(--success-border);
+          animation: slideDown 0.4s cubic-bezier(.22,1,.36,1);
+        }
+        @keyframes slideDown {
+          from { opacity:0; transform:translateY(-16px) scale(0.97); }
+          to { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .success-emoji { font-size: 2rem; margin-bottom: 6px; display: block; }
+        .success-title {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #16a34a;
+          margin-bottom: 3px;
+        }
+        .success-sub { font-size: 0.8rem; color: var(--text3, #94a3b8); }
+
+        /* ── Error banner ── */
+        .upload-error {
+          width: 100%;
+          padding: 1rem 1.25rem;
+          border-radius: 16px;
+          background: var(--error-bg);
+          border: 1.5px solid var(--error-border);
+          font-size: 0.85rem;
+          color: #ef4444;
+          text-align: center;
+          animation: slideDown 0.3s ease;
+        }
+
+        /* ── Submit button override ── */
+        .upload-submit-btn {
+          width: 100%;
+          padding: 1rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          border-radius: 16px;
+          transition: opacity 0.2s, transform 0.15s;
+          min-height: 56px;
+        }
+        .upload-submit-btn:not(:disabled):active { transform: scale(0.97); }
+
+        /* ── Divider ── */
+        .upload-divider {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: var(--text3, #94a3b8);
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .upload-divider::before,
+        .upload-divider::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: rgba(100,116,139,0.15);
+        }
+
+        /* ── Mobile fine-tuning ── */
+        @media (max-width: 480px) {
+          .upload-content {
+            padding-top: 6rem;
+            gap: 1rem;
+          }
+          .upload-section .gcard-inner {
+            padding: 1.25rem;
+          }
+          .photo-preview-grid {
+            grid-template-columns: repeat(3,1fr);
+            gap: 8px;
+          }
+          .upload-drop-zone {
+            padding: 1.5rem 1rem;
+          }
+        }
+      `}</style>
+
+      <div className="lp upload-page">
+        {/* Background elements */}
+        <div className="orbs">
+          <div className="orb orb1" />
+          <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
+        <div className="grain" />
 
-        {/* Success Banner */}
-        {uploadSuccess && (
-          <div className="w-full max-w-md mb-6 p-4 rounded-2xl text-center reveal visible"
-            style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.1))', border: '1px solid rgba(34,197,94,0.3)' }}>
-            <p className="text-2xl mb-1">🎉</p>
-            <p className="font-bold" style={{ color: '#22c55e' }}>Posted to the wall!</p>
-            <p className="text-sm" style={{ color: 'var(--text3)' }}>Your memories are now live</p>
+        {/* ── NAV ── */}
+        <nav className="lp-nav scrolled">
+          <Link href="/">
+            <AnimatedLogo width={150} height={50} />
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className={`upload-status-pill ${isConnected ? 'live' : 'offline'}`}>
+              <span className="pulse-dot" style={{ background: isConnected ? '#22c55e' : '#f87171' }} />
+              {isConnected ? 'Live' : 'Offline'}
+            </span>
+            {totalUploaded > 0 && (
+              <span className="upload-sent-badge">
+                ✓&nbsp;{totalUploaded} sent
+              </span>
+            )}
           </div>
-        )}
+        </nav>
 
-        {/* Error Banner */}
-        {error && (
-          <div className="w-full max-w-md mb-6 p-4 rounded-2xl"
-            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-            <p className="text-sm text-center" style={{ color: '#ef4444' }}>{error}</p>
+        {/* ── Main content ── */}
+        <div className="upload-content">
+
+          {/* Header */}
+          <div className="upload-header reveal visible">
+            <span className="kicker">Demo Wall</span>
+            <h1 className="hero-h1">
+              Share the <span className="gradient-text">Moment</span>
+            </h1>
+            <p className="hero-sub">Upload photos or a video — they appear on the live wall instantly.</p>
           </div>
-        )}
 
-        <div className="w-full max-w-md space-y-4">
+          {/* ── Success banner ── */}
+          {uploadSuccess && (
+            <div className="upload-success">
+              <span className="success-emoji">🎉</span>
+              <p className="success-title">Posted to the wall!</p>
+              <p className="success-sub">Your memories are now live for everyone to see.</p>
+            </div>
+          )}
 
-          {/* Name & Comment */}
-          <div className="gcard">
+          {/* ── Error banner ── */}
+          {error && (
+            <div className="upload-error">
+              ⚠️ &nbsp;{error}
+            </div>
+          )}
+
+          {/* ── Name & Caption card ── */}
+          <div className="upload-section gcard reveal visible">
             <div className="gcard-border" />
-            <div className="gcard-inner p-5 space-y-4">
+            <div className="gcard-inner" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
               <div>
-                <label className="text-xs font-bold tracking-widest uppercase mb-2 block" style={{ color: 'var(--text3)' }}>Your Name</label>
+                <label className="upload-label">Your Name</label>
                 <input
                   type="text"
+                  className="upload-input"
                   placeholder="e.g. Sarah"
                   value={uploaderName}
                   onChange={e => setUploaderName(e.target.value)}
                   disabled={uploading}
                   maxLength={40}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
-                  style={{
-                    background: 'rgba(30,41,59,0.06)',
-                    border: '1.5px solid rgba(100,116,139,0.2)',
-                    color: 'var(--text1)',
-                  }}
+                  autoComplete="given-name"
                 />
               </div>
               <div>
-                <label className="text-xs font-bold tracking-widest uppercase mb-2 block" style={{ color: 'var(--text3)' }}>Caption <span style={{ color: 'var(--text3)', fontWeight: 400 }}>(optional)</span></label>
+                <label className="upload-label">
+                  Caption&nbsp;<span style={{ fontWeight: 400, textTransform: 'none', fontSize: '0.7rem' }}>(optional)</span>
+                </label>
                 <textarea
-                  placeholder="Write something about this moment..."
+                  className="upload-input upload-textarea"
+                  placeholder="Write something about this moment…"
                   value={comment}
                   onChange={e => setComment(e.target.value)}
                   disabled={uploading}
                   maxLength={120}
                   rows={2}
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all resize-none"
-                  style={{
-                    background: 'rgba(30,41,59,0.06)',
-                    border: '1.5px solid rgba(100,116,139,0.2)',
-                    color: 'var(--text1)',
-                  }}
                 />
-                <p className="text-right text-xs mt-1" style={{ color: 'var(--text3)' }}>{comment.length}/120</p>
+                <p className="char-count">{comment.length}/120</p>
               </div>
             </div>
           </div>
 
-          {/* Photos */}
-          <div className="gcard">
+          {/* ── Photos card ── */}
+          <div className="upload-section gcard reveal visible">
             <div className="gcard-border" />
-            <div className="gcard-inner p-5">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-bold" style={{ color: 'var(--text1)' }}>📷 Photos</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
-                  style={{ background: uploadPhotos.length > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(100,116,139,0.1)', color: uploadPhotos.length > 0 ? '#22c55e' : 'var(--text3)' }}>
+            <div className="gcard-inner">
+              <div className="upload-section-label">
+                <span className="upload-section-title">
+                  <span className="emoji">📷</span> Photos
+                </span>
+                <span className={`upload-count-pill ${uploadPhotos.length > 0 ? 'filled' : 'empty'}`}>
                   {uploadPhotos.length}/{MAX_IMAGES}
                 </span>
               </div>
-              <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoSelect} className="hidden" disabled={uploading} />
+
+              {/* Hidden input */}
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoSelect}
+                className="hidden"
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+
+              {/* Previews */}
               {uploadPhotos.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="photo-preview-grid">
                   {uploadPhotos.map((photo, i) => (
-                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden group">
-                      <img src={URL.createObjectURL(photo)} className="w-full h-full object-cover" alt="" />
+                    <div key={i} className="photo-preview-item">
+                      <img src={URL.createObjectURL(photo)} alt="" />
                       {!uploading && (
-                        <button onClick={() => removePhoto(i)}
-                          className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ background: 'rgba(239,68,68,0.9)' }}>×</button>
+                        <button
+                          className="photo-remove-btn"
+                          onClick={() => removePhoto(i)}
+                          aria-label="Remove photo"
+                        >
+                          ×
+                        </button>
                       )}
                     </div>
                   ))}
                 </div>
               )}
+
+              {/* Drop zone */}
               {uploadPhotos.length < MAX_IMAGES && (
-                <button onClick={() => photoInputRef.current?.click()} disabled={uploading}
-                  className="w-full py-3 rounded-xl text-sm font-semibold border-2 border-dashed transition-all"
-                  style={{ borderColor: 'rgba(100,116,139,0.3)', color: 'var(--text2)', background: 'transparent', opacity: uploading ? 0.5 : 1 }}>
-                  {uploadPhotos.length === 0 ? '+ Choose Photos' : '+ Add More'}
-                </button>
+                <div
+                  className={`upload-drop-zone ${photoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
+                  onClick={() => !uploading && photoInputRef.current?.click()}
+                  onDragOver={e => { e.preventDefault(); setPhotoDragOver(true); }}
+                  onDragLeave={() => setPhotoDragOver(false)}
+                  onDrop={handlePhotoDrop}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && photoInputRef.current?.click()}
+                >
+                  <div className="drop-zone-icon">
+                    {uploadPhotos.length === 0 ? '🖼️' : '➕'}
+                  </div>
+                  <p className="drop-zone-text">
+                    {uploadPhotos.length === 0 ? 'Choose or drop photos' : 'Add more photos'}
+                  </p>
+                  <p className="drop-zone-hint">JPG, PNG, HEIC — up to {MAX_IMAGES} total</p>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Video */}
-          <div className="gcard">
+          {/* ── Video card ── */}
+          <div className="upload-section gcard reveal visible">
             <div className="gcard-border" />
-            <div className="gcard-inner p-5">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-bold" style={{ color: 'var(--text1)' }}>🎥 Video</p>
-                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
-                  style={{ background: uploadVideos.length > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(100,116,139,0.1)', color: uploadVideos.length > 0 ? '#22c55e' : 'var(--text3)' }}>
+            <div className="gcard-inner">
+              <div className="upload-section-label">
+                <span className="upload-section-title">
+                  <span className="emoji">🎥</span> Video
+                </span>
+                <span className={`upload-count-pill ${uploadVideos.length > 0 ? 'filled' : 'empty'}`}>
                   {uploadVideos.length}/{MAX_VIDEOS}
                 </span>
               </div>
-              <input ref={videoInputRef} type="file" accept="video/*" onChange={handleVideoSelect} className="hidden" disabled={uploading} />
+
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/*"
+                onChange={handleVideoSelect}
+                className="hidden"
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+
               {uploadVideos.length > 0 && (
-                <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
-                  <video src={URL.createObjectURL(uploadVideos[0])} className="w-full h-full object-cover" muted />
+                <div className="video-preview-wrap">
+                  <video
+                    src={URL.createObjectURL(uploadVideos[0])}
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
                   {!uploading && (
-                    <button onClick={removeVideo}
-                      className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white"
-                      style={{ background: 'rgba(239,68,68,0.9)' }}>×</button>
+                    <button className="video-remove-btn" onClick={removeVideo} aria-label="Remove video">
+                      ×
+                    </button>
                   )}
                 </div>
               )}
+
               {uploadVideos.length < MAX_VIDEOS && (
-                <button onClick={() => videoInputRef.current?.click()} disabled={uploading}
-                  className="w-full py-3 rounded-xl text-sm font-semibold border-2 border-dashed transition-all"
-                  style={{ borderColor: 'rgba(100,116,139,0.3)', color: 'var(--text2)', background: 'transparent', opacity: uploading ? 0.5 : 1 }}>
-                  + Choose Video
-                </button>
+                <div
+                  className={`upload-drop-zone ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
+                  onClick={() => !uploading && videoInputRef.current?.click()}
+                  onDragOver={e => { e.preventDefault(); setVideoDragOver(true); }}
+                  onDragLeave={() => setVideoDragOver(false)}
+                  onDrop={handleVideoDrop}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && videoInputRef.current?.click()}
+                >
+                  <div className="drop-zone-icon">🎬</div>
+                  <p className="drop-zone-text">Choose or drop a video</p>
+                  <p className="drop-zone-hint">MP4 — 1 video maximum</p>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Upload progress */}
+          {/* ── Divider ── */}
+          {totalFiles > 0 && !uploading && (
+            <div className="upload-divider">
+              {totalFiles} file{totalFiles !== 1 ? 's' : ''} ready
+            </div>
+          )}
+
+          {/* ── Progress bar ── */}
           {uploading && (
-            <div className="px-1">
-              <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text3)' }}>
+            <div className="upload-progress-wrap">
+              <div className="upload-progress-header">
                 <span>{status}</span>
-                <span>{progress}%</span>
+                <span style={{ fontWeight: 700, color: 'var(--text2, #334155)' }}>{progress}%</span>
               </div>
-              <div className="w-full rounded-full h-1.5" style={{ background: 'rgba(100,116,139,0.2)' }}>
-                <div className="h-1.5 rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
+              <div className="upload-progress-track">
+                <div className="upload-progress-fill" style={{ width: `${progress}%` }} />
               </div>
             </div>
           )}
 
-          {/* Submit Button */}
+          {/* ── Submit ── */}
           <button
+            className="btn-glow upload-submit-btn"
             onClick={handleUpload}
             disabled={uploading || totalFiles === 0}
-            className="btn-glow w-full py-4 font-bold text-lg"
-            style={{ opacity: uploading || totalFiles === 0 ? 0.5 : 1 }}
+            style={{ opacity: uploading || totalFiles === 0 ? 0.45 : 1 }}
           >
-            {uploading ? `Uploading... ${progress}%` : `Share to Wall${totalFiles > 0 ? ` (${totalFiles} file${totalFiles !== 1 ? 's' : ''})` : ''}`}
+            {uploading
+              ? `Uploading… ${progress}%`
+              : totalFiles > 0
+                ? `Share to Wall (${totalFiles} file${totalFiles !== 1 ? 's' : ''})`
+                : 'Select files above to share'}
           </button>
 
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
 export default function DemoUploadPage() {
   return (
-    <Suspense fallback={<div className="lp min-h-screen flex items-center justify-center"><span style={{ color: 'var(--text2)' }}>Loading...</span></div>}>
+    <Suspense fallback={
+      <div className="lp min-h-screen flex items-center justify-center">
+        <span style={{ color: 'var(--text2)' }}>Loading…</span>
+      </div>
+    }>
       <DemoUploadContent />
     </Suspense>
   );
