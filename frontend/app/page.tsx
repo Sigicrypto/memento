@@ -486,6 +486,60 @@ export default function LandingPage() {
   const SocialFeedPrice = showingINR ? "1,000" : "12";
   const Sym = showingINR ? "₹" : "$";
 
+  const t = {
+    heroWedding: showingINR ? "Priya's Wedding" : "Sarah's Wedding",
+    gallery: [
+      { title: showingINR ? 'Priya & Rohan Wedding' : 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
+      { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
+      { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' }
+    ],
+    testimonials: showingINR ? [
+      {
+        quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.",
+        author: "Rohan & Priya",
+        role: "Happy Couple",
+        event: "Mumbai Wedding • 524 photos",
+        rating: 5
+      },
+      {
+        quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.",
+        author: "Sonia Mehta",
+        role: "Wedding Planner",
+        event: "Corporate Gala • Bangalore",
+        rating: 5
+      },
+      {
+        quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.",
+        author: "Vikram Singh",
+        role: "Professional Event Organizer",
+        event: "Tech Summit • Delhi",
+        rating: 5
+      }
+    ] : [
+      {
+        quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.",
+        author: "James & Emily",
+        role: "Happy Couple",
+        event: "London Wedding • 524 photos",
+        rating: 5
+      },
+      {
+        quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.",
+        author: "Sarah Thompson",
+        role: "Event Coordinator",
+        event: "Corporate Gala • New York",
+        rating: 5
+      },
+      {
+        quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.",
+        author: "Michael Chen",
+        role: "Professional Event Organizer",
+        event: "Tech Summit • San Francisco",
+        rating: 5
+      }
+    ]
+  };
+
   return (
     <div className="lp pt-[calc(140px+env(safe-area-inset-top))]">
       <div className="flex flex-col gap-16">
@@ -588,7 +642,7 @@ export default function LandingPage() {
               <div className="phone-notch" />
               <div className="phone-screen">
                 <div className="phone-header">
-                  <span className="phone-title">Sarah&apos;s Wedding</span>
+                  <span className="phone-title">{t.heroWedding}</span>
                   <span className="phone-live"><span className="pulse-dot" /> 24 Live</span>
                 </div>
                 <div className="phone-grid">
@@ -732,11 +786,7 @@ export default function LandingPage() {
           <p className="sec-sub reveal">See how people are using Memento to capture their special moments</p>
 
           <div className="gallery-grid reveal">
-            {[
-              { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
-              { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
-              { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' }
-            ].map((item, i) => (
+            {t.gallery.map((item, i) => (
               <div key={i} className="gallery-item" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="gallery-img-wrapper">
                   <img src={item.src} alt={item.title} className="gallery-img" />
@@ -757,29 +807,7 @@ export default function LandingPage() {
           <p className="sec-sub reveal">See what people are saying about Memento</p>
 
           <div className="testimonial-grid reveal">
-            {[
-              {
-                quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.",
-                author: "Rohan & Priya",
-                role: "Happy Couple",
-                event: "Mumbai Wedding • 524 photos",
-                rating: 5
-              },
-              {
-                quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.",
-                author: "Sonia Mehta",
-                role: "Wedding Planner",
-                event: "Corporate Gala • Bangalore",
-                rating: 5
-              },
-              {
-                quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.",
-                author: "Vikram Singh",
-                role: "Professional Event Organizer",
-                event: "Tech Summit • Delhi",
-                rating: 5
-              }
-            ].map((item, i) => (
+            {t.testimonials.map((item, i) => (
               <div key={i} className="gcard testimonial-card" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="gcard-border" />
                 <div className="gcard-inner">
