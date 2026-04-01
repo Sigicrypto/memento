@@ -73,6 +73,10 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
 
     setLoading(true);
     try {
+      const baseUrl = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
@@ -81,7 +85,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
             full_name: name.trim(),
             plan_type: plan || 'starter',
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${baseUrl}/auth/callback?plan=${plan || 'starter'}`,
         },
       });
 
@@ -128,8 +132,13 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
       if (signInError) throw signInError;
 
       if (data.user) {
-        onAuthSuccess?.(data.user.id, plan);
-        setStep('success');
+        // If a paid plan was selected, redirect to payment
+        if (plan && plan !== 'starter') {
+          window.location.href = `/checkout?plan=${plan}`;
+        } else {
+          // Otherwise, redirect to dashboard
+          window.location.href = '/dashboard';
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Sign in failed');
@@ -142,10 +151,14 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
     setError('');
     setLoading(true);
     try {
+      const baseUrl = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?plan=${plan || 'starter'}`,
+          redirectTo: `${baseUrl}/auth/callback?plan=${plan || 'starter'}`,
         },
       });
       if (oauthError) throw oauthError;
