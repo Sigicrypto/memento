@@ -84,7 +84,9 @@ export default function DemoUploadPage() {
     if (!demoId) return;
     const channel = supabase.channel(getDemoChannelName(demoId));
     channel.subscribe((status) => setIsConnected(status === 'SUBSCRIBED'));
-    return () => supabase.removeChannel(channel);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [demoId]);
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
