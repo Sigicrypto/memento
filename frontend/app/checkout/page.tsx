@@ -38,10 +38,30 @@ function CheckoutContent() {
   
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS'>('IDLE');
   const [region, setRegion] = useState<Region>('GLOBAL');
+  const [eventData, setEventData] = useState<{ name: string } | null>(null);
+
+  const eventId = searchParams.get('eventId');
 
   useEffect(() => {
     setRegion(readRegionCookie());
   }, []);
+
+  // Strict Auth: Redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      router.push(`/auth?redirect=${currentUrl}`);
+    }
+  }, [user, authLoading, router]);
+
+  // Fetch event details if eventId is provided
+  useEffect(() => {
+    if (eventId) {
+      supabase.from('events').select('name').eq('id', eventId).single().then(({ data }) => {
+        if (data) setEventData(data);
+      });
+    }
+  }, [eventId]);
 
   const planKey = planName.toUpperCase();
   const planLabel = PLAN_DISPLAY_NAMES[planKey] || planName;
@@ -60,9 +80,33 @@ function CheckoutContent() {
           region,
           userId: user?.id,
           userEmail: user?.email,
+          eventId,
         }),
       });
       const data = await res.json();
+
+      // ── Mock fallback or Dev mode success ──
+      if (data.mock || data.dev) {
+        console.log('[checkout] Mock/Dev success received');
+        const verifyRes = await fetch('/api/payment/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plan: planKey,
+            eventId,
+            mock: true,
+          }),
+        });
+        if (verifyRes.ok) {
+          setStatus('SUCCESS');
+          const redirectUrl = eventId ? `/wall/${eventId}` : '/create';
+          setTimeout(() => router.push(redirectUrl), 3000);
+        } else {
+          setStatus('IDLE');
+          alert('Verification failed');
+        }
+        return;
+      }
 
       // ── Stripe: redirect to hosted checkout ──
       if (data.gateway === 'stripe' && data.sessionUrl) {
@@ -96,11 +140,13 @@ function CheckoutContent() {
                 signature: response.razorpay_signature,
                 plan: planKey,
                 userId: user?.id,
+                eventId,
               }),
             });
             if (verifyRes.ok) {
               setStatus('SUCCESS');
-              setTimeout(() => router.push('/create'), 3000);
+              const redirectUrl = eventId ? `/wall/${eventId}` : '/create';
+              setTimeout(() => router.push(redirectUrl), 3000);
             } else {
               setStatus('IDLE');
               alert('Payment verification failed. Contact support.');
@@ -120,7 +166,8 @@ function CheckoutContent() {
         await supabase.auth.updateUser({ data: { plan_type: planName } });
       }
       setStatus('SUCCESS');
-      setTimeout(() => router.push('/create'), 3000);
+      const redirectUrl = eventId ? `/wall/${eventId}` : '/create';
+      setTimeout(() => router.push(redirectUrl), 3000);
     } catch {
       setStatus('IDLE');
       alert('Payment failed. Please try again.');
@@ -148,7 +195,7 @@ function CheckoutContent() {
                 <span className="nm-badge">{regionLabel} price</span>
               </div>
               <p className="text-sm mb-6" style={{color:'var(--text2)'}}>
-                You are buying <span className="font-bold" style={{color:'#f59e0b'}}>{planLabel}</span>.
+                Upgrading {eventData ? <span className="font-bold text-slate-800">"{eventData.name}"</span> : 'account'} to <span className="font-bold" style={{color:'#f59e0b'}}>{planLabel}</span>.
               </p>
 
               <div className="nm-inset p-4 mb-8 text-left rounded-2xl">

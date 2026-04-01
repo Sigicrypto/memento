@@ -15,6 +15,7 @@ interface Event {
   created_at: string;
   photo_count?: number;
   custom_domain?: string;
+  plan_type?: string;
 }
 
 export default function DashboardPage() {
@@ -275,6 +276,18 @@ export default function DashboardPage() {
                       <p className="text-[10px]" style={{color:'var(--text2)'}}>{new Date(event.created_at).toLocaleDateString()}</p>
                       <span style={{color:'#4a4f6a'}}>•</span>
                       <p className="text-[10px] font-semibold" style={{color:'#f59e0b'}}>📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</p>
+                      {event.plan_type && event.plan_type !== 'FREE' && (
+                        <>
+                          <span style={{color:'#4a4f6a'}}>•</span>
+                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{
+                            background: event.plan_type === 'PREMIUM' ? 'rgba(168,85,247,0.1)' : 'rgba(245,158,11,0.1)',
+                            color: event.plan_type === 'PREMIUM' ? '#a855f7' : '#f59e0b',
+                            border: `1px solid ${event.plan_type === 'PREMIUM' ? 'rgba(168,85,247,0.2)' : 'rgba(245,158,11,0.2)'}`
+                          }}>
+                            {event.plan_type.toUpperCase()}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
@@ -296,6 +309,15 @@ export default function DashboardPage() {
                     <button onClick={() => { const s = prompt('New slug:', event.slug); if (s && s !== event.slug) updateSlug(event.id, s); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#60a5fa'}}>✏️ Slug</button>
                     <button onClick={() => { const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`; navigator.clipboard.writeText(url); alert('Copied!'); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#a78bfa'}}>📋 Copy</button>
                   </div>
+                  {(!event.plan_type || event.plan_type === 'FREE' || event.plan_type === 'Starter') && (
+                    <Link href={`/checkout?plan=STANDARD&eventId=${event.id}`} className="nm-btn w-full text-center text-[10px] py-2 font-bold mt-3" style={{
+                      background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(244,114,182,0.15))',
+                      color: '#f59e0b',
+                      border: '1px solid rgba(245,158,11,0.3)'
+                    }}>
+                      ✨ Upgrade to Standard
+                    </Link>
+                  )}
                   {event.custom_domain && <p className="text-[10px] mb-1" style={{color:'var(--text2)'}}><span className="font-medium">Domain:</span> {event.custom_domain}</p>}
                   <p className="text-[10px] font-mono break-all" style={{color:'#4a4f6a'}}>
                     {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}

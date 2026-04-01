@@ -12,7 +12,7 @@ const PLAN_NAMES: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  const { plan, region, userId, userEmail } = await req.json();
+  const { plan, region, userId, userEmail, eventId } = await req.json();
   const planKey = (plan || 'PRO').toUpperCase().replace(' ', '_');
 
   // ── Razorpay (India) ──────────────────────────────────────────
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         amount,
         currency: 'INR',
         receipt: `memento_${planKey}_${Date.now()}`,
-        notes: { plan: planKey, userId: userId || '' },
+        notes: { plan: planKey, userId: userId || '', eventId: eventId || '' },
       }),
     });
 
@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
     cancel_url: `${origin}/#pricing`,
     'metadata[plan]': planKey,
     'metadata[userId]': userId || '',
+    'metadata[eventId]': eventId || '',
   });
   if (userEmail) params.set('customer_email', userEmail);
 
