@@ -1,1018 +1,1103 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import { useState, useRef, Suspense, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { QRCodeSVG } from 'qrcode.react';
-import { X, Maximize2, Minimize2, Image as ImageIcon, Grid, Play } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import {
-  clearDemoData,
-  DemoMedia,
-  getDemoPhotosKey,
-  getDemoTimeLeft,
-  getOrCreateDemoExpiry,
-  getOrCreateDemoId,
-  readDemoPhotos,
-  writeDemoPhotos,
-} from '@/lib/demoWall';
+import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
-import './landing.css';
+import '@/app/landing.css';
 
-type ViewMode = 'grid' | 'polaroid' | 'slideshow';
+const MAX_IMAGES = 5;
+const MAX_VIDEOS = 1;
+const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']);
+const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4']);
+const ACCEPTED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']);
+const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4']);
 
-function isViewMode(value: string): value is ViewMode {
-  return value === 'grid' || value === 'polaroid' || value === 'slideshow';
+const getDemoChannelName = (demoId: string) => `demo-${demoId}`;
+
+function getFileExtension(fileName: string) {
+  return fileName.split('.').pop()?.toLowerCase() || '';
+}
+function isAcceptedImage(file: File) {
+  return ACCEPTED_IMAGE_TYPES.has(file.type) || ACCEPTED_IMAGE_EXTENSIONS.has(getFileExtension(file.name));
+}
+function isAcceptedVideo(file: File) {
+  return ACCEPTED_VIDEO_TYPES.has(file.type) || ACCEPTED_VIDEO_EXTENSIONS.has(getFileExtension(file.name));
 }
 
-function mergeDemoMedia(items: DemoMedia[], incoming: DemoMedia) {
-  return [incoming, ...items.filter((item) => item.id !== incoming.id && item.url !== incoming.url)];
+async function compressDemoImage(file: File): Promise<File> {
+  const ext = getFileExtension(file.name);
+  if (ext === 'heic' || ext === 'heif') return file;
+  try {
+    const imageUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.src = imageUrl;
+    await new Promise((resolve) => { image.onload = resolve; });
+    URL.revokeObjectURL(imageUrl);
+    const MAX_DIM = 1920;
+    const scale = Math.min(1, MAX_DIM / Math.max(image.width, image.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(image.width * scale);
+    canvas.height = Math.round(image.height * scale);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+    const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, outputType, 0.92));
+    if (!blob || blob.size >= file.size) return file;
+    const nextExt = outputType === 'image/png' ? 'png' : 'jpg';
+    return new File([blob], file.name.replace(/\.[^.]+$/, `.${nextExt}`), { type: outputType, lastModified: Date.now() });
+  } catch {
+    return file;
+  }
 }
 
-function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [demoId, setDemoId] = useState<string>('');
-  const [photos, setPhotos] = useState<DemoMedia[]>([]);
-  const [timeLeft, setTimeLeft] = useState(300);
-  const [isConnected, setIsConnected] = useState(false);
-  const [uploadUrl, setUploadUrl] = useState('');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    
-    const newDemoId = getOrCreateDemoId(new URLSearchParams(window.location.search).get('id'));
-    const expiryAt = getOrCreateDemoExpiry(newDemoId);
-    
-    const syncCountdown = () => {
-      const remainingSeconds = Math.ceil(getDemoTimeLeft(newDemoId) / 1000);
-      setTimeLeft(remainingSeconds);
-      if (remainingSeconds <= 0) {
-        clearDemoData(newDemoId);
-        if (isOpen) {
-           onClose();
-           // Optional: Show a toast that demo expired
-        }
-      }
-    };
-
-    setDemoId(newDemoId);
-    setPhotos(readDemoPhotos(newDemoId));
-    setTimeLeft(Math.max(0, Math.ceil((expiryAt - Date.now()) / 1000)));
-    syncCountdown();
-    
-    const timerInterval = setInterval(syncCountdown, 1000);
-    return () => clearInterval(timerInterval);
-  }, [isOpen, onClose]);
-
-  useEffect(() => {
-    if (!demoId || !isOpen) return;
-
-    const syncFromStorage = () => setPhotos(readDemoPhotos(demoId));
-    syncFromStorage();
-
-    const handleStorage = (event: StorageEvent) => {
-      if (!event.key || event.key === getDemoPhotosKey(demoId)) {
-        syncFromStorage();
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-
-    const addPhoto = (newPhoto: DemoMedia) => {
-      setPhotos(prev => {
-        const updatedPhotos = mergeDemoMedia(prev, newPhoto);
-        writeDemoPhotos(demoId, updatedPhotos);
-        return updatedPhotos;
-      });
-    };
-
-    // Primary: postgres_changes on demo_uploads (reliable cross-device)
-    console.log('[DEMO WALL] Setting up postgres_changes for demo_id:', demoId);
-    const dbChannel = supabase
-      .channel(`demo-db-${demoId}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'demo_uploads', filter: `demo_id=eq.${demoId}` },
-        (payload) => {
-          console.log('[DEMO WALL] Received postgres_changes payload:', payload);
-          const row = payload.new as { id: string; url: string; type: string; caption: string; uploader: string; created_at: string };
-          if (!row.url || !row.type) {
-            console.log('[DEMO WALL] Invalid payload - missing url or type');
-            return;
-          }
-          console.log('[DEMO WALL] Adding photo to wall:', row);
-          addPhoto({
-            id: row.id,
-            url: row.url,
-            type: row.type === 'video' ? 'video' : 'image',
-            caption: row.caption || '',
-            uploader: row.uploader || 'Demo Guest',
-            createdAt: new Date(row.created_at).getTime(),
-          });
-        }
-      )
-      .subscribe((status) => {
-        console.log('[DEMO WALL] postgres_changes subscription status:', status);
-        setIsConnected(status === 'SUBSCRIBED');
-      });
-
-    // Fallback: broadcast (same-browser backup)
-    const bcastChannel = supabase.channel(`demo-wall-${demoId}`);
-    bcastChannel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
-      const data = payload.payload as Partial<DemoMedia>;
-      if (!data.url || !data.type) return;
-      addPhoto({
-        id: String(data.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
-        url: data.url,
-        type: data.type === 'video' ? 'video' : 'image',
-        caption: data.caption || '',
-        uploader: data.uploader || 'Demo Guest',
-        createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
-      });
+async function broadcastUpload(demoId: string, payload: DemoMedia) {
+  try {
+    await supabase.channel(getDemoChannelName(demoId)).send({
+      type: 'broadcast',
+      event: 'NEW_UPLOAD',
+      payload,
     });
-    bcastChannel.subscribe();
+  } catch (err) {
+    console.error('Broadcast failed:', err);
+  }
+}
 
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      supabase.removeChannel(dbChannel);
-      supabase.removeChannel(bcastChannel);
+// ── localStorage helpers for lifetime per-device quota ──────────────────
+function getQuotaKey(demoId: string) {
+  return `demo-quota-${demoId}`;
+}
+function loadQuota(demoId: string): { photos: number; videos: number } {
+  try {
+    const raw = localStorage.getItem(getQuotaKey(demoId));
+    if (!raw) return { photos: 0, videos: 0 };
+    const parsed = JSON.parse(raw);
+    return {
+      photos: typeof parsed.photos === 'number' ? parsed.photos : 0,
+      videos: typeof parsed.videos === 'number' ? parsed.videos : 0,
     };
-  }, [demoId, isOpen]);
+  } catch { return { photos: 0, videos: 0 }; }
+}
+function saveQuota(demoId: string, photos: number, videos: number) {
+  try {
+    localStorage.setItem(getQuotaKey(demoId), JSON.stringify({ photos, videos }));
+  } catch { /* storage unavailable */ }
+}
 
-  // Polling fallback: re-fetch demo_uploads every 2s in case realtime is delayed
-  useEffect(() => {
-    if (!demoId || !isOpen) return;
-    console.log('[DEMO WALL] Starting polling for demo_id:', demoId);
-    const poll = async () => {
-      console.log('[DEMO WALL] Polling demo_uploads for demo_id:', demoId);
-      const { data, error } = await supabase
-        .from('demo_uploads')
-        .select('*')
-        .eq('demo_id', demoId)
-        .order('created_at', { ascending: false })
-        .limit(20);
-      console.log('[DEMO WALL] Poll result:', { data, error });
-      if (!data?.length) {
-        console.log('[DEMO WALL] No data found in poll');
-        return;
-      }
-      console.log('[DEMO WALL] Found', data.length, 'rows in poll');
-      setPhotos(prev => {
-        let updated = [...prev];
-        for (const row of data) {
-          const incoming: DemoMedia = {
-            id: row.id,
-            url: row.url,
-            type: row.type === 'video' ? 'video' : 'image',
-            caption: row.caption || '',
-            uploader: row.uploader || 'Demo Guest',
-            createdAt: new Date(row.created_at).getTime(),
-          };
-          updated = mergeDemoMedia(updated, incoming);
-        }
-        writeDemoPhotos(demoId, updated);
-        return updated;
-      });
-    };
-    poll(); // immediate on mount
-    const interval = setInterval(poll, 2000); // poll every 2s
-    return () => clearInterval(interval);
-  }, [demoId, isOpen]);
+function DemoUploadContent() {
+  const searchParams = useSearchParams();
+  const demoId = searchParams.get('id') || '';
+  const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
+  const [uploadVideos, setUploadVideos] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [status, setStatus] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [totalUploaded, setTotalUploaded] = useState(0);
+  const [uploaderName, setUploaderName] = useState('');
+  const [comment, setComment] = useState('');
+  const [photoDragOver, setPhotoDragOver] = useState(false);
+  const [videoDragOver, setVideoDragOver] = useState(false);
+  // Lifetime quota — persisted in localStorage per device per demoId
+  const [lifetimePhotos, setLifetimePhotos] = useState(0);
+  const [lifetimeVideos, setLifetimeVideos] = useState(0);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
+  // Load lifetime quota from localStorage once demoId is known
   useEffect(() => {
-    if (photos.length > 0 && currentSlide >= photos.length) {
-      setCurrentSlide(0);
-    }
-  }, [currentSlide, photos.length]);
-
-  useEffect(() => {
-    if (viewMode === 'slideshow' && isPlaying && photos.length > 1 && isOpen) {
-      const interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % photos.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [viewMode, isPlaying, photos.length, isOpen]);
-
-  useEffect(() => {
-    if (demoId) {
-      setUploadUrl(`${window.location.origin}/demo/upload?id=${demoId}`);
-    }
+    if (!demoId) return;
+    const quota = loadQuota(demoId);
+    setLifetimePhotos(quota.photos);
+    setLifetimeVideos(quota.videos);
   }, [demoId]);
 
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isFullscreen) onClose();
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, [onClose, isFullscreen]);
+    if (!demoId) return;
+    const channel = supabase.channel(getDemoChannelName(demoId));
+    channel.subscribe((status) => setIsConnected(status === 'SUBSCRIBED'));
+    return () => { supabase.removeChannel(channel); };
+  }, [demoId]);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      modalRef.current?.requestFullscreen().catch((err: Error) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    processPhotoFiles(files);
+  };
+
+  const processPhotoFiles = (files: File[]) => {
+    const validPhotos = files.filter(isAcceptedImage);
+    const invalidFiles = files.filter(f => !isAcceptedImage(f));
+    if (invalidFiles.length > 0) {
+      setError(`Invalid file type: only JPG, PNG, HEIC are accepted.`);
+      setTimeout(() => setError(null), 5000);
+      return;
+    }
+    setUploadPhotos(prev => {
+      // lifetime quota = already uploaded (persisted) + currently staged
+      const totalUsed = lifetimePhotos + prev.length;
+      const slotsLeft = MAX_IMAGES - totalUsed;
+      if (slotsLeft <= 0) {
+        setError(`You've used all ${MAX_IMAGES} photo uploads for this demo.`);
+        setTimeout(() => setError(null), 5000);
+        return prev;
+      }
+      const toAdd = validPhotos.slice(0, slotsLeft);
+      if (validPhotos.length > slotsLeft) {
+        setError(`Only ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left — added ${toAdd.length} of ${validPhotos.length}.`);
+        setTimeout(() => setError(null), 5000);
+      } else {
+        setError(null);
+      }
+      return [...prev, ...toAdd];
+    });
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    processVideoFiles(files);
+  };
+
+  const processVideoFiles = (files: File[]) => {
+    const validVideos = files.filter(isAcceptedVideo);
+    const invalidFiles = files.filter(f => !isAcceptedVideo(f));
+    if (invalidFiles.length > 0) {
+      setError(`Invalid file type: only MP4 videos are accepted.`);
+      setTimeout(() => setError(null), 5000);
+      return;
+    }
+    // Lifetime video quota check
+    if (lifetimeVideos >= MAX_VIDEOS) {
+      setError(`You've already used your 1 video upload for this demo.`);
+      setTimeout(() => setError(null), 5000);
+      return;
+    }
+    if (validVideos.length > 0) {
+      setUploadVideos([validVideos[0]]);
+      setError(null);
     }
   };
 
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
+  const handlePhotoDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setPhotoDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    processPhotoFiles(files);
+  };
 
-  if (!isOpen) return null;
+  const handleVideoDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setVideoDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    processVideoFiles(files);
+  };
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  const removePhoto = (index: number) => {
+    setUploadPhotos(prev => prev.filter((_, i) => i !== index));
+  };
 
-  return (
-    <div className="demo-modal-overlay">
-      <div className={`demo-modal-container ${isFullscreen ? 'fullscreen' : ''}`} ref={modalRef}>
-        
-        {/* Header */}
-        <div className="demo-modal-header">
-           <div className="flex items-center gap-4">
-              <AnimatedLogo width={120} height={40} />
-              <div className="demo-status-badges hidden sm:flex">
-                  <span className="modal-badge live-badge">
-                    <span className={`pulse-dot ${isConnected ? 'active' : ''}`} />
-                    {isConnected ? 'LIVE' : 'CONNECTING...'}
-                  </span>
-                  <span className="modal-badge time-badge">
-                    {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-                  </span>
-              </div>
-           </div>
-           
-           <div className="flex items-center gap-2">
-              <button onClick={() => setViewMode('grid')} className={`modal-icon-btn ${viewMode === 'grid' ? 'active' : ''}`} title="Grid View">
-                <Grid size={18} />
-              </button>
-              <button onClick={() => setViewMode('polaroid')} className={`modal-icon-btn ${viewMode === 'polaroid' ? 'active' : ''}`} title="Polaroid View">
-                <ImageIcon size={18} />
-              </button>
-              <button onClick={() => setViewMode('slideshow')} className={`modal-icon-btn ${viewMode === 'slideshow' ? 'active' : ''}`} title="Slideshow View">
-                <Play size={18} />
-              </button>
-              <div className="w-px h-6 bg-white/20 mx-1 hidden sm:block"></div>
-              <button onClick={toggleFullscreen} className="modal-icon-btn hidden sm:flex" title="Toggle Fullscreen">
-                {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-              </button>
-              <button onClick={onClose} className="modal-icon-btn close-btn" title="Close Demo">
-                <X size={20} />
-              </button>
-           </div>
-        </div>
+  const removeVideo = () => setUploadVideos([]);
 
-        {/* Content Body */}
-        <div className="demo-modal-body">
-            
-            {/* Sidebar / QR */}
-            <div className="demo-modal-sidebar">
-               <div className="qr-container-glass">
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">Scan to Upload</h3>
-                  <p className="text-xs text-slate-500 mb-4">Point your camera to join the wall</p>
-                  <div className="qr-box">
-                    {uploadUrl ? <QRCodeSVG value={uploadUrl} size={140} level="M" /> : <div style={{width: 140, height: 140}}/>}
-                  </div>
-                  <div className="mt-4 text-center sm:hidden">
-                    <div className="demo-status-badges flex-col items-center gap-2">
-                        <span className="modal-badge live-badge text-xs">
-                          <span className={`pulse-dot ${isConnected ? 'active' : ''}`} />
-                          {isConnected ? 'LIVE' : 'CONNECTING...'}
-                        </span>
-                        <span className="modal-badge time-badge text-xs">
-                          Resets in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-                        </span>
-                    </div>
-                  </div>
-               </div>
-            </div>
+  const uploadFile = async (file: File): Promise<string> => {
+    const fileName = `${demoId}/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, file);
+    if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
+    const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(fileName);
+    return publicUrl;
+  };
 
-            {/* Main Visual Area */}
-            <div className="demo-modal-main relative">
-               
-               {photos.length === 0 ? (
-                  <div className="demo-empty-state">
-                     <span className="text-5xl mb-4 block">📷</span>
-                     <h2 className="text-2xl font-bold text-slate-800 mb-2">The wall is empty!</h2>
-                     <p className="text-slate-600">Scan the QR code to upload the first photo.</p>
-                  </div>
-               ) : (
-                  <>
-                    {/* GRID VIEW */}
-                    {viewMode === 'grid' && (
-                      <div className="demo-grid-view">
-                         {photos.map((photo, i) => (
-                           <div key={photo.id} className="demo-grid-item" style={{animationDelay: `${i * 0.05}s`}}>
-                              {photo.type === 'video' ? (
-                                <video src={photo.url} className="demo-media" autoPlay muted loop playsInline preload="metadata" />
-                              ) : (
-                                <img src={photo.url} className="demo-media" alt="Upload" loading="lazy" />
-                              )}
-                              <div className="demo-item-overlay">
-                                 <p className="caption font-medium">{photo.caption}</p>
-                                 <p className="uploader">by {photo.uploader}</p>
-                              </div>
-                           </div>
-                         ))}
-                      </div>
-                    )}
+  const handleUpload = async () => {
+    if (!uploadPhotos.length && !uploadVideos.length) return;
+    setUploading(true);
+    setProgress(0);
+    setError(null);
+    setUploadSuccess(false);
+    setStatus('Preparing…');
+    try {
+      const totalFiles = uploadPhotos.length + uploadVideos.length;
+      let uploaded = 0;
+      const uploadPromises: Promise<string>[] = [];
+      for (const photo of uploadPhotos) {
+        const compressed = await compressDemoImage(photo);
+        uploadPromises.push(uploadFile(compressed));
+      }
+      for (const video of uploadVideos) {
+        uploadPromises.push(uploadFile(video));
+      }
+      const urls = await Promise.all(uploadPromises);
+      for (const url of urls) {
+        uploaded++;
+        setProgress(Math.round((uploaded / totalFiles) * 100));
+        setStatus(`Uploading ${uploaded} of ${totalFiles}…`);
+        await new Promise(r => setTimeout(r, 200));
+      }
+      setStatus('Sending to wall…');
+      const uploader = uploaderName.trim() || 'Demo Guest';
+      for (let i = 0; i < urls.length; i++) {
+        const publicUrl = urls[i];
+        const type = i < uploadPhotos.length ? 'image' : 'video';
+        const caption = comment.trim() || (type === 'video' ? '🎥 Live Video!' : '📸 Live Photo!');
+        const { error: insertError } = await supabase.from('demo_uploads').insert({
+          demo_id: demoId,
+          url: publicUrl,
+          type,
+          caption,
+          uploader,
+        });
+        if (insertError) console.error('[DEMO UPLOAD] Database insert failed:', insertError);
+        const payload: DemoMedia = {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          url: publicUrl,
+          type,
+          caption,
+          uploader,
+          createdAt: Date.now(),
+        };
+        upsertDemoPhoto(demoId, payload);
+        await broadcastUpload(demoId, payload);
+      }
+      // Persist lifetime quota to localStorage so limits survive page refreshes
+      const newLifetimePhotos = lifetimePhotos + uploadPhotos.length;
+      const newLifetimeVideos = lifetimeVideos + uploadVideos.length;
+      setLifetimePhotos(newLifetimePhotos);
+      setLifetimeVideos(newLifetimeVideos);
+      saveQuota(demoId, newLifetimePhotos, newLifetimeVideos);
 
-                    {/* POLAROID VIEW */}
-                    {viewMode === 'polaroid' && (
-                      <div className="demo-polaroid-view" style={{ overflow: 'hidden', padding: '2rem' }}>
-                         <div className="flex flex-wrap justify-center gap-8">
-                             {photos.map((photo, i) => (
-                               <div key={photo.id} className="polaroid-float-demo" style={{animationDelay: `${i * 0.5}s`, '--rot': `${(i % 5) * 4 - 8}deg`} as React.CSSProperties}>
-                                  <div className="polaroid-img-wrapper">
-                                    {photo.type === 'video' ? (
-                                      <video src={photo.url} className="demo-media" autoPlay muted loop playsInline preload="metadata" />
-                                    ) : (
-                                      <img src={photo.url} className="demo-media" alt="Upload" loading="lazy" />
-                                    )}
-                                  </div>
-                                  <p className="polaroid-caption">{photo.caption}</p>
-                               </div>
-                             ))}
-                         </div>
-                      </div>
-                    )}
+      setTotalUploaded(prev => prev + urls.length);
+      setUploadPhotos([]);
+      setUploadVideos([]);
+      setComment('');
+      setStatus('');
+      setUploadSuccess(true);
+      if (photoInputRef.current) photoInputRef.current.value = '';
+      if (videoInputRef.current) videoInputRef.current.value = '';
+      setTimeout(() => setUploadSuccess(false), 5000);
+    } catch (err: any) {
+      setError(err.message || 'Upload failed. Please try again.');
+      setStatus('');
+    } finally {
+      setUploading(false);
+      setProgress(0);
+    }
+  };
 
-                    {/* SLIDESHOW VIEW */}
-                    {viewMode === 'slideshow' && (
-                      <div className="demo-slideshow-view" onMouseEnter={() => setIsPlaying(false)} onMouseLeave={() => setIsPlaying(true)} onTouchStart={() => setIsPlaying(false)}>
-                         {photos[currentSlide]?.type === 'video' ? (
-                            <video src={photos[currentSlide]?.url} className="demo-media-slide" autoPlay muted loop playsInline preload="metadata" />
-                          ) : (
-                            <img src={photos[currentSlide]?.url} className="demo-media-slide" alt="Upload" />
-                          )}
-                          <div className="slide-overlay">
-                             <h3 className="slide-caption">{photos[currentSlide]?.caption}</h3>
-                             <p className="slide-uploader">by {photos[currentSlide]?.uploader}</p>
-                          </div>
-                      </div>
-                    )}
-                  </>
-               )}
-
-            </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [currency, setCurrency] = useState({ showINR: false });
-  const [showingINR, setShowingINR] = useState(false);
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-    const cards = document.querySelectorAll('.gcard');
-    cards.forEach(card => {
-      const el = card as HTMLElement;
-      el.addEventListener('mousemove', (e) => {
-        const r = el.getBoundingClientRect();
-        const x = e.clientX - r.left, y = e.clientY - r.top;
-        el.style.setProperty('--mx', `${x}px`);
-        el.style.setProperty('--my', `${y}px`);
-      });
-    });
-
-    (async () => {
-      let isIndia = false;
-      try {
-        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
-        isIndia = (await res.json()).country_code === 'IN';
-      } catch { isIndia = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').includes('Kolkata'); }
-      setCurrency({ showINR: isIndia });
-      if (isIndia) setShowingINR(true);
-    })();
-
-    return () => { window.removeEventListener('scroll', onScroll); obs.disconnect(); };
-  }, []);
-
-  const Free = "0";
-  const Starter = showingINR ? "2,500" : "30";
-  const Pro = showingINR ? "5,000" : "60";
-  const Premium = showingINR ? "7,500" : "90";
-  const WhiteLabel = showingINR ? "10,000" : "120";
-  const PhotoBookPrice = showingINR ? "1,000" : "12";
-  const ExtraStoragePrice = showingINR ? "500" : "6";
-  const SocialFeedPrice = showingINR ? "1,000" : "12";
-  const Sym = showingINR ? "₹" : "$";
+  const totalFiles = uploadPhotos.length + uploadVideos.length;
 
   return (
-    <div className="lp pt-[calc(140px+env(safe-area-inset-top))]">
-      <div className="flex flex-col gap-16">
+    <>
+      {/* ── Inline styles that extend landing.css ───────────────────────── */}
+      <style>{`
+        /* ── Upload-specific tokens ── */
+        :root {
+          --upload-radius: 20px;
+          --upload-zone-bg: rgba(30,41,59,0.04);
+          --upload-zone-border: rgba(100,116,139,0.18);
+          --upload-zone-hover: rgba(245,158,11,0.08);
+          --upload-zone-hover-border: rgba(245,158,11,0.45);
+          --input-bg: rgba(255,255,255,0.55);
+          --input-border: rgba(100,116,139,0.18);
+          --input-focus-border: rgba(245,158,11,0.55);
+          --success-bg: linear-gradient(135deg,rgba(34,197,94,0.12),rgba(16,185,129,0.07));
+          --success-border: rgba(34,197,94,0.28);
+          --error-bg: rgba(239,68,68,0.08);
+          --error-border: rgba(239,68,68,0.25);
+        }
 
+        /* ── Page shell ── */
+        .upload-page {
+          min-height: 100dvh;
+          padding-bottom: env(safe-area-inset-bottom, 32px);
+          padding-left: env(safe-area-inset-left, 0px);
+          padding-right: env(safe-area-inset-right, 0px);
+        }
+
+        /* ── Content wrapper ── */
+        .upload-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 7rem 1rem 3rem;
+          width: 100%;
+          max-width: 520px;
+          margin: 0 auto;
+          gap: 1.25rem;
+        }
+
+        /* ── Page header ── */
+        .upload-header {
+          text-align: center;
+          width: 100%;
+          margin-bottom: 0.5rem;
+        }
+        .upload-header .hero-h1 {
+          font-size: clamp(1.75rem,5.5vw,2.6rem);
+          line-height: 1.15;
+          margin-bottom: 0.5rem;
+        }
+        .upload-header .hero-sub {
+          font-size: 0.975rem;
+          margin-bottom: 0;
+        }
+
+        /* ── Status badge (nav area) ── */
+        .upload-status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 14px 5px 10px;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          border: 1.5px solid;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          transition: all 0.3s ease;
+        }
+        .upload-status-pill.live {
+          background: rgba(34,197,94,0.1);
+          border-color: rgba(34,197,94,0.3);
+          color: #16a34a;
+        }
+        .upload-status-pill.offline {
+          background: rgba(239,68,68,0.08);
+          border-color: rgba(239,68,68,0.25);
+          color: #dc2626;
+        }
+        .upload-sent-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 12px;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          background: rgba(245,158,11,0.12);
+          border: 1.5px solid rgba(245,158,11,0.3);
+          color: var(--amber, #f59e0b);
+        }
+
+        /* ── Glass cards (already have gcard styles from landing.css) ── */
+        .upload-section {
+          width: 100%;
+        }
+        .upload-section .gcard-inner {
+          padding: 1.5rem;
+        }
+
+        /* ── Section label inside card ── */
+        .upload-section-label {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 1rem;
+        }
+        .upload-section-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--text1, #0f172a);
+        }
+        .upload-section-title .emoji {
+          font-size: 1rem;
+        }
+        .upload-count-pill {
+          padding: 3px 10px;
+          border-radius: 999px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          transition: all 0.25s ease;
+        }
+        .upload-count-pill.empty {
+          background: rgba(100,116,139,0.1);
+          color: var(--text3, #94a3b8);
+        }
+        .upload-count-pill.filled {
+          background: rgba(34,197,94,0.14);
+          color: #16a34a;
+        }
+        .upload-count-pill.maxed {
+          background: rgba(239,68,68,0.1);
+          color: #dc2626;
+        }
+
+        /* ── Inputs ── */
+        .upload-input {
+          width: 100%;
+          padding: 13px 16px;
+          border-radius: 14px;
+          font-size: 0.9rem;
+          outline: none;
+          transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+          background: var(--input-bg);
+          border: 1.5px solid var(--input-border);
+          color: var(--text1, #0f172a);
+          -webkit-appearance: none;
+        }
+        .upload-input::placeholder { color: var(--text3, #94a3b8); }
+        .upload-input:focus {
+          border-color: var(--input-focus-border);
+          background: rgba(255,255,255,0.7);
+          box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+        }
+        .upload-input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .upload-textarea {
+          resize: none;
+          min-height: 80px;
+        }
+        .upload-label {
+          display: block;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: var(--text3, #94a3b8);
+          margin-bottom: 8px;
+        }
+        .char-count {
+          text-align: right;
+          font-size: 0.7rem;
+          color: var(--text3, #94a3b8);
+          margin-top: 5px;
+        }
+
+        /* ── Drop zone ── */
+        .upload-drop-zone {
+          width: 100%;
+          padding: 2rem 1rem;
+          border-radius: var(--upload-radius);
+          border: 2px dashed var(--upload-zone-border);
+          background: var(--upload-zone-bg);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          cursor: pointer;
+          transition: all 0.22s ease;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .upload-drop-zone:hover,
+        .upload-drop-zone.drag-over {
+          border-color: var(--upload-zone-hover-border);
+          background: var(--upload-zone-hover);
+        }
+        .upload-drop-zone:active { transform: scale(0.985); }
+        .upload-drop-zone.disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+        .drop-zone-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.4rem;
+          background: linear-gradient(135deg,rgba(245,158,11,0.15),rgba(244,114,182,0.1));
+          border: 1.5px solid rgba(245,158,11,0.2);
+        }
+        .drop-zone-text {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--text2, #334155);
+        }
+        .drop-zone-hint {
+          font-size: 0.72rem;
+          color: var(--text3, #94a3b8);
+        }
+
+        /* ── Photo preview grid ── */
+        .photo-preview-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          margin-bottom: 14px;
+        }
+        .photo-preview-item {
+          position: relative;
+          aspect-ratio: 1;
+          border-radius: 14px;
+          overflow: hidden;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .photo-preview-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .photo-remove-btn {
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #fff;
+          background: rgba(15,23,42,0.65);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          border: none;
+          cursor: pointer;
+          transition: background 0.18s, transform 0.18s;
+          -webkit-tap-highlight-color: transparent;
+          opacity: 0;
+        }
+        .photo-preview-item:hover .photo-remove-btn,
+        .photo-preview-item:focus-within .photo-remove-btn {
+          opacity: 1;
+        }
+        /* Always visible on touch devices */
+        @media (hover: none) {
+          .photo-remove-btn { opacity: 1; }
+        }
+        .photo-remove-btn:hover { background: rgba(239,68,68,0.85); transform: scale(1.1); }
+
+        /* ── Video preview ── */
+        .video-preview-wrap {
+          position: relative;
+          aspect-ratio: 16/9;
+          border-radius: 16px;
+          overflow: hidden;
+          margin-bottom: 14px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+        .video-preview-wrap video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .video-remove-btn {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1rem;
+          font-weight: 700;
+          color: #fff;
+          background: rgba(15,23,42,0.6);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: none;
+          cursor: pointer;
+          transition: background 0.18s;
+        }
+        .video-remove-btn:hover { background: rgba(239,68,68,0.85); }
+
+        /* ── Progress bar ── */
+        .upload-progress-wrap {
+          width: 100%;
+          padding: 0 2px;
+        }
+        .upload-progress-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 0.78rem;
+          color: var(--text3, #94a3b8);
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+        .upload-progress-track {
+          width: 100%;
+          height: 6px;
+          border-radius: 999px;
+          background: rgba(100,116,139,0.15);
+          overflow: hidden;
+        }
+        .upload-progress-fill {
+          height: 100%;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #f59e0b, #f472b6, #3b82f6);
+          background-size: 200% 100%;
+          transition: width 0.35s cubic-bezier(.22,1,.36,1);
+          animation: shimmer 1.8s linear infinite;
+        }
+        @keyframes shimmer {
+          0% { background-position: 200% center; }
+          100% { background-position: -200% center; }
+        }
+
+        /* ── Success banner ── */
+        .upload-success {
+          width: 100%;
+          padding: 1.25rem 1.5rem;
+          border-radius: 20px;
+          text-align: center;
+          background: var(--success-bg);
+          border: 1.5px solid var(--success-border);
+          animation: slideDown 0.4s cubic-bezier(.22,1,.36,1);
+        }
+        @keyframes slideDown {
+          from { opacity:0; transform:translateY(-16px) scale(0.97); }
+          to { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .success-emoji { font-size: 2rem; margin-bottom: 6px; display: block; }
+        .success-title {
+          font-size: 1rem;
+          font-weight: 700;
+          color: #16a34a;
+          margin-bottom: 3px;
+        }
+        .success-sub { font-size: 0.8rem; color: var(--text3, #94a3b8); }
+
+        /* ── Error banner ── */
+        .upload-error {
+          width: 100%;
+          padding: 1rem 1.25rem;
+          border-radius: 16px;
+          background: var(--error-bg);
+          border: 1.5px solid var(--error-border);
+          font-size: 0.85rem;
+          color: #ef4444;
+          text-align: center;
+          animation: slideDown 0.3s ease;
+        }
+
+        /* ── Submit button override ── */
+        .upload-submit-btn {
+          width: 100%;
+          padding: 1rem 1.5rem;
+          font-size: 1rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          border-radius: 16px;
+          transition: opacity 0.2s, transform 0.15s;
+          min-height: 56px;
+        }
+        .upload-submit-btn:not(:disabled):active { transform: scale(0.97); }
+
+        /* ── Divider ── */
+        .upload-divider {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: var(--text3, #94a3b8);
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .upload-divider::before,
+        .upload-divider::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: rgba(100,116,139,0.15);
+        }
+
+        /* ── Mobile fine-tuning ── */
+        @media (max-width: 480px) {
+          .upload-content {
+            padding-top: 6rem;
+            gap: 1rem;
+          }
+          .upload-section .gcard-inner {
+            padding: 1.25rem;
+          }
+          .photo-preview-grid {
+            grid-template-columns: repeat(3,1fr);
+            gap: 8px;
+          }
+          .upload-drop-zone {
+            padding: 1.5rem 1rem;
+          }
+        }
+      `}</style>
+
+      <div className="lp upload-page">
+        {/* Background elements */}
         <div className="orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
           <div className="orb orb3" />
         </div>
-
-        <div className="floating-shapes">
-          <div className="shape s-cross s-1">✦</div>
-          <div className="shape s-circle s-2" />
-          <div className="shape s-star s-3">★</div>
-          <div className="shape s-ring s-4" />
-          <div className="shape s-cross s-5">✦</div>
-          <div className="shape s-circle s-6" />
-        </div>
-
         <div className="grain" />
 
-        {/* NAV */}
-        <nav className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
+        {/* ── NAV ── */}
+        <nav className="lp-nav scrolled">
           <Link href="/">
-            <AnimatedLogo width={220} height={80} />
+            <AnimatedLogo width={150} height={50} />
           </Link>
-          <div className="nav-mid">
-            <Link href="#features">Features</Link>
-            <Link href="#how">How it works</Link>
-            <Link href="#pricing">Pricing</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className={`upload-status-pill ${isConnected ? 'live' : 'offline'}`}>
+              <span className="pulse-dot" style={{ background: isConnected ? '#22c55e' : '#f87171' }} />
+              {isConnected ? 'Live' : 'Offline'}
+            </span>
+            {totalUploaded > 0 && (
+              <span className="upload-sent-badge">
+                ✓&nbsp;{totalUploaded} sent
+              </span>
+            )}
           </div>
-          <Link href="#pricing" className="nav-btn">
-            Get Started
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-          </Link>
         </nav>
 
-        {/* HERO */}
-        <section className="hero pt-16 md:pt-20 py-16">
-          <h1 className="hero-h1 reveal leading-tight md:leading-[1.1]">
-            Collect Every Moment.
-            <br />
-            <span className="gradient-text">Instantly. Effortlessly.</span>
-          </h1>
-          <p className="hero-p reveal">
-            QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle.
-          </p>
-          <div className="hero-btns reveal">
-            <Link href="#pricing" className="btn-glow">
-              <span>Create Your Wall</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </Link>
-            <button onClick={() => setIsDemoOpen(true)} className="btn-outline">
-              <span>🎬 Watch Demo Wall</span>
-            </button>
-          </div>
-          <div className="hero-visual reveal">
-            <div className="polaroid-float p-1" style={{ '--rot': '-8deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo2.jpg" alt="Memory" />
-            </div>
-            <div className="polaroid-float p-2" style={{ '--rot': '12deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo6.jpg" alt="Memory" />
-            </div>
-            <div className="polaroid-float p-3" style={{ '--rot': '-5deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo12.jpg" alt="Memory" />
-            </div>
-            <div className="polaroid-float p-4" style={{ '--rot': '6deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo4.jpg" alt="Memory" />
-            </div>
+        {/* ── Main content ── */}
+        <div className="upload-content">
 
-            {/* Left phone — Upload view */}
-            <div className="phone-mockup">
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <div className="phone-header">
-                  <span className="phone-title">Upload</span>
-                  <span className="phone-live"><span className="pulse-dot" /> Live</span>
-                </div>
-                <div className="phone-grid">
-                  {[
-                    { src: '/landing-hero/photo1.jpg', alt: 'Guest photo 1' },
-                    { src: '/landing-hero/photo2.jpg', alt: 'Guest photo 2' },
-                    { src: '/landing-hero/photo3.jpg', alt: 'Guest photo 3' },
-                    { src: '/landing-hero/photo4.jpg', alt: 'Guest photo 4' }
-                  ].map((img, i) => (
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(245,158,11,${0.15 + i * 0.05}), rgba(244,114,182,${0.1 + i * 0.05}))`, animationDelay: `${0.8 + i * 0.2}s` }}>
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                    </div>
-                  ))}
-                </div>
-                <div className="phone-upload-bar">
-                  ⬆ Uploading...
-                  <div className="upload-progress"><div className="upload-progress-bar" /></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Center phone — Live Wall */}
-            <div className="phone-mockup phone-c">
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <div className="phone-header">
-                  <span className="phone-title">Sarah&apos;s Wedding</span>
-                  <span className="phone-live"><span className="pulse-dot" /> 24 Live</span>
-                </div>
-                <div className="phone-grid">
-                  {[
-                    { src: '/landing-hero/photo5.jpg', alt: 'Wedding photo 1' },
-                    { src: '/landing-hero/photo6.jpg', alt: 'Wedding photo 2' },
-                    { src: '/landing-hero/photo7.jpg', alt: 'Wedding photo 3' },
-                    { src: '/landing-hero/photo8.jpg', alt: 'Wedding photo 4' },
-                    { src: '/landing-hero/photo9.jpg', alt: 'Wedding photo 5' },
-                    { src: '/landing-hero/photo10.jpg', alt: 'Wedding photo 6' }
-                  ].map((img, i) => (
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(${200 + i * 10},${100 + i * 15},${50 + i * 20},0.3), rgba(244,114,182,0.15))`, animationDelay: `${0.5 + i * 0.15}s` }}>
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right phone — QR Scan */}
-            <div className="phone-mockup phone-r">
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <div className="phone-header">
-                  <span className="phone-title">Join Wall</span>
-                </div>
-                <div className="phone-qr">QR</div>
-                <p className="phone-scan-text">Scan to join the live wall</p>
-                <div className="phone-grid" style={{ marginTop: '0.75rem' }}>
-                  {[
-                    { src: '/landing-hero/photo11.jpg', alt: 'Guest photo 1' },
-                    { src: '/landing-hero/photo12.jpg', alt: 'Guest photo 2' }
-                  ].map((img, i) => (
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(252,211,77,0.2), rgba(245,158,11,0.15))`, animationDelay: `${1.2 + i * 0.2}s` }}>
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* STATS */}
-        <section className="stats reveal py-16">
-          {[
-            { val: '∞', label: 'Photos per wall' },
-            { val: '0s', label: 'App install time' },
-            { val: '<3s', label: 'Upload speed' },
-            { val: '0', label: 'Hidden fees' },
-          ].map((s, i) => (
-            <div key={i} className="stat">
-              <span className="stat-val">{s.val}</span>
-              <span className="stat-lbl text-sm">{s.label}</span>
-            </div>
-          ))}
-        </section>
-
-        {/* WHY CHOOSE MEMENTO */}
-        <section id="why" className="sec py-16">
-          <span className="kicker reveal">Why Choose Memento?</span>
-          <h2 className="sec-h2 reveal">Capture what matters. <span className="gradient-text">Instantly.</span></h2>
-          <p className="sec-sub reveal">Your guests take the photos, we collect them all in one place. No missed moments, no lost memories.</p>
-
-          <div className="feat-grid">
-            {[
-              { icon: '🎉', title: 'Perfect for Weddings', desc: 'From the first look to the last dance, every guest becomes your personal photographer.', big: true },
-              { icon: '🎂', title: 'Birthdays & Private Parties', desc: 'No more chasing friends for photos. Get them all at once in a beautiful live gallery.' },
-              { icon: '🏢', title: 'Corporate Events', desc: 'Level up your branding. Show real-time interaction on any screen with full moderation.' },
-              { icon: '👰', title: 'Anniversaries', desc: 'Celebrate the journey. Let every generation share their memories in one click.' },
-              { icon: '🎈', title: 'Festivals', desc: 'Capture the scale and energy. Crowdsourced memories that look professional.' },
-            ].map((f, i) => (
-              <div key={i} className={`gcard feat-card ${f.big ? 'feat-big' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <span className="feat-icon">{f.icon}</span>
-                  <h3 className="feat-title">{f.title}</h3>
-                  <p className="feat-desc">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FEATURES */}
-        <section id="features" className="sec py-16">
-          <span className="kicker reveal">Core Features</span>
-          <h2 className="sec-h2 reveal">The Best Experience. <span className="gradient-text">Built in.</span></h2>
-
-          <div className="feat-grid">
-            {[
-              { icon: '📺', title: 'Live Slideshow', desc: 'Auto-plays on any screen. Cast to TV or projector for a stunning real-time display.', big: true },
-              { icon: '📷', title: 'Polaroid Gallery', desc: 'Beautiful framed photos with captions and gentle float animations.' },
-              { icon: '🔒', title: 'Private Walls', desc: 'Password-protect your wall. Approve photos before they go live.' },
-              { icon: '📱', title: 'Mobile First', desc: 'Optimized for phones. Each guest gets their own personal photo page.' },
-              { icon: '⚡', title: 'Real-time Sync', desc: 'Zero delay. Photos appear the instant they\'re uploaded.' },
-              { icon: '🛡️', title: 'Moderation', desc: 'Full control. Approve or remove any photo with one tap.' },
-            ].map((f, i) => (
-              <div key={i} className={`gcard feat-card ${f.big ? 'feat-big' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <span className="feat-icon">{f.icon}</span>
-                  <h3 className="feat-title">{f.title}</h3>
-                  <p className="feat-desc">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* HOW IT WORKS */}
-        <section id="how" className="sec py-16">
-          <span className="kicker reveal">How it works</span>
-          <h2 className="sec-h2 reveal">Three steps. <span className="gradient-text">That&apos;s it.</span></h2>
-          <p className="sec-sub reveal">No downloads. No accounts. No friction.</p>
-
-          <div className="steps">
-            {[
-              { num: '01', icon: '🎉', title: 'Create Your Event', desc: 'Name it and get a shareable QR code in under a minute.' },
-              { num: '02', icon: '📲', title: 'Guests Scan & Share', desc: 'No app. No login. Just scan the QR and upload photos instantly.' },
-              { num: '03', icon: '✨', title: 'Watch It Come Alive', desc: 'Every photo streams live into a beautiful gallery for everyone.' },
-            ].map((s, i) => (
-              <div key={i} className="gcard step-card reveal" style={{ animationDelay: `${i * 0.12}s` }}>
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <span className="step-num">{s.num}</span>
-                  <span className="step-icon">{s.icon}</span>
-                  <h3 className="step-title">{s.title}</h3>
-                  <p className="step-desc">{s.desc}</p>
-                </div>
-              </div>
-            ))}
-            <div className="steps-line" />
-          </div>
-        </section>
-
-        {/* IMAGE GALLERY */}
-        <section className="sec">
-          <span className="kicker reveal">Gallery</span>
-          <h2 className="sec-h2 reveal">Real <span className="gradient-text">Event Walls</span></h2>
-          <p className="sec-sub reveal">See how people are using Memento to capture their special moments</p>
-
-          <div className="gallery-grid reveal">
-            {[
-              { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
-              { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
-              { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' },
-              { title: 'Corporate Gala', src: 'https://picsum.photos/400/300?random=4', count: '234 photos' },
-              { title: 'Graduation Party', src: 'https://picsum.photos/400/300?random=5', count: '145 photos' },
-              { title: 'Festival Weekend', src: 'https://picsum.photos/400/300?random=6', count: '512 photos' }
-            ].map((item, i) => (
-              <div key={i} className="gallery-item" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="gallery-img-wrapper">
-                  <img src={item.src} alt={item.title} className="gallery-img" />
-                  <div className="gallery-overlay">
-                    <h3 className="gallery-title">{item.title}</h3>
-                    <p className="gallery-count">{item.count}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section className="sec">
-          <span className="kicker reveal">Testimonials</span>
-          <h2 className="sec-h2 reveal">Loved by <span className="gradient-text">Event Organizers</span></h2>
-          <p className="sec-sub reveal">See what people are saying about Memento</p>
-
-          <div className="testimonial-grid reveal">
-            {[
-              {
-                quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.",
-                author: "Rohan & Priya",
-                role: "Happy Couple",
-                event: "Mumbai Wedding • 524 photos",
-                rating: 5
-              },
-              {
-                quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.",
-                author: "Sonia Mehta",
-                role: "Wedding Planner",
-                event: "Corporate Gala • Bangalore",
-                rating: 5
-              },
-              {
-                quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.",
-                author: "Vikram Singh",
-                role: "Professional Event Organizer",
-                event: "Tech Summit • Delhi",
-                rating: 5
-              }
-            ].map((item, i) => (
-              <div key={i} className="gcard testimonial-card" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(item.rating)].map((_, j) => (
-                      <span key={j} className="text-amber-400">⭐</span>
-                    ))}
-                  </div>
-                  <p className="text-slate-700 mb-4 text-base leading-relaxed">&quot;{item.quote}&quot;</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white font-semibold text-lg">
-                      {item.author.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div>
-                      <p className="text-slate-900 font-semibold text-base">{item.author}</p>
-                      <p className="text-slate-500 text-sm">{item.role}</p>
-                    </div>
-                  </div>
-                  <p className="text-amber-500 text-sm mt-3 font-medium">{item.event}</p>
-                </div>
-              </div>
-            ))}
+          {/* Header */}
+          <div className="upload-header reveal visible">
+            <span className="kicker">Demo Wall</span>
+            <h1 className="hero-h1">
+              Share the <span className="gradient-text">Moment</span>
+            </h1>
+            <p className="hero-sub">Upload photos or a video — they appear on the live wall instantly.</p>
           </div>
 
-          {/* Social Proof Bar */}
-          <div className="social-proof-bar reveal">
-            <div className="social-proof-item">
-              <span className="text-2xl font-bold gradient-text">10,000+</span>
-              <span className="text-slate-600 text-sm block mt-1">Events Created</span>
+          {/* ── Success banner ── */}
+          {uploadSuccess && (
+            <div className="upload-success">
+              <span className="success-emoji">🎉</span>
+              <p className="success-title">Posted to the wall!</p>
+              <p className="success-sub">Your memories are now live for everyone to see.</p>
             </div>
-            <div className="social-proof-item">
-              <span className="text-2xl font-bold gradient-text">500K+</span>
-              <span className="text-slate-600 text-sm block mt-1">Photos Shared</span>
-            </div>
-            <div className="social-proof-item">
-              <span className="text-2xl font-bold gradient-text">50+</span>
-              <span className="text-slate-600 text-sm block mt-1">Countries</span>
-            </div>
-            <div className="social-proof-item">
-              <span className="text-2xl font-bold gradient-text">4.9★</span>
-              <span className="text-slate-600 text-sm block mt-1">User Rating</span>
-            </div>
-          </div>
-        </section>
-
-        {/* PRICING */}
-        <section id="pricing" className="sec py-16">
-          <span className="kicker reveal">One-time Payment • Per Event</span>
-          <h2 className="sec-h2 reveal">Pricing That <span className="gradient-text">Grows With You</span></h2>
-          <p className="sec-sub reveal">Simple, transparent pricing. No subscriptions, zero surprises.</p>
-
-          {!showingINR && currency.showINR && (
-            <button className="currency-toggle reveal" onClick={() => setShowingINR(!showingINR)}>
-              Switch to {showingINR ? '$ USD' : '₹ INR'}
-            </button>
           )}
 
-          <div className="price-grid">
-            {[
-              {
-                name: 'Starter',
-                price: Starter,
-                emoji: '🟢',
-                description: 'Perfect for small, basic events',
-                stats: 'Up to 150 guests',
-                features: [
-                  '✓ Collect guest photos instantly',
-                  '✓ Live photo wall',
-                  '✓ Unlimited uploads',
-                  '✓ Download all photos as ZIP',
-                  '1 Month Storage'
-                ],
-                tagline: 'Simple, fast photo sharing for your event.',
-                popular: false
-              },
-              {
-                name: 'Standard',
-                price: Pro,
-                emoji: '🔵',
-                description: 'For interactive and lively events',
-                stats: 'Up to 300 guests',
-                features: [
-                  'Everything in Starter +',
-                  '🎥 Auto album creation',
-                  '🎨 Custom wall theme',
-                  '📊 Simple analytics',
-                  '📺 Slideshow TV Mode',
-                  '❤️ Live reactions',
-                  '3 Months Storage'
-                ],
-                tagline: 'Bring your event to life with interactive features.',
-                popular: true
-              },
-              {
-                name: 'Premium',
-                price: Premium,
-                emoji: '🟣',
-                description: 'For weddings & luxury experiences',
-                stats: 'Unlimited guests',
-                features: [
-                  'Everything in Standard +',
-                  '🎶 Music slideshow',
-                  '⏳ Expiring galleries',
-                  '🛡️ Priority support',
-                  '🔒 Advanced privacy options',
-                  '☁️ Google Drive sync',
-                  '6 Months Storage'
-                ],
-                tagline: 'A premium, fully featured photo experience.',
-                popular: false
-              },
-              {
-                name: 'White Label',
-                price: WhiteLabel,
-                emoji: '🟡',
-                description: 'For agencies & photographers',
-                stats: 'Multi-event dashboard',
-                features: [
-                  'Everything in Premium +',
-                  '🔥 Full branding removal',
-                  '🌐 Custom domain (e.g. photos.you.com)',
-                  '💰 Partner resell rights',
-                  '📊 Client management',
-                  '🚀 Training & Priority Setup'
-                ],
-                tagline: 'Launch your own branded platform.',
-                popular: false
-              }
-            ].map((p, i) => (
-              <div key={i} className={`gcard price-card ${p.popular ? 'popular' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  {p.popular && <span className="popular-tag">⭐ Most Popular</span>}
+          {/* ── Error banner ── */}
+          {error && (
+            <div className="upload-error">
+              ⚠️ &nbsp;{error}
+            </div>
+          )}
 
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{p.emoji}</span>
-                    <p className="price-name">{p.name}</p>
-                  </div>
-                  <p className="text-slate-600 text-sm mb-3">{p.description}</p>
-                  <div className="price-amount">
-                    <span className="price-sym">{Sym}</span>
-                    <span className="price-val">{p.price}</span>
-                  </div>
-                  <span className="price-period text-sm">per event • one-time</span>
-                  <Link href={p.name === 'White Label' ? '#pricing' : '#pricing'} className={`price-btn ${p.popular ? 'filled' : ''}`}>
-                    {p.name === 'White Label' ? 'Become a Partner' : p.name === 'Premium' ? 'Book Premium' : p.name === 'Standard' ? 'Get Started' : 'Start Now'}
-                  </Link>
-                  <div className="price-divider" />
-                  <div className="mb-4">
-                    <span className="text-xs uppercase tracking-widest text-[#f59e0b] font-bold">{p.stats}</span>
-                  </div>
-                  <div className="space-y-2.5">
-                    {p.features.map((f, j) => {
-                      const isStorage = f.includes('Storage');
-                      return (
-                        <div key={j} className={`price-feat text-sm ${f.startsWith('Everything in') ? 'font-semibold text-amber-600 text-base' : ''}`}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
-                          <span className={isStorage ? 'text-amber-600 font-semibold' : ''}>{f}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-5 pt-4 border-t border-slate-200">
-                    <p className="text-sm text-slate-500 italic">💬 {p.tagline}</p>
-                  </div>
-                </div>
+          {/* ── Name & Caption card ── */}
+          <div className="upload-section gcard reveal visible">
+            <div className="gcard-border" />
+            <div className="gcard-inner" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div>
+                <label className="upload-label">Your Name</label>
+                <input
+                  type="text"
+                  className="upload-input"
+                  placeholder="e.g. Sarah"
+                  value={uploaderName}
+                  onChange={e => setUploaderName(e.target.value)}
+                  disabled={uploading}
+                  maxLength={40}
+                  autoComplete="given-name"
+                />
               </div>
-            ))}
+              <div>
+                <label className="upload-label">
+                  Caption&nbsp;<span style={{ fontWeight: 400, textTransform: 'none', fontSize: '0.7rem' }}>(optional)</span>
+                </label>
+                <textarea
+                  className="upload-input upload-textarea"
+                  placeholder="Write something about this moment…"
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  disabled={uploading}
+                  maxLength={120}
+                  rows={2}
+                />
+                <p className="char-count">{comment.length}/120</p>
+              </div>
+            </div>
           </div>
-        </section>
 
-        {/* Feature Comparison Table */}
-        <div className="comparison-table-wrap max-w-[1200px] w-full mx-auto reveal px-4">
-          <h3 className="text-3xl font-bold text-center mb-20 text-slate-800">Compare features at a glance</h3>
-          <div className="gcard w-full overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-slate-200">
-                    <th className="p-6 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">Feature</th>
-                    <th className="p-6 text-center text-amber-500 font-bold text-lg">Starter</th>
-                    <th className="p-6 text-center text-blue-500 font-bold text-lg">Standard</th>
-                    <th className="p-6 text-center text-purple-500 font-bold text-lg">Premium</th>
-                    <th className="p-6 text-center text-slate-800 font-bold text-lg">White Label</th>
-                  </tr>
-                </thead>
-                <tbody className="text-slate-700">
-                  {[
-                    { f: 'Collect Photos', v: ['✅', '✅', '✅', '✅'] },
-                    { f: 'Live Wall', v: ['✅', '✅', '✅', '✅'] },
-                    { f: 'Auto Album', v: ['❌', '✅', '✅', '✅'] },
-                    { f: 'Music Slideshow', v: ['❌', '❌', '✅', '✅'] },
-                    { f: 'Custom Domain', v: ['❌', '❌', '❌', '✅'] },
-                    { f: 'Storage', v: ['1 Mo', '3 Mo', '6 Mo', '6 Mo'] },
-                  ].map((row, i) => (
-                    <tr key={i} className="border-b border-slate-200 hover:bg-slate-50/50 transition-colors">
-                      <td className="p-6 font-medium text-lg">{row.f}</td>
-                      {row.v.map((val, k) => (
-                        <td key={k} className="p-6 text-center text-lg">{val}</td>
-                      ))}
-                    </tr>
+          {/* ── Photos card ── */}
+          <div className="upload-section gcard reveal visible">
+            <div className="gcard-border" />
+            <div className="gcard-inner">
+              <div className="upload-section-label">
+                <span className="upload-section-title">
+                  <span className="emoji">📷</span> Photos
+                </span>
+                <span className={`upload-count-pill ${(lifetimePhotos + uploadPhotos.length) > 0 ? 'filled' : 'empty'} ${(lifetimePhotos + uploadPhotos.length) >= MAX_IMAGES ? 'maxed' : ''}`}>
+                  {lifetimePhotos + uploadPhotos.length}/{MAX_IMAGES}
+                </span>
+              </div>
+
+              {/* Hidden input */}
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoSelect}
+                className="hidden"
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+
+              {/* Previews */}
+              {uploadPhotos.length > 0 && (
+                <div className="photo-preview-grid">
+                  {uploadPhotos.map((photo, i) => (
+                    <div key={i} className="photo-preview-item">
+                      <img src={URL.createObjectURL(photo)} alt="" />
+                      {!uploading && (
+                        <button
+                          className="photo-remove-btn"
+                          onClick={() => removePhoto(i)}
+                          aria-label="Remove photo"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              )}
+
+              {/* Drop zone — uses lifetime quota */}
+              {(() => {
+                const totalUsed = lifetimePhotos + uploadPhotos.length;
+                const slotsLeft = MAX_IMAGES - totalUsed;
+                if (totalUsed >= MAX_IMAGES) {
+                  return (
+                    <div style={{
+                      width: '100%', padding: '0.85rem 1rem', borderRadius: 14,
+                      background: 'rgba(34,197,94,0.08)', border: '1.5px solid rgba(34,197,94,0.25)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      gap: 8, fontSize: '0.82rem', fontWeight: 600, color: '#16a34a',
+                    }}>
+                      ✓ Photo limit reached ({MAX_IMAGES}/{MAX_IMAGES} used)
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    className={`upload-drop-zone ${photoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
+                    onClick={() => !uploading && photoInputRef.current?.click()}
+                    onDragOver={e => { e.preventDefault(); setPhotoDragOver(true); }}
+                    onDragLeave={() => setPhotoDragOver(false)}
+                    onDrop={handlePhotoDrop}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && photoInputRef.current?.click()}
+                  >
+                    <div className="drop-zone-icon">{uploadPhotos.length === 0 && lifetimePhotos === 0 ? '🖼️' : '➕'}</div>
+                    <p className="drop-zone-text">
+                      {totalUsed === 0
+                        ? 'Choose or drop photos'
+                        : `Add more — ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left`}
+                    </p>
+                    <p className="drop-zone-hint">
+                      {lifetimePhotos > 0
+                        ? `${lifetimePhotos} already uploaded · ${slotsLeft} remaining`
+                        : `JPG, PNG, HEIC — up to ${MAX_IMAGES} total`}
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
           </div>
-        </div>
-        {/* OPTIONAL BOOSTER ADD-ONS */}
-        <section id="extras" className="sec py-8 extras-section">
-          <h3 className="text-2xl font-bold mb-20 reveal text-center">
-            Optional Extras <span className="gradient-text"></span>
-          </h3>
 
-          <div className="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto reveal mt-16">
-            {[
-              {
-                title: 'Extra Storage',
-                price: `${Sym}${ExtraStoragePrice}`,
-                desc: 'Keep your photos live for more than 6 months.',
-              },
-              {
-                title: 'Social Media Live Feed',
-                price: `${Sym}${SocialFeedPrice}`,
-                desc: 'Stream photos directly to Instagram/TikTok during the event.',
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="gcard feat-card reveal w-full md:w-[calc(50%-1rem)] max-w-[500px]"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <div className="gcard-border" />
-                <div className="gcard-inner flex items-center justify-between gap-6 py-8 px-6">
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 mb-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-base text-slate-600">{item.desc}</p>
+          {/* ── Video card ── */}
+          <div className="upload-section gcard reveal visible">
+            <div className="gcard-border" />
+            <div className="gcard-inner">
+              <div className="upload-section-label">
+                <span className="upload-section-title">
+                  <span className="emoji">🎥</span> Video
+                </span>
+                <span className={`upload-count-pill ${(lifetimeVideos + uploadVideos.length) > 0 ? 'filled' : 'empty'} ${(lifetimeVideos + uploadVideos.length) >= MAX_VIDEOS ? 'maxed' : ''}`}>
+                  {lifetimeVideos + uploadVideos.length}/{MAX_VIDEOS}
+                </span>
+              </div>
+
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/*"
+                onChange={handleVideoSelect}
+                className="hidden"
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+
+              {uploadVideos.length > 0 && (
+                <div className="video-preview-wrap">
+                  <video
+                    src={URL.createObjectURL(uploadVideos[0])}
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                  {!uploading && (
+                    <button className="video-remove-btn" onClick={removeVideo} aria-label="Remove video">
+                      ×
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {lifetimeVideos + uploadVideos.length >= MAX_VIDEOS ? (
+                <div style={{
+                  width: '100%', padding: '0.85rem 1rem', borderRadius: 14,
+                  background: uploadVideos.length > 0 ? 'transparent' : 'rgba(34,197,94,0.08)',
+                  border: uploadVideos.length > 0 ? 'none' : '1.5px solid rgba(34,197,94,0.25)',
+                  display: uploadVideos.length > 0 ? 'none' : 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  gap: 8, fontSize: '0.82rem', fontWeight: 600, color: '#16a34a',
+                }}>
+                  ✓ Video limit reached (1/1 used)
+                </div>
+              ) : (
+                <div
+                  className={`upload-drop-zone ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
+                  onClick={() => !uploading && videoInputRef.current?.click()}
+                  onDragOver={e => { e.preventDefault(); setVideoDragOver(true); }}
+                  onDragLeave={() => setVideoDragOver(false)}
+                  onDrop={handleVideoDrop}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => e.key === 'Enter' && videoInputRef.current?.click()}
+                >
+                  <div className="drop-zone-icon">🎬</div>
+                  <p className="drop-zone-text">Choose or drop a video</p>
+                  <p className="drop-zone-hint">MP4 — 1 video maximum</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Live preview card — shows name + caption as they'll appear on the wall ── */}
+          {(uploaderName.trim() || comment.trim() || totalFiles > 0) && !uploading && (
+            <div className="upload-section gcard reveal visible" style={{ animationDelay: '0.05s' }}>
+              <div className="gcard-border" />
+              <div className="gcard-inner" style={{ padding: '1.1rem 1.4rem' }}>
+                <p className="upload-label" style={{ marginBottom: '0.65rem' }}>Preview on wall</p>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.75rem',
+                }}>
+                  {/* Avatar circle */}
+                  <div style={{
+                    flexShrink: 0,
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #f59e0b, #f472b6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    letterSpacing: '-0.02em',
+                  }}>
+                    {uploaderName.trim() ? uploaderName.trim().charAt(0).toUpperCase() : '?'}
                   </div>
-                  <span className="text-xl text-amber-500 font-bold whitespace-nowrap">
-                    {item.price}
-                  </span>
+                  {/* Name + caption */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
+                      color: 'var(--text1, #0f172a)',
+                      marginBottom: '2px',
+                      lineHeight: 1.3,
+                    }}>
+                      {uploaderName.trim() || <span style={{ color: 'var(--text3)', fontStyle: 'italic', fontWeight: 400 }}>Your name</span>}
+                    </p>
+                    <p style={{
+                      fontSize: '0.82rem',
+                      color: 'var(--text2, #334155)',
+                      lineHeight: 1.45,
+                      wordBreak: 'break-word',
+                    }}>
+                      {comment.trim() || (
+                        <span style={{ color: 'var(--text3)', fontStyle: 'italic' }}>
+                          {totalFiles > 0 ? (uploadVideos.length > 0 ? '🎥 Live Video!' : '📸 Live Photo!') : 'No caption'}
+                        </span>
+                      )}
+                    </p>
+                    {(totalFiles > 0 || lifetimePhotos > 0 || lifetimeVideos > 0) && (
+                      <p style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text3)',
+                        marginTop: '5px',
+                        fontWeight: 600,
+                      }}>
+                        {totalFiles > 0 && (
+                          <>
+                            {uploadPhotos.length > 0 && `${uploadPhotos.length} photo${uploadPhotos.length !== 1 ? 's' : ''}`}
+                            {uploadPhotos.length > 0 && uploadVideos.length > 0 && ' · '}
+                            {uploadVideos.length > 0 && '1 video'}
+                            {' · ready to share'}
+                          </>
+                        )}
+                        {lifetimePhotos > 0 && totalFiles === 0 && `${lifetimePhotos} photo${lifetimePhotos !== 1 ? 's' : ''} already sent`}
+                        {lifetimeVideos > 0 && lifetimePhotos === 0 && totalFiles === 0 && '1 video already sent'}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="cta-sec reveal py-12">
-          <div className="cta-glow" />
-          <h2 className="cta-h2">Ready to collect every moment<br /><span className="gradient-text">instantly?</span></h2>
-          <p className="cta-p">Start with just {Sym}{Starter}. One-time payment. Zero hassle.</p>
-          <Link href="#pricing" className="btn-glow btn-lg">
-            <span>Get Started Now — {Sym}{Starter}</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-          </Link>
-        </section>
-
-        {/* FOOTER */}
-        <footer className="lp-footer py-8">
-          <div className="footer-top">
-            <div className="footer-brand">
-              <Link href="/">
-                <AnimatedLogo width={180} height={60} />
-              </Link>
             </div>
-            <div className="footer-cols">
-              <div className="footer-col">
-                <h4>Product</h4>
-                <Link href="#features">Features</Link>
-                <Link href="#pricing">Pricing</Link>
-                <Link href="#how">How it works</Link>
+          )}
+
+          {/* ── Divider ── */}
+          {totalFiles > 0 && !uploading && (
+            <div className="upload-divider">
+              {totalFiles} file{totalFiles !== 1 ? 's' : ''} ready
+            </div>
+          )}
+
+          {/* ── Progress bar ── */}
+          {uploading && (
+            <div className="upload-progress-wrap">
+              <div className="upload-progress-header">
+                <span>{status}</span>
+                <span style={{ fontWeight: 700, color: 'var(--text2, #334155)' }}>{progress}%</span>
               </div>
-              <div className="footer-col">
-                <h4>Company</h4>
-                <Link href="#">About</Link>
-                <Link href="#">Blog</Link>
-                <Link href="#">Contact</Link>
-              </div>
-              <div className="footer-col">
-                <h4>Legal</h4>
-                <Link href="#">Privacy</Link>
-                <Link href="#">Terms</Link>
+              <div className="upload-progress-track">
+                <div className="upload-progress-fill" style={{ width: `${progress}%` }} />
               </div>
             </div>
-          </div>
-          <div className="footer-bottom">
-            <p>© 2025 Memento. Made with ♥ for every celebration.</p>
-          </div>
-        </footer>
+          )}
+
+          {/* ── Submit ── */}
+          <button
+            className="btn-glow upload-submit-btn"
+            onClick={handleUpload}
+            disabled={uploading || totalFiles === 0}
+            style={{ opacity: uploading || totalFiles === 0 ? 0.45 : 1 }}
+          >
+            {uploading
+              ? `Uploading… ${progress}%`
+              : totalFiles > 0
+                ? `Share to Wall (${totalFiles} file${totalFiles !== 1 ? 's' : ''})`
+                : 'Select files above to share'}
+          </button>
+
+        </div>
       </div>
-      
-      {/* Demo Modal */}
-      <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
-    </div>
+    </>
+  );
+}
+
+export default function DemoUploadPage() {
+  return (
+    <Suspense fallback={
+      <div className="lp min-h-screen flex items-center justify-center">
+        <span style={{ color: 'var(--text2)' }}>Loading…</span>
+      </div>
+    }>
+      <DemoUploadContent />
+    </Suspense>
   );
 }
