@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 
 export default function EditEventPage() {
   const params = useParams();
@@ -17,6 +18,8 @@ export default function EditEventPage() {
   const [theme, setTheme] = useState('light');
   const [musicTrack, setMusicTrack] = useState('none');
   const [planType, setPlanType] = useState('FREE');
+  const [customDomain, setCustomDomain] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -48,7 +51,9 @@ export default function EditEventPage() {
       setPassword(data.password || '');
       setTheme(data.theme || 'light');
       setMusicTrack(data.music_track || 'none');
-      setPlanType(data.plan_type || 'FREE');
+      setPlanType((data.plan_type || 'FREE').toUpperCase());
+      setCustomDomain(data.custom_domain || '');
+      setLogoUrl(data.brand_logo_url || '');
       setLoading(false);
     };
 
@@ -69,6 +74,8 @@ export default function EditEventPage() {
         password: password || null,
         theme,
         music_track: musicTrack !== 'none' ? musicTrack : null,
+        custom_domain: planType === 'WHITE_LABEL' ? customDomain : null,
+        brand_logo_url: planType === 'WHITE_LABEL' ? logoUrl : null,
       })
       .eq('id', id);
 
@@ -90,6 +97,10 @@ export default function EditEventPage() {
       </div>
     );
   }
+
+  const isWhiteLabel = planType === 'WHITE_LABEL';
+  const isPremiumPlus = ['PREMIUM', 'WHITE_LABEL'].includes(planType);
+  const isStandardPlus = ['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planType);
 
   return (
     <div className="nm-page flex items-center justify-center px-4 py-12">
@@ -122,17 +133,42 @@ export default function EditEventPage() {
                 onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for public access" />
             </div>
 
+            {/* White Label Section */}
+            {isWhiteLabel && (
+              <div className="pt-4 border-t border-slate-200/20 space-y-5">
+                <div>
+                  <label className="block text-xs font-semibold mb-2 text-amber-500 flex items-center gap-2">
+                     ⭐ Custom Domain (White Label)
+                  </label>
+                  <input type="text" className="nm-input" value={customDomain} 
+                    onChange={(e) => setCustomDomain(e.target.value)} placeholder="e.g. photos.wedding.com" />
+                  <p className="text-[10px] mt-1" style={{color:'var(--text2)'}}>Point your A record to memento.events IP.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-2 text-amber-500">
+                     ⭐ Brand Logo URL
+                  </label>
+                  <input type="text" className="nm-input" value={logoUrl} 
+                    onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://... logo.png" />
+                </div>
+              </div>
+            )}
+
             {/* Premium / Standard Features */}
             <div className="pt-4 border-t border-slate-200/20">
-              <label className="block text-xs font-semibold mb-2 flex items-center gap-2" style={{color:'var(--text2)'}}>
-                Wall Theme
-                {['FREE', 'Starter'].includes(planType) && <span className="text-[9px] px-2 bg-amber-500/20 text-amber-600 rounded-full">Standard+</span>}
+              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{color:'var(--text2)'}}>
+                <span className="flex items-center gap-2">Wall Theme</span>
+                {!isStandardPlus && (
+                  <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 hover:bg-amber-500/20 transition-colors">
+                    ✨ Upgrade to Unlock
+                  </Link>
+                )}
               </label>
               <select 
                 className="nm-input w-full" 
                 value={theme}
                 onChange={(e) => setTheme(e.target.value)}
-                disabled={['FREE', 'Starter'].includes(planType)}
+                disabled={!isStandardPlus}
               >
                 <option value="light">Classic Light</option>
                 <option value="dark">Cinematic Dark</option>
@@ -141,15 +177,19 @@ export default function EditEventPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-2 flex items-center gap-2" style={{color:'var(--text2)'}}>
-                Slideshow Music
-                {['FREE', 'Starter', 'Standard'].includes(planType) && <span className="text-[9px] px-2 bg-amber-500/20 text-amber-600 rounded-full">Premium</span>}
+              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{color:'var(--text2)'}}>
+                <span className="flex items-center gap-2">Slideshow Music</span>
+                {!isPremiumPlus && (
+                  <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors">
+                    💎 Upgrade to Unlock
+                  </Link>
+                )}
               </label>
               <select 
                 className="nm-input w-full" 
                 value={musicTrack}
                 onChange={(e) => setMusicTrack(e.target.value)}
-                disabled={['FREE', 'Starter', 'Standard'].includes(planType)}
+                disabled={!isPremiumPlus}
               >
                 <option value="none">No Music</option>
                 <option value="lofi">Lofi Chill (Free default)</option>

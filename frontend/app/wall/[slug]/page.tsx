@@ -201,12 +201,19 @@ export default function WallPage() {
 
       // Fetch owner's branding
       try {
+        // Step 1: Detect if we are on a custom domain
+        const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+        const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'memento.events';
+        const isCustomDomain = hostname !== 'localhost' && hostname !== baseDomain && !hostname.endsWith('.' + baseDomain);
+
         const { data: ownerData } = await supabase.auth.admin.getUserById(data.owner_id);
         const owner = ownerData?.user;
-        if (owner?.user_metadata?.plan_tier === 'white_label') {
+        
+        // Step 2: Set branding if White Label tier
+        if (data.plan_type === 'WHITE_LABEL' || owner?.user_metadata?.plan_tier === 'white_label') {
           setBrand({
-            logoUrl: owner.user_metadata.brand_logo_url || null,
-            colors: owner.user_metadata.brand_colors || null,
+            logoUrl: owner?.user_metadata?.brand_logo_url || null,
+            colors: owner?.user_metadata?.brand_colors || null,
           });
         }
       } catch (brandingErr) {
@@ -707,7 +714,7 @@ export default function WallPage() {
                   {planTier === 'WHITE_LABEL' && photo.watermark_url && (
                     <img src={photo.watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
                   )}
-                  {(planTier === 'STARTER' || planTier === 'PLUS' || planTier === 'FREE') && (
+                  {['FREE', 'STARTER', 'PLUS', 'STANDARD', 'PRO', 'PREMIUM'].includes(planTier) && (
                     <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
                       Memento
                     </div>
@@ -790,7 +797,7 @@ export default function WallPage() {
                 {planTier === 'WHITE_LABEL' && photos[0]?.watermark_url && (
                   <img src={photos[0].watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
                 )}
-                {(planTier === 'STARTER' || planTier === 'PLUS' || planTier === 'FREE') && (
+                {['FREE', 'STARTER', 'PLUS', 'STANDARD', 'PRO', 'PREMIUM'].includes(planTier) && (
                   <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
                     Memento
                   </div>

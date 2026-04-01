@@ -309,8 +309,8 @@ export default function DashboardPage() {
                     <button onClick={() => { const s = prompt('New slug:', event.slug); if (s && s !== event.slug) updateSlug(event.id, s); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#60a5fa'}}>✏️ Slug</button>
                     <button onClick={() => { const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`; navigator.clipboard.writeText(url); alert('Copied!'); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#a78bfa'}}>📋 Copy</button>
                   </div>
-                  {(!event.plan_type || event.plan_type === 'FREE' || event.plan_type === 'Starter') && (
-                    <Link href={`/checkout?plan=STANDARD&eventId=${event.id}`} className="nm-btn w-full text-center text-[10px] py-2 font-bold mt-3" style={{
+                  {(!event.plan_type || event.plan_type === 'FREE' || event.plan_type === 'STARTER') && (
+                    <Link href={`/pricing?eventId=${event.id}`} className="nm-btn w-full text-center text-[10px] py-2 font-bold mt-3" style={{
                       background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(244,114,182,0.15))',
                       color: '#f59e0b',
                       border: '1px solid rgba(245,158,11,0.3)'

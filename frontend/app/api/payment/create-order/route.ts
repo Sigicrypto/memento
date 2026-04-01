@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const PRICES_INR: Record<string, number> = {
-  STARTER: 2500, PRO: 5000, PREMIUM: 7500, WHITE_LABEL: 10000,
+  STARTER: 2500, STANDARD: 5000, PREMIUM: 7500, WHITE_LABEL: 10000,
 };
 const PRICES_USD: Record<string, number> = {
-  STARTER: 30, PRO: 60, PREMIUM: 90, WHITE_LABEL: 120,
+  STARTER: 30, STANDARD: 60, PREMIUM: 90, WHITE_LABEL: 120,
 };
 const PLAN_NAMES: Record<string, string> = {
-  STARTER: 'Memento Starter', PRO: 'Memento Pro',
+  STARTER: 'Memento Starter', STANDARD: 'Memento Standard',
   PREMIUM: 'Memento Premium', WHITE_LABEL: 'Memento White Label',
 };
 
 export async function POST(req: NextRequest) {
   const { plan, region, userId, userEmail, eventId } = await req.json();
-  const planKey = (plan || 'PRO').toUpperCase().replace(' ', '_');
+  const planKey = (plan || 'STANDARD').toUpperCase().replace(' ', '_');
 
   // ── Razorpay (India) ──────────────────────────────────────────
   if (region === 'IN') {
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     'line_items[0][price_data][unit_amount]': String(amount),
     'line_items[0][quantity]': '1',
     mode: 'payment',
-    success_url: `${origin}/checkout/success?plan=${planKey}`,
+    success_url: `${origin}/checkout/success?plan=${planKey}${eventId ? `&eventId=${eventId}` : ''}`,
     cancel_url: `${origin}/#pricing`,
     'metadata[plan]': planKey,
     'metadata[userId]': userId || '',

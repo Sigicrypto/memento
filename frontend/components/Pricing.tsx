@@ -83,7 +83,7 @@ async function getRegion(): Promise<Region> {
 }
 
 
-export default async function Pricing({ isEmbedded = false }: { isEmbedded?: boolean }) {
+export default async function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: boolean, eventId?: string }) {
   const region = await getRegion();
 
   return (
@@ -146,7 +146,7 @@ export default async function Pricing({ isEmbedded = false }: { isEmbedded?: boo
                     </ul>
                   </div>
                 <Link
-                  href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}`}
+                  href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
                   className={`mt-6 text-center py-3 rounded-lg font-semibold transition block ${
                     plan.highlight
                       ? 'bg-gradient-to-r from-amber-500 to-pink-500 text-white'
