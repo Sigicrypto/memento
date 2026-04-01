@@ -952,7 +952,7 @@ export default function LandingPage() {
                     <span className="price-val">{p.price}</span>
                   </div>
                   <span className="price-period text-sm">per event • one-time</span>
-                  <Link href={p.name === 'White Label' ? '#pricing' : '#pricing'} className={`price-btn ${p.popular ? 'filled' : ''}`}>
+                  <Link href={`/auth?plan=${p.name.toLowerCase().replace(' ', '_')}&mode=signup`} className={`price-btn ${p.popular ? 'filled' : ''}`}>
                     {p.name === 'White Label' ? 'Become a Partner' : p.name === 'Premium' ? 'Book Premium' : p.name === 'Standard' ? 'Get Started' : 'Start Now'}
                   </Link>
                   <div className="price-divider" />

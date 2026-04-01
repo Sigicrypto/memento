@@ -1,20 +1,38 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AuthPage() {
-  const { signIn, signUp } = useAuth();
+  const { user, loading: authLoading, signIn, signUp } = useAuth();
   const router = useRouter();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const searchParams = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      const plan = searchParams.get('plan');
+      if (plan) {
+        router.push(`/checkout?plan=${plan}`);
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [user, authLoading, searchParams, router]);
+
+  useEffect(() => {
+    if (searchParams.get('mode') === 'signup') {
+      setIsSignUp(true);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,11 +43,23 @@ export default function AuthPage() {
     if (isSignUp) {
       const { error } = await signUp(email, password, phone);
       if (error) setError(error.message);
-      else setMessage('Check your email for a confirmation link!');
+      else {
+        setMessage('Check your email for a confirmation link!');
+        const plan = searchParams.get('plan');
+        // If there is a plan, we might want to tell them to confirm email before proceeding
+        // or redirect to a wait page. For now, let's keep it simple.
+      }
     } else {
       const { error } = await signIn(email, password);
       if (error) setError(error.message);
-      else router.push('/dashboard');
+      else {
+        const plan = searchParams.get('plan');
+        if (plan) {
+          router.push(`/checkout?plan=${plan}`);
+        } else {
+          router.push('/dashboard');
+        }
+      }
     }
     setLoading(false);
   };
