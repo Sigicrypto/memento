@@ -1685,7 +1685,7 @@
 :-webkit-full-screen *,
 :-moz-full-screen *,
 :fullscreen * {
-  cursor: auto !important;
+  cursor: none !important;
 }
 
 @keyframes modalSlideUp {

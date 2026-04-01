@@ -39,6 +39,8 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   const [uploadUrl, setUploadUrl] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const fsDotRef = useRef<HTMLDivElement>(null);
+  const fsOuterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -229,6 +231,44 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  useEffect(() => {
+    if (!isFullscreen || !modalRef.current) return;
+    let outerX = 0, outerY = 0;
+    let raf: number;
+    let mx = 0, my = 0;
+
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (fsDotRef.current) {
+        fsDotRef.current.style.left = `${mx}px`;
+        fsDotRef.current.style.top = `${my}px`;
+        fsDotRef.current.style.opacity = '1';
+      }
+    };
+
+    const loop = () => {
+      outerX += (mx - outerX) * 0.12;
+      outerY += (my - outerY) * 0.12;
+      if (fsOuterRef.current) {
+        fsOuterRef.current.style.left = `${outerX}px`;
+        fsOuterRef.current.style.top = `${outerY}px`;
+        fsOuterRef.current.style.opacity = '1';
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    const el = modalRef.current;
+    el.addEventListener('mousemove', onMove);
+    return () => {
+      el.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+      if (fsDotRef.current) fsDotRef.current.style.opacity = '0';
+      if (fsOuterRef.current) fsOuterRef.current.style.opacity = '0';
+    };
+  }, [isFullscreen]);
+
   if (!isOpen) return null;
 
   const minutes = Math.floor(timeLeft / 60);
@@ -237,6 +277,31 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
   return (
     <div className="demo-modal-overlay">
       <div className={`demo-modal-container ${isFullscreen ? 'fullscreen' : ''}`} ref={modalRef}>
+        {/* ── Fullscreen custom cursor (only active in fullscreen; position:fixed is relative to the FS viewport) ── */}
+        {isFullscreen && (
+          <>
+            <div ref={fsOuterRef} style={{
+              position: 'fixed', pointerEvents: 'none', zIndex: 99999,
+              width: 40, height: 40, opacity: 0,
+              transform: 'translate(-50%,-50%)',
+              transition: 'opacity 0.3s',
+              borderRadius: '50%',
+              border: '2px solid rgba(245,158,11,0.55)',
+              background: 'radial-gradient(circle,rgba(245,158,11,0.1),transparent 70%)',
+              animation: 'cursor-ring-pulse 2s ease-in-out infinite',
+            }} />
+            <div ref={fsDotRef} style={{
+              position: 'fixed', pointerEvents: 'none', zIndex: 100000,
+              width: 10, height: 10, opacity: 0,
+              transform: 'translate(-50%,-50%)',
+              transition: 'opacity 0.3s',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg,#f59e0b,#f472b6,#fcd34d)',
+              boxShadow: '0 0 20px rgba(245,158,11,0.8),0 0 40px rgba(244,114,182,0.6)',
+              animation: 'cursor-pulse 2s ease-in-out infinite',
+            }} />
+          </>
+        )}
         
         {/* Header */}
         <div className="demo-modal-header">
