@@ -30,7 +30,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { router.push('/auth'); return; }
+    if (!user) { router.push('/'); return; }
 
     const fetchEvents = async () => {
       const { data: eventData } = await supabase.from('events').select('*')

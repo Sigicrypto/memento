@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AuthPage() {
+function AuthPageContent() {
   const { user, loading: authLoading, signIn, signUp } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -144,3 +144,14 @@ export default function AuthPage() {
   );
 }
 
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="nm-page flex items-center justify-center">
+        <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+      </div>
+    }>
+      <AuthPageContent />
+    </Suspense>
+  );
+}
