@@ -5,8 +5,18 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { QRCodeSVG } from 'qrcode.react';
-import { createRoot } from 'react-dom/client';
+import { LogOut, Plus, Camera, Layout, Shield, Copy, ExternalLink, Trash2, Settings } from 'lucide-react';
+import AnimatedLogo from '@/components/AnimatedLogo';
+import '../landing.css';
+
+interface Profile {
+  id: string;
+  full_name: string;
+  email: string;
+  plan: string;
+  payment_status: string;
+  created_at: string;
+}
 
 interface Event {
   id: string;
@@ -18,26 +28,59 @@ interface Event {
   plan_type?: string;
 }
 
+const PLAN_INFO: Record<string, { name: string; emoji: string; color: string; features: string[] }> = {
+  starter: {
+    name: 'Starter',
+    emoji: '🟢',
+    color: '#22c55e',
+    features: ['Up to 150 guests', 'Live photo wall', 'Unlimited uploads', 'Download as ZIP', '1 Month Storage'],
+  },
+  standard: {
+    name: 'Standard',
+    emoji: '🔵',
+    color: '#3b82f6',
+    features: ['Up to 300 guests', 'Auto album creation', 'Custom wall theme', 'Slideshow TV Mode', 'Live reactions', '3 Months Storage'],
+  },
+  premium: {
+    name: 'Premium',
+    emoji: '🟣',
+    color: '#a855f7',
+    features: ['Unlimited guests', 'Music slideshow', 'Expiring galleries', 'Priority support', 'Google Drive sync', '6 Months Storage'],
+  },
+  whitelabel: {
+    name: 'White Label',
+    emoji: '🟡',
+    color: '#eab308',
+    features: ['Full branding removal', 'Custom domain', 'Partner resell rights', 'Client management', 'Training & Priority Setup'],
+  },
+};
+
 export default function DashboardPage() {
-  const { user, loading: authLoading, plan } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [confirmDialog, setConfirmDialog] = useState<{open: boolean; message: string; onConfirm: () => void}>({open: false, message: '', onConfirm: () => {}});
-
-  const showConfirm = (message: string, onConfirm: () => void) => setConfirmDialog({open: true, message, onConfirm});
-  const closeConfirm = () => setConfirmDialog(prev => ({...prev, open: false}));
+  const [copied, setCopied] = useState('');
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.push('/'); return; }
 
-    const fetchEvents = async () => {
+    const fetchData = async () => {
+      // Fetch profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      if (profileData) setProfile(profileData);
+
+      // Fetch events
       const { data: eventData } = await supabase.from('events').select('*')
         .eq('owner_id', user.id).order('created_at', { ascending: false });
-      
+
       if (eventData) {
-        // Fetch photo counts for each event
         const eventsWithCounts = await Promise.all(eventData.map(async (event) => {
           const { count } = await supabase
             .from('photos')
@@ -49,279 +92,191 @@ export default function DashboardPage() {
       }
       setLoading(false);
     };
-    fetchEvents();
+    fetchData();
   }, [user, authLoading, router]);
 
-  const handleDelete = (id: string) => {
-    showConfirm('Delete this event and all its photos?', async () => {
-      await supabase.from('events').delete().eq('id', id);
-      setEvents((prev) => prev.filter((e) => e.id !== id));
-      closeConfirm();
-    });
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this event and all its photos?')) return;
+    await supabase.from('events').delete().eq('id', id);
+    setEvents((prev) => prev.filter((e) => e.id !== id));
   };
 
-  const downloadPrintablePDF = async (event: Event) => {
-    const { default: jsPDF } = await import('jspdf');
-    const { default: html2canvas } = await import('html2canvas');
-
-    const uploadUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`;
-    
-    // Create a temporary container for the PDF content
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.top = '-9999px';
-    document.body.appendChild(container);
-
-    // Render the Tabletop Sign Template
-    const root = createRoot(container);
-    
-    const TabletopTemplate = () => (
-      <div id="tabletop-sign" style={{
-        width: '1122px', // A4 Landscape at 96 DPI
-        height: '794px',
-        background: '#09090b',
-        color: '#f4f4f5',
-        display: 'flex',
-        padding: '0',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        overflow: 'hidden',
-        position: 'relative'
-      }}>
-        {/* Background Ambient Glows */}
-        <div style={{position:'absolute', top:'-100px', left:'-100px', width:'400px', height:'400px', background:'radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%)', filter:'blur(50px)'}}></div>
-        <div style={{position:'absolute', bottom:'-100px', right:'-100px', width:'500px', height:'500px', background:'radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%)', filter:'blur(60px)'}}></div>
-
-        {/* Vertical Center Fold Line (Visual indicator for host) */}
-        <div style={{position:'absolute', left:'50%', top:'10%', bottom:'10%', width:'1px', background:'rgba(255,255,255,0.05)', borderLeft:'1px dashed rgba(255,255,255,0.2)'}}></div>
-        
-        {/* Left Side - Instructions (Back of the stand) */}
-        <div style={{flex:1, display:'flex', flexDirection:'column', justifyContent:'center', padding:'60px', borderRight:'1px solid rgba(255,255,255,0.03)'}}>
-           <div style={{display:'inline-flex', padding:'8px 16px', borderRadius:'100px', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', fontSize:'12px', fontWeight:'700', color:'#a1a1aa', marginBottom:'24px', alignSelf:'flex-start'}}>
-             STEP-BY-STEP GUIDE
-           </div>
-           <h2 style={{fontSize:'36px', fontWeight:'800', marginBottom:'40px', background:'linear-gradient(135deg, #fff 0%, #a1a1aa 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent'}}>Capture every angle 📸</h2>
-           <div style={{display:'flex', flexDirection:'column', gap:'32px'}}>
-             {[
-               { i: '1', t: 'Scan', d: 'Point your camera at the QR code on the front.' },
-               { i: '2', t: 'Upload', d: 'Select your favorite photos or videos.' },
-               { i: '3', t: 'See it live', d: 'Watch as your moments hit the big screen!' }
-             ].map((step) => (
-               <div key={step.i} style={{display:'flex', gap:'20px', alignItems:'flex-start'}}>
-                 <div style={{width:'40px', height:'40px', borderRadius:'12px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px', fontWeight:'800', color:'#9333ea', flexShrink:0}}>{step.i}</div>
-                 <div>
-                   <h4 style={{fontSize:'18px', fontWeight:'700', marginBottom:'4px', color:'#fff'}}>{step.t}</h4>
-                   <p style={{fontSize:'14px', color:'#a1a1aa', lineHeight:'1.5'}}>{step.d}</p>
-                 </div>
-               </div>
-             ))}
-           </div>
-           <div style={{marginTop:'auto', fontSize:'12px', color:'#71717a'}}>
-             No apps to download. Pure magic. <span style={{color:'#9333ea', marginLeft:'8px'}}>memento.events</span>
-           </div>
-        </div>
-
-        {/* Right Side - Call to Action (Front of the stand) */}
-        <div style={{flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'60px', textAlign:'center'}}>
-           <div style={{width:'100%', maxWidth:'400px'}}>
-             <div style={{marginBottom:'24px'}}>
-               <span style={{fontSize:'12px', fontWeight:'700', letterSpacing:'2px', color:'#9333ea', textTransform:'uppercase'}}>Welcome to</span>
-               <h1 style={{fontSize:'48px', fontWeight:'800', marginTop:'8px', marginBottom:'40px', wordBreak:'break-word'}}>{event.name}</h1>
-             </div>
-             
-             {/* QR Code Container */}
-             <div style={{
-               background: '#fff',
-               padding: '24px',
-               borderRadius: '32px',
-               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-               display: 'inline-block',
-               marginBottom: '32px',
-               position: 'relative'
-             }}>
-               <QRCodeSVG value={uploadUrl} size={240} level="H" />
-             </div>
-
-             <div style={{fontSize:'20px', fontWeight:'700', color:'#fff', marginBottom:'12px'}}>Scan to Upload</div>
-             <div style={{fontSize:'14px', fontFamily:'monospace', color:'#71717a', background:'rgba(255,255,255,0.03)', padding:'8px 16px', borderRadius:'100px', display:'inline-block'}}>
-               {uploadUrl.replace(/https?:\/\//, '')}
-             </div>
-           </div>
-        </div>
-      </div>
-    );
-
-    // Wait a moment for the content to render
-    setTimeout(async () => {
-      try {
-        const element = document.getElementById('tabletop-sign');
-        if (!element) throw new Error('Template not found');
-        
-        const canvas = await html2canvas(element, { 
-          scale: 3, // Higher resolution
-          useCORS: true,
-          backgroundColor: '#09090b'
-        });
-        
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('l', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`${event.slug}-tabletop-sign.pdf`);
-      } catch (err) {
-        console.error('PDF Generation failed:', err);
-        alert('Failed to generate PDF. Check console for details.');
-      } finally {
-        root.unmount();
-        document.body.removeChild(container);
-      }
-    }, 1000);
+  const copyUrl = (slug: string) => {
+    const url = `${window.location.origin}/upload/${slug}`;
+    navigator.clipboard.writeText(url);
+    setCopied(slug);
+    setTimeout(() => setCopied(''), 2000);
   };
 
-  const updateSlug = async (eventId: string, newSlug: string) => {
-    if (!newSlug) return;
-    
-    try {
-      const { error } = await supabase
-        .from('events')
-        .update({ slug: newSlug })
-        .eq('id', eventId);
-      
-      if (error) throw error;
-      
-      // Refresh events
-      const { data: eventData } = await supabase.from('events').select('*')
-        .eq('owner_id', user!.id).order('created_at', { ascending: false });
-      
-      if (eventData) {
-        const eventsWithCounts = await Promise.all(eventData.map(async (event) => {
-          const { count } = await supabase
-            .from('photos')
-            .select('*', { count: 'exact', head: true })
-            .eq('event_id', event.id);
-          return { ...event, photo_count: count || 0 };
-        }));
-        setEvents(eventsWithCounts);
-      }
-    } catch (error) {
-      alert('Failed to update slug. Please try again.');
-    }
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
   };
+
+  const currentPlan = profile?.plan || 'starter';
+  const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
 
   if (authLoading || loading) {
     return (
-      <div className="nm-page flex items-center justify-center">
-        <div className="nm-circle w-14 h-14">
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-        </div>
+      <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+        <div style={{ width: 40, height: 40, border: '3px solid rgba(245,158,11,0.2)', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
-    <div className="nm-page px-4 py-12 pb-40">
-      {/* Confirm Dialog */}
-      {confirmDialog.open && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center px-4" style={{background:'rgba(14,18,40,0.7)', backdropFilter:'blur(4px)'}}>
-          <div className="nm-card p-8 max-w-md w-full text-center">
-            <div className="text-3xl mb-4">⚠️</div>
-            <p className="text-sm mb-6" style={{color:'var(--text1)'}}>{confirmDialog.message}</p>
-            <div className="flex gap-3">
-              <button onClick={closeConfirm} className="nm-btn flex-1 py-3 text-sm">Cancel</button>
-              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-3 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
-            </div>
-          </div>
+    <div className="lp" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
+      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+      <div className="grain" />
+
+      {/* Nav */}
+      <nav className="lp-nav scrolled">
+        <Link href="/"><AnimatedLogo width={180} height={60} /></Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>
+            {profile?.full_name || user?.email}
+          </span>
+          <button onClick={handleSignOut} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text2)', fontSize: '0.8rem', cursor: 'pointer', backdropFilter: 'blur(12px)' }}>
+            <LogOut size={14} /> Sign Out
+          </button>
         </div>
-      )}
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="nm-card p-8 mb-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <div className="nm-badge mb-3 text-[10px]">● Host Dashboard</div>
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>My Events</h1>
-                <span className="nm-badge text-[10px]">{plan}</span>
+      </nav>
+
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 1.5rem 0' }}>
+
+        {/* Welcome + Plan Card */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+
+          {/* Welcome */}
+          <div className="gcard" style={{ padding: '2rem' }}>
+            <div className="gcard-border" />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #fbbf24, #f472b6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>
+                  {(profile?.full_name || 'U').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text1)' }}>
+                    Welcome back, {(profile?.full_name || 'there').split(' ')[0]}!
+                  </h1>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>{profile?.email || user?.email}</p>
+                </div>
               </div>
-              <p className="text-sm" style={{color:'var(--text2)'}}>{events.length} event{events.length !== 1 ? 's' : ''}</p>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                <div style={{ textAlign: 'center', padding: '0.75rem 1.5rem', borderRadius: '12px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.12)' }}>
+                  <span style={{ display: 'block', fontSize: '1.5rem', fontWeight: 700, color: '#f59e0b' }}>{events.length}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>Events</span>
+                </div>
+                <div style={{ textAlign: 'center', padding: '0.75rem 1.5rem', borderRadius: '12px', background: 'rgba(244,114,182,0.06)', border: '1px solid rgba(244,114,182,0.12)' }}>
+                  <span style={{ display: 'block', fontSize: '1.5rem', fontWeight: 700, color: '#f472b6' }}>{events.reduce((sum, e) => sum + (e.photo_count || 0), 0)}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>Photos</span>
+                </div>
+              </div>
             </div>
-            <Link href="/create" className="nm-btn nm-btn-accent px-5 py-3 text-sm font-bold">✨ Create New</Link>
+          </div>
+
+          {/* Plan Card */}
+          <div className="gcard" style={{ padding: '2rem' }}>
+            <div className="gcard-border" />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Current Plan</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>{planInfo.emoji}</span>
+                    <span style={{ fontSize: '1.3rem', fontWeight: 700, color: planInfo.color }}>{planInfo.name}</span>
+                  </div>
+                </div>
+                <span style={{ padding: '0.3rem 0.8rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 600, background: profile?.payment_status === 'paid' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: profile?.payment_status === 'paid' ? '#22c55e' : '#f59e0b', border: `1px solid ${profile?.payment_status === 'paid' ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
+                  {profile?.payment_status === 'paid' ? 'Active' : 'Pending'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                {planInfo.features.slice(0, 4).map((f, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text2)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={planInfo.color} strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
+                    {f}
+                  </div>
+                ))}
+              </div>
+              {currentPlan !== 'whitelabel' && (
+                <Link href="/#pricing" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '1rem', padding: '0.5rem 1rem', borderRadius: '10px', background: `${planInfo.color}12`, color: planInfo.color, fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', border: `1px solid ${planInfo.color}25` }}>
+                  Upgrade Plan
+                  <ExternalLink size={12} />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="mb-5">
-          <h2 className="text-lg font-semibold mb-1" style={{color:'var(--text1)'}}>Your walls</h2>
-          <p className="text-xs" style={{color:'var(--text2)'}}>Manage sharing links, downloads, and moderation.</p>
+        {/* Events Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text1)' }}>Your Events</h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>Manage your photo walls and sharing</p>
+          </div>
+          <Link href="/create" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.7rem 1.25rem', borderRadius: '14px', background: 'linear-gradient(135deg, #fbbf24, #f472b6)', color: '#0a0600', fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none', boxShadow: '0 4px 16px rgba(244,114,182,0.25)', transition: 'transform 0.2s' }}>
+            <Plus size={16} /> Create Event
+          </Link>
         </div>
 
+        {/* Events Grid */}
         {events.length === 0 ? (
-        <div className="nm-card p-12 text-center">
-            <div className="text-3xl mb-4">🎈</div>
-            <h2 className="text-xl font-bold mb-2" style={{color:'var(--text1)'}}>No Events Yet</h2>
-            <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Create your first photo wall and start collecting memories!</p>
-            <Link href="/create" className="nm-btn nm-btn-accent px-6 py-3 text-sm font-bold">Create Your First Wall</Link>
+          <div className="gcard" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+            <div className="gcard-border" />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🎈</span>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text1)', marginBottom: '0.5rem' }}>No Events Yet</h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text2)', marginBottom: '1.5rem' }}>Create your first photo wall and start collecting moments!</p>
+              <Link href="/create" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.75rem 1.5rem', borderRadius: '14px', background: 'linear-gradient(135deg, #fbbf24, #f472b6)', color: '#0a0600', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>
+                <Plus size={16} /> Create Your First Wall
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.25rem' }}>
             {events.map((event) => (
-              <div key={event.id} className="nm-card p-4 group">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="text-lg font-semibold transition-colors group-hover:text-[#f59e0b]" style={{color:'var(--text1)'}}>
-                      {event.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-[10px]" style={{color:'var(--text2)'}}>{new Date(event.created_at).toLocaleDateString()}</p>
-                      <span style={{color:'#4a4f6a'}}>•</span>
-                      <p className="text-[10px] font-semibold" style={{color:'#f59e0b'}}>📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</p>
-                      {event.plan_type && event.plan_type !== 'FREE' && (
-                        <>
-                          <span style={{color:'#4a4f6a'}}>•</span>
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{
-                            background: event.plan_type === 'PREMIUM' ? 'rgba(168,85,247,0.1)' : 'rgba(245,158,11,0.1)',
-                            color: event.plan_type === 'PREMIUM' ? '#a855f7' : '#f59e0b',
-                            border: `1px solid ${event.plan_type === 'PREMIUM' ? 'rgba(168,85,247,0.2)' : 'rgba(245,158,11,0.2)'}`
-                          }}>
-                            {event.plan_type.toUpperCase()}
-                          </span>
-                        </>
-                      )}
+              <div key={event.id} className="gcard" style={{ padding: '1.5rem', transition: 'transform 0.3s' }}>
+                <div className="gcard-border" />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <div>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text1)', marginBottom: '0.25rem' }}>{event.name}</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text2)' }}>
+                        <span>{new Date(event.created_at).toLocaleDateString()}</span>
+                        <span>•</span>
+                        <span style={{ color: '#f59e0b', fontWeight: 600 }}>📸 {event.photo_count || 0}</span>
+                      </div>
                     </div>
+                    <button onClick={() => handleDelete(event.id)} style={{ width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(200,210,230,0.4)', background: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text3)' }}>
+                      <Trash2 size={14} />
+                    </button>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Link href={`/dashboard/edit/${event.id}`} className="nm-circle w-8 h-8 text-sm">⚙️</Link>
-                    <button onClick={() => handleDelete(event.id)} className="nm-circle w-8 h-8 text-sm">🗑️</button>
-                  </div>
-                </div>
-                <div className="flex gap-2 flex-wrap mb-3">
-                  <Link href={`/wall/${event.slug}`} className="nm-btn flex-1 text-center text-xs py-2 px-3" style={{color:'#f59e0b'}}>🖼️ Wall</Link>
-                  <Link href={`/upload/${event.slug}`} className="nm-btn flex-1 text-center text-xs py-2 px-3" style={{color:'#f472b6'}}>📱 Upload</Link>
-                  <Link href={`/moderate/${event.slug}`} className="nm-btn flex-1 text-center text-xs py-2 px-3" style={{color:'#a78bfa'}}>🛡️ Moderate</Link>
-                </div>
 
-                {/* Sharing Options */}
-                <div className="nm-inset p-3">
-                  <p className="text-[10px] font-semibold mb-2" style={{color:'var(--text2)'}}>Sharing Options</p>
-                  <div className="flex gap-2 flex-wrap mb-2">
-                    <button onClick={() => downloadPrintablePDF(event)} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#4ade80'}}>📄 PDF</button>
-                    <button onClick={() => { const s = prompt('New slug:', event.slug); if (s && s !== event.slug) updateSlug(event.id, s); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#60a5fa'}}>✏️ Slug</button>
-                    <button onClick={() => { const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/upload/${event.slug}`; navigator.clipboard.writeText(url); alert('Copied!'); }} className="nm-btn flex-1 text-[10px] py-1.5 px-2" style={{color:'#a78bfa'}}>📋 Copy</button>
-                  </div>
-                  {(!event.plan_type || event.plan_type === 'FREE' || event.plan_type === 'STARTER') && (
-                    <Link href={`/pricing?eventId=${event.id}`} className="nm-btn w-full text-center text-[10px] py-2 font-bold mt-3" style={{
-                      background: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(244,114,182,0.15))',
-                      color: '#f59e0b',
-                      border: '1px solid rgba(245,158,11,0.3)'
-                    }}>
-                      ✨ Upgrade to Standard
+                  {/* Action buttons */}
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <Link href={`/wall/${event.slug}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0.55rem', borderRadius: '10px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', color: '#f59e0b', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}>
+                      <Layout size={13} /> Wall
                     </Link>
-                  )}
-                  {event.custom_domain && <p className="text-[10px] mb-1" style={{color:'var(--text2)'}}><span className="font-medium">Domain:</span> {event.custom_domain}</p>}
-                  <p className="text-[10px] font-mono break-all" style={{color:'#4a4f6a'}}>
-                    {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
-                  </p>
+                    <Link href={`/upload/${event.slug}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0.55rem', borderRadius: '10px', background: 'rgba(244,114,182,0.06)', border: '1px solid rgba(244,114,182,0.15)', color: '#f472b6', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}>
+                      <Camera size={13} /> Upload
+                    </Link>
+                    <Link href={`/moderate/${event.slug}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0.55rem', borderRadius: '10px', background: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.15)', color: '#a855f7', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}>
+                      <Shield size={13} /> Mod
+                    </Link>
+                  </div>
+
+                  {/* Copy link */}
+                  <button onClick={() => copyUrl(event.slug)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.85rem', borderRadius: '10px', background: 'rgba(241,245,249,0.5)', border: '1px solid rgba(200,210,230,0.3)', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text2)' }}>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
+                    </span>
+                    <span style={{ flexShrink: 0, marginLeft: '0.5rem', color: copied === event.slug ? '#22c55e' : 'var(--text3)' }}>
+                      {copied === event.slug ? '✓ Copied' : <Copy size={13} />}
+                    </span>
+                  </button>
                 </div>
               </div>
             ))}
@@ -331,4 +286,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

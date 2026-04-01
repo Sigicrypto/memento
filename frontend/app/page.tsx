@@ -4,7 +4,11 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import Link from 'next/link';
+
+import { useAuth } from '@/hooks/useAuth';
 
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -878,9 +882,11 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
 }
 
-
-
 export default function LandingPage() {
+
+  const { user, loading: authLoading, signOut } = useAuth();
+
+  const router = useRouter();
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -897,6 +903,10 @@ export default function LandingPage() {
   const openAuth = (plan: 'starter' | 'standard' | 'premium' | 'whitelabel') => {
     setSelectedPlan(plan);
     setIsAuthOpen(true);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
 
@@ -1049,13 +1059,22 @@ export default function LandingPage() {
 
           </div>
 
-          <button onClick={() => openAuth('starter')} className="nav-btn">
-
-            Get Started
-
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-
-          </button>
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Link href="/dashboard" className="nav-btn">
+                Dashboard
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              </Link>
+              <button onClick={handleSignOut} className="nav-link-btn" style={{ fontSize: '0.85rem', color: 'var(--text2)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => openAuth('starter')} className="nav-btn">
+              Get Started
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </button>
+          )}
 
         </nav>
 

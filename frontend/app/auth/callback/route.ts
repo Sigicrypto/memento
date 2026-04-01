@@ -7,8 +7,6 @@ export async function GET(request: NextRequest) {
   const plan = searchParams.get('plan') || 'starter';
   const origin = new URL(request.url).origin;
 
-  console.log('Auth callback:', { code: !!code, plan, url: request.url });
-
   if (code) {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,7 +16,6 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      console.log('OAuth success:', { userId: data.user.id, plan });
       // Upsert profile with plan from OAuth redirect
       await supabase.from('profiles').upsert({
         id: data.user.id,
@@ -26,8 +23,6 @@ export async function GET(request: NextRequest) {
         email: data.user.email || '',
         plan: plan,
       });
-    } else {
-      console.error('OAuth error:', error);
     }
   }
 

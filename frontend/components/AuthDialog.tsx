@@ -141,7 +141,6 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
   const handleOAuth = async (provider: 'google' | 'github') => {
     setError('');
     setLoading(true);
-    console.log('OAuth attempt:', { provider, plan });
     try {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
