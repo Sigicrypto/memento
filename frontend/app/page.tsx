@@ -735,10 +735,7 @@ export default function LandingPage() {
             {[
               { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
               { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
-              { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' },
-              { title: 'Corporate Gala', src: 'https://picsum.photos/400/300?random=4', count: '234 photos' },
-              { title: 'Graduation Party', src: 'https://picsum.photos/400/300?random=5', count: '145 photos' },
-              { title: 'Festival Weekend', src: 'https://picsum.photos/400/300?random=6', count: '512 photos' }
+              { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' }
             ].map((item, i) => (
               <div key={i} className="gallery-item" style={{ animationDelay: `${i * 0.1}s` }}>
                 <div className="gallery-img-wrapper">
@@ -948,83 +945,6 @@ export default function LandingPage() {
                   <div className="mt-5 pt-4 border-t border-slate-200">
                     <p className="text-sm text-slate-500 italic">💬 {p.tagline}</p>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Feature Comparison Table */}
-        <div className="comparison-table-wrap max-w-[1200px] w-full mx-auto reveal px-4">
-          <h3 className="text-3xl font-bold text-center mb-20 text-slate-800">Compare features at a glance</h3>
-          <div className="gcard w-full overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/50 border-b border-slate-200">
-                    <th className="p-6 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">Feature</th>
-                    <th className="p-6 text-center text-amber-500 font-bold text-lg">Starter</th>
-                    <th className="p-6 text-center text-blue-500 font-bold text-lg">Standard</th>
-                    <th className="p-6 text-center text-purple-500 font-bold text-lg">Premium</th>
-                    <th className="p-6 text-center text-slate-800 font-bold text-lg">White Label</th>
-                  </tr>
-                </thead>
-                <tbody className="text-slate-700">
-                  {[
-                    { f: 'Collect Photos', v: ['✅', '✅', '✅', '✅'] },
-                    { f: 'Live Wall', v: ['✅', '✅', '✅', '✅'] },
-                    { f: 'Auto Album', v: ['❌', '✅', '✅', '✅'] },
-                    { f: 'Music Slideshow', v: ['❌', '❌', '✅', '✅'] },
-                    { f: 'Custom Domain', v: ['❌', '❌', '❌', '✅'] },
-                    { f: 'Storage', v: ['1 Mo', '3 Mo', '6 Mo', '6 Mo'] },
-                  ].map((row, i) => (
-                    <tr key={i} className="border-b border-slate-200 hover:bg-slate-50/50 transition-colors">
-                      <td className="p-6 font-medium text-lg">{row.f}</td>
-                      {row.v.map((val, k) => (
-                        <td key={k} className="p-6 text-center text-lg">{val}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        {/* OPTIONAL BOOSTER ADD-ONS */}
-        <section id="extras" className="sec py-8 extras-section">
-          <h3 className="text-2xl font-bold mb-20 reveal text-center">
-            Optional Extras <span className="gradient-text"></span>
-          </h3>
-
-          <div className="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto reveal mt-16">
-            {[
-              {
-                title: 'Extra Storage',
-                price: `${Sym}${ExtraStoragePrice}`,
-                desc: 'Keep your photos live for more than 6 months.',
-              },
-              {
-                title: 'Social Media Live Feed',
-                price: `${Sym}${SocialFeedPrice}`,
-                desc: 'Stream photos directly to Instagram/TikTok during the event.',
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="gcard feat-card reveal w-full md:w-[calc(50%-1rem)] max-w-[500px]"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <div className="gcard-border" />
-                <div className="gcard-inner flex items-center justify-between gap-6 py-8 px-6">
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900 mb-1">
-                      {item.title}
-                    </h4>
-                    <p className="text-base text-slate-600">{item.desc}</p>
-                  </div>
-                  <span className="text-xl text-amber-500 font-bold whitespace-nowrap">
-                    {item.price}
-                  </span>
                 </div>
               </div>
             ))}
