@@ -101,11 +101,24 @@ function DemoUploadContent() {
     const validPhotos = files.filter(isAcceptedImage);
     const invalidFiles = files.filter(f => !isAcceptedImage(f));
     if (invalidFiles.length > 0) {
-      setError(`Invalid files: ${invalidFiles.map(f => f.name).join(', ')}`);
+      setError(`Invalid file type: only JPG, PNG, HEIC are accepted.`);
       setTimeout(() => setError(null), 5000);
       return;
     }
-    setUploadPhotos(prev => [...prev.slice(0, MAX_IMAGES - 1), ...validPhotos].slice(0, MAX_IMAGES));
+    setUploadPhotos(prev => {
+      const slotsLeft = MAX_IMAGES - prev.length;
+      if (slotsLeft <= 0) {
+        setError(`Maximum ${MAX_IMAGES} photos allowed.`);
+        setTimeout(() => setError(null), 4000);
+        return prev;
+      }
+      const toAdd = validPhotos.slice(0, slotsLeft);
+      if (validPhotos.length > slotsLeft) {
+        setError(`Only ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left — added ${toAdd.length} of ${validPhotos.length} photos.`);
+        setTimeout(() => setError(null), 4000);
+      }
+      return [...prev, ...toAdd];
+    });
     setError(null);
   };
 
@@ -797,7 +810,8 @@ function DemoUploadContent() {
               )}
 
               {/* Drop zone */}
-              {uploadPhotos.length < MAX_IMAGES && (
+              {/* Drop zone — hidden when at limit */}
+              {uploadPhotos.length < MAX_IMAGES ? (
                 <div
                   className={`upload-drop-zone ${photoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
                   onClick={() => !uploading && photoInputRef.current?.click()}
@@ -812,9 +826,26 @@ function DemoUploadContent() {
                     {uploadPhotos.length === 0 ? '🖼️' : '➕'}
                   </div>
                   <p className="drop-zone-text">
-                    {uploadPhotos.length === 0 ? 'Choose or drop photos' : 'Add more photos'}
+                    {uploadPhotos.length === 0 ? 'Choose or drop photos' : `Add more (${MAX_IMAGES - uploadPhotos.length} slot${MAX_IMAGES - uploadPhotos.length !== 1 ? 's' : ''} left)`}
                   </p>
                   <p className="drop-zone-hint">JPG, PNG, HEIC — up to {MAX_IMAGES} total</p>
+                </div>
+              ) : (
+                <div style={{
+                  width: '100%',
+                  padding: '0.85rem 1rem',
+                  borderRadius: 14,
+                  background: 'rgba(34,197,94,0.08)',
+                  border: '1.5px solid rgba(34,197,94,0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  color: '#16a34a',
+                }}>
+                  ✓ Maximum {MAX_IMAGES} photos selected
                 </div>
               )}
             </div>
@@ -859,7 +890,7 @@ function DemoUploadContent() {
                 </div>
               )}
 
-              {uploadVideos.length < MAX_VIDEOS && (
+              {uploadVideos.length < MAX_VIDEOS ? (
                 <div
                   className={`upload-drop-zone ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
                   onClick={() => !uploading && videoInputRef.current?.click()}
@@ -874,9 +905,79 @@ function DemoUploadContent() {
                   <p className="drop-zone-text">Choose or drop a video</p>
                   <p className="drop-zone-hint">MP4 — 1 video maximum</p>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
+
+          {/* ── Live preview card — shows name + caption as they'll appear on the wall ── */}
+          {(uploaderName.trim() || comment.trim() || totalFiles > 0) && !uploading && (
+            <div className="upload-section gcard reveal visible" style={{ animationDelay: '0.05s' }}>
+              <div className="gcard-border" />
+              <div className="gcard-inner" style={{ padding: '1.1rem 1.4rem' }}>
+                <p className="upload-label" style={{ marginBottom: '0.65rem' }}>Preview on wall</p>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '0.75rem',
+                }}>
+                  {/* Avatar circle */}
+                  <div style={{
+                    flexShrink: 0,
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #f59e0b, #f472b6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    letterSpacing: '-0.02em',
+                  }}>
+                    {uploaderName.trim() ? uploaderName.trim().charAt(0).toUpperCase() : '?'}
+                  </div>
+                  {/* Name + caption */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
+                      color: 'var(--text1, #0f172a)',
+                      marginBottom: '2px',
+                      lineHeight: 1.3,
+                    }}>
+                      {uploaderName.trim() || <span style={{ color: 'var(--text3)', fontStyle: 'italic', fontWeight: 400 }}>Your name</span>}
+                    </p>
+                    <p style={{
+                      fontSize: '0.82rem',
+                      color: 'var(--text2, #334155)',
+                      lineHeight: 1.45,
+                      wordBreak: 'break-word',
+                    }}>
+                      {comment.trim() || (
+                        <span style={{ color: 'var(--text3)', fontStyle: 'italic' }}>
+                          {totalFiles > 0 ? (uploadVideos.length > 0 ? '🎥 Live Video!' : '📸 Live Photo!') : 'No caption'}
+                        </span>
+                      )}
+                    </p>
+                    {totalFiles > 0 && (
+                      <p style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text3)',
+                        marginTop: '5px',
+                        fontWeight: 600,
+                      }}>
+                        {uploadPhotos.length > 0 && `${uploadPhotos.length} photo${uploadPhotos.length !== 1 ? 's' : ''}`}
+                        {uploadPhotos.length > 0 && uploadVideos.length > 0 && ' · '}
+                        {uploadVideos.length > 0 && '1 video'}
+                        {' '}· ready to share
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── Divider ── */}
           {totalFiles > 0 && !uploading && (
