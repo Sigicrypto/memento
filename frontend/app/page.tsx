@@ -81,38 +81,105 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
     window.addEventListener('storage', handleStorage);
 
-    const channel = supabase.channel(`demo-wall-${demoId}`);
-
-    channel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
-      const data = payload.payload as Partial<DemoMedia>;
-      if (!data.url || !data.type) return;
-
-      const mediaUrl = data.url;
-      const mediaType: DemoMedia['type'] = data.type === 'video' ? 'video' : 'image';
-
+    const addPhoto = (newPhoto: DemoMedia) => {
       setPhotos(prev => {
-        const newPhoto: DemoMedia = {
-          id: String(data.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
-          url: mediaUrl,
-          type: mediaType,
-          caption: data.caption || '',
-          uploader: data.uploader || 'Demo Guest',
-          createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
-        };
         const updatedPhotos = mergeDemoMedia(prev, newPhoto);
         writeDemoPhotos(demoId, updatedPhotos);
         return updatedPhotos;
       });
-    });
+    };
 
-    channel.subscribe((status) => {
-      setIsConnected(status === 'SUBSCRIBED');
+    // Primary: postgres_changes on demo_uploads (reliable cross-device)
+    console.log('[DEMO WALL] Setting up postgres_changes for demo_id:', demoId);
+    const dbChannel = supabase
+      .channel(`demo-db-${demoId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'demo_uploads', filter: `demo_id=eq.${demoId}` },
+        (payload) => {
+          console.log('[DEMO WALL] Received postgres_changes payload:', payload);
+          const row = payload.new as { id: string; url: string; type: string; caption: string; uploader: string; created_at: string };
+          if (!row.url || !row.type) {
+            console.log('[DEMO WALL] Invalid payload - missing url or type');
+            return;
+          }
+          console.log('[DEMO WALL] Adding photo to wall:', row);
+          addPhoto({
+            id: row.id,
+            url: row.url,
+            type: row.type === 'video' ? 'video' : 'image',
+            caption: row.caption || '',
+            uploader: row.uploader || 'Demo Guest',
+            createdAt: new Date(row.created_at).getTime(),
+          });
+        }
+      )
+      .subscribe((status) => {
+        console.log('[DEMO WALL] postgres_changes subscription status:', status);
+        setIsConnected(status === 'SUBSCRIBED');
+      });
+
+    // Fallback: broadcast (same-browser backup)
+    const bcastChannel = supabase.channel(`demo-wall-${demoId}`);
+    bcastChannel.on('broadcast', { event: 'NEW_UPLOAD' }, (payload) => {
+      const data = payload.payload as Partial<DemoMedia>;
+      if (!data.url || !data.type) return;
+      addPhoto({
+        id: String(data.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+        url: data.url,
+        type: data.type === 'video' ? 'video' : 'image',
+        caption: data.caption || '',
+        uploader: data.uploader || 'Demo Guest',
+        createdAt: typeof data.createdAt === 'number' ? data.createdAt : Date.now(),
+      });
     });
+    bcastChannel.subscribe();
 
     return () => {
       window.removeEventListener('storage', handleStorage);
-      supabase.removeChannel(channel);
+      supabase.removeChannel(dbChannel);
+      supabase.removeChannel(bcastChannel);
     };
+  }, [demoId, isOpen]);
+
+  // Polling fallback: re-fetch demo_uploads every 2s in case realtime is delayed
+  useEffect(() => {
+    if (!demoId || !isOpen) return;
+    console.log('[DEMO WALL] Starting polling for demo_id:', demoId);
+    const poll = async () => {
+      console.log('[DEMO WALL] Polling demo_uploads for demo_id:', demoId);
+      const { data, error } = await supabase
+        .from('demo_uploads')
+        .select('*')
+        .eq('demo_id', demoId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      console.log('[DEMO WALL] Poll result:', { data, error });
+      if (!data?.length) {
+        console.log('[DEMO WALL] No data found in poll');
+        return;
+      }
+      console.log('[DEMO WALL] Found', data.length, 'rows in poll');
+      setPhotos(prev => {
+        let updated = [...prev];
+        for (const row of data) {
+          const incoming: DemoMedia = {
+            id: row.id,
+            url: row.url,
+            type: row.type === 'video' ? 'video' : 'image',
+            caption: row.caption || '',
+            uploader: row.uploader || 'Demo Guest',
+            createdAt: new Date(row.created_at).getTime(),
+          };
+          updated = mergeDemoMedia(updated, incoming);
+        }
+        writeDemoPhotos(demoId, updated);
+        return updated;
+      });
+    };
+    poll(); // immediate on mount
+    const interval = setInterval(poll, 2000); // poll every 2s
+    return () => clearInterval(interval);
   }, [demoId, isOpen]);
 
   useEffect(() => {
@@ -132,7 +199,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
   useEffect(() => {
     if (demoId) {
-      setUploadUrl(`${window.location.origin}/demo?id=${demoId}`);
+      setUploadUrl(`${window.location.origin}/demo/upload?id=${demoId}`);
     }
   }, [demoId]);
 
