@@ -1681,6 +1681,13 @@
   cursor: auto !important;
 }
 
+.demo-modal-container.fullscreen *,
+:-webkit-full-screen *,
+:-moz-full-screen *,
+:fullscreen * {
+  cursor: auto !important;
+}
+
 @keyframes modalSlideUp {
   from {
     opacity: 0;
