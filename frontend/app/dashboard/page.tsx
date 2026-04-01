@@ -5,8 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, Plus, Camera, Layout, Shield, Copy, ExternalLink, Trash2, Settings } from 'lucide-react';
-import AnimatedLogo from '@/components/AnimatedLogo';
+import { Plus, Camera, Layout, Shield, Copy, ExternalLink, Trash2, Settings } from 'lucide-react';
 import '../landing.css';
 
 interface Profile {
@@ -56,7 +55,7 @@ const PLAN_INFO: Record<string, { name: string; emoji: string; color: string; fe
 };
 
 export default function DashboardPage() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
@@ -108,11 +107,6 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(''), 2000);
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/');
-  };
-
   const currentPlan = profile?.plan || 'starter';
   const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
 
@@ -130,19 +124,6 @@ export default function DashboardPage() {
     <div className="lp" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
       <div className="grain" />
-
-      {/* Nav */}
-      <nav className="lp-nav scrolled">
-        <Link href="/"><AnimatedLogo width={180} height={60} /></Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>
-            {profile?.full_name || user?.email}
-          </span>
-          <button onClick={handleSignOut} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0.5rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text2)', fontSize: '0.8rem', cursor: 'pointer', backdropFilter: 'blur(12px)' }}>
-            <LogOut size={14} /> Sign Out
-          </button>
-        </div>
-      </nav>
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 1.5rem 0' }}>
 

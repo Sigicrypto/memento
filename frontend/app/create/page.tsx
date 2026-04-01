@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { useRef } from 'react';
 import Link from 'next/link';
-import ThemedNav from '@/components/ThemedNav';
 import '../landing.css';
 
 function generateSlug(name: string): string {
@@ -77,7 +76,6 @@ export default function CreateEventPage() {
       <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
         <div className="grain" />
-        <ThemedNav />
         <div style={{ width: 40, height: 40, border: '3px solid rgba(245,158,11,0.2)', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -90,7 +88,6 @@ export default function CreateEventPage() {
     <div className="lp" style={{ minHeight: '100vh', paddingTop: '140px' }}>
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
       <div className="grain" />
-      <ThemedNav />
       <div className="flex items-center justify-center px-4 py-12 pb-40">
         <div className="w-full max-w-md">
           <div className="nm-card p-8 text-center">
@@ -138,7 +135,6 @@ export default function CreateEventPage() {
     <div className="lp" style={{ minHeight: '100vh', paddingTop: '140px' }}>
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
       <div className="grain" />
-      <ThemedNav />
       <div className="flex items-center justify-center px-4 py-12 pb-40">
       <div className="w-full max-w-md">
         <div className="nm-card p-8">
