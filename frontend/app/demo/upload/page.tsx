@@ -288,7 +288,11 @@ function UploadContent() {
   }
 
   return (
-    <div className="lp min-h-screen flex flex-col items-center py-20 px-4">
+    <div className="lp min-h-screen flex flex-col items-center py-12 px-4">
+      {/* Debug indicator - remove after fixing */}
+      <div className="fixed top-4 right-4 z-50 bg-blue-500 text-white px-2 py-1 text-xs font-bold rounded">
+        UPLOAD DEBUG v2.0
+      </div>
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
       <div className="grain" />
 
