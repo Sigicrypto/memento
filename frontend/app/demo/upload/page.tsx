@@ -181,14 +181,16 @@ function UploadContent() {
             demo_id: demoId,
             url: publicUrl,
             type,
-            caption,
+            caption: caption || 'Demo Photo',
             uploader: 'Demo Guest',
           });
           if (insertError) {
             console.error('[DEMO UPLOAD] Database insert failed:', insertError);
-            throw new Error(`Database insert failed: ${insertError.message}`);
+            // Don't throw error - continue with fallback so upload still works
+            console.log('[DEMO UPLOAD] Continuing with fallback methods...');
+          } else {
+            console.log('[DEMO UPLOAD] Database insert successful');
           }
-          console.log('[DEMO UPLOAD] Database insert successful');
 
           const payload: DemoMedia = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
