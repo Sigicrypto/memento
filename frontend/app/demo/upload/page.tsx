@@ -2,8 +2,10 @@
 
 import { useState, useRef, Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
+import AnimatedLogo from '@/components/AnimatedLogo';
 import '@/app/landing.css';
 
 const MAX_IMAGES = 5;
@@ -72,11 +74,13 @@ function DemoUploadContent() {
   const [uploadVideos, setUploadVideos] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [lastUrl, setLastUrl] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [status, setStatus] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [totalUploaded, setTotalUploaded] = useState(0);
+  const [uploaderName, setUploaderName] = useState('');
+  const [comment, setComment] = useState('');
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -138,7 +142,8 @@ function DemoUploadContent() {
     setUploading(true);
     setProgress(0);
     setError(null);
-    setStatus('Uploading files...');
+    setUploadSuccess(false);
+    setStatus('Uploading...');
     try {
       const totalFiles = uploadPhotos.length + uploadVideos.length;
       let uploaded = 0;
@@ -154,53 +159,43 @@ function DemoUploadContent() {
       for (const url of urls) {
         uploaded++;
         setProgress(Math.round((uploaded / totalFiles) * 100));
-        setStatus(`Uploaded ${uploaded}/${totalFiles} files...`);
-        await new Promise(r => setTimeout(r, 300));
+        setStatus(`Uploading ${uploaded}/${totalFiles}...`);
+        await new Promise(r => setTimeout(r, 200));
       }
       setStatus('Sending to wall...');
+      const uploader = uploaderName.trim() || 'Demo Guest';
       for (let i = 0; i < urls.length; i++) {
         const publicUrl = urls[i];
         const type = i < uploadPhotos.length ? 'image' : 'video';
-        const caption = type === 'video' ? '🎥 Live Video!' : '📸 Live Photo!';
-        
-        // Primary: insert into DB → triggers reliable postgres_changes on wall
-        console.log('[DEMO UPLOAD] Inserting into demo_uploads:', { demo_id: demoId, url: publicUrl, type, caption });
+        const caption = comment.trim() || (type === 'video' ? '🎥 Live Video!' : '📸 Live Photo!');
         const { error: insertError } = await supabase.from('demo_uploads').insert({
           demo_id: demoId,
           url: publicUrl,
           type,
-          caption: caption || 'Demo Photo',
-          uploader: 'Demo Guest',
+          caption,
+          uploader,
         });
-        if (insertError) {
-          console.error('[DEMO UPLOAD] Database insert failed:', insertError);
-          console.log('[DEMO UPLOAD] Continuing with fallback methods...');
-        } else {
-          console.log('[DEMO UPLOAD] Database insert successful');
-        }
-
+        if (insertError) console.error('[DEMO UPLOAD] Database insert failed:', insertError);
         const payload: DemoMedia = {
           id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           url: publicUrl,
           type,
           caption,
-          uploader: 'Demo Guest',
+          uploader,
           createdAt: Date.now(),
         };
-
-        // Fallback: localStorage + broadcast (same-browser and backup path)
         upsertDemoPhoto(demoId, payload);
         await broadcastUpload(demoId, payload);
       }
-      setLastUrl(urls[0]);
-      setStatus('Upload complete!');
       setTotalUploaded(prev => prev + urls.length);
       setUploadPhotos([]);
       setUploadVideos([]);
-      // Reset input refs
+      setComment('');
+      setStatus('');
+      setUploadSuccess(true);
       if (photoInputRef.current) photoInputRef.current.value = '';
       if (videoInputRef.current) videoInputRef.current.value = '';
-      setTimeout(() => setStatus(''), 3000);
+      setTimeout(() => setUploadSuccess(false), 4000);
     } catch (err: any) {
       setError(err.message || 'Upload failed. Please try again.');
       setStatus('');
@@ -210,216 +205,193 @@ function DemoUploadContent() {
     }
   };
 
+  const totalFiles = uploadPhotos.length + uploadVideos.length;
+
   return (
-    <div className="lp min-h-screen flex flex-col items-center py-12 px-4">
+    <div className="lp min-h-screen pb-16">
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
       <div className="grain" />
 
-      {/* Connection badge */}
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-        <span className="hero-badge" style={{ gap: 8 }}>
-          <span className={`pulse-dot ${isConnected ? '' : 'opacity-40'}`}
-            style={{ background: isConnected ? '#4ade80' : '#f87171' }} />
+      {/* NAV */}
+      <nav className="lp-nav scrolled">
+        <Link href="/">
+          <AnimatedLogo width={150} height={50} />
+        </Link>
+        <span className="hero-badge" style={{ gap: 6 }}>
+          <span className={`pulse-dot`} style={{ background: isConnected ? '#4ade80' : '#f87171' }} />
           <span className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: isConnected ? '#16a34a' : '#dc2626' }}>
-            {isConnected ? 'Connected to Wall' : 'Connecting...'}
+            style={{ color: isConnected ? '#16a34a' : '#ef4444' }}>
+            {isConnected ? 'Live' : 'Offline'}
           </span>
           {totalUploaded > 0 && (
-            <span className="text-xs font-bold" style={{ color: 'var(--amber)' }}>· {totalUploaded} shared ✓</span>
+            <span className="text-xs font-bold" style={{ color: 'var(--amber)' }}>· {totalUploaded} sent ✓</span>
           )}
         </span>
-      </div>
+      </nav>
 
-      <div className="text-center mb-8 reveal visible">
-        <h1 className="hero-h1" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>Add to Wall</h1>
-        <p className="hero-sub" style={{ fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>
-          Share photos and videos to the live wall
-        </p>
-      </div>
-
-      {error && (
-        <div className="w-full max-w-md mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
-          <p className="text-red-400 text-sm text-center">{error}</p>
+      <div className="px-4 pt-28 flex flex-col items-center">
+        {/* Header */}
+        <div className="text-center mb-8 reveal visible" style={{ maxWidth: 480, width: '100%' }}>
+          <span className="kicker">Demo Wall</span>
+          <h1 className="hero-h1" style={{ fontSize: 'clamp(1.8rem, 6vw, 3rem)', marginBottom: '0.5rem' }}>Share the Moment</h1>
+          <p className="hero-sub" style={{ fontSize: '1rem' }}>Upload photos or a video to the live wall</p>
         </div>
-      )}
 
-      {status && !error && (
-        <div className="w-full max-w-md mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/30">
-          <p className="text-green-400 text-sm text-center">{status}</p>
+        {/* Success Banner */}
+        {uploadSuccess && (
+          <div className="w-full max-w-md mb-6 p-4 rounded-2xl text-center reveal visible"
+            style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(16,185,129,0.1))', border: '1px solid rgba(34,197,94,0.3)' }}>
+            <p className="text-2xl mb-1">🎉</p>
+            <p className="font-bold" style={{ color: '#22c55e' }}>Posted to the wall!</p>
+            <p className="text-sm" style={{ color: 'var(--text3)' }}>Your memories are now live</p>
+          </div>
+        )}
+
+        {/* Error Banner */}
+        {error && (
+          <div className="w-full max-w-md mb-6 p-4 rounded-2xl"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
+            <p className="text-sm text-center" style={{ color: '#ef4444' }}>{error}</p>
+          </div>
+        )}
+
+        <div className="w-full max-w-md space-y-4">
+
+          {/* Name & Comment */}
+          <div className="gcard">
+            <div className="gcard-border" />
+            <div className="gcard-inner p-5 space-y-4">
+              <div>
+                <label className="text-xs font-bold tracking-widest uppercase mb-2 block" style={{ color: 'var(--text3)' }}>Your Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Sarah"
+                  value={uploaderName}
+                  onChange={e => setUploaderName(e.target.value)}
+                  disabled={uploading}
+                  maxLength={40}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+                  style={{
+                    background: 'rgba(30,41,59,0.06)',
+                    border: '1.5px solid rgba(100,116,139,0.2)',
+                    color: 'var(--text1)',
+                  }}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold tracking-widest uppercase mb-2 block" style={{ color: 'var(--text3)' }}>Caption <span style={{ color: 'var(--text3)', fontWeight: 400 }}>(optional)</span></label>
+                <textarea
+                  placeholder="Write something about this moment..."
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  disabled={uploading}
+                  maxLength={120}
+                  rows={2}
+                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all resize-none"
+                  style={{
+                    background: 'rgba(30,41,59,0.06)',
+                    border: '1.5px solid rgba(100,116,139,0.2)',
+                    color: 'var(--text1)',
+                  }}
+                />
+                <p className="text-right text-xs mt-1" style={{ color: 'var(--text3)' }}>{comment.length}/120</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Photos */}
+          <div className="gcard">
+            <div className="gcard-border" />
+            <div className="gcard-inner p-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold" style={{ color: 'var(--text1)' }}>📷 Photos</p>
+                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{ background: uploadPhotos.length > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(100,116,139,0.1)', color: uploadPhotos.length > 0 ? '#22c55e' : 'var(--text3)' }}>
+                  {uploadPhotos.length}/{MAX_IMAGES}
+                </span>
+              </div>
+              <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={handlePhotoSelect} className="hidden" disabled={uploading} />
+              {uploadPhotos.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {uploadPhotos.map((photo, i) => (
+                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden group">
+                      <img src={URL.createObjectURL(photo)} className="w-full h-full object-cover" alt="" />
+                      {!uploading && (
+                        <button onClick={() => removePhoto(i)}
+                          className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ background: 'rgba(239,68,68,0.9)' }}>×</button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {uploadPhotos.length < MAX_IMAGES && (
+                <button onClick={() => photoInputRef.current?.click()} disabled={uploading}
+                  className="w-full py-3 rounded-xl text-sm font-semibold border-2 border-dashed transition-all"
+                  style={{ borderColor: 'rgba(100,116,139,0.3)', color: 'var(--text2)', background: 'transparent', opacity: uploading ? 0.5 : 1 }}>
+                  {uploadPhotos.length === 0 ? '+ Choose Photos' : '+ Add More'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Video */}
+          <div className="gcard">
+            <div className="gcard-border" />
+            <div className="gcard-inner p-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-bold" style={{ color: 'var(--text1)' }}>🎥 Video</p>
+                <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                  style={{ background: uploadVideos.length > 0 ? 'rgba(34,197,94,0.15)' : 'rgba(100,116,139,0.1)', color: uploadVideos.length > 0 ? '#22c55e' : 'var(--text3)' }}>
+                  {uploadVideos.length}/{MAX_VIDEOS}
+                </span>
+              </div>
+              <input ref={videoInputRef} type="file" accept="video/*" onChange={handleVideoSelect} className="hidden" disabled={uploading} />
+              {uploadVideos.length > 0 && (
+                <div className="relative aspect-video rounded-xl overflow-hidden mb-3">
+                  <video src={URL.createObjectURL(uploadVideos[0])} className="w-full h-full object-cover" muted />
+                  {!uploading && (
+                    <button onClick={removeVideo}
+                      className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white"
+                      style={{ background: 'rgba(239,68,68,0.9)' }}>×</button>
+                  )}
+                </div>
+              )}
+              {uploadVideos.length < MAX_VIDEOS && (
+                <button onClick={() => videoInputRef.current?.click()} disabled={uploading}
+                  className="w-full py-3 rounded-xl text-sm font-semibold border-2 border-dashed transition-all"
+                  style={{ borderColor: 'rgba(100,116,139,0.3)', color: 'var(--text2)', background: 'transparent', opacity: uploading ? 0.5 : 1 }}>
+                  + Choose Video
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Upload progress */}
           {uploading && (
-            <div className="mt-3">
-              <div className="w-full bg-green-500/20 rounded-full h-2">
-                <div className="bg-green-400 h-2 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="px-1">
+              <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--text3)' }}>
+                <span>{status}</span>
+                <span>{progress}%</span>
+              </div>
+              <div className="w-full rounded-full h-1.5" style={{ background: 'rgba(100,116,139,0.2)' }}>
+                <div className="h-1.5 rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)' }} />
               </div>
             </div>
           )}
-        </div>
-      )}
 
-      <div className="w-full max-w-md space-y-6">
-        {/* Photo Upload */}
-        <div className="gcard">
-          <div className="gcard-border" />
-          <div className="gcard-inner p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold" style={{ color: 'var(--text1)' }}>Photos</h3>
-              <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' }}>
-                {uploadPhotos.length}/{MAX_IMAGES}
-              </span>
-            </div>
-            {uploadPhotos.length === 0 ? (
-              <input
-                ref={photoInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handlePhotoSelect}
-                className="hidden"
-                disabled={uploading}
-              />
-            ) : (
-              <div className="space-y-2">
-                {uploadPhotos.map((photo, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl"
-                    style={{ background: 'rgba(30,41,59,0.04)' }}>
-                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
-                      <img src={URL.createObjectURL(photo)} className="w-full h-full object-cover" alt="" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: 'var(--text1)' }}>{photo.name}</p>
-                      <p className="text-xs" style={{ color: 'var(--text3)' }}>{(photo.size / 1024 / 1024).toFixed(1)} MB</p>
-                    </div>
-                    {!uploading && (
-                      <button onClick={() => removePhoto(i)}
-                        className="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white flex-shrink-0"
-                        style={{ background: '#ef4444' }}>×</button>
-                    )}
-                  </div>
-                ))}
-                {uploadPhotos.length < MAX_IMAGES && (
-                  <input
-                    ref={photoInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handlePhotoSelect}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                )}
-              </div>
-            )}
-            {(uploadPhotos.length < MAX_IMAGES) && (
-              <button
-                onClick={() => photoInputRef.current?.click()}
-                disabled={uploading}
-                className="w-full py-3 rounded-xl font-semibold transition-all duration-200 border-2"
-                style={{ 
-                  background: 'transparent', 
-                  borderColor: 'var(--text3)', 
-                  color: 'var(--text2)',
-                  opacity: uploading ? 0.5 : 1
-                }}
-              >
-                {uploadPhotos.length === 0 ? '📷 Choose Photos' : '+ Add More Photos'}
-              </button>
-            )}
-          </div>
-        </div>
+          {/* Submit Button */}
+          <button
+            onClick={handleUpload}
+            disabled={uploading || totalFiles === 0}
+            className="btn-glow w-full py-4 font-bold text-lg"
+            style={{ opacity: uploading || totalFiles === 0 ? 0.5 : 1 }}
+          >
+            {uploading ? `Uploading... ${progress}%` : `Share to Wall${totalFiles > 0 ? ` (${totalFiles} file${totalFiles !== 1 ? 's' : ''})` : ''}`}
+          </button>
 
-        {/* Video Upload */}
-        <div className="gcard">
-          <div className="gcard-border" />
-          <div className="gcard-inner p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold" style={{ color: 'var(--text1)' }}>Videos</h3>
-              <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#22c55e' }}>
-                {uploadVideos.length}/{MAX_VIDEOS}
-              </span>
-            </div>
-            {uploadVideos.length === 0 ? (
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/*"
-                onChange={handleVideoSelect}
-                className="hidden"
-                disabled={uploading}
-              />
-            ) : (
-              <div className="space-y-2">
-                {uploadVideos.map((v, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl"
-                    style={{ background: 'rgba(30,41,59,0.04)' }}>
-                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-black">
-                      <video src={URL.createObjectURL(v)} className="w-full h-full object-cover" muted />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: 'var(--text1)' }}>{v.name}</p>
-                      <p className="text-xs" style={{ color: 'var(--text3)' }}>{(v.size / 1024 / 1024).toFixed(1)} MB</p>
-                    </div>
-                    {!uploading && (
-                      <button onClick={removeVideo}
-                        className="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white flex-shrink-0"
-                        style={{ background: '#ef4444' }}>×</button>
-                    )}
-                  </div>
-                ))}
-                <input
-                  ref={videoInputRef}
-                  type="file"
-                  accept="video/*"
-                  onChange={handleVideoSelect}
-                  className="hidden"
-                  disabled={uploading}
-                />
-              </div>
-            )}
-            {uploadVideos.length < MAX_VIDEOS && (
-              <button
-                onClick={() => videoInputRef.current?.click()}
-                disabled={uploading}
-                className="w-full py-3 rounded-xl font-semibold transition-all duration-200 border-2"
-                style={{ 
-                  background: 'transparent', 
-                  borderColor: 'var(--text3)', 
-                  color: 'var(--text2)',
-                  opacity: uploading ? 0.5 : 1
-                }}
-              >
-                🎥 Choose Video
-              </button>
-            )}
-          </div>
         </div>
-
-        {/* Upload Button */}
-        <button
-          onClick={handleUpload}
-          disabled={uploading || (!uploadPhotos.length && !uploadVideos.length)}
-          className="w-full py-4 rounded-xl font-bold text-white transition-all duration-200"
-          style={{ 
-            background: uploading ? 'var(--text3)' : 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-            opacity: uploading || (!uploadPhotos.length && !uploadVideos.length) ? 0.5 : 1,
-            transform: uploading ? 'scale(0.98)' : 'scale(1)'
-          }}
-        >
-          {uploading ? 'Uploading...' : `Upload ${uploadPhotos.length + uploadVideos.length} File${uploadPhotos.length + uploadVideos.length !== 1 ? 's' : ''}`}
-        </button>
       </div>
-
-      {lastUrl && (
-        <div className="mt-8 text-center">
-          <p className="text-sm mb-2" style={{ color: 'var(--text2)' }}>Last uploaded:</p>
-          <div className="w-32 h-32 mx-auto rounded-xl overflow-hidden">
-            {uploadVideos.length > 0 ? (
-              <video src={lastUrl} className="w-full h-full object-cover" autoPlay muted loop />
-            ) : (
-              <img src={lastUrl} className="w-full h-full object-cover" alt="" />
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
