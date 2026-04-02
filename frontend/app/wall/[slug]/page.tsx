@@ -770,42 +770,39 @@ export default function WallPage() {
                 {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
 
-              {/* Metadata Overlay — Positioned at the bottom of the photo */}
+              {/* Metadata Overlay — Positioned at the FAR BOTTOM-RIGHT to avoid obstructing the photo */}
               <div 
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 glass-card" 
+                className="absolute bottom-12 right-12 z-50 glass-card" 
                 style={{ 
-                  padding: '12px 32px', minWidth: 260, background: 'rgba(255,255,255,0.4)', 
+                  padding: '12px 28px', minWidth: 220, background: 'rgba(255,255,255,0.4)', 
                   backdropFilter: 'blur(32px) saturate(180%)', border: '1px solid rgba(255,255,255,0.4)', 
-                  animation: 'fadeInUp 1s cubic-bezier(0.2, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 100,
+                  animation: 'fadeInRight 1s cubic-bezier(0.2, 1, 0.3, 1) both', textAlign: 'left', borderRadius: 24,
                   boxShadow: '0 10px 40px rgba(0,0,0,0.08)'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
-                  <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--rose)', opacity: 0.8, letterSpacing: '0.05em' }}>MOMENT BY</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', opacity: 0.8, letterSpacing: '0.1em' }}>MOMENT BY</span>
                   <span style={{ fontSize: 18, fontWeight: 800, color: '#1e293b', letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</span>
                   {current.caption && (
-                    <>
-                      <div style={{ width: 1, height: 16, background: 'rgba(30,41,59,0.2)' }} />
-                      <span style={{ fontSize: 15, color: '#475569', fontStyle: 'italic', fontWeight: 400 }}>"{current.caption}"</span>
-                    </>
+                    <span style={{ fontSize: 14, color: '#475569', fontStyle: 'italic', fontWeight: 400, marginTop: 4, lineHeight: 1.4 }}>"{current.caption}"</span>
                   )}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Join Panel Refinement — Absolute at bottom-left */}
-          <div className="absolute left-8 bottom-8 z-50">
+          {/* Join Panel Refinement — Positioned at the FAR BOTTOM-LEFT */}
+          <div className="absolute left-12 bottom-12 z-50">
             <div className="slideshow-join-panel" style={{ 
-              padding: 10, borderRadius: 20,
+              padding: 12, borderRadius: 24,
               background: 'rgba(255,255,255,0.1)', 
               backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.2)',
               boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
             }}>
-              <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 12, borderRadius: 14 }}>
-                <QRCodeSVG value={uploadUrl} size={80} bgColor="#ffffff" fgColor="#000" />
+              <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 12, borderRadius: 16 }}>
+                <QRCodeSVG value={uploadUrl} size={100} bgColor="#ffffff" fgColor="#000" />
               </div>
-              <p style={{ fontSize: 10, color: '#fff', fontWeight: 800, marginTop: 8, textAlign: 'center', opacity: 0.8, letterSpacing: '0.05em' }}>SCAN TO JOIN</p>
+              <p style={{ fontSize: 11, color: '#fff', fontWeight: 900, marginTop: 10, textAlign: 'center', opacity: 0.9, letterSpacing: '0.1em' }}>JOIN THE WALL</p>
             </div>
           </div>
         </div>
@@ -814,6 +811,10 @@ export default function WallPage() {
           @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.96) translateY(10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
+          }
+          @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
           }
         `}</style>
       </div>
