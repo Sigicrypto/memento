@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Webcam from 'react-webcam';
-import { hasFeature } from '@/lib/permissions';
+import { hasFeature, getRequiredTier } from '@/lib/permissions';
 import { extractFaceDescriptor, fileToImage } from '@/lib/faceEngine';
 
 // ─── BACKGROUND DECORATION ───
@@ -446,6 +446,29 @@ export default function MobilePage() {
     }
   };
 
+  const handleDownload = async (photo: Photo) => {
+    if (!hasFeature(event?.plan_type, 'GUEST_DOWNLOAD')) {
+      alert(`✨ High-Res Downloads are a ${getRequiredTier('GUEST_DOWNLOAD')} feature!`);
+      return;
+    }
+
+    try {
+      const response = await fetch(getPublicUrl(photo.storage_path));
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `memento_${slug}_${photo.id}.${photo.media_type === 'video' ? 'mp4' : 'jpg'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Download failed. Please try again.");
+    }
+  };
+
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
 
   return (
@@ -506,7 +529,7 @@ export default function MobilePage() {
                 : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
               }`}
             >
-              {isSearching ? 'SEARCHING…' : matchedPhotoIds ? '✕ CLEAR SEARCH' : '✨ FIND ME'}
+              {isSearching ? 'SEARCHING…' : matchedPhotoIds ? '✕ CLEAR SEARCH' : '✨ SEARCH AGAIN'}
             </button>
           </div>
           {photos.length === 0 ? (
@@ -517,12 +540,28 @@ export default function MobilePage() {
           ) : (
             <div className="grid grid-cols-2 gap-4">
               {photos.map((photo) => (
-                <div key={photo.id} className="glass-card" style={{ borderRadius:20, overflow:'hidden', border:'none' }}>
+                <div key={photo.id} className="glass-card" style={{ borderRadius:20, overflow:'hidden', border:'none', position:'relative' }}>
                   {photo.media_type === 'video' ? (
                     <video src={getPublicUrl(photo.storage_path)} className="w-full h-48 object-cover" controls playsInline loop muted />
                   ) : (
                     <img src={getPublicUrl(photo.storage_path)} className="w-full h-48 object-cover" />
                   )}
+                  
+                  {/* Download Action Overlay */}
+                  <button 
+                    onClick={() => handleDownload(photo)}
+                    style={{ 
+                      position:'absolute', top:12, right:12, 
+                      width:36, height:36, borderRadius:'50%', 
+                      background:'rgba(255,255,255,0.9)', 
+                      display:'flex', alignItems:'center', justifyContent:'center', 
+                      boxShadow:'0 4px 12px rgba(0,0,0,0.1)',
+                      color: hasFeature(event?.plan_type, 'GUEST_DOWNLOAD') ? 'var(--amber)' : '#94a3b8'
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  </button>
+
                   {photo.caption && <div style={{ padding:10, fontSize:11, fontStyle:'italic', color:'var(--text2)' }}>"{photo.caption}"</div>}
                 </div>
               ))}
@@ -531,12 +570,16 @@ export default function MobilePage() {
         </div>
       </div>
 
-      {/* Bottom Actions */}
+      {/* Bottom Action: Find Me */}
       <div className="fixed bottom-0 left-0 right-0 p-6 z-20" style={{ background:'linear-gradient(to top, var(--bg) 60%, transparent)' }}>
         <div className="max-w-4xl mx-auto">
-          <Link href={`/wall/${slug}`} className="btn-outline w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2" style={{ borderRadius:20 }}>
-            <span>🖼️</span> VIEW FULL EVENT WALL
-          </Link>
+          <button 
+            onClick={handleFindMyPhotos}
+            className="btn-glow w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3"
+            style={{ borderRadius:24 }}
+          >
+            <span>✨</span> FIND ME ON WALL
+          </button>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ export type Feature =
   | 'BRANDING_REMOVAL' 
   | 'CUSTOM_DOMAIN'
   | 'SELFIE_MATCH'
+  | 'GUEST_DOWNLOAD'
   | 'VIDEO_UPLOAD';
 
 const TIER_RANK: Record<PlanTier, number> = {
@@ -21,7 +22,8 @@ const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
   ZIP_DOWNLOAD: 'STARTER', // Updated based on marketing
   CUSTOM_THEME: 'STANDARD',
   LIVE_REACTIONS: 'STANDARD',
-  SELFIE_MATCH: 'STANDARD', // New Selfie Match feature
+  SELFIE_MATCH: 'STANDARD',
+  GUEST_DOWNLOAD: 'STANDARD',
   SLIDESHOW_MUSIC: 'PREMIUM',
   VIDEO_UPLOAD: 'PREMIUM',
   BRANDING_REMOVAL: 'WHITE_LABEL',
