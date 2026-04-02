@@ -846,7 +846,7 @@ export default function WallPage() {
           <button onClick={nextSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', width: 56, height: 56, borderRadius: '50%', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>›</button>
 
           {/* QR + URL Join Panel */}
-          <div className="slideshow-join-panel" style={{ transform: 'scale(0.85)', origin: 'bottom right' }}>
+          <div className="slideshow-join-panel" style={{ transform: 'scale(0.85)', transformOrigin: 'bottom right' }}>
             <div className="slideshow-join-qr">
               <QRCodeSVG value={uploadUrl} size={70} bgColor="#ffffff" fgColor="#1e293b" />
             </div>
