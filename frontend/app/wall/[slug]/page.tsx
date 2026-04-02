@@ -13,80 +13,172 @@ import { saveAs } from 'file-saver';
 /**
  * Dreamy Typography & Global Styles
  */
+/**
+ * Dreamy Typography & Global Styles matching Landing Page
+ */
 const FontLoader = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
     
     :root {
-      --font-display: 'Cormorant Garamond', serif;
-      --font-sans: 'DM Sans', sans-serif;
-      --surface: #0a0c10;
-      --card: rgba(255, 255, 255, 0.03);
-      --border: rgba(255, 255, 255, 0.08);
-      --text1: #ffffff;
-      --text2: rgba(255, 255, 255, 0.6);
+      --bg: #faf9fd;
+      --surface: rgba(255, 255, 255, 0.45);
+      --border: rgba(255, 255, 255, 0.6);
+      --amber: #fbbf24;
+      --rose: #f472b6;
+      --gold: #fcd34d;
+      --text1: #1e293b;
+      --text2: #64748b;
+      --radius: 24px;
+      --nm-shadow: 0 8px 32px rgba(30, 41, 59, 0.05);
     }
 
     .wall-page {
       min-height: 100vh;
-      background: radial-gradient(circle at 0% 0%, #1a1c2e 0%, #0a0c10 50%);
+      background: var(--bg);
       color: var(--text1);
-      font-family: var(--font-sans);
+      font-family: 'Inter', system-ui, sans-serif;
+      position: relative;
       overflow-x: hidden;
     }
 
+    /* ─── BACKGROUND ELEMENTS ─── */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain 0.5s steps(1) infinite;
+    }
+    @keyframes grain {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-2%, -3%); }
+      50% { transform: translate(3%, 2%); }
+      75% { transform: translate(-1%, 4%); }
+    }
+
+    .orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      animation: orb-drift 18s ease-in-out infinite;
+    }
+    .orb1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15), transparent 70%);
+      top: -15%; left: -10%;
+    }
+    .orb2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(244, 114, 182, 0.12), transparent 70%);
+      top: 40%; right: -8%;
+      animation-delay: -6s;
+    }
+    @keyframes orb-drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -40px) scale(1.05); }
+      66% { transform: translate(-20px, 25px) scale(0.95); }
+    }
+
+    .floating-shapes {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .shape {
+      position: absolute;
+      opacity: 0.1;
+      color: var(--amber);
+      animation: float-slow 20s ease-in-out infinite alternate;
+    }
+    @keyframes float-slow {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-40px) rotate(90deg); }
+    }
+
+    /* ─── UI COMPONENTS ─── */
     .glass-card {
-      background: var(--card);
-      backdrop-filter: blur(12px);
+      background: var(--surface);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--nm-shadow);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(30, 41, 59, 0.08);
     }
 
     .photo-card {
-      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .btn-glow {
+      background: linear-gradient(135deg, var(--amber), var(--rose));
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 16px rgba(244, 114, 182, 0.3);
+      transition: all 0.25s;
+    }
+    .btn-glow:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(244, 114, 182, 0.4);
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      color: var(--text1);
+      transition: all 0.25s;
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.65);
+      transform: translateY(-2px);
+    }
+
+    .polaroid-card {
+      background: #ffffff;
+      padding: 12px 12px 48px 12px;
+      box-shadow: 0 15px 45px rgba(30, 41, 59, 0.12);
+      border-radius: 8px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .polaroid-card:hover {
+      transform: rotate(0deg) scale(1.05) !important;
+      z-index: 20;
+      box-shadow: 0 25px 60px rgba(30, 41, 59, 0.2);
     }
 
     .status-dot {
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.5; }
-      50% { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(0.95); opacity: 0.5; }
-    }
-
-    .shimmer-box {
-      background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite linear;
-    }
-
-    @keyframes shimmer {
-      from { background-position: 200% 0; }
-      to { background-position: -200% 0; }
-    }
-
-    /* Polaroids */
-    .polaroid-card {
-      background: #ffffff;
-      padding: 12px 12px 48px 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      border-radius: 4px;
-      transition: transform 0.3s ease;
-    }
-    .polaroid-card:hover {
-      transform: rotate(0deg) scale(1.02) !important;
-      z-index: 10;
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
     }
   `}</style>
 );
+
 
 const Confetti = ({ trigger }: { trigger: boolean }) => {
   const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; size: number }>>([]);
@@ -118,8 +210,24 @@ const Confetti = ({ trigger }: { trigger: boolean }) => {
   );
 };
 
+const BackgroundDecoration = () => (
+  <>
+    <div className="grain" />
+    <div className="orbs">
+      <div className="orb orb1" />
+      <div className="orb orb2" />
+    </div>
+    <div className="floating-shapes">
+      <div className="shape" style={{ top: '15%', left: '10%', fontSize: '2rem' }}>✦</div>
+      <div className="shape" style={{ top: '45%', right: '15%', fontSize: '1.5rem', animationDelay: '-5s' }}>✧</div>
+      <div className="shape" style={{ bottom: '20%', left: '15%', fontSize: '2.5rem', animationDelay: '-10s' }}>✻</div>
+      <div className="shape" style={{ top: '75%', right: '25%', fontSize: '1.2rem', animationDelay: '-15s' }}>✦</div>
+    </div>
+  </>
+);
+
 const SkeletonCard = ({ h = 220 }: { h?: number }) => (
-  <div className="shimmer-box" style={{ height: h, borderRadius: 18 }} />
+  <div className="glass-card animate-pulse" style={{ height: h, background: 'rgba(255,255,255,0.1)' }} />
 );
 
 // ── Types ──────────────────────────────────────────────────
@@ -305,15 +413,15 @@ export default function WallPage() {
   const StatusBadge = () => {
     const isLive = realtimeStatus === 'SUBSCRIBED';
     return (
-      <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, background:'rgba(255,255,255,0.05)', padding:'4px 10px', borderRadius:20, border:'1px solid rgba(255,255,255,0.1)' }}>
-        <div className="status-dot" style={{ width:6, height:6, borderRadius:'50%', background: isLive ? '#4ade80' : '#fbbf24' }} />
-        <span style={{ color: isLive ? '#4ade80' : '#fbbf24', fontWeight:500 }}>{isLive ? 'Live' : 'Polling'}</span>
+      <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:12, background:'var(--surface)', padding:'6px 14px', borderRadius:100, border:'1px solid var(--border)', boxShadow:'0 2px 8px rgba(30,41,59,0.05)', fontWeight:600 }}>
+        <div className="status-dot" style={{ width:8, height:8, borderRadius:'50%', background: isLive ? '#4ade80' : 'var(--amber)' }} />
+        <span style={{ color: isLive ? '#166534' : '#92400e' }}>{isLive ? 'LIVE' : 'POLLING'}</span>
       </div>
     );
   };
 
   const Watermark = () => (
-    <div style={{ position:'absolute', bottom:10, right:10, background:'rgba(0,0,0,0.4)', backdropFilter:'blur(4px)', padding:'3px 8px', borderRadius:6, fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.6)', textTransform:'uppercase', letterSpacing:'0.15em', border:'1px solid rgba(255,255,255,0.1)' }}>
+    <div style={{ position:'absolute', bottom:12, right:12, background:'rgba(255,255,255,0.8)', backdropFilter:'blur(8px)', padding:'4px 10px', borderRadius:8, fontSize:10, fontWeight:800, color:'var(--text1)', textTransform:'uppercase', letterSpacing:'0.15em', border:'1px solid var(--border)', boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>
       Memento
     </div>
   );
@@ -323,9 +431,10 @@ export default function WallPage() {
   if (loading) return (
     <div className="wall-page flex items-center justify-center">
       <FontLoader />
-      <div className="text-center">
-        <div style={{ width:48, height:48, border:'3px solid rgba(255,255,255,0.1)', borderTopColor:themeP, borderRadius:'50%', animation:'spin 1s linear infinite', marginBottom:16 }} />
-        <p style={{ fontSize:14, opacity:0.6 }}>Entering the Wall…</p>
+      <BackgroundDecoration />
+      <div className="text-center relative z-10">
+        <div style={{ width:48, height:48, border:'4px solid var(--surface)', borderTopColor:'var(--amber)', borderRadius:'50%', animation:'spin 1s linear infinite', marginBottom:16, margin:'0 auto' }} />
+        <p style={{ fontSize:16, fontWeight:500, color:'var(--text2)' }}>Entering the Wall…</p>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
@@ -334,11 +443,12 @@ export default function WallPage() {
   if (notFound || eventExpired) return (
     <div className="wall-page flex items-center justify-center p-6 text-center">
       <FontLoader />
-      <div className="glass-card p-12 max-w-md">
-        <div style={{ fontSize:48, marginBottom:20 }}>{notFound ? '😢' : '🕒'}</div>
-        <h1 style={{ fontFamily:'var(--font-display)', fontSize:32, marginBottom:12 }}>{notFound ? 'Wall Not Found' : 'Event Expired'}</h1>
-        <p style={{ opacity:0.6, marginBottom:32 }}>{notFound ? "This event doesn't exist or has been removed." : "The photo wall for this event is no longer available."}</p>
-        <Link href="/" style={{ background:themeP, color:'#000', padding:'12px 32px', borderRadius:12, fontWeight:700, textDecoration:'none' }}>Go Home</Link>
+      <BackgroundDecoration />
+      <div className="glass-card p-12 max-w-md relative z-10">
+        <div style={{ fontSize:64, marginBottom:20 }}>{notFound ? '✨' : '📅'}</div>
+        <h1 style={{ fontSize:32, fontWeight:700, marginBottom:16, color:'var(--text1)' }}>{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
+        <p style={{ color:'var(--text2)', marginBottom:32, fontSize:16 }}>{notFound ? "This memory lane hasn't been created yet." : "The photo wall for this event has reached its destination."}</p>
+        <Link href="/" className="btn-glow inline-block px-10 py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">Go Home</Link>
       </div>
     </div>
   );
@@ -348,54 +458,58 @@ export default function WallPage() {
     return (
       <div className="wall-page fixed inset-0 flex flex-col z-50">
         <FontLoader />
-        <div style={{ padding:'16px 24px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-          <h1 style={{ fontFamily:'var(--font-display)', fontSize:24 }}>{eventName}</h1>
-          <button onClick={() => setViewMode('polaroid')} style={{ background:'rgba(255,255,255,0.1)', border:'none', color:'#fff', padding:'8px 16px', borderRadius:10 }}>✕ Exit</button>
+        <BackgroundDecoration />
+        <div className="relative z-10" style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', background:'rgba(255,255,255,0.4)', backdropFilter:'blur(12px)', borderBottom:'1px solid var(--border)' }}>
+          <h1 style={{ fontSize:28, fontWeight:800, color:'var(--text1)', letterSpacing:'-0.03em' }}>{eventName}</h1>
+          <button onClick={() => setViewMode('polaroid')} className="btn-outline px-6 py-2 rounded-xl font-bold text-sm">✕ EXIT</button>
         </div>
-        <div style={{ flex:1, position:'relative', display:'flex', alignItems:'center', justifyContent:'center', padding:40 }}>
+        <div className="relative z-10" style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:40 }}>
           {current && (
-            <div className="photo-card" key={current.id} style={{ height:'100%', width:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <div className="photo-card" key={current.id} style={{ height:'85%', width:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
               {current.media_type === 'video' 
-                ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:20 }} autoPlay loop muted />
-                : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:20, boxShadow:'0 20px 80px rgba(0,0,0,0.8)' }} alt="" />}
+                ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(0,0,0,0.15)' }} autoPlay loop muted />
+                : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(30,41,59,0.15)' }} alt="" />}
               {planTier !== 'WHITE_LABEL' && <Watermark />}
             </div>
           )}
-          <button onClick={prevSlide} style={{ position:'absolute', left:20, background:'none', border:'none', color:'#fff', fontSize:48 }}>‹</button>
-          <button onClick={nextSlide} style={{ position:'absolute', right:20, background:'none', border:'none', color:'#fff', fontSize:48 }}>›</button>
+          <button onClick={prevSlide} className="btn-outline" style={{ position:'absolute', left:40, width:64, height:64, borderRadius:'50%', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center' }}>‹</button>
+          <button onClick={nextSlide} className="btn-outline" style={{ position:'absolute', right:40, width:64, height:64, borderRadius:'50%', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center' }}>›</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="wall-page" style={{ padding:'24px 20px 80px' }}>
+    <div className="wall-page" style={{ padding:'24px 20px 100px' }}>
       <FontLoader />
+      <BackgroundDecoration />
+      
       {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
       
-      <div style={{ maxWidth:1400, margin:'0 auto' }}>
+      <div style={{ maxWidth:1300, margin:'0 auto', position:'relative', zIndex:10 }}>
         {/* Header */}
-        <div className="glass-card" style={{ padding:32, marginBottom:32, display:'flex', flexWrap:'wrap', gap:24, justifyContent:'space-between', alignItems:'center' }}>
+        <div className="glass-card" style={{ padding:'32px 40px', marginBottom:40, display:'flex', flexWrap:'wrap', gap:24, justifyContent:'space-between', alignItems:'center' }}>
           <div>
-            <h1 style={{ fontFamily:'var(--font-display)', fontSize:48, marginBottom:8 }}>{eventName}</h1>
-            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <h1 style={{ fontSize:'clamp(2.5rem, 5vw, 4rem)', fontWeight:800, color:'var(--text1)', letterSpacing:'-0.03em', marginBottom:12 }}>{eventName}</h1>
+            <div style={{ display:'flex', alignItems:'center', gap:16 }}>
               <StatusBadge />
-              <span style={{ fontSize:12, opacity:0.5 }}>📸 {displayedPhotos.length} photos</span>
+              <span style={{ fontSize:13, fontWeight:600, color:'var(--text2)' }}>📸 {displayedPhotos.length} Memories</span>
             </div>
           </div>
           
-          <div style={{ display:'flex', flexWrap:'wrap', gap:10 }}>
-            <div style={{ background:'rgba(255,255,255,0.05)', padding:4, borderRadius:14, display:'flex', gap:4 }}>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:12 }}>
+            <div style={{ background:'rgba(255,255,255,0.5)', padding:6, borderRadius:18, display:'flex', gap:6, border:'1px solid var(--border)' }}>
               {(['polaroid','grid','album','slideshow'] as ViewMode[]).map(m => (
                 <button key={m} onClick={() => setViewMode(m)} style={{
-                  padding:'8px 12px', borderRadius:10, border:'none', fontSize:12, fontWeight:600, transition:'0.2s',
-                  background: viewMode === m ? themeP : 'transparent',
-                  color: viewMode === m ? '#000' : 'rgba(255,255,255,0.6)'
-                }}>{m.charAt(0).toUpperCase() + m.slice(1)}</button>
+                  padding:'10px 18px', borderRadius:12, border:'none', fontSize:13, fontWeight:700, transition:'0.3s',
+                  background: viewMode === m ? 'linear-gradient(135deg, var(--amber), var(--rose))' : 'transparent',
+                  color: viewMode === m ? '#fff' : 'var(--text2)',
+                  boxShadow: viewMode === m ? '0 4px 12px rgba(244,114,182,0.3)' : 'none'
+                }}>{m.toUpperCase()}</button>
               ))}
             </div>
-            <button onClick={() => setShowQR(!showQR)} style={{ padding:'0 16px', borderRadius:12, border:`1px solid ${themeP}`, background:'none', color:themeP, fontSize:12, fontWeight:700 }}>QR Code</button>
-            <button onClick={handleDownloadZip} style={{ padding:'0 16px', borderRadius:12, background:themeP, border:'none', color:'#000', fontSize:12, fontWeight:700 }}>Download ZIP</button>
+            <button onClick={() => setShowQR(!showQR)} className="btn-outline px-6 py-3 rounded-xl font-bold text-sm">QR CODE</button>
+            <button onClick={handleDownloadZip} className="btn-glow px-6 py-3 rounded-xl font-bold text-sm">DOWNLOAD ALL</button>
           </div>
         </div>
 
@@ -412,10 +526,10 @@ export default function WallPage() {
         {/* View Transitions */}
         {displayedPhotos.length === 0 ? (
           <div className="glass-card" style={{ padding:80, textAlign:'center' }}>
-            <div style={{ fontSize:64, marginBottom:24 }}>📷</div>
-            <h2 style={{ fontSize:32, marginBottom:16 }}>No Photos Yet</h2>
-            <p style={{ opacity:0.5, marginBottom:32 }}>Share the QR code to start the memories!</p>
-            <button onClick={() => setShowQR(true)} style={{ background:themeP, color:'#000', padding:'12px 32px', borderRadius:12, fontWeight:700, border:'none' }}>Show QR Code</button>
+            <div style={{ fontSize:80, marginBottom:32 }}>📸</div>
+            <h2 style={{ fontSize:32, fontWeight:700, marginBottom:16, color:'var(--text1)' }}>No Photos Yet</h2>
+            <p style={{ color:'var(--text2)', marginBottom:40, fontSize:18, maxWidth:500, margin:'0 auto 40px' }}>The memories haven't started flowing in yet. Share your QR code to let the magic begin!</p>
+            <button onClick={() => setShowQR(true)} className="btn-glow px-10 py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">Show QR Code</button>
           </div>
         ) : viewMode === 'polaroid' ? (
           <div style={{ display:'flex', flexWrap:'wrap', gap:40, justifyContent:'center' }}>
