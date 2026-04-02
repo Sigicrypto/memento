@@ -746,7 +746,7 @@ export default function WallPage() {
         {/* Content Area */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-0 overflow-hidden">
           {current && (
-            <div className="w-full h-full flex flex-col items-center justify-center max-w-7xl mx-auto" key={current.id}>
+            <div className="w-full h-full flex flex-col items-center justify-center" key={current.id}>
               {/* Image Container */}
               <div className="relative flex-1 w-full flex items-center justify-center min-h-0" style={{ perspective: 1000 }}>
                 <div style={{ 
@@ -756,13 +756,13 @@ export default function WallPage() {
                   {current.media_type === 'video' ? (
                     <video 
                       src={getPublicUrl(current.storage_path)} 
-                      style={{ maxHeight: '94vh', maxWidth: '98vw', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.1)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.2)' }} 
+                      style={{ height: '100%', width: '100%', objectFit: 'contain', boxShadow: '0 40px 100px rgba(0,0,0,0.1)' }} 
                       autoPlay loop muted 
                     />
                   ) : (
                     <img 
                       src={getPublicUrl(current.storage_path)} 
-                      style={{ maxHeight: '94vh', maxWidth: '98vw', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.1)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.2)' }} 
+                      style={{ height: '100%', width: '100%', objectFit: 'contain', boxShadow: '0 40px 100px rgba(0,0,0,0.1)' }} 
                       alt="" 
                     />
                   )}
