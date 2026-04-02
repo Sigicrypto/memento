@@ -20,12 +20,22 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    if (data) setProfile(data as UserProfile);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+      
+      if (data) setProfile(data as UserProfile);
+    } catch (err) {
+      console.error('Unexpected error in fetchProfile:', err);
+    }
   };
 
   useEffect(() => {

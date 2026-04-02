@@ -175,13 +175,24 @@ export default function WallPage() {
         .eq('slug', slug)
         .single();
 
-      console.log("[wall] event fetch result:", { data, error });
-      if (error || !data) { 
-        console.log("[wall] event not found, setting notFound");
+      if (error) {
+        console.error("[wall] error fetching event:", error);
+        if (error.code === 'PGRST116') {
+          setNotFound(true);
+        } else {
+          setErrorStatus(`Database Error: ${error.message} (Code: ${error.code})`);
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (!data) { 
+        console.log("[wall] event not found");
         setNotFound(true); 
         setLoading(false);
         return; 
       }
+      
       setEventName(data.name);
       setEventId(data.id);
       setPlanTier(data.plan_type || 'STARTER');
