@@ -32,7 +32,7 @@ interface Stats {
 }
 
 export default function AdminPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading, isAdmin } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'events'>('overview');
   const [stats, setStats] = useState<Stats>({
@@ -44,7 +44,6 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{open: boolean; message: string; onConfirm: () => void}>({open: false, message: '', onConfirm: () => {}});
 
   const showConfirm = (message: string, onConfirm: () => void) => setConfirmDialog({open: true, message, onConfirm});
@@ -58,20 +57,12 @@ export default function AdminPage() {
       return; 
     }
     
-    // Check admin status from user metadata or explicit admin email
-    const isAdminUser = 
-      user.user_metadata?.role === 'admin' || 
-      user.user_metadata?.is_admin === true || 
-      user.email?.toLowerCase() === 'sagarfalcon@gmail.com';
-    
-    if (isAdminUser) {
-      setIsAdmin(true);
-    } else {
-      // Redirect to system login if not admin
+    // Wait for profile to load, then check admin role
+    if (profile && !isAdmin) {
       console.log('Access denied for user:', user.email);
       router.push('/system');
     }
-  }, [user, authLoading, router]);
+  }, [user, profile, authLoading, isAdmin, router]);
 
   // Fetch stats
   useEffect(() => {

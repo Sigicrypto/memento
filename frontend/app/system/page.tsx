@@ -44,30 +44,24 @@ export default function SystemAdminPage() {
         if (signUpError) throw signUpError;
 
         if (signUpData.user) {
-          // Update user metadata to mark as admin
-          await supabase.auth.updateUser({
-            data: { 
-              role: 'admin',
-              is_admin: true 
-            }
+          // Set admin role in profiles table
+          await supabase.from('profiles').upsert({
+            id: signUpData.user.id,
+            email: signUpData.user.email || email,
+            role: 'admin',
+            full_name: 'Admin',
           });
         }
       } else if (authData.user) {
-        // Update user metadata to mark as admin
-        const { error: updateError } = await supabase.auth.updateUser({
-          data: { 
-            role: 'admin',
-            is_admin: true 
-          }
+        // Set admin role in profiles table
+        await supabase.from('profiles').upsert({
+          id: authData.user.id,
+          email: authData.user.email || email,
+          role: 'admin',
         });
-
-        if (updateError) {
-          console.warn('Could not update admin role:', updateError);
-        }
       }
 
-      // Refresh session to apply metadata changes and then redirect
-      await supabase.auth.refreshSession();
+      // Redirect to admin panel
       router.push('/admin');
     } catch (error: any) {
       setError(error.message || 'Access denied');

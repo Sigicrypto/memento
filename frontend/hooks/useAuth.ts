@@ -10,6 +10,7 @@ export interface UserProfile {
   email: string;
   plan: 'starter' | 'standard' | 'premium' | 'whitelabel';
   payment_status: 'pending' | 'paid' | 'trial';
+  role: 'user' | 'admin';
   created_at: string;
 }
 
@@ -31,28 +32,20 @@ export const useAuth = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
+      setLoading(false); // Set loading false immediately after getting session
       if (currentUser) fetchProfile(currentUser.id);
-      else setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
+      setLoading(false); // Set loading false immediately
       if (currentUser) fetchProfile(currentUser.id);
-      else {
-        setProfile(null);
-        setLoading(false);
-      }
+      else setProfile(null);
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // Update loading state when profile is fetched
-  useEffect(() => {
-    if (user && profile) setLoading(false);
-    else if (!user) setLoading(false);
-  }, [user, profile]);
 
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
@@ -72,6 +65,7 @@ export const useAuth = () => {
   // The plan is now derived from the database profile
   const plan = profile?.plan || 'starter';
   const isPaid = profile?.payment_status === 'paid';
+  const isAdmin = profile?.role === 'admin';
 
-  return { user, profile, loading, signIn, signUp, signOut, plan, isPaid };
+  return { user, profile, loading, signIn, signUp, signOut, plan, isPaid, isAdmin };
 };

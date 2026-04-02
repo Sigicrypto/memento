@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { X, Mail, Lock, User, Eye, EyeOff, Loader2, Check, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -23,6 +24,7 @@ const PLAN_LABELS: Record<string, { name: string; emoji: string; color: string }
 };
 
 export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAuthSuccess }: AuthDialogProps) {
+  const router = useRouter();
   const [tab, setTab] = useState<AuthTab>('signup');
   const [step, setStep] = useState<AuthStep>('auth');
   const [name, setName] = useState('');
@@ -134,11 +136,12 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
       if (data.user) {
         // If a paid plan was selected, redirect to payment
         if (plan && plan !== 'starter') {
-          window.location.href = `/checkout?plan=${plan}`;
+          router.push(`/checkout?plan=${plan}`);
         } else {
           // Otherwise, redirect to dashboard
-          window.location.href = '/dashboard';
+          router.push('/dashboard');
         }
+        onClose();
       }
     } catch (err: any) {
       setError(err.message || 'Sign in failed');

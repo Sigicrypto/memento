@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 const REGION_COOKIE = 'livewall_region';
 
@@ -16,7 +17,7 @@ function detectCountryCode(request: NextRequest): string | undefined {
   );
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // -------- Region cookie (India vs Global) --------
@@ -33,27 +34,44 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin') || pathname.startsWith('/system')) {
-    // Check for admin access code in headers (for API calls)
-    const adminCode = request.headers.get('x-admin-code');
-    const expectedCode = process.env.ADMIN_ACCESS_CODE || 'memento-admin-2024';
+  // Protect admin routes with server-side session verification
+  if (pathname.startsWith('/admin')) {
+    // Get Supabase session from cookies
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     
-    // For direct browser access, we'll rely on the page-level authentication
-    // But you can add IP whitelisting here if needed
-    const clientIP = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
-                     'unknown';
+    // Extract access token from cookies
+    const accessToken = request.cookies.get('sb-access-token')?.value ||
+                       request.cookies.get('sb-' + supabaseUrl.split('//')[1].split('.')[0] + '-auth-token')?.value;
     
-    // Optional: Add IP whitelisting
-    const allowedIPs = process.env.ALLOWED_ADMIN_IPS?.split(',') || [];
-    
-    if (allowedIPs.length > 0 && !allowedIPs.includes(clientIP || '')) {
-      // Log the attempt
-      console.warn(`Unauthorized admin access attempt from IP: ${clientIP}`);
+    if (!accessToken) {
+      // No session, redirect to system login
+      return NextResponse.redirect(new URL('/system', request.url));
+    }
+
+    // Verify session and check admin role
+    try {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { data: { user }, error } = await supabase.auth.getUser(accessToken);
       
-      // Don't block for now, but you can uncomment to enable IP protection
-      // return new NextResponse('Access Denied', { status: 403 });
+      if (error || !user) {
+        return NextResponse.redirect(new URL('/system', request.url));
+      }
+
+      // Check if user has admin role in profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.role !== 'admin') {
+        // Not an admin, redirect to system login
+        return NextResponse.redirect(new URL('/system', request.url));
+      }
+    } catch (err) {
+      console.error('Admin auth check failed:', err);
+      return NextResponse.redirect(new URL('/system', request.url));
     }
   }
 
