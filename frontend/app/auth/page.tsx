@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 function AuthPageContent() {
-  const { user, profile, loading: authLoading, signIn, signUp } = useAuth();
+  const { user, profile, isLoading, signIn, signUp } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
@@ -18,7 +18,7 @@ function AuthPageContent() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user && profile) {
+    if (!isLoading && user && profile) {
       const plan = searchParams.get('plan');
       const isPaid = profile.payment_status === 'paid';
 
@@ -31,7 +31,7 @@ function AuthPageContent() {
         router.push('/dashboard');
       }
     }
-  }, [user, profile, authLoading, searchParams, router]);
+  }, [user, profile, isLoading, searchParams, router]);
 
   useEffect(() => {
     if (searchParams.get('mode') === 'signup') {

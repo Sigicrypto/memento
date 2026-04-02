@@ -19,7 +19,7 @@ export default function ModeratePage() {
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   const [eventName, setEventName] = useState('');
   const [eventId, setEventId] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function ModeratePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     const fetchEvent = async () => {
       const { data, error } = await supabase.from('events')
         .select('id, name, owner_id').eq('slug', slug).single();
@@ -45,7 +45,7 @@ export default function ModeratePage() {
       setLoading(false);
     };
     fetchEvent();
-  }, [slug, user, authLoading, router]);
+  }, [slug, user, isLoading, router]);
 
   const getPublicUrl = (path: string) => {
     const { data } = supabase.storage.from('photos').getPublicUrl(path);
@@ -64,7 +64,7 @@ export default function ModeratePage() {
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
   };
 
-  if (authLoading || loading) {
+  if (isLoading || loading) {
     return (
       <div className="nm-page flex items-center justify-center">
         <div className="nm-circle w-14 h-14">

@@ -884,7 +884,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
 export default function LandingPage() {
 
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, isLoading, signOut } = useAuth();
 
   const { openAuth: openGlobalAuth } = useAuthModal();
 

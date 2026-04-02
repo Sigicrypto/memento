@@ -22,7 +22,7 @@ interface Event {
 }
 
 export default function EditEventPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
@@ -42,7 +42,7 @@ export default function EditEventPage() {
   const [googleDriveSync, setGoogleDriveSync] = useState(false);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     if (!user) {
       router.push('/system');
       return;
@@ -53,7 +53,7 @@ export default function EditEventPage() {
     } else {
       setIsAdmin(true);
     }
-  }, [user, authLoading, router]);
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (!isAdmin || !slug) return;
@@ -125,7 +125,7 @@ export default function EditEventPage() {
     }
   };
 
-  if (loading || authLoading || !isAdmin) {
+  if (loading || isLoading || !isAdmin) {
     return <div className="nm-page flex items-center justify-center">Loading...</div>;
   }
 

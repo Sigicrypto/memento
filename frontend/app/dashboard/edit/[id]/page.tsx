@@ -10,7 +10,7 @@ export default function EditEventPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -26,7 +26,7 @@ export default function EditEventPage() {
   const [slugError, setSlugError] = useState('');
 
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     if (!user) { router.push('/auth'); return; }
 
     const fetchEvent = async () => {
@@ -58,7 +58,7 @@ export default function EditEventPage() {
     };
 
     fetchEvent();
-  }, [id, user, authLoading, router]);
+  }, [id, user, isLoading, router]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +88,7 @@ export default function EditEventPage() {
     router.push('/dashboard');
   };
 
-  if (authLoading || loading) {
+  if (isLoading || loading) {
     return (
       <div className="nm-page flex items-center justify-center">
         <div className="nm-circle w-14 h-14">

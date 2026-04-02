@@ -33,7 +33,7 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const planName = searchParams.get('plan') || 'STANDARD';
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS'>('IDLE');
   const [region, setRegion] = useState<Region>('GLOBAL');
@@ -47,11 +47,11 @@ function CheckoutContent() {
 
   // Strict Auth: Redirect if not logged in
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!isLoading && !user) {
       const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
       router.push(`/auth?redirect=${currentUrl}`);
     }
-  }, [user, authLoading, router]);
+  }, [user, isLoading, router]);
 
   // Fetch event details if eventId is provided
   useEffect(() => {
@@ -173,7 +173,7 @@ function CheckoutContent() {
     }
   };
 
-  if (authLoading) return (
+  if (isLoading) return (
     <div className="nm-page flex items-center justify-center">
       <div className="nm-circle w-14 h-14">
         <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />

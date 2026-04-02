@@ -17,13 +17,13 @@ interface Event {
 }
 
 export default function NeumorphicDashboardPage() {
-  const { user, loading: authLoading, plan } = useAuth();
+  const { user, isLoading, plan } = useAuth();
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     if (!user) { router.push('/auth-neumo'); return; }
 
     const fetchEvents = async () => {
@@ -43,7 +43,7 @@ export default function NeumorphicDashboardPage() {
       setLoading(false);
     };
     fetchEvents();
-  }, [user, authLoading, router]);
+  }, [user, isLoading, router]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this event and all its photos?')) return;
@@ -51,7 +51,7 @@ export default function NeumorphicDashboardPage() {
     setEvents((prev) => prev.filter((e) => e.id !== id));
   };
 
-  if (authLoading || loading) {
+  if (isLoading || loading) {
     return (
       <div className="neumo-dark min-h-screen flex items-center justify-center">
         <div className="neumo-icon neumo-icon-dark w-16 h-16">

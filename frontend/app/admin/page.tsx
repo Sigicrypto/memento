@@ -32,7 +32,7 @@ interface Stats {
 }
 
 export default function AdminPage() {
-  const { user, profile, loading: authLoading, isAdmin } = useAuth();
+  const { user, profile, isLoading, isAdmin } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'events'>('overview');
   const [stats, setStats] = useState<Stats>({
@@ -51,7 +51,7 @@ export default function AdminPage() {
 
   // Check if user is admin
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     if (!user) { 
       router.push('/system'); 
       return; 
@@ -62,7 +62,7 @@ export default function AdminPage() {
       console.log('Access denied for user:', user.email);
       router.push('/system');
     }
-  }, [user, profile, authLoading, isAdmin, router]);
+  }, [user, profile, isLoading, isAdmin, router]);
 
   // Fetch stats
   useEffect(() => {
@@ -227,7 +227,7 @@ export default function AdminPage() {
     });
   };
 
-  if (authLoading || loading) {
+  if (isLoading || loading) {
     return (
       <div className="nm-page flex items-center justify-center">
         <div className="nm-circle w-14 h-14">

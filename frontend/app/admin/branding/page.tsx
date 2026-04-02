@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function BrandingPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
   const [brandLogoFile, setBrandLogoFile] = useState<File | null>(null);
@@ -17,7 +17,7 @@ export default function BrandingPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     if (!user) {
       router.push('/auth');
       return;
@@ -38,7 +38,7 @@ export default function BrandingPage() {
     };
 
     fetchBranding();
-  }, [user, authLoading, router]);
+  }, [user, isLoading, router]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +66,7 @@ export default function BrandingPage() {
     }
   };
 
-  if (loading || authLoading) {
+  if (loading || isLoading) {
     return <div className="nm-page flex items-center justify-center">Loading...</div>;
   }
 

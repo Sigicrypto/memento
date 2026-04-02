@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
-import { useRef } from 'react';
 import Link from 'next/link';
 import '../landing.css';
 
@@ -15,7 +14,7 @@ function generateSlug(name: string): string {
 }
 
 export default function CreateEventPage() {
-  const { user, profile, loading: authLoading, plan, isPaid, isApproved } = useAuth();
+  const { user, profile, isLoading, plan, isPaid, isApproved } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [customSlug, setCustomSlug] = useState('');
@@ -23,6 +22,12 @@ export default function CreateEventPage() {
   const [loading, setLoading] = useState(false);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) { router.push('/'); return; }
+    if (!isApproved) { router.push('/pending'); return; }
+  }, [user, isLoading, isApproved, router]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +79,7 @@ export default function CreateEventPage() {
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/mobile/${createdSlug}` : '';
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  if (authLoading) {
+  if (isLoading) {
     return (
       <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>

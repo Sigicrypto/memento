@@ -13,7 +13,7 @@ interface DownloadStat {
 }
 
 export default function AnalyticsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState<DownloadStat[]>([]);
   const [totalDownloads, setTotalDownloads] = useState(0);
@@ -21,7 +21,7 @@ export default function AnalyticsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (authLoading) return;
+    if (isLoading) return;
     if (!user) {
       router.push('/system');
       return;
@@ -32,7 +32,7 @@ export default function AnalyticsPage() {
     } else {
       setIsAdmin(true);
     }
-  }, [user, authLoading, router]);
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -59,7 +59,7 @@ export default function AnalyticsPage() {
     return data.publicUrl;
   };
 
-  if (loading || authLoading || !isAdmin) {
+  if (loading || isLoading || !isAdmin) {
     return <div className="nm-page flex items-center justify-center">Loading...</div>;
   }
 
