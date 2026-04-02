@@ -100,6 +100,14 @@ export const useAuth = () => {
       } 
     });
 
+  const signInWithGoogle = () =>
+    supabase.auth.signInWithOAuth({ 
+      provider: 'google',
+      options: {
+        redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`
+      }
+    });
+
   const signOut = () => {
     setIsLoading(true);
     return supabase.auth.signOut();
@@ -111,5 +119,5 @@ export const useAuth = () => {
   const isApproved = profile?.is_approved === true;
   const isAdmin = profile?.role === 'admin';
 
-  return { user, profile, isLoading, signIn, signUp, signOut, plan, isPaid, isApproved, isAdmin };
+  return { user, profile, isLoading, signIn, signUp, signInWithGoogle, signOut, plan, isPaid, isApproved, isAdmin };
 };
