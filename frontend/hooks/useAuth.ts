@@ -19,11 +19,9 @@ export interface UserProfile {
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [profileLoading, setProfileLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    setProfileLoading(true);
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -40,24 +38,31 @@ export const useAuth = () => {
     } catch (err) {
       console.error('Unexpected error in fetchProfile:', err);
     } finally {
-      setProfileLoading(false);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      setLoading(false); // Set loading false immediately after getting session
-      if (currentUser) fetchProfile(currentUser.id);
+      if (currentUser) {
+        fetchProfile(currentUser.id);
+      } else {
+        setIsLoading(false);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      setLoading(false);
-      if (currentUser) fetchProfile(currentUser.id);
-      else setProfile(null);
+      if (currentUser) {
+        fetchProfile(currentUser.id);
+      } else {
+        setProfile(null);
+        setIsLoading(false);
+      }
     });
 
     // Real-time profile subscription
@@ -95,7 +100,10 @@ export const useAuth = () => {
       } 
     });
 
-  const signOut = () => supabase.auth.signOut();
+  const signOut = () => {
+    setIsLoading(true);
+    return supabase.auth.signOut();
+  };
 
   // The plan is now derived from the database profile
   const plan = profile?.plan || 'starter';
@@ -103,5 +111,5 @@ export const useAuth = () => {
   const isApproved = profile?.is_approved === true;
   const isAdmin = profile?.role === 'admin';
 
-  return { user, profile, loading, profileLoading, signIn, signUp, signOut, plan, isPaid, isApproved, isAdmin };
+  return { user, profile, isLoading, signIn, signUp, signOut, plan, isPaid, isApproved, isAdmin };
 };

@@ -55,14 +55,14 @@ const PLAN_INFO: Record<string, { name: string; emoji: string; color: string; fe
 };
 
 export default function DashboardPage() {
-  const { user, profile, isPaid, isApproved, loading: authLoading, profileLoading } = useAuth();
+  const { user, profile, isApproved, isLoading } = useAuth();
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState('');
 
   useEffect(() => {
-    if (authLoading || profileLoading) return;
+    if (isLoading) return;
     if (!user) { router.push('/'); return; }
     if (!isApproved) { router.push('/pending'); return; }
 
@@ -84,7 +84,7 @@ export default function DashboardPage() {
       setLoading(false);
     };
     fetchEvents();
-  }, [user, authLoading, router]);
+  }, [user, isLoading, router]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this event and all its photos?')) return;
@@ -99,7 +99,7 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(''), 2000);
   };
 
-  if (authLoading || loading) {
+  if (isLoading || loading) {
     return (
       <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
