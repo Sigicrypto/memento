@@ -376,12 +376,12 @@ const FontLoader = () => (
       flex-direction: column;
       gap: 20px;
       padding: 24px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 28px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-      color: #fff;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      color: #000;
     }
     
     .qr-side {
@@ -398,7 +398,7 @@ const FontLoader = () => (
       left: 45px;
       top: 66%;
       transform: translateY(-50%);
-      width: 360px;
+      width: 280px;
       animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
@@ -834,12 +834,12 @@ export default function WallPage() {
         )}
 
         {/* Header Overlay */}
-        <div className="absolute top-0 left-0 right-0 z-50" style={{ padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)' }}>
+        <div className="absolute top-0 left-0 right-0 z-50" style={{ padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(255,255,255,0.2), transparent)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.15em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Live Experience</span>
-            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{eventName}</h1>
+            <span style={{ fontSize: 9, fontWeight: 900, color: '#000', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Live Experience</span>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#000', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
           </div>
-          <button onClick={() => setViewMode(prevViewMode)} className="px-8 py-3 rounded-full font-bold text-[10px] bg-white/10 text-white border border-white/20 hover:bg-white/30 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
+          <button onClick={() => setViewMode(prevViewMode)} className="px-8 py-3 rounded-full font-bold text-[10px] bg-black/5 text-black border border-black/10 hover:bg-black/10 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
         </div>
 
         {/* Main Content Area */}
@@ -872,10 +872,10 @@ export default function WallPage() {
 
               {/* QR Side Panel (Left, Stacked) */}
               <div className="slideshow-side-panel qr-side float-anim">
-                <div style={{ background: '#fff', padding: 10, borderRadius: 16, boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+                <div style={{ background: '#fff', padding: 10, borderRadius: 16, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                   <QRCodeSVG value={uploadUrl} size={130} bgColor="#ffffff" fgColor="#000" />
                 </div>
-                <p className="mt-4 text-white font-bold text-[9px] uppercase tracking-widest opacity-80" style={{ maxWidth: 140 }}>
+                <p className="mt-4 text-black font-bold text-[9px] uppercase tracking-widest opacity-90" style={{ maxWidth: 140 }}>
                   scan the QR to start sharing
                 </p>
               </div>
@@ -884,25 +884,25 @@ export default function WallPage() {
               <div className="slideshow-side-panel meta-side float-anim" style={{ animationDelay: '-1.5s' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
                   <div>
-                    <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--amber)', letterSpacing: '0.15em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Moment Shared By</span>
-                    <h2 style={{ fontSize: 32, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginTop: 4, textShadow: '0 2px 10px rgba(0,0,0,0.4)' }}>
+                    <span style={{ fontSize: 9, fontWeight: 900, color: '#000', letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.6 }}>Moment Shared By</span>
+                    <h2 style={{ fontSize: 32, fontWeight: 900, color: '#000', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginTop: 4 }}>
                       {current.uploader_name}
                     </h2>
                   </div>
                   
                   {current.caption && (
-                    <div style={{ padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                      <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.9)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, textShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
+                    <div style={{ padding: '16px 0', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                      <p style={{ fontSize: 18, color: '#000', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, opacity: 0.8 }}>
                         "{current.caption}"
                       </p>
                     </div>
                   )}
 
                   <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
-                    <div className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-xs">
+                    <div className="px-5 py-2 rounded-xl bg-black/5 border border-black/5 text-black font-bold text-xs">
                       {current.reaction_count || 0} ❤️
                     </div>
-                    <div className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-xs uppercase tracking-widest">
+                    <div className="px-5 py-2 rounded-xl bg-black/5 border border-black/5 text-black font-bold text-xs uppercase tracking-widest text-[10px]">
                       {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
