@@ -6,12 +6,11 @@ import '../app/landing.css';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isMini = pathname?.startsWith('/wall/') || pathname?.startsWith('/mobile/');
 
   if (pathname === '/') return <ThemedNav />;
-  if (pathname?.startsWith('/wall/')) return null;
-  if (pathname?.startsWith('/mobile/')) return null;
-  if (pathname?.startsWith('/create')) return null;
-  if (pathname?.startsWith('/dashboard')) return null;
+  if (isMini) return <ThemedNav mini={true} />;
+  if (pathname?.startsWith('/create') || pathname?.startsWith('/dashboard')) return null;
 
   return <ThemedNav />;
 }

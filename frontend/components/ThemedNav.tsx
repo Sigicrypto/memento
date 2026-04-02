@@ -9,9 +9,10 @@ import { LogOut } from 'lucide-react';
 
 interface ThemedNavProps {
   showAuthButtons?: boolean;
+  mini?: boolean;
 }
 
-export default function ThemedNav({ showAuthButtons = true }: ThemedNavProps) {
+export default function ThemedNav({ showAuthButtons = true, mini = false }: ThemedNavProps) {
   const { user, signOut } = useAuth();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
@@ -33,13 +34,15 @@ export default function ThemedNav({ showAuthButtons = true }: ThemedNavProps) {
         <AnimatedLogo width={180} height={60} />
       </Link>
 
-      <div className="nav-mid">
-        <Link href="/#features">Features</Link>
-        <Link href="/#how">How it works</Link>
-        <Link href="/#pricing">Pricing</Link>
-      </div>
+      {!mini && (
+        <div className="nav-mid">
+          <Link href="/#features">Features</Link>
+          <Link href="/#how">How it works</Link>
+          <Link href="/#pricing">Pricing</Link>
+        </div>
+      )}
 
-      {showAuthButtons && (
+      {!mini && showAuthButtons && (
         <>
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -53,7 +56,7 @@ export default function ThemedNav({ showAuthButtons = true }: ThemedNavProps) {
                 onClick={handleSignOut} 
                 className="glass-pill"
                 style={{ 
-                  padding: '0.5rem 1rem', 
+                  padding: '1.2rem', 
                   color: 'var(--color-text-secondary)', 
                   fontSize: '0.8rem', 
                   cursor: 'pointer', 
