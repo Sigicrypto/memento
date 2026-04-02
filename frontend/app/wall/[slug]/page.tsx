@@ -8,52 +8,121 @@ import { QRCodeSVG } from 'qrcode.react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
-// Confetti animation component
-const Confetti = ({ trigger }: { trigger: boolean }) => {
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; color: string }>>([]);
+// ── Components ──────────────────────────────────────────────
 
-  useEffect(() => {
-    if (trigger) {
-      const colors = ['#f59e0b', '#fb923c', '#f472b6', '#a78bfa', '#fcd34d', '#f97316'];
-      const newParticles = Array.from({ length: 50 }, (_, i) => ({
-        id: Date.now() + i,
-        x: Math.random() * 100,
-        y: -10,
-        color: colors[Math.floor(Math.random() * colors.length)]
-      }));
-      setParticles(newParticles);
-      
-      setTimeout(() => setParticles([]), 3000);
+/**
+ * Dreamy Typography & Global Styles
+ */
+const FontLoader = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap');
+    
+    :root {
+      --font-display: 'Cormorant Garamond', serif;
+      --font-sans: 'DM Sans', sans-serif;
+      --surface: #0a0c10;
+      --card: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+      --text1: #ffffff;
+      --text2: rgba(255, 255, 255, 0.6);
     }
+
+    .wall-page {
+      min-height: 100vh;
+      background: radial-gradient(circle at 0% 0%, #1a1c2e 0%, #0a0c10 50%);
+      color: var(--text1);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .photo-card {
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .status-dot {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.5; }
+    }
+
+    .shimmer-box {
+      background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.02) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite linear;
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
+    /* Polaroids */
+    .polaroid-card {
+      background: #ffffff;
+      padding: 12px 12px 48px 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border-radius: 4px;
+      transition: transform 0.3s ease;
+    }
+    .polaroid-card:hover {
+      transform: rotate(0deg) scale(1.02) !important;
+      z-index: 10;
+    }
+  `}</style>
+);
+
+const Confetti = ({ trigger }: { trigger: boolean }) => {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; size: number }>>([]);
+  useEffect(() => {
+    if (!trigger) return;
+    const palette = ['#f59e0b', '#fb923c', '#f472b6', '#a78bfa', '#fcd34d', '#34d399'];
+    setParticles(Array.from({ length: 50 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 100,
+      color: palette[Math.floor(Math.random() * palette.length)],
+      size: Math.random() * 8 + 4,
+    })));
+    setTimeout(() => setParticles([]), 3000);
   }, [trigger]);
 
-  if (particles.length === 0) return null;
-
+  if (!particles.length) return null;
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 dark">
-      {particles.map((particle) => (
-        <div
-          key={particle.id}
-          className="absolute w-2 h-2 animate-bounce"
-          style={{
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-            backgroundColor: particle.color,
-            animation: 'fall 3s ease-out forwards'
-          }}
-        />
+    <div className="fixed inset-0 pointer-events-none z-50">
+      {particles.map((p, i) => (
+        <div key={p.id} style={{
+          position: 'absolute', left: `${p.x}%`, top: '-20px',
+          width: p.size, height: p.size,
+          background: p.color, borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+          animation: `fall ${2.5 + Math.random()}s ease-out ${i * 0.02}s forwards`,
+        }} />
       ))}
-      <style jsx>{`
-        @keyframes fall {
-          to {
-            transform: translateY(100vh) rotate(360deg);
-            opacity: 0;
-          }
-        }
-      `}</style>
+      <style>{`@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }`}</style>
     </div>
   );
 };
+
+const SkeletonCard = ({ h = 220 }: { h?: number }) => (
+  <div className="shimmer-box" style={{ height: h, borderRadius: 18 }} />
+);
+
+// ── Types ──────────────────────────────────────────────────
 
 interface Photo {
   id: string;
@@ -71,13 +140,16 @@ interface Photo {
 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow' | 'album';
 
+// ── Main Component ─────────────────────────────────────────
+
 export default function WallPage() {
   const params = useParams();
   const slug = params.slug as string;
 
+  // -- State --
   const [eventName, setEventName] = useState('');
   const [theme, setTheme] = useState({ primary: '#f59e0b', secondary: '#f472b6' });
-  const [brand, setBrand] = useState<{ logoUrl: string | null, colors: { primary: string, secondary: string } | null }>({ logoUrl: null, colors: null });
+  const [brand, setBrand] = useState<{ logoUrl: string | null; colors: { primary: string; secondary: string } | null }>({ logoUrl: null, colors: null });
   const [eventExpired, setEventExpired] = useState(false);
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -86,8 +158,6 @@ export default function WallPage() {
   const [showQR, setShowQR] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
-  const [usePolling, setUsePolling] = useState(false);
-  const pollingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const [moderationMode, setModerationMode] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [showBestShots, setShowBestShots] = useState(false);
@@ -97,78 +167,30 @@ export default function WallPage() {
   const [musicTrack, setMusicTrack] = useState<string | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
-  const slideshowTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Fallback polling when WebSocket fails
-  const startPolling = useCallback(() => {
-    if (pollingInterval.current) return;
-    
-    setUsePolling(true);
-    setRealtimeStatus('polling');
-    console.log('🔄 Starting aggressive polling (2-second intervals)');
-    
-    pollingInterval.current = setInterval(async () => {
-      if (!eventId) return;
-      
-      console.log('📡 Polling for new photos...');
-      
-      let query = supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
-      if (moderationMode) {
-        query = query.eq('approved', true);
-      }
-      const { data, error } = await query;
-      
-      if (error) {
-        console.error('❌ Polling error:', error);
-        return;
-      }
-      
-      if (data && data.length > 0) {
-        console.log(`📸 Polling found ${data.length} photos`);
-        
-        setPhotos(prev => {
-          const currentPhotoIds = new Set(prev.map(p => p.id));
-          const newPhotos = data.filter((photo: Photo) => !currentPhotoIds.has(photo.id));
+  // -- Callbacks --
 
-          if (newPhotos.length > 0) {
-            console.log(`✨ Adding ${newPhotos.length} new photos to wall`);
-            
-            if (!moderationMode) {
-              setNewPhotoId(newPhotos[0].id);
-              setConfettiTrigger(true);
-              setTimeout(() => setConfettiTrigger(false), 100);
-            }
-          }
-
-          // Also update reaction counts for existing photos
-          const updatedPhotos = prev.map(oldPhoto => {
-            const newData = data.find((p: Photo) => p.id === oldPhoto.id);
-            return newData ? { ...oldPhoto, reaction_count: newData.reaction_count } : oldPhoto;
-          });
-          
-          return [...newPhotos, ...updatedPhotos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 100);
-        });
-      }
-    }, 2000); // Poll every 2 seconds (more aggressive)
-  }, [eventId, moderationMode]);
-
-  const stopPolling = useCallback(() => {
-    if (pollingInterval.current) {
-      clearInterval(pollingInterval.current);
-      pollingInterval.current = null;
-    }
-    setUsePolling(false);
+  const getPublicUrl = useCallback((path: string) => {
+    const { data } = supabase.storage.from('photos').getPublicUrl(path);
+    return data.publicUrl;
   }, []);
 
-  // Fetch event info
+  const startPolling = useCallback(() => {
+    setRealtimeStatus('polling');
+    const interval = setInterval(async () => {
+      if (!eventId) return;
+      const { data } = await supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
+      if (data) setPhotos(data);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [eventId]);
+
+  // -- Effects --
+
   useEffect(() => {
     const fetchEvent = async () => {
-      console.log("[wall] fetching event for slug:", slug);
       setLoading(true);
-      setErrorStatus(null);
       const { data, error } = await supabase
         .from('events')
         .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id, plan_type, music_track')
@@ -176,698 +198,282 @@ export default function WallPage() {
         .single();
 
       if (error) {
-        console.error("[wall] error fetching event:", error);
-        if (error.code === 'PGRST116') {
-          setNotFound(true);
-        } else {
-          setErrorStatus(`Database Error: ${error.message} (Code: ${error.code})`);
-        }
-        setLoading(false);
-        return;
+        if (error.code === 'PGRST116') setNotFound(true);
+        else setErrorStatus(`Database Error: ${error.message}`);
+        setLoading(false); return;
       }
+      if (!data) { setNotFound(true); setLoading(false); return; }
 
-      if (!data) { 
-        console.log("[wall] event not found");
-        setNotFound(true); 
-        setLoading(false);
-        return; 
-      }
-      
       setEventName(data.name);
       setEventId(data.id);
       setPlanTier(data.plan_type || 'STARTER');
-      console.log("[wall] event loaded:", { id: data.id, name: data.name });
-      if (data.theme_primary_color && data.theme_secondary_color) {
+      if (data.theme_primary_color && data.theme_secondary_color)
         setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
-      }
-      if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        setEventExpired(true);
-      }
-      if (data.enable_safety_filter) {
-        setModerationMode(true);
-      }
-      if (data.music_track && data.music_track !== 'none') {
-        setMusicTrack(data.music_track);
-      }
+      if (data.expires_at && new Date(data.expires_at) < new Date()) setEventExpired(true);
+      if (data.enable_safety_filter) setModerationMode(true);
+      if (data.music_track && data.music_track !== 'none') setMusicTrack(data.music_track);
 
-      // Fetch owner's branding
+      // Fetch branding
       try {
-        // Step 1: Detect if we are on a custom domain
-        const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
-        const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'memento.events';
-        const isCustomDomain = hostname !== 'localhost' && hostname !== baseDomain && !hostname.endsWith('.' + baseDomain);
-
-        // Step 2: Fetch owner profile for plan and branding info
-        const { data: ownerProfile, error: ownerErr } = await supabase
-          .from('profiles')
-          .select('plan, role')
-          .eq('id', data.owner_id)
-          .single();
-
-        if (ownerErr) {
-          console.warn('Failed to fetch owner profile:', ownerErr);
+        const { data: profile } = await supabase.from('profiles').select('plan, role').eq('id', data.owner_id).single();
+        if (data.plan_type === 'WHITE_LABEL' || profile?.plan === 'whitelabel') {
+           // Branding usually comes from user metadata, but profiles can store logoUrl now if synced
+           setBrand({ logoUrl: null, colors: null });
         }
-        
-        // Step 3: Set branding if White Label tier
-        // Note: Currently branding info is in user_metadata, which isn't accessible 
-        // via public profiles unless we sync it to columns. 
-        // For now, we'll check the plan_type from the event itself.
-        if (data.plan_type === 'WHITE_LABEL' || ownerProfile?.plan === 'whitelabel') {
-          // Fallback branding if not synced to profiles yet
-          setBrand({
-            logoUrl: null, // We need to sync this to profiles table for it to work here
-            colors: null,
-          });
-        }
-      } catch (brandingErr) {
-        console.warn('Failed to fetch branding info:', brandingErr);
-      }
-      
+      } catch {}
       setLoading(false);
     };
     fetchEvent();
   }, [slug]);
 
-  // Fetch photos + realtime
   useEffect(() => {
     if (!eventId) return;
-
     const fetchPhotos = async () => {
-      console.log("[wall] fetching photos for eventId:", eventId);
-      console.log("[wall] moderation mode:", moderationMode);
-      let query = supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
-      if (moderationMode) {
-        query = query.eq('approved', true);
-      }
-      const { data, error } = await query;
-
-      console.log("[wall] photos fetch result:", { data: data?.length || 0, error });
-      if (error) {
-        console.error('[wall] Error fetching photos with reactions:', error);
-        setErrorStatus(`Database Error: ${error.message}. Please check if the 'get_photos_with_reactions' RPC is created.`);
-      } else if (data) {
-        setPhotos(data as Photo[]);
-        console.log("[wall] photos loaded:", data.length, "items");
-      }
+      const { data } = await supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
+      if (data) setPhotos(data);
     };
     fetchPhotos();
 
-    const channel = supabase
-      .channel(`wall-photos-${eventId}`)
-      .on('postgres_changes', 
-        { 
-          event: 'INSERT', 
-          schema: 'public', 
-          table: 'photos'
-        },
+    const channel = supabase.channel(`wall-${eventId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
         (payload) => {
-          console.log('[wall] New photo received via realtime:', payload.new);
           const newPhoto = payload.new as Photo;
-          
-          // Filter on client side to ensure we only get photos for this event
-          if (newPhoto.event_id === eventId) {
-            setPhotos((prev) => {
-              // Check if photo already exists
-              if (prev.some(p => p.id === newPhoto.id)) {
-                console.log('[wall] Photo already exists, skipping');
-                return prev;
-              }
-              console.log('[wall] Adding new photo to wall:', newPhoto.id);
-              return [...prev, newPhoto];
-            });
-            
-            // Trigger confetti for new photos (only in non-moderation mode)
-            if (!moderationMode) {
-              setNewPhotoId(newPhoto.id);
-              setConfettiTrigger(true);
-              setTimeout(() => setConfettiTrigger(false), 100);
-            }
-          } else {
-            console.log('[wall] Photo not for this event, ignoring');
-          }
-        }
-      )
-      .on('postgres_changes',
-        { 
-          event: 'DELETE', 
-          schema: 'public', 
-          table: 'photos'
-        },
-        (payload) => {
-          console.log('[wall] Photo deleted via realtime:', payload.old);
-          const oldPhoto = payload.old as Photo;
-          
-          // Filter on client side
-          if (oldPhoto.event_id === eventId) {
-            setPhotos((prev) => prev.filter((p) => p.id !== oldPhoto.id));
+          setPhotos(prev => [newPhoto, ...prev]);
+          if (!moderationMode) {
+            setNewPhotoId(newPhoto.id);
+            setConfettiTrigger(true);
+            setTimeout(() => setConfettiTrigger(false), 100);
           }
         }
       )
       .subscribe((status) => {
         setRealtimeStatus(status);
-        console.log(`[wall] Realtime subscription status [${eventId}]:`, status);
-        
-        if (status === 'SUBSCRIBED') {
-          console.log('[wall] ✅ Successfully subscribed to real-time updates');
-          stopPolling(); // Stop polling if WebSocket works
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          console.error('[wall] ❌ Realtime subscription failed, falling back to polling');
-          startPolling(); // Start polling as fallback
-        }
+        if (status !== 'SUBSCRIBED') startPolling();
       });
 
-    // Start polling as backup if WebSocket doesn't connect within 3 seconds
-    const fallbackTimer = setTimeout(() => {
-      if (realtimeStatus === 'connecting') {
-        console.log('[wall] ⚠️ WebSocket taking too long, starting polling immediately');
-        startPolling();
-      }
-    }, 3000);
+    return () => { supabase.removeChannel(channel); };
+  }, [eventId, moderationMode, startPolling]);
 
-    return () => { 
-    supabase.removeChannel(channel); 
-    clearTimeout(fallbackTimer);
-    stopPolling();
-  };
-  }, [eventId]);
-
-
-  const displayedPhotos = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
-
-  // Slideshow auto-advance
+  // Slideshow
   useEffect(() => {
-    if (viewMode === 'slideshow' && displayedPhotos.length > 1) {
-      slideshowTimer.current = setInterval(() => {
-        setSlideIndex((i) => (i + 1) % displayedPhotos.length);
-      }, 5000);
+    if (viewMode === 'slideshow' && photos.length > 0) {
+      const timer = setInterval(() => setSlideIndex(i => (i + 1) % photos.length), 5000);
+      return () => clearInterval(timer);
     }
-    return () => {
-      if (slideshowTimer.current) clearInterval(slideshowTimer.current);
-    };
-  }, [viewMode, displayedPhotos.length]);
+  }, [viewMode, photos.length]);
 
-  const nextSlide = useCallback(() => setSlideIndex((i) => (i + 1) % displayedPhotos.length), [displayedPhotos.length]);
-  const prevSlide = useCallback(() => setSlideIndex((i) => (i - 1 + displayedPhotos.length) % displayedPhotos.length), [displayedPhotos.length]);
+  const nextSlide = () => setSlideIndex(i => (i + 1) % photos.length);
+  const prevSlide = () => setSlideIndex(i => (i - 1 + photos.length) % photos.length);
+
+  // -- Actions --
 
   const handleLike = async (photoId: string) => {
-    const guestId = localStorage.getItem('memento_guest_id') || `guest_${Date.now()}`;
-    localStorage.setItem('memento_guest_id', guestId);
-
-    // Optimistically update UI
-    setPhotos(prevPhotos => 
-      prevPhotos.map(p => 
-        p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p
-      )
-    );
-
-    const { error } = await supabase.from('reactions').insert({ 
-      photo_id: photoId, 
-      guest_id: guestId 
-    });
-
-    if (error) {
-      console.error('Error liking photo:', error);
-      // Revert optimistic update on error
-      setPhotos(prevPhotos => 
-        prevPhotos.map(p => 
-          p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) - 1 } : p
-        )
-      );
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    const { default: jsPDF } = await import('jspdf');
-    const { default: html2canvas } = await import('html2canvas');
-
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const photoElements = Array.from(document.querySelectorAll('.photo-for-pdf'));
-
-    if (photoElements.length === 0) {
-      alert('No photos to create a PDF.');
-      return;
-    }
-
-    for (let i = 0; i < photoElements.length; i++) {
-      const element = photoElements[i] as HTMLElement;
-      const canvas = await html2canvas(element);
-      const imgData = canvas.toDataURL('image/png');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      if (i > 0) {
-        pdf.addPage();
-      }
-      pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth - 20, pdfHeight - 20);
-    }
-
-    pdf.save(`${slug}-photobook.pdf`);
-  };
-
-  const handleDownloadZip = async () => {
-    if (displayedPhotos.length === 0) {
-      alert('No photos to download.');
-      return;
-    }
-    
-    // Notify user since this takes time
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-bounce';
-    toast.innerText = 'Packaging Wall into ZIP (this may take a minute)...';
-    document.body.appendChild(toast);
-
-    try {
-      const zip = new JSZip();
-      const folder = zip.folder(`${slug}-memento-wall`);
-
-      for (let i = 0; i < displayedPhotos.length; i++) {
-        const photo = displayedPhotos[i];
-        const url = getPublicUrl(photo.storage_path);
-        
-        // Fetch image as blob
-        const response = await fetch(url);
-        const blob = await response.blob();
-        
-        // Extract extension from storage path
-        const extMatch = photo.storage_path.match(/\.([0-9a-z]+)(?:[\?#]|$)/i);
-        const ext = extMatch ? extMatch[1] : (photo.media_type === 'video' ? 'mp4' : 'jpg');
-        const filename = `${photo.uploader_name.replace(/[^a-z0-9]/gi, '_')}-${i + 1}.${ext}`;
-        
-        folder?.file(filename, blob);
-      }
-
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      saveAs(zipBlob, `${slug}-memento-wall.zip`);
-    } catch (e) {
-      console.error('Error creating ZIP:', e);
-      alert('Failed to create ZIP. Try again later.');
-    } finally {
-      document.body.removeChild(toast);
-    }
-  };
-
-  const getPublicUrl = (path: string) => {
-    const { data } = supabase.storage.from('photos').getPublicUrl(path);
-    return data.publicUrl;
+    const gid = localStorage.getItem('memento_guest_id') || `guest_${Date.now()}`;
+    localStorage.setItem('memento_guest_id', gid);
+    setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p));
+    const { error } = await supabase.from('reactions').insert({ photo_id: photoId, guest_id: gid });
+    if (error) setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) - 1 } : p));
   };
 
   const downloadPhoto = async (photo: Photo) => {
-    const guestId = localStorage.getItem('memento_guest_id') || `guest_${Date.now()}`;
-    localStorage.setItem('memento_guest_id', guestId);
-
-    await supabase.from('downloads').insert({ 
-      photo_id: photo.id, 
-      guest_id: guestId 
-    });
-
-    const url = getPublicUrl(photo.storage_path);
-    const res = await fetch(url);
+    const res = await fetch(getPublicUrl(photo.storage_path));
     const blob = await res.blob();
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `memento-${photo.uploader_name}-${photo.id.slice(0, 6)}.jpg`;
-    link.click();
+    saveAs(blob, `memento-${photo.uploader_name}-${photo.id.slice(0, 4)}.jpg`);
   };
 
-  const uploadUrl = typeof window !== 'undefined'
-    ? `${window.location.protocol}//${window.location.host}/mobile/${slug}`
-    : '';
+  const handleDownloadZip = async () => {
+    if (!['STANDARD','PREMIUM','WHITE_LABEL'].includes(planTier)) {
+      alert('✨ Bulk ZIP Download is a Standard feature! Upgrade to unlock.'); return;
+    }
+    if (!photos.length) return;
+    const zip = new JSZip();
+    const folder = zip.folder(`${slug}-memento`);
+    for (const p of photos) {
+      const blob = await (await fetch(getPublicUrl(p.storage_path))).blob();
+      folder?.file(`${p.uploader_name}-${p.id.slice(0,4)}.jpg`, blob);
+    }
+    saveAs(await zip.generateAsync({ type: 'blob' }), `${slug}-wall.zip`);
+  };
 
-  if (loading) {
+  const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/mobile/${slug}` : '';
+  const displayedPhotos = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
+  const themeP = brand.colors?.primary || theme.primary;
+  const themeS = brand.colors?.secondary || theme.secondary;
+
+  // -- Helper Components --
+
+  const StatusBadge = () => {
+    const isLive = realtimeStatus === 'SUBSCRIBED';
     return (
-      <div className="nm-page flex items-center justify-center">
-        <div className="text-center">
-          <div className="nm-circle w-16 h-16 border-4 border-[#f59e0b] border-t-transparent animate-spin rounded-full mb-4"></div>
-          <p className="text-[var(--text2)] font-medium animate-pulse">Entering the Wall...</p>
-        </div>
+      <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, background:'rgba(255,255,255,0.05)', padding:'4px 10px', borderRadius:20, border:'1px solid rgba(255,255,255,0.1)' }}>
+        <div className="status-dot" style={{ width:6, height:6, borderRadius:'50%', background: isLive ? '#4ade80' : '#fbbf24' }} />
+        <span style={{ color: isLive ? '#4ade80' : '#fbbf24', fontWeight:500 }}>{isLive ? 'Live' : 'Polling'}</span>
       </div>
     );
-  }
+  };
 
-  if (errorStatus) {
-    return (
-      <div className="nm-page flex items-center justify-center px-4">
-        <div className="nm-card max-w-lg text-center p-10">
-          <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">⚠️</div>
-          <h1 className="text-2xl font-bold mb-3" style={{color:'var(--text1)'}}>System Error</h1>
-          <p className="mb-6 text-sm" style={{color:'#fca5a5'}}>{errorStatus}</p>
-          <div className="flex flex-col gap-3">
-            <button onClick={() => window.location.reload()} className="nm-btn nm-btn-accent px-6 py-3 font-bold">🔄 Retry Connection</button>
-            <Link href="/" className="nm-btn px-6 py-3 text-sm" style={{color:'var(--text2)'}}>🏠 Go Home</Link>
-          </div>
-        </div>
+  const Watermark = () => (
+    <div style={{ position:'absolute', bottom:10, right:10, background:'rgba(0,0,0,0.4)', backdropFilter:'blur(4px)', padding:'3px 8px', borderRadius:6, fontSize:9, fontWeight:700, color:'rgba(255,255,255,0.6)', textTransform:'uppercase', letterSpacing:'0.15em', border:'1px solid rgba(255,255,255,0.1)' }}>
+      Memento
+    </div>
+  );
+
+  // -- Render States --
+
+  if (loading) return (
+    <div className="wall-page flex items-center justify-center">
+      <FontLoader />
+      <div className="text-center">
+        <div style={{ width:48, height:48, border:'3px solid rgba(255,255,255,0.1)', borderTopColor:themeP, borderRadius:'50%', animation:'spin 1s linear infinite', marginBottom:16 }} />
+        <p style={{ fontSize:14, opacity:0.6 }}>Entering the Wall…</p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (eventExpired) {
-    return (
-      <div className="nm-page flex items-center justify-center px-4">
-        <div className="nm-card max-w-md text-center p-10">
-          <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">🕒</div>
-          <h1 className="text-2xl font-bold mb-3" style={{color:'var(--text1)'}}>This event has expired</h1>
-          <p className="mb-6" style={{color:'var(--text2)'}}>The photo wall for this event is no longer available.</p>
-          <Link href="/" className="nm-btn nm-btn-accent px-6 py-3 font-bold">🏠 Go Home</Link>
-        </div>
+  if (notFound || eventExpired) return (
+    <div className="wall-page flex items-center justify-center p-6 text-center">
+      <FontLoader />
+      <div className="glass-card p-12 max-w-md">
+        <div style={{ fontSize:48, marginBottom:20 }}>{notFound ? '😢' : '🕒'}</div>
+        <h1 style={{ fontFamily:'var(--font-display)', fontSize:32, marginBottom:12 }}>{notFound ? 'Wall Not Found' : 'Event Expired'}</h1>
+        <p style={{ opacity:0.6, marginBottom:32 }}>{notFound ? "This event doesn't exist or has been removed." : "The photo wall for this event is no longer available."}</p>
+        <Link href="/" style={{ background:themeP, color:'#000', padding:'12px 32px', borderRadius:12, fontWeight:700, textDecoration:'none' }}>Go Home</Link>
       </div>
-    );
-  }
+    </div>
+  );
 
-  if (notFound) {
-    return (
-      <div className="nm-page flex items-center justify-center px-4">
-        <div className="nm-card max-w-md text-center p-10">
-          <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">😢</div>
-          <h1 className="text-2xl font-bold mb-3" style={{color:'var(--text1)'}}>Wall Not Found</h1>
-          <p className="mb-6" style={{color:'var(--text2)'}}>This event doesn't exist or has been removed.</p>
-          <Link href="/" className="nm-btn nm-btn-accent px-6 py-3 font-bold">🏠 Go Home</Link>
-        </div>
-      </div>
-    );
-  }
-
-  // ── SLIDESHOW MODE (fullscreen) ────────────────────────
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="fixed inset-0 z-50 flex flex-col" style={{background:'#14182a'}}>
-        <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="font-bold text-lg" style={{color:'var(--text1)'}}>{eventName}</h1>
-          <div className="flex gap-3 items-center">
-            <span className="nm-badge">{slideIndex + 1} / {displayedPhotos.length}</span>
-            <button onClick={() => { setViewMode('polaroid'); if (slideshowTimer.current) clearInterval(slideshowTimer.current); }}
-              className="nm-btn px-3 py-1 text-sm" style={{color:'var(--text2)'}}>✕ Exit</button>
-          </div>
+      <div className="wall-page fixed inset-0 flex flex-col z-50">
+        <FontLoader />
+        <div style={{ padding:'16px 24px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <h1 style={{ fontFamily:'var(--font-display)', fontSize:24 }}>{eventName}</h1>
+          <button onClick={() => setViewMode('polaroid')} style={{ background:'rgba(255,255,255,0.1)', border:'none', color:'#fff', padding:'8px 16px', borderRadius:10 }}>✕ Exit</button>
         </div>
-
-        {current && (
-          <div className="flex-1 relative flex items-center justify-center px-16 overflow-hidden">
-            {current.media_type === 'video' ? (
-              <video key={current.id} src={getPublicUrl(current.storage_path)} controls autoPlay loop playsInline className="max-h-full max-w-full object-contain rounded-xl" style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
-            ) : (
-              <img key={current.id} src={getPublicUrl(current.storage_path)} alt="" className="max-h-full max-w-full object-contain rounded-xl" style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
-            )}
-            
-            {/* Slideshow Watermark */}
-            {planTier !== 'WHITE_LABEL' && (
-              <div className="absolute top-10 right-10 bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg text-[12px] font-bold text-white/50 uppercase tracking-[0.3em] border border-white/10 pointer-events-none">
-                Memento
-              </div>
-            )}
-
-            {(current.caption || current.uploader_name) && (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center nm-card px-6 py-3">
-                {current.caption && <p className="text-sm italic mb-1" style={{color:'var(--text1)'}}>&#34;{current.caption}&#34;</p>}
-                <p className="text-xs" style={{color:'var(--text2)'}}>— {current.uploader_name}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        <button onClick={prevSlide} className="nm-circle w-12 h-12 absolute left-4 top-1/2 -translate-y-1/2 text-2xl" style={{color: 'var(--theme-primary)'}}>‹</button>
-        <button onClick={nextSlide} className="nm-circle w-12 h-12 absolute right-4 top-1/2 -translate-y-1/2 text-2xl" style={{color: 'var(--theme-primary)'}}>›</button>
-
-        <div className="flex gap-2 px-6 py-3 overflow-x-auto">
-          {displayedPhotos.map((p, i) => (
-            <button key={p.id} onClick={() => setSlideIndex(i)}
-              className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden transition ${i === slideIndex ? 'ring-2 ring-[#f59e0b]' : 'opacity-50'}`}>
-              {p.media_type === 'video' ? (
-                <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
-              ) : (
-                <img src={getPublicUrl(p.storage_path)} alt="" className="w-full h-full object-cover" />
-              )}
-            </button>
-          ))}
+        <div style={{ flex:1, position:'relative', display:'flex', alignItems:'center', justifyContent:'center', padding:40 }}>
+          {current && (
+            <div className="photo-card" key={current.id} style={{ height:'100%', width:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              {current.media_type === 'video' 
+                ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:20 }} autoPlay loop muted />
+                : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:20, boxShadow:'0 20px 80px rgba(0,0,0,0.8)' }} alt="" />}
+              {planTier !== 'WHITE_LABEL' && <Watermark />}
+            </div>
+          )}
+          <button onClick={prevSlide} style={{ position:'absolute', left:20, background:'none', border:'none', color:'#fff', fontSize:48 }}>‹</button>
+          <button onClick={nextSlide} style={{ position:'absolute', right:20, background:'none', border:'none', color:'#fff', fontSize:48 }}>›</button>
         </div>
-
-        <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }`}</style>
       </div>
     );
   }
 
-  // ── NORMAL VIEWS ───────────────────────────────────────────────
   return (
-    <div className="nm-page px-4 sm:px-6 lg:px-8 py-8" style={{
-      '--theme-primary': brand.colors?.primary || theme.primary,
-      '--theme-secondary': brand.colors?.secondary || theme.secondary
-    } as React.CSSProperties}>
-      {musicTrack && (
-        <audio ref={audioRef} loop src={`/music/${musicTrack}.mp3`} preload="auto" />
-      )}
-      <div className="max-w-7xl mx-auto">
+    <div className="wall-page" style={{ padding:'24px 20px 80px' }}>
+      <FontLoader />
+      {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
+      
+      <div style={{ maxWidth:1400, margin:'0 auto' }}>
         {/* Header */}
-        <div className="nm-card p-6 mb-8">
-          {brand.logoUrl ? <img src={brand.logoUrl} alt="Brand Logo" className="h-12 mb-4" /> : <div className="nm-badge mb-4">Live Wall Experience</div>}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="flex-1">
-              <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight" style={{color:'var(--text1)'}}>
-                {eventName || 'Loading…'}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="nm-badge flex items-center gap-2">
-                  📸 {displayedPhotos.length} photo{displayedPhotos.length !== 1 ? 's' : ''}
-                  <span className={`w-2 h-2 rounded-full ${
-                    realtimeStatus === 'SUBSCRIBED' ? 'bg-green-400 animate-pulse' :
-                    realtimeStatus === 'polling' ? 'bg-yellow-400 animate-pulse' :
-                    'bg-red-400'}`} />
-                  <span style={{color:'var(--text2)'}}>
-                    {realtimeStatus === 'SUBSCRIBED' ? '⚡ Live' : realtimeStatus === 'polling' ? '🔄 Polling' : '🟡 Connecting'}
-                  </span>
-                </div>
-                <button onClick={() => window.location.reload()} className="nm-btn px-3 py-1.5 text-xs" style={{color:'var(--text2)'}}>🔄 Refresh</button>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <div className="flex rounded-xl overflow-hidden nm-inset p-1">
-                {(['polaroid', 'grid', 'slideshow', 'album'] as ViewMode[]).map((mode) => (
-                  <button key={mode} onClick={() => { setViewMode(mode); if (mode === 'slideshow') setSlideIndex(0); }}
-                    className="px-3 py-2 text-xs font-medium rounded-lg transition"
-                    style={{
-                      background: viewMode === mode ? `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` : 'transparent',
-                      color: viewMode === mode ? 'var(--surface)' : 'var(--text2)'
-                    }}>
-                    {mode === 'polaroid' ? '📷 Polaroid' : mode === 'grid' ? '🔲 Grid' : mode === 'album' ? '📅 Auto Album' : '▶ Slideshow'}
-                  </button>
-                ))}
-              </div>
-              <button onClick={() => setModerationMode(!moderationMode)}
-                className="nm-btn px-3 py-2 text-xs font-semibold"
-                style={{color: moderationMode ? '#f59e0b' : 'var(--text2)'}}>
-                {moderationMode ? '🛡️ Moderation ON' : '👁️ Auto-Show'}
-              </button>
-              <button onClick={() => setShowQR(!showQR)} className="nm-btn px-3 py-2 text-xs" style={{color:'var(--text2)'}}>
-                {showQR ? 'Hide QR' : '📱 QR'}
-              </button>
-                            <Link href={`/mobile/${slug}`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: 'var(--theme-secondary)'}}>📱 My Photos</Link>
-              <Link href={`/wall/${slug}/tv`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#818cf8'}}>📺 TV Mode</Link>
-              {musicTrack && (
-                <button onClick={() => {
-                  if (!['PREMIUM', 'WHITE_LABEL'].includes(planTier)) {
-                    alert("💎 Background Music is a Premium feature! Upgrade to unlock.");
-                    return;
-                  }
-                  if (audioRef.current) {
-                    if (isAudioPlaying) { audioRef.current.pause(); setIsAudioPlaying(false); } 
-                    else { audioRef.current.play().then(() => setIsAudioPlaying(true)).catch(e => console.log(e)); }
-                  }
-                }} className={`nm-btn px-4 py-2 text-xs font-bold ${!['PREMIUM', 'WHITE_LABEL'].includes(planTier) ? 'opacity-60' : ''}`} 
-                   style={{color: isAudioPlaying ? '#4ade80' : 'var(--text2)'}}>
-                  {isAudioPlaying ? '🎵 Sound ON' : '🔇 Sound OFF'}
-                  {!['PREMIUM', 'WHITE_LABEL'].includes(planTier) && <span className="ml-1">🔒</span>}
-                </button>
-              )}
-              <button onClick={() => {
-                if (!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier)) {
-                  alert("✨ Bulk ZIP Download is a Standard feature! Upgrade to unlock.");
-                  return;
-                }
-                handleDownloadZip();
-              }} className={`nm-btn px-4 py-2 text-xs font-bold ${!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier) ? 'opacity-60' : ''}`} 
-                 style={{color: '#fbbf24'}}>
-                📦 Download ZIP
-                {!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier) && <span className="ml-1">🔒</span>}
-              </button>
-              <button onClick={handleDownloadPdf} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#a78bfa'}}>📘 Download PDF</button>
-              <button onClick={() => setShowBestShots(!showBestShots)} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: showBestShots ? 'var(--theme-primary)' : 'var(--text2)'}}>{showBestShots ? '🏆 Best Shots' : 'All Photos'}</button>
+        <div className="glass-card" style={{ padding:32, marginBottom:32, display:'flex', flexWrap:'wrap', gap:24, justifyContent:'space-between', alignItems:'center' }}>
+          <div>
+            <h1 style={{ fontFamily:'var(--font-display)', fontSize:48, marginBottom:8 }}>{eventName}</h1>
+            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+              <StatusBadge />
+              <span style={{ fontSize:12, opacity:0.5 }}>📸 {displayedPhotos.length} photos</span>
             </div>
           </div>
-        </div>
-
-      {/* QR Popover */}
-      {showQR && (
-        <div className="nm-card max-w-sm mx-auto text-center mb-8 p-8">
-          <h3 className="text-lg font-semibold mb-4" style={{color:'var(--text1)'}}>Share This Wall</h3>
-          <div className="nm-inset p-6 rounded-2xl inline-block mx-auto mb-4">
-            <QRCodeSVG value={uploadUrl} size={180} bgColor="var(--surface)" fgColor="var(--text1)" />
-          </div>
-          <p className="text-xs break-all mb-4 font-mono" style={{color:'var(--text2)'}}>{uploadUrl}</p>
           
-          {/* Enhanced Sharing Options */}
-          <div className="space-y-3">
-            <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="nm-btn w-full py-2.5 text-sm" style={{color: 'var(--theme-primary)'}}>
-              📋 Copy Link
-            </button>
-            <div className="flex gap-2">
-              <button onClick={() => {
-                const printWindow = window.open('', '_blank');
-                if (printWindow) {
-                  printWindow.document.write(`<html><head><title>${eventName}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:40px}h1{color:#333;margin-bottom:30px}.url{font-family:monospace;background:#f5f5f5;padding:10px;border-radius:5px;margin:20px auto;max-width:400px}@media print{body{padding:20px}}</style></head><body><h1>${eventName}</h1><h2>Scan to Upload Photos</h2><div class="url">${uploadUrl}</div><script>window.onload=()=>window.print();</script></body></html>`);
-                  printWindow.document.close();
-                }
-              }} className="nm-btn flex-1 text-xs py-2" style={{color:'#4ade80'}}>📄 Print</button>
-              <button onClick={() => {
-                if (navigator.share) { navigator.share({ title: eventName, text: `Upload photos to ${eventName}`, url: uploadUrl }); }
-                else { navigator.clipboard.writeText(uploadUrl); }
-              }} className="nm-btn flex-1 text-xs py-2" style={{color:'#60a5fa'}}>📤 Share</button>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:10 }}>
+            <div style={{ background:'rgba(255,255,255,0.05)', padding:4, borderRadius:14, display:'flex', gap:4 }}>
+              {(['polaroid','grid','album','slideshow'] as ViewMode[]).map(m => (
+                <button key={m} onClick={() => setViewMode(m)} style={{
+                  padding:'8px 12px', borderRadius:10, border:'none', fontSize:12, fontWeight:600, transition:'0.2s',
+                  background: viewMode === m ? themeP : 'transparent',
+                  color: viewMode === m ? '#000' : 'rgba(255,255,255,0.6)'
+                }}>{m.charAt(0).toUpperCase() + m.slice(1)}</button>
+              ))}
             </div>
+            <button onClick={() => setShowQR(!showQR)} style={{ padding:'0 16px', borderRadius:12, border:`1px solid ${themeP}`, background:'none', color:themeP, fontSize:12, fontWeight:700 }}>QR Code</button>
+            <button onClick={handleDownloadZip} style={{ padding:'0 16px', borderRadius:12, background:themeP, border:'none', color:'#000', fontSize:12, fontWeight:700 }}>Download ZIP</button>
           </div>
-          <button onClick={() => setShowQR(false)} className="nm-btn mt-4 text-xs px-4 py-1.5" style={{color:'var(--text2)'}}>✕ Close</button>
         </div>
-      )}
 
-      {/* Empty State */}
-      {displayedPhotos.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="nm-card max-w-lg mx-auto p-12">
-            <div className="nm-circle w-32 h-32 mx-auto mb-8 text-6xl">📷</div>
-            <h2 className="text-3xl font-bold mb-4" style={{color:'var(--text1)'}}>No Photos Yet</h2>
-            <p className="text-sm mb-10 leading-relaxed" style={{color:'var(--text2)'}}>
-              Share the QR code and photos will appear here in real time!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={() => setShowQR(true)} className="nm-btn nm-btn-accent px-8 py-3 font-bold">📱 Show QR Code</button>
-              <Link href={`/mobile/${slug}`} className="nm-btn px-8 py-3 font-bold" style={{color:'var(--text2)'}}>📸 Upload First Photo</Link>
+        {showQR && (
+          <div className="glass-card" style={{ maxWidth:400, margin:'0 auto 40px', padding:40, textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center' }}>
+            <h3 style={{ marginBottom:20 }}>Scan to Upload</h3>
+            <div style={{ padding:20, background:'#fff', borderRadius:16, marginBottom:20 }}>
+              <QRCodeSVG value={uploadUrl} size={180} />
             </div>
+            <p style={{ fontSize:12, opacity:0.5, wordBreak:'break-all' }}>{uploadUrl}</p>
           </div>
-        </div>
-      ) : viewMode === 'polaroid' ? (
-        // ── POLAROID ──
-        <div className="p-4">
-          <div className="flex flex-wrap justify-center gap-8">
-            {displayedPhotos.map((photo, index) => (
-              <div key={photo.id} className="nm-card p-5 pb-7 w-72 group flex flex-col photo-for-pdf"
-                style={{transform:`rotate(${(index % 5 - 2) * 3}deg)`,transition:'transform 0.3s'}
-                }>
-                <div className="aspect-square overflow-hidden rounded-xl mb-4 nm-inset relative">
-                  {photo.media_type === 'video' ? (
-                    <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" controls playsInline loop muted />
-                  ) : (
-                    <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  )}
-                  {/* Tiered Watermark Logic */}
-                  {planTier === 'WHITE_LABEL' && photo.watermark_url && (
-                    <img src={photo.watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
-                  )}
-                  {planTier !== 'WHITE_LABEL' && (
-                    <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
-                      Memento
-                    </div>
-                  )}
+        )}
+
+        {/* View Transitions */}
+        {displayedPhotos.length === 0 ? (
+          <div className="glass-card" style={{ padding:80, textAlign:'center' }}>
+            <div style={{ fontSize:64, marginBottom:24 }}>📷</div>
+            <h2 style={{ fontSize:32, marginBottom:16 }}>No Photos Yet</h2>
+            <p style={{ opacity:0.5, marginBottom:32 }}>Share the QR code to start the memories!</p>
+            <button onClick={() => setShowQR(true)} style={{ background:themeP, color:'#000', padding:'12px 32px', borderRadius:12, fontWeight:700, border:'none' }}>Show QR Code</button>
+          </div>
+        ) : viewMode === 'polaroid' ? (
+          <div style={{ display:'flex', flexWrap:'wrap', gap:40, justifyContent:'center' }}>
+            {displayedPhotos.map((p, i) => (
+              <div key={p.id} className="polaroid-card" style={{ transform:`rotate(${(i % 6 - 3) * 2}deg)` }}>
+                <div style={{ width:260, height:260, overflow:'hidden', marginBottom:12 }}>
+                  {p.media_type === 'video'
+                    ? <video src={getPublicUrl(p.storage_path)} style={{ width:'100%', height:'100%', objectFit:'cover' }} muted playsInline />
+                    : <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="" />}
                 </div>
-                <div className="text-center flex-1">
-                  {photo.caption && <p className="text-sm italic mb-2" style={{color:'var(--text1)'}}>&#34;{photo.caption}&#34;</p>}
-                  <p className="text-xs font-medium" style={{color:'var(--text2)'}}>📷 {photo.uploader_name}</p>
+                <div style={{ color:'#333', textAlign:'center', width:260 }}>
+                  {p.caption && <p style={{ fontSize:13, fontStyle:'italic', marginBottom:4 }}>"{p.caption}"</p>}
+                  <p style={{ fontSize:11, fontWeight:600 }}>By {p.uploader_name}</p>
                 </div>
-                <div className="mt-4 flex justify-between items-center">
-                  <button onClick={() => handleLike(photo.id)}
-                    className="nm-btn text-xs px-3 py-1.5 flex items-center gap-1.5" style={{color: 'var(--theme-secondary)'}}>
-                    ❤️ <span className="font-bold">{photo.reaction_count || 0}</span>
-                  </button>
-                  <button onClick={() => downloadPhoto(photo)}
-                    className="nm-btn text-xs px-3 py-1.5 opacity-0 group-hover:opacity-100 transition" style={{color: 'var(--theme-primary)'}}>⬇ Download</button>
-                </div>
+                {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
             ))}
           </div>
-        </div>
-      ) : viewMode === 'album' ? (
-        // ── AUTO ALBUM (Grouped by time segment) ──
-        <div className="p-4 space-y-12">
-          {(() => {
-            // Group photos by hour
-            const groups: { [key: string]: Photo[] } = {};
-            displayedPhotos.forEach(p => {
-              const d = new Date(p.created_at);
-              const hourLabel = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' - ' + d.toLocaleDateString();
-              if (!groups[hourLabel]) groups[hourLabel] = [];
-              groups[hourLabel].push(p);
-            });
-            
-            return Object.entries(groups).map(([timeLabel, groupPhotos]) => (
-              <div key={timeLabel} className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <h3 className="text-xl font-bold" style={{color:'var(--text1)'}}>{timeLabel}</h3>
-                  <div className="flex-1 h-px bg-slate-200/20"></div>
+        ) : viewMode === 'album' ? (
+           <div style={{ display:'flex', flexDirection:'column', gap:60 }}>
+             {(() => {
+               const groups: { [k: string]: Photo[] } = {};
+               displayedPhotos.forEach(p => {
+                 const label = new Date(p.created_at).toLocaleDateString();
+                 groups[label] = groups[label] || [];
+                 groups[label].push(p);
+               });
+               return Object.entries(groups).map(([label, gPhotos]) => (
+                 <div key={label}>
+                   <h3 style={{ fontSize:24, marginBottom:20, opacity:0.8 }}>{label}</h3>
+                   <div style={{ columns:'2 280px', gap:20 }}>
+                     {gPhotos.map(p => (
+                       <div key={p.id} className="photo-card" style={{ breakInside:'avoid', marginBottom:20, borderRadius:16, overflow:'hidden', position:'relative' }}>
+                         <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', display:'block' }} alt="" />
+                         {planTier !== 'WHITE_LABEL' && <Watermark />}
+                       </div>
+                     ))}
+                   </div>
+                 </div>
+               ));
+             })()}
+           </div>
+        ) : (
+          <div style={{ columns:'2 280px', gap:20 }}>
+            {displayedPhotos.map(p => (
+              <div key={p.id} className="photo-card" style={{ breakInside:'avoid', marginBottom:20, borderRadius:16, overflow:'hidden', position:'relative' }}>
+                <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', display:'block' }} alt="" />
+                <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:16, opacity:0, transition:'0.3s' }} className="hover-info">
+                   <p style={{ fontSize:12, fontWeight:600 }}>{p.uploader_name}</p>
                 </div>
-                <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
-                  {groupPhotos.map((photo, index) => (
-                    <div key={photo.id} className="nm-card break-inside-avoid overflow-hidden group relative">
-                      <div className="overflow-hidden rounded-[14px] relative">
-                        {photo.media_type === 'video' ? (
-                          <video src={getPublicUrl(photo.storage_path)} className="w-full object-cover" controls playsInline loop muted />
-                        ) : (
-                          <img src={getPublicUrl(photo.storage_path)} alt="" className="w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                        )}
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
-                        <div className="flex justify-between items-center">
-                          <p className="text-xs font-semibold" style={{color:'var(--text1)'}}>{photo.uploader_name}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {planTier !== 'WHITE_LABEL' && <Watermark />}
+                <style>{`.photo-card:hover .hover-info { opacity: 1; }`}</style>
               </div>
-            ));
-          })()}
-        </div>
-      ) : (
-        // ── MASONRY GRID ──
-        <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4 p-4">
-          {displayedPhotos.map((photo, index) => (
-            <div key={photo.id}
-              className={`nm-card break-inside-avoid overflow-hidden group relative photo-for-pdf ${
-                newPhotoId === photo.id ? 'ring-2 ring-[#f59e0b]' : ''
-              }`}
-              style={{animation:`fadeInUp 0.6s ease-out ${index * 0.1}s both`}}
-            >
-              <div className="overflow-hidden rounded-[14px] relative">
-                {photo.media_type === 'video' ? (
-                  <video src={getPublicUrl(photo.storage_path)} className="w-full object-cover" controls playsInline loop muted />
-                ) : (
-                  <img src={getPublicUrl(photo.storage_path)} alt={`By ${photo.uploader_name}`} className="w-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw" />
-                )}
-                {/* Tiered Watermark Logic */}
-                {planTier === 'WHITE_LABEL' && photos[0]?.watermark_url && (
-                  <img src={photos[0].watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
-                )}
-                {planTier !== 'WHITE_LABEL' && (
-                  <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
-                    Memento
-                  </div>
-                )}
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#14182a]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-[18px]">
-                {photo.caption && <p className="text-xs italic mb-2" style={{color:'var(--text1)'}}>&#34;{photo.caption}&#34;</p>}
-                <div className="flex justify-between items-center">
-                  <p className="text-xs font-semibold" style={{color:'var(--text1)'}}>{photo.uploader_name}</p>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => handleLike(photo.id)} className="nm-btn text-xs px-2 py-1 flex items-center gap-1" style={{color: 'var(--theme-secondary)'}}>❤️ {photo.reaction_count || 0}</button>
-                    <button onClick={() => downloadPhoto(photo)} className="nm-circle w-7 h-7 text-xs" style={{color: 'var(--theme-primary)'}}>⬇</button>
-                  </div>
-                </div>
-              </div>
-              {newPhotoId === photo.id && (
-                <div className="absolute top-2 right-2 nm-badge text-xs animate-bounce" style={{color: 'var(--theme-primary)'}}>NEW!</div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
       </div>
-      
-      {/* Confetti Animation */}
+
       <Confetti trigger={confettiTrigger} />
     </div>
   );
