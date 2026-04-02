@@ -169,6 +169,56 @@ const FontLoader = () => (
       box-shadow: 0 25px 60px rgba(30, 41, 59, 0.2);
     }
 
+    /* ─── LAYOUT STRUCTURE ─── */
+    .wall-container {
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+      position: relative;
+      z-index: 10;
+    }
+    @media (max-width: 1100px) {
+      .wall-container { flex-direction: column; gap: 32px; }
+    }
+
+    .wall-sidebar {
+      width: 320px;
+      position: sticky;
+      top: 128px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      flex-shrink: 0;
+    }
+    @media (max-width: 1100px) {
+      .wall-sidebar { width: 100%; position: relative; top: 0; }
+    }
+
+    .wall-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .qr-container {
+      text-align: center;
+      padding: 32px 24px;
+    }
+    .qr-box {
+      background: white;
+      padding: 16px;
+      border-radius: 20px;
+      display: inline-block;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+    }
+
     .status-dot {
       animation: pulse 2s infinite;
     }
@@ -178,6 +228,7 @@ const FontLoader = () => (
     }
   `}</style>
 );
+
 
 
 const Confetti = ({ trigger }: { trigger: boolean }) => {
@@ -480,112 +531,129 @@ export default function WallPage() {
   }
 
   return (
-    <div className="wall-page" style={{ padding:'24px 20px 100px' }}>
+    <div className="wall-page" style={{ padding:'0 32px 100px' }}>
       <FontLoader />
       <BackgroundDecoration />
       
       {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
       
-      <div style={{ maxWidth:1300, margin:'0 auto', position:'relative', zIndex:10 }}>
-        {/* Header */}
-        <div className="glass-card" style={{ padding:'32px 40px', marginBottom:40, display:'flex', flexWrap:'wrap', gap:24, justifyContent:'space-between', alignItems:'center' }}>
-          <div>
-            <h1 style={{ fontSize:'clamp(2.5rem, 5vw, 4rem)', fontWeight:800, color:'var(--text1)', letterSpacing:'-0.03em', marginBottom:12 }}>{eventName}</h1>
-            <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+      <div className="wall-container" style={{ maxWidth:1440, margin:'0 auto' }}>
+        {/* SIDEBAR */}
+        <aside className="wall-sidebar">
+          <div className="glass-card qr-container">
+            <h3 style={{ fontSize:18, fontWeight:800, marginBottom:8, color:'var(--text1)' }}>Join the Wall</h3>
+            <p style={{ fontSize:13, color:'var(--text2)', marginBottom:24 }}>Scan to share your memories</p>
+            <div className="qr-box">
+              <QRCodeSVG value={uploadUrl} size={200} />
+            </div>
+            <p style={{ fontSize:11, color:'var(--text2)', wordBreak:'break-all', marginTop:16, opacity:0.6 }}>{uploadUrl}</p>
+          </div>
+
+          <div className="glass-card" style={{ padding:24, display:'flex', flexDirection:'column', gap:16 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <span style={{ fontSize:14, fontWeight:700, color:'var(--text2)' }}>STATUS</span>
               <StatusBadge />
-              <span style={{ fontSize:13, fontWeight:600, color:'var(--text2)' }}>📸 {displayedPhotos.length} Memories</span>
+            </div>
+            <div style={{ height:1, background:'var(--border)', opacity:0.3 }} />
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <span style={{ fontSize:14, fontWeight:700, color:'var(--text2)' }}>PHOTOS</span>
+              <span style={{ fontSize:16, fontWeight:800, color:'var(--text1)' }}>{displayedPhotos.length}</span>
             </div>
           </div>
-          
-          <div style={{ display:'flex', flexWrap:'wrap', gap:12 }}>
-            <div style={{ background:'rgba(255,255,255,0.5)', padding:6, borderRadius:18, display:'flex', gap:6, border:'1px solid var(--border)' }}>
-              {(['polaroid','grid','album','slideshow'] as ViewMode[]).map(m => (
-                <button key={m} onClick={() => setViewMode(m)} style={{
-                  padding:'10px 18px', borderRadius:12, border:'none', fontSize:13, fontWeight:700, transition:'0.3s',
-                  background: viewMode === m ? 'linear-gradient(135deg, var(--amber), var(--rose))' : 'transparent',
-                  color: viewMode === m ? '#fff' : 'var(--text2)',
-                  boxShadow: viewMode === m ? '0 4px 12px rgba(244,114,182,0.3)' : 'none'
-                }}>{m.toUpperCase()}</button>
+
+          <button onClick={handleDownloadZip} className="btn-glow w-full py-4 rounded-2xl font-bold tracking-wider text-sm flex items-center justify-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            DOWNLOAD ZIP
+          </button>
+        </aside>
+
+        {/* MAIN CONTENT AREA */}
+        <main className="wall-main">
+          <header className="action-bar">
+            <h1 style={{ fontSize:'clamp(2.5rem, 5vw, 4.5rem)', fontWeight:900, color:'var(--text1)', letterSpacing:'-0.04em', lineHeight:1.1 }}>{eventName}</h1>
+            
+            <div style={{ display:'flex', flexWrap:'wrap', gap:12, alignItems:'center' }}>
+              <div style={{ background:'rgba(255,255,255,0.5)', padding:6, borderRadius:18, display:'flex', gap:6, border:'1px solid var(--border)', backdropFilter:'blur(12px)' }}>
+                {(['polaroid','grid','album','slideshow'] as ViewMode[]).map(m => (
+                  <button key={m} onClick={() => setViewMode(m)} style={{
+                    padding:'10px 18px', borderRadius:12, border:'none', fontSize:12, fontWeight:800, transition:'0.3s',
+                    background: viewMode === m ? 'linear-gradient(135deg, var(--amber), var(--rose))' : 'transparent',
+                    color: viewMode === m ? '#fff' : 'var(--text2)',
+                    boxShadow: viewMode === m ? '0 4px 12px rgba(244,114,182,0.3)' : 'none',
+                    letterSpacing:'0.03em'
+                  }}>{m.toUpperCase()}</button>
+                ))}
+              </div>
+            </div>
+          </header>
+
+          {/* View Transitions */}
+          {displayedPhotos.length === 0 ? (
+            <div className="glass-card" style={{ padding:100, textAlign:'center' }}>
+              <div style={{ fontSize:100, marginBottom:32, opacity:0.8 }}>✨</div>
+              <h2 style={{ fontSize:36, fontWeight:800, marginBottom:16, color:'var(--text1)' }}>Your Wall Awaits</h2>
+              <p style={{ color:'var(--text2)', marginBottom:40, fontSize:18, maxWidth:500, margin:'0 auto 40px' }}>Waiting for the first magical moment to be shared. The memories you capture here will last a lifetime.</p>
+            </div>
+          ) : viewMode === 'polaroid' ? (
+            <div style={{ display:'flex', flexWrap:'wrap', gap:40, justifyContent:'center' }}>
+              {displayedPhotos.map((p, i) => (
+                <div key={p.id} className="polaroid-card" style={{ transform:`rotate(${(i % 6 - 3) * 2}deg)` }}>
+                  <div style={{ width:260, height:260, overflow:'hidden', marginBottom:12 }}>
+                    {p.media_type === 'video'
+                      ? <video src={getPublicUrl(p.storage_path)} style={{ width:'100%', height:'100%', objectFit:'cover' }} muted playsInline />
+                      : <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="" />}
+                  </div>
+                  <div style={{ color:'#333', textAlign:'center', width:260 }}>
+                    {p.caption && <p style={{ fontSize:13, fontStyle:'italic', marginBottom:4, fontWeight:500 }}>"{p.caption}"</p>}
+                    <p style={{ fontSize:11, fontWeight:700, color:'#666', textTransform:'uppercase', letterSpacing:'0.05em' }}>BY {p.uploader_name}</p>
+                  </div>
+                  {planTier !== 'WHITE_LABEL' && <Watermark />}
+                </div>
               ))}
             </div>
-            <button onClick={() => setShowQR(!showQR)} className="btn-outline px-6 py-3 rounded-xl font-bold text-sm">QR CODE</button>
-            <button onClick={handleDownloadZip} className="btn-glow px-6 py-3 rounded-xl font-bold text-sm">DOWNLOAD ALL</button>
-          </div>
-        </div>
-
-        {showQR && (
-          <div className="glass-card" style={{ maxWidth:400, margin:'0 auto 40px', padding:40, textAlign:'center', display:'flex', flexDirection:'column', alignItems:'center' }}>
-            <h3 style={{ marginBottom:20 }}>Scan to Upload</h3>
-            <div style={{ padding:20, background:'#fff', borderRadius:16, marginBottom:20 }}>
-              <QRCodeSVG value={uploadUrl} size={180} />
-            </div>
-            <p style={{ fontSize:12, opacity:0.5, wordBreak:'break-all' }}>{uploadUrl}</p>
-          </div>
-        )}
-
-        {/* View Transitions */}
-        {displayedPhotos.length === 0 ? (
-          <div className="glass-card" style={{ padding:80, textAlign:'center' }}>
-            <div style={{ fontSize:80, marginBottom:32 }}>📸</div>
-            <h2 style={{ fontSize:32, fontWeight:700, marginBottom:16, color:'var(--text1)' }}>No Photos Yet</h2>
-            <p style={{ color:'var(--text2)', marginBottom:40, fontSize:18, maxWidth:500, margin:'0 auto 40px' }}>The memories haven't started flowing in yet. Share your QR code to let the magic begin!</p>
-            <button onClick={() => setShowQR(true)} className="btn-glow px-10 py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">Show QR Code</button>
-          </div>
-        ) : viewMode === 'polaroid' ? (
-          <div style={{ display:'flex', flexWrap:'wrap', gap:40, justifyContent:'center' }}>
-            {displayedPhotos.map((p, i) => (
-              <div key={p.id} className="polaroid-card" style={{ transform:`rotate(${(i % 6 - 3) * 2}deg)` }}>
-                <div style={{ width:260, height:260, overflow:'hidden', marginBottom:12 }}>
-                  {p.media_type === 'video'
-                    ? <video src={getPublicUrl(p.storage_path)} style={{ width:'100%', height:'100%', objectFit:'cover' }} muted playsInline />
-                    : <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', height:'100%', objectFit:'cover' }} alt="" />}
-                </div>
-                <div style={{ color:'#333', textAlign:'center', width:260 }}>
-                  {p.caption && <p style={{ fontSize:13, fontStyle:'italic', marginBottom:4 }}>"{p.caption}"</p>}
-                  <p style={{ fontSize:11, fontWeight:600 }}>By {p.uploader_name}</p>
-                </div>
-                {planTier !== 'WHITE_LABEL' && <Watermark />}
-              </div>
-            ))}
-          </div>
-        ) : viewMode === 'album' ? (
-           <div style={{ display:'flex', flexDirection:'column', gap:60 }}>
-             {(() => {
-               const groups: { [k: string]: Photo[] } = {};
-               displayedPhotos.forEach(p => {
-                 const label = new Date(p.created_at).toLocaleDateString();
-                 groups[label] = groups[label] || [];
-                 groups[label].push(p);
-               });
-               return Object.entries(groups).map(([label, gPhotos]) => (
-                 <div key={label}>
-                   <h3 style={{ fontSize:24, marginBottom:20, opacity:0.8 }}>{label}</h3>
-                   <div style={{ columns:'2 280px', gap:20 }}>
-                     {gPhotos.map(p => (
-                       <div key={p.id} className="photo-card" style={{ breakInside:'avoid', marginBottom:20, borderRadius:16, overflow:'hidden', position:'relative' }}>
-                         <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', display:'block' }} alt="" />
-                         {planTier !== 'WHITE_LABEL' && <Watermark />}
-                       </div>
-                     ))}
+          ) : viewMode === 'album' ? (
+             <div style={{ display:'flex', flexDirection:'column', gap:80 }}>
+               {(() => {
+                 const groups: { [k: string]: Photo[] } = {};
+                 displayedPhotos.forEach(p => {
+                   const label = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                   groups[label] = groups[label] || [];
+                   groups[label].push(p);
+                 });
+                 return Object.entries(groups).map(([label, gPhotos]) => (
+                   <div key={label}>
+                     <h3 style={{ fontSize:20, fontWeight:800, marginBottom:32, color:'var(--text2)', letterSpacing:'0.1em', textTransform:'uppercase' }}>{label}</h3>
+                     <div style={{ columns:'3 300px', gap:32 }}>
+                       {gPhotos.map(p => (
+                         <div key={p.id} className="photo-card glass-card" style={{ breakInside:'avoid', marginBottom:32, borderRadius:24, overflow:'hidden', position:'relative', border:'none', padding:0 }}>
+                           <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', display:'block' }} alt="" />
+                           {planTier !== 'WHITE_LABEL' && <Watermark />}
+                         </div>
+                       ))}
+                     </div>
                    </div>
-                 </div>
-               ));
-             })()}
-           </div>
-        ) : (
-          <div style={{ columns:'2 280px', gap:20 }}>
-            {displayedPhotos.map(p => (
-              <div key={p.id} className="photo-card" style={{ breakInside:'avoid', marginBottom:20, borderRadius:16, overflow:'hidden', position:'relative' }}>
-                <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', display:'block' }} alt="" />
-                <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:16, opacity:0, transition:'0.3s' }} className="hover-info">
-                   <p style={{ fontSize:12, fontWeight:600 }}>{p.uploader_name}</p>
+                 ));
+               })()}
+             </div>
+          ) : (
+            <div style={{ columns:'3 300px', gap:32 }}>
+              {displayedPhotos.map(p => (
+                <div key={p.id} className="photo-card glass-card" style={{ breakInside:'avoid', marginBottom:32, borderRadius:24, overflow:'hidden', position:'relative', border:'none', padding:0 }}>
+                  <img src={getPublicUrl(p.storage_path)} style={{ width:'100%', display:'block', transition:'0.5s' }} className="wall-img" alt="" />
+                  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.6), transparent)', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:24, opacity:0, transition:'0.3s' }} className="hover-info">
+                     <p style={{ fontSize:14, fontWeight:700, color:'#fff' }}>{p.uploader_name}</p>
+                     {p.caption && <p style={{ fontSize:12, color:'rgba(255,255,255,0.8)', marginTop:4 }}>{p.caption}</p>}
+                  </div>
+                  {planTier !== 'WHITE_LABEL' && <Watermark />}
+                  <style>{`
+                    .photo-card:hover .hover-info { opacity: 1; }
+                    .photo-card:hover .wall-img { transform: scale(1.05); }
+                  `}</style>
                 </div>
-                {planTier !== 'WHITE_LABEL' && <Watermark />}
-                <style>{`.photo-card:hover .hover-info { opacity: 1; }`}</style>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </main>
       </div>
 
       <Confetti trigger={confettiTrigger} />

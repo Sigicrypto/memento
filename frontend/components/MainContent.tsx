@@ -15,7 +15,7 @@ export default function MainContent({ children }: { children: React.ReactNode })
   const isLanding = pathname === '/';
 
   return (
-    <main className={`flex-1 w-full ${isLanding ? '' : 'pt-20'}`}>
+    <main className={`flex-1 w-full ${isLanding ? '' : 'pt-32'}`}>
       {children}
     </main>
   );
