@@ -1361,17 +1361,17 @@ export default function LandingPage() {
 
             {[
 
-              { icon: '📺', title: 'Live Slideshow', desc: 'Auto-plays on any screen. Cast to TV or projector for a stunning real-time display.', big: true },
+              { icon: '✨', title: 'Selfie-Safe Matching', desc: 'The ultimate privacy feature. Guests scan their face to instantly find and download only their photos—no manual searching required.', big: true },
 
-              { icon: '📷', title: 'Polaroid Gallery', desc: 'Beautiful framed photos with captions and gentle float animations.' },
+              { icon: '📺', title: 'Live Slideshow', desc: 'Auto-plays on any screen. Cast to TV or projector for a stunning real-time display.' },
 
-              { icon: '🔒', title: 'Private Walls', desc: 'Password-protect your wall. Approve photos before they go live.' },
+              { icon: '📷', title: 'Mirror Grid & Album', desc: 'Beautiful high-res photo gallery with automated albums and grid views.' },
 
-              { icon: '📱', title: 'Mobile First', desc: 'Optimized for phones. Each guest gets their own personal photo page.' },
+              { icon: '🔒', title: 'Private Walls', desc: 'Password-protect your memory wall. Full moderation allows you to approve every shot before it goes live.' },
 
-              { icon: '⚡', title: 'Real-time Sync', desc: 'Zero delay. Photos appear the instant they\'re uploaded.' },
+              { icon: '📱', title: 'Zero Friction', desc: 'No apps. No accounts. No logins. Just scan a QR and start sharing within 3 seconds.' },
 
-              { icon: '🛡️', title: 'Moderation', desc: 'Full control. Approve or remove any photo with one tap.' },
+              { icon: '🛡️', title: 'Safety & Moderation', desc: 'Control your event. Remove or approve photos with one tap to keep the energy positive.' },
 
             ].map((f, i) => (
 

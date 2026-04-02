@@ -50,9 +50,9 @@ export default function CreateEventPage() {
       }
     }
 
-    console.log("[create] inserting event:", { name, slug, owner_id: user.id });
+    console.log("[create] inserting event:", { name, slug, owner_id: user.id, owner_email: user.email });
     const { error: dbError } = await supabase.from('events').insert({
-      name, slug, owner_id: user.id, created_at: new Date().toISOString(),
+      name, slug, owner_id: user.id, owner_email: user.email, created_at: new Date().toISOString(),
       password: password || null,
       plan_type: (plan || 'STARTER').toUpperCase(),
     });

@@ -7,6 +7,9 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import Webcam from 'react-webcam';
+import { extractFaceDescriptor } from '@/lib/faceEngine';
+import { useAuth } from '@/hooks/useAuth';
 
 // ── Components ──────────────────────────────────────────────
 
@@ -576,6 +579,7 @@ interface Photo {
   approved?: boolean;
   is_best_shot?: boolean;
   watermark_url?: string;
+  face_descriptor?: number[];
 }
 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow' | 'album';
@@ -602,6 +606,12 @@ export default function WallPage() {
   const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [showBestShots, setShowBestShots] = useState(false);
   const [revealPhoto, setRevealPhoto] = useState<Photo | null>(null);
+  const [matchedPhotoIds, setMatchedPhotoIds] = useState<string[] | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSelfieCam, setShowSelfieCam] = useState(false);
+  const webcamRef = useRef<Webcam>(null);
+  const { user } = useAuth();
+  const [ownerId, setOwnerId] = useState<string | null>(null);
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [musicTrack, setMusicTrack] = useState<string | null>(null);
@@ -651,6 +661,7 @@ export default function WallPage() {
 
       setEventName(data.name);
       setEventId(data.id);
+      setOwnerId(data.owner_id);
       setPlanTier(data.plan_type || 'STARTER');
       if (data.theme_primary_color && data.theme_secondary_color)
         setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
@@ -716,10 +727,63 @@ export default function WallPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [viewMode, prevViewMode]);
 
-  const nextSlide = () => setSlideIndex(i => (i + 1) % photos.length);
-  const prevSlide = () => setSlideIndex(i => (i - 1 + photos.length) % photos.length);
-
   // -- Actions --
+
+  const handleSelfieSearch = async () => {
+    setShowSelfieCam(true);
+  };
+
+  const captureSelfieAndSearch = async () => {
+    if (!webcamRef.current) return;
+    const screenshot = webcamRef.current.getScreenshot();
+    if (!screenshot) return;
+    
+    setIsSearching(true);
+    setShowSelfieCam(false);
+    
+    try {
+      // Convert base64 to Image element for AI processing
+      const img = new Image();
+      img.src = screenshot;
+      await new Promise(resolve => img.onload = resolve);
+      
+      const descriptor = await extractFaceDescriptor(img);
+      if (!descriptor) {
+        alert("We couldn't see your face clearly. Please try again with better lighting!");
+        return;
+      }
+      
+      const { data, error } = await supabase.rpc('match_photo_faces', {
+        query_embedding: Array.from(descriptor),
+        match_threshold: 0.5,
+        match_count: 50,
+        target_event_id: eventId
+      });
+      
+      if (error) throw error;
+      
+      const photoIds = data.map((d: any) => d.photo_id);
+      setMatchedPhotoIds(photoIds);
+      
+      if (photoIds.length === 0) {
+        alert("We couldn't find any photos of you yet—keep sharing!");
+      } else {
+        alert(`Found ${photoIds.length} photos of you!`);
+      }
+      
+    } catch (err: any) {
+      console.error("Match error:", err);
+      alert("Error searching for photos. Please try again.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const downloadPhoto = async (photo: Photo) => {
+    const res = await fetch(getPublicUrl(photo.storage_path));
+    const blob = await res.blob();
+    saveAs(blob, `memento-${photo.uploader_name}-${photo.id.slice(0, 4)}.jpg`);
+  };
 
   const handleLike = async (photoId: string) => {
     const gid = localStorage.getItem('memento_guest_id') || `guest_${Date.now()}`;
@@ -729,25 +793,39 @@ export default function WallPage() {
     if (error) setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) - 1 } : p));
   };
 
-  const downloadPhoto = async (photo: Photo) => {
-    const res = await fetch(getPublicUrl(photo.storage_path));
-    const blob = await res.blob();
-    saveAs(blob, `memento-${photo.uploader_name}-${photo.id.slice(0, 4)}.jpg`);
-  };
-
   const handleDownloadZip = async () => {
-    // Correcting to match marketing: Starter NOW includes ZIP download.
-    if (!['STARTER', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier.toUpperCase())) {
-      alert('✨ Bulk ZIP Download is a Premium feature! Upgrade to unlock.'); return;
+    const isOwner = user && user.id === ownerId;
+    const photosToDownload = isOwner 
+      ? displayedPhotos 
+      : displayedPhotos.filter(p => matchedPhotoIds?.includes(p.id));
+
+    if (photosToDownload.length === 0) {
+      if (isOwner) alert("No photos to download yet!");
+      else alert("✨ Please use the 'Find My Photos' button to match your photos before downloading your collection.");
+      return;
     }
-    if (!photos.length) return;
+
+    if (!isOwner) {
+      const confirmDownload = confirm(`Ready to download your ${photosToDownload.length} matched photos?`);
+      if (!confirmDownload) return;
+    }
+
+    alert(`Preparing ${isOwner ? 'Full Event' : 'your personal'} ZIP archive...`);
     const zip = new JSZip();
     const folder = zip.folder(`${slug}-memento`);
-    for (const p of photos) {
-      const blob = await (await fetch(getPublicUrl(p.storage_path))).blob();
-      folder?.file(`${p.uploader_name}-${p.id.slice(0, 4)}.jpg`, blob);
+    
+    // Process only the filtered photos
+    for (const p of photosToDownload) {
+      try {
+        const blob = await (await fetch(getPublicUrl(p.storage_path))).blob();
+        folder?.file(`${p.uploader_name}-${p.id.slice(0, 4)}.jpg`, blob);
+      } catch (e) {
+        console.error("Download failed for photo:", p.id, e);
+      }
     }
-    saveAs(await zip.generateAsync({ type: 'blob' }), `${slug}-wall.zip`);
+    
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, `${slug}-${isOwner ? 'master' : 'personal'}-memento.zip`);
   };
 
   const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/mobile/${slug}` : '';
@@ -966,10 +1044,28 @@ export default function WallPage() {
             </div>
           </div>
 
-          <button onClick={handleDownloadZip} className="btn-glow w-full py-4 rounded-2xl font-bold tracking-wider text-sm flex items-center justify-center gap-2">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-            DOWNLOAD ZIP
-          </button>
+          <div className="glass-card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <button 
+              onClick={matchedPhotoIds ? () => setMatchedPhotoIds(null) : handleSelfieSearch}
+              className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                matchedPhotoIds 
+                ? 'bg-slate-100 text-slate-500 hover:bg-slate-200' 
+                : 'bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20'
+              }`}
+            >
+              {isSearching ? 'SEARCHING...' : matchedPhotoIds ? '✕ CLEAR SEARCH' : '✨ FIND MY PHOTOS'}
+            </button>
+            <button 
+              onClick={handleDownloadZip} 
+              className="btn-glow w-full py-4 rounded-2xl font-bold tracking-wider text-sm flex items-center justify-center gap-2"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+              {user && user.id === ownerId ? 'DOWNLOAD MASTER ZIP' : 'DOWNLOAD MY PHOTOS'}
+            </button>
+            {matchedPhotoIds && (
+               <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">{matchedPhotoIds.length} photos found</p>
+            )}
+          </div>
         </aside>
 
         {/* MAIN CONTENT AREA */}
