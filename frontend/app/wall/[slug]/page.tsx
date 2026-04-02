@@ -697,14 +697,33 @@ export default function WallPage() {
     fetchPhotos();
 
     const channel = supabase.channel(`wall-${eventId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` }, 
         (payload) => {
           const newPhoto = payload.new as Photo;
-          setPhotos(prev => [newPhoto, ...prev]);
-          if (!moderationMode) {
-            setConfettiTrigger(true);
-            setRevealPhoto(newPhoto);
-            setTimeout(() => setConfettiTrigger(false), 3000);
+          const oldPhoto = payload.old as Photo;
+
+          if (payload.eventType === 'INSERT') {
+            // Only add and animate if already approved (Safety Filter OFF)
+            if (newPhoto.approved) {
+              setPhotos(prev => [newPhoto, ...prev]);
+              setConfettiTrigger(true);
+              setRevealPhoto(newPhoto);
+              setTimeout(() => setConfettiTrigger(false), 3000);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            // If it was just approved (Safety Filter ON -> Admin Approved)
+            if (!oldPhoto?.approved && newPhoto.approved) {
+              setPhotos(prev => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
+              setConfettiTrigger(true);
+              setRevealPhoto(newPhoto);
+              setTimeout(() => setConfettiTrigger(false), 3000);
+            } 
+            // If it was unapproved/hidden later
+            else if (oldPhoto?.approved && !newPhoto.approved) {
+              setPhotos(prev => prev.filter(p => p.id !== newPhoto.id));
+            }
+          } else if (payload.eventType === 'DELETE') {
+            setPhotos(prev => prev.filter(p => p.id !== oldPhoto.id));
           }
         }
       )

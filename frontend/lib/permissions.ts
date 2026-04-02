@@ -1,4 +1,4 @@
-export type PlanTier = 'STARTER' | 'STANDARD' | 'PREMIUM' | 'WHITE_LABEL';
+export type PlanTier = 'STARTER' | 'STANDARD' | 'PREMIUM' | 'WHITELABEL';
 
 export type Feature = 
   | 'ZIP_DOWNLOAD' 
@@ -15,7 +15,7 @@ const TIER_RANK: Record<PlanTier, number> = {
   STARTER: 0,
   STANDARD: 1,
   PREMIUM: 2,
-  WHITE_LABEL: 3,
+  WHITELABEL: 3,
 };
 
 const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
@@ -26,8 +26,8 @@ const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
   GUEST_DOWNLOAD: 'STANDARD',
   SLIDESHOW_MUSIC: 'PREMIUM',
   VIDEO_UPLOAD: 'PREMIUM',
-  BRANDING_REMOVAL: 'WHITE_LABEL',
-  CUSTOM_DOMAIN: 'WHITE_LABEL',
+  BRANDING_REMOVAL: 'WHITELABEL',
+  CUSTOM_DOMAIN: 'WHITELABEL',
 };
 
 /**

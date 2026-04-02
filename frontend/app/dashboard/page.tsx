@@ -132,9 +132,16 @@ export default function DashboardPage() {
                   {(profile?.full_name || 'U').charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text1)' }}>
-                    Welcome back, {(profile?.full_name || 'there').split(' ')[0]}!
-                  </h1>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text1)' }}>
+                      Welcome back, {(profile?.full_name || 'there').split(' ')[0]}!
+                    </h1>
+                    {profile?.role === 'admin' && (
+                      <Link href="/admin" className="nm-badge !bg-amber-500/10 !text-amber-500 !border-amber-500/20 px-3 py-1 flex items-center gap-1 hover:!bg-amber-500/20 transition-all">
+                        <Shield size={10} /> ADMIN
+                      </Link>
+                    )}
+                  </div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>{profile?.email || user?.email}</p>
                 </div>
               </div>

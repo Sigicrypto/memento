@@ -215,6 +215,60 @@ export default function CreateEventPage() {
               <input type="password" className="nm-input py-3 text-sm" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for open access…" />
             </div>
 
+            {/* Premium Features Upsell */}
+            <div className="nm-inset p-6 rounded-3xl space-y-5 bg-white/5 border border-white/5">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[10px] font-black uppercase tracking-widest" style={{color:'var(--text2)'}}>Premium Experience</h3>
+                {(plan === 'starter' || !plan) && (
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 border border-amber-500/20">LOCKED</span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {/* Feature: Slideshow Music */}
+                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${plan === 'starter' ? 'opacity-40 grayscale-[0.5] border-transparent' : 'border-white/5 bg-white/5'}`}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">🎵</span>
+                    <div>
+                      <p className="text-xs font-bold" style={{color:'var(--text1)'}}>Cinematic Music</p>
+                      <p className="text-[10px]" style={{color:'var(--text2)'}}>Curated tracks for your wall</p>
+                    </div>
+                  </div>
+                  {plan === 'starter' && <span className="text-[9px] font-black text-amber-500/80">STANDARD+</span>}
+                </div>
+
+                {/* Feature: Video Uploads */}
+                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${plan === 'starter' ? 'opacity-40 grayscale-[0.5] border-transparent' : 'border-white/5 bg-white/5'}`}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">🎬</span>
+                    <div>
+                      <p className="text-xs font-bold" style={{color:'var(--text1)'}}>Video Support</p>
+                      <p className="text-[10px]" style={{color:'var(--text2)'}}>Capture motion & sound</p>
+                    </div>
+                  </div>
+                  {plan === 'starter' && <span className="text-[9px] font-black text-rose-500/80">PREMIUM+</span>}
+                </div>
+
+                {/* Feature: Watermark Removal */}
+                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${plan !== 'whitelabel' ? 'opacity-40 grayscale-[0.5] border-transparent' : 'border-white/5 bg-white/5'}`}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">✨</span>
+                    <div>
+                      <p className="text-xs font-bold" style={{color:'var(--text1)'}}>White Label</p>
+                      <p className="text-[10px]" style={{color:'var(--text2)'}}>Remove all Memento branding</p>
+                    </div>
+                  </div>
+                  {plan !== 'whitelabel' && <span className="text-[9px] font-black text-indigo-500/80">PARTNER</span>}
+                </div>
+              </div>
+
+              {(plan === 'starter' || !plan) && (
+                <Link href="/#pricing" className="block text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] font-bold text-amber-500 hover:bg-amber-500/20 transition-all">
+                  ✨ SCALE TO UNLOCK PREMIUM FEATURES
+                </Link>
+              )}
+            </div>
+
             {error && (
               <div className="nm-inset p-4 flex items-center gap-3 text-sm" style={{color:'#f472b6'}}>
                 <span>⚠️</span>

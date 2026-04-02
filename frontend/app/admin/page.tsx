@@ -11,6 +11,7 @@ interface User {
   email: string;
   created_at: string;
   plan: string;
+  is_approved: boolean;
   events_count?: number;
 }
 
@@ -191,6 +192,21 @@ export default function AdminPage() {
     fetchEvents();
   }, [isAdmin, activeTab]);
 
+  const handleToggleApproval = async (userId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_approved: !currentStatus })
+        .eq('id', userId);
+
+      if (error) throw error;
+      
+      setUsers(users.map(u => u.id === userId ? { ...u, is_approved: !currentStatus } : u));
+    } catch (error: any) {
+      alert('Failed to update status: ' + error.message);
+    }
+  };
+
   const handleUpdatePlan = async (userId: string, newPlan: string) => {
     try {
       const { error } = await supabase
@@ -352,14 +368,25 @@ export default function AdminPage() {
                     <div className="flex items-center gap-2">
                       <select 
                         className="nm-badge text-[11px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-1 cursor-pointer outline-none font-bold uppercase"
-                        value={u.plan || 'STARTER'}
+                        value={(u.plan || 'STARTER').toUpperCase()}
                         onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
                       >
                         <option value="STARTER">Starter</option>
                         <option value="STANDARD">Standard</option>
                         <option value="PREMIUM">Premium</option>
-                        <option value="WHITE_LABEL">Partner</option>
+                        <option value="WHITELABEL">Partner</option>
                       </select>
+                      
+                      <button 
+                        onClick={() => handleToggleApproval(u.id, u.is_approved)}
+                        className={`nm-badge text-[10px] px-3 py-1 font-bold transition-all ${
+                          u.is_approved 
+                          ? 'bg-green-500/10 text-green-500 border-green-500/20' 
+                          : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                        }`}
+                      >
+                        {u.is_approved ? '✓ APPROVED' : '⚡ APPROVE'}
+                      </button>
                       <button onClick={() => handleDeleteUser(u.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
                     </div>
                   </div>
