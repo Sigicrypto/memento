@@ -51,13 +51,32 @@ export const useAuth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      setLoading(false); // Set loading false immediately
+      setLoading(false);
       if (currentUser) fetchProfile(currentUser.id);
       else setProfile(null);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // Real-time profile subscription
+    let profileChannel: any;
+    if (user) {
+      profileChannel = supabase
+        .channel(`profile-${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
+          (payload) => {
+            console.log('Real-time profile update:', payload.new);
+            setProfile(payload.new as UserProfile);
+          }
+        )
+        .subscribe();
+    }
+
+    return () => {
+      subscription.unsubscribe();
+      if (profileChannel) supabase.removeChannel(profileChannel);
+    };
+  }, [user?.id]); // Re-subscribe if user ID changes
 
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
