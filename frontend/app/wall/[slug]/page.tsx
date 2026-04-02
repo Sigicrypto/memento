@@ -10,6 +10,7 @@ import { saveAs } from 'file-saver';
 import Webcam from 'react-webcam';
 import { extractFaceDescriptor } from '@/lib/faceEngine';
 import { useAuth } from '@/hooks/useAuth';
+import { hasFeature } from '@/lib/permissions';
 
 // ── Components ──────────────────────────────────────────────
 
@@ -598,6 +599,7 @@ export default function WallPage() {
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [planTier, setPlanTier] = useState<string>('STARTER');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
   const [prevViewMode, setPrevViewMode] = useState<ViewMode>('polaroid');
@@ -659,19 +661,23 @@ export default function WallPage() {
       }
       if (!data) { setNotFound(true); setLoading(false); return; }
 
-      setEventName(data.name);
-      setEventId(data.id);
-      setOwnerId(data.owner_id);
-      setPlanTier(data.plan_type || 'STARTER');
-      if (data.theme_primary_color && data.theme_secondary_color)
-        setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
+      if (data) {
+        setEventName(data.name);
+        setEventId(data.id);
+        setOwnerId(data.owner_id);
+        const actualPlan = (data.plan_type || 'STARTER').toUpperCase();
+        setPlanTier(actualPlan);
+        
+        if (data.theme_primary_color && data.theme_secondary_color)
+          setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
+      }
       if (data.expires_at && new Date(data.expires_at) < new Date()) setEventExpired(true);
       if (data.enable_safety_filter) setModerationMode(true);
       if (data.music_track && data.music_track !== 'none') setMusicTrack(data.music_track);
 
       try {
         const { data: profile } = await supabase.from('profiles').select('plan, role').eq('id', data.owner_id).single();
-        if (data.plan_type === 'WHITE_LABEL' || profile?.plan === 'whitelabel') {
+        if (data.plan_type === 'WHITE_LABEL') {
           setBrand({ logoUrl: null, colors: null });
         }
       } catch { }
@@ -845,20 +851,25 @@ export default function WallPage() {
     );
   };
 
-  const Watermark = () => (
-    <div style={{
-      position: 'absolute', bottom: 12, right: 12,
-      display: 'flex', alignItems: 'center',
-      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-      opacity: 0.6, pointerEvents: 'none'
-    }}>
-      <img
-        src="/CC logo.png"
-        alt="Memento"
-        style={{ height: 14, width: 'auto', display: 'block', objectFit: 'contain' }}
-      />
-    </div>
-  );
+  const Watermark = () => {
+    // Branding Removal is strictly for WHITE_LABEL events
+    if (hasFeature(planTier, 'BRANDING_REMOVAL')) return null;
+
+    return (
+      <div style={{
+        position: 'absolute', bottom: 12, right: 12,
+        display: 'flex', alignItems: 'center',
+        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+        opacity: 0.6, pointerEvents: 'none'
+      }}>
+        <img
+          src="/CC logo.png"
+          alt="Memento"
+          style={{ height: 14, width: 'auto', display: 'block', objectFit: 'contain' }}
+        />
+      </div>
+    );
+  };
 
   // -- Render States --
 
@@ -1008,7 +1019,9 @@ export default function WallPage() {
       <FontLoader />
       <DreamyBackground primary={themeP} secondary={themeS} />
 
-      {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
+      {musicTrack && isAudioPlaying && hasFeature(planTier, 'SLIDESHOW_MUSIC') && (
+        <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />
+      )}
 
       {/* ── NEW PHOTO REVEAL OVERLAY ── */}
       {revealPhoto && (

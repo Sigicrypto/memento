@@ -286,7 +286,7 @@ export default function MobilePage() {
     }
 
     const hasVideo = validFiles.some(f => f.type.startsWith('video/'));
-    if (hasVideo && (event?.plan_type === 'STARTER' || !event?.plan_type)) {
+    if (hasVideo && !hasFeature(event?.plan_type, 'VIDEO_UPLOAD')) {
       setError('Video uploads are a Standard feature.');
       return;
     }
@@ -364,7 +364,7 @@ export default function MobilePage() {
       if (insertedData?.[0]?.id) {
          setSessionPhotoIds(prev => [...prev, insertedData[0].id]);
          
-         // ✨ FACE INDEXING (Standard+ Only)
+         // Feature gate: Selfie Match (Selfie-Safe) is Standard+
          if (mediaType === 'image' && hasFeature(event?.plan_type, 'SELFIE_MATCH')) {
            try {
              const img = await fileToImage(file);
