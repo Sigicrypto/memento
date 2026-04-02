@@ -17,7 +17,7 @@ export default function EditEventPage() {
   const [password, setPassword] = useState('');
   const [theme, setTheme] = useState('light');
   const [musicTrack, setMusicTrack] = useState('none');
-  const [planType, setPlanType] = useState('FREE');
+  const [planType, setPlanType] = useState('STARTER');
   const [customDomain, setCustomDomain] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ export default function EditEventPage() {
       setPassword(data.password || '');
       setTheme(data.theme || 'light');
       setMusicTrack(data.music_track || 'none');
-      setPlanType((data.plan_type || 'FREE').toUpperCase());
+      setPlanType((data.plan_type || 'STARTER').toUpperCase());
       setCustomDomain(data.custom_domain || '');
       setLogoUrl(data.brand_logo_url || '');
       setLoading(false);
@@ -118,11 +118,22 @@ export default function EditEventPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Custom Slug (URL)</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-semibold" style={{color:'var(--text2)'}}>Custom Slug (URL)</label>
+                {!isStandardPlus && (
+                  <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 hover:bg-amber-500/20 transition-colors font-bold">
+                    ✨ Upgrade to Standard
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style={{color:'#4a4f6a'}}>/wall/</span>
-                <input type="text" className="nm-input !pl-14" value={slug}
-                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} required />
+                <input type="text" className={`nm-input !pl-14 ${!isStandardPlus ? 'opacity-50' : ''}`} 
+                  value={slug}
+                  disabled={!isStandardPlus}
+                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
+                  placeholder={!isStandardPlus ? 'Standard required' : ''}
+                  required />
               </div>
               {slugError && <p className="text-[10px] mt-1" style={{color:'#f87171'}}>{slugError}</p>}
             </div>
@@ -133,26 +144,33 @@ export default function EditEventPage() {
                 onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for public access" />
             </div>
 
-            {/* White Label Section */}
-            {isWhiteLabel && (
-              <div className="pt-4 border-t border-slate-200/20 space-y-5">
-                <div>
-                  <label className="block text-xs font-semibold mb-2 text-amber-500 flex items-center gap-2">
-                     ⭐ Custom Domain (White Label)
-                  </label>
-                  <input type="text" className="nm-input" value={customDomain} 
-                    onChange={(e) => setCustomDomain(e.target.value)} placeholder="e.g. photos.wedding.com" />
-                  <p className="text-[10px] mt-1" style={{color:'var(--text2)'}}>Point your A record to memento.events IP.</p>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold mb-2 text-amber-500">
-                     ⭐ Brand Logo URL
-                  </label>
-                  <input type="text" className="nm-input" value={logoUrl} 
-                    onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://... logo.png" />
-                </div>
+            {/* White Label Section (Visible but Locked) */}
+            <div className="pt-4 border-t border-slate-200/20 space-y-5">
+              <div>
+                <label className="block text-xs font-semibold mb-2 flex items-center justify-between">
+                   <span style={{color: isWhiteLabel ? '#f59e0b' : 'var(--text2)'}}>⭐ Custom Domain (White Label)</span>
+                   {!isWhiteLabel && (
+                     <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors font-bold">
+                       🌐 Upgrade to Partner
+                     </Link>
+                   )}
+                </label>
+                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`} 
+                  value={customDomain} 
+                  disabled={!isWhiteLabel}
+                  onChange={(e) => setCustomDomain(e.target.value)} placeholder="e.g. photos.wedding.com" />
+                {isWhiteLabel && <p className="text-[10px] mt-1" style={{color:'var(--text2)'}}>Point your A record to memento.events IP.</p>}
               </div>
-            )}
+              <div>
+                <label className="block text-xs font-semibold mb-2 flex items-center justify-between">
+                   <span style={{color: isWhiteLabel ? '#f59e0b' : 'var(--text2)'}}>⭐ Brand Logo URL</span>
+                </label>
+                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`} 
+                  value={logoUrl} 
+                  disabled={!isWhiteLabel}
+                  onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://... logo.png" />
+              </div>
+            </div>
 
             {/* Premium / Standard Features */}
             <div className="pt-4 border-t border-slate-200/20">

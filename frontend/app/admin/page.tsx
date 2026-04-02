@@ -138,7 +138,7 @@ export default function AdminPage() {
                 id: event.owner_id,
                 email: `user-${event.owner_id.slice(0, 8)}@example.com`, // Placeholder
                 created_at: event.created_at,
-                plan: 'FREE',
+                plan: 'STARTER',
                 events_count: 0
               });
             }
@@ -339,7 +339,7 @@ export default function AdminPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="nm-badge text-xs">{u.plan || 'FREE'}</span>
+                      <span className="nm-badge text-xs">{u.plan || 'STARTER'}</span>
                       <button onClick={() => handleDeleteUser(u.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
                     </div>
                   </div>

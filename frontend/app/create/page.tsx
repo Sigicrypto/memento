@@ -15,7 +15,7 @@ function generateSlug(name: string): string {
 }
 
 export default function CreateEventPage() {
-  const { user, loading: authLoading, plan } = useAuth();
+  const { user, profile, loading: authLoading, plan, isPaid } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [customSlug, setCustomSlug] = useState('');
@@ -31,6 +31,7 @@ export default function CreateEventPage() {
     console.log("[create] customSlug:", customSlug);
     
     if (!user) { console.log("[create] no user, redirecting to auth"); router.push('/auth'); return; }
+    if (!isPaid) { router.push('/dashboard'); return; }
     setLoading(true);
     setError('');
 
@@ -189,16 +190,16 @@ export default function CreateEventPage() {
             <div className="space-y-3">
               <div className="flex items-center justify-between ml-1">
                 <label className="text-xs font-semibold" style={{color:'var(--text1)'}}>Custom Link (URL)</label>
-                {plan === 'FREE' && (
-                  <Link href="/#pricing" className="text-xs font-bold px-3 py-1.5 rounded-full" style={{color:'#f59e0b',background:'rgba(245,158,11,0.1)'}}>✨ UPGRADE</Link>
+                {plan === 'starter' && (
+                  <Link href="/#pricing" className="text-xs font-bold px-3 py-1.5 rounded-full" style={{color:'#f59e0b',background:'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)'}}>✨ Upgrade to Standard</Link>
                 )}
               </div>
               <div className="relative">
                 <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'var(--text2)'}}>/mobile/</span>
-                <input type="text" className={`nm-input py-3 text-sm !pl-20 ${plan === 'FREE' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  value={customSlug} disabled={plan === 'FREE'}
+                <input type="text" className={`nm-input py-3 text-sm !pl-20 ${plan === 'starter' ? 'opacity-50' : ''}`}
+                  value={customSlug} disabled={plan === 'starter'}
                   onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  placeholder={plan === 'FREE' ? 'Auto-generated' : 'my-cool-party'} />
+                  placeholder={plan === 'starter' ? 'Standard Plan required' : 'my-cool-party'} />
               </div>
             </div>
 

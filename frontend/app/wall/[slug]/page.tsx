@@ -545,6 +545,14 @@ export default function WallPage() {
             ) : (
               <img key={current.id} src={getPublicUrl(current.storage_path)} alt="" className="max-h-full max-w-full object-contain rounded-xl" style={{animation:'fadeIn 0.5s ease', boxShadow:'0 20px 60px #14182a'}} />
             )}
+            
+            {/* Slideshow Watermark */}
+            {planTier !== 'WHITE_LABEL' && (
+              <div className="absolute top-10 right-10 bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg text-[12px] font-bold text-white/50 uppercase tracking-[0.3em] border border-white/10 pointer-events-none">
+                Memento
+              </div>
+            )}
+
             {(current.caption || current.uploader_name) && (
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center nm-card px-6 py-3">
                 {current.caption && <p className="text-sm italic mb-1" style={{color:'var(--text1)'}}>&#34;{current.caption}&#34;</p>}
@@ -632,17 +640,31 @@ export default function WallPage() {
               <Link href={`/wall/${slug}/tv`} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#818cf8'}}>📺 TV Mode</Link>
               {musicTrack && (
                 <button onClick={() => {
+                  if (!['PREMIUM', 'WHITE_LABEL'].includes(planTier)) {
+                    alert("💎 Background Music is a Premium feature! Upgrade to unlock.");
+                    return;
+                  }
                   if (audioRef.current) {
                     if (isAudioPlaying) { audioRef.current.pause(); setIsAudioPlaying(false); } 
                     else { audioRef.current.play().then(() => setIsAudioPlaying(true)).catch(e => console.log(e)); }
                   }
-                }} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: isAudioPlaying ? '#4ade80' : 'var(--text2)'}}>
+                }} className={`nm-btn px-4 py-2 text-xs font-bold ${!['PREMIUM', 'WHITE_LABEL'].includes(planTier) ? 'opacity-60' : ''}`} 
+                   style={{color: isAudioPlaying ? '#4ade80' : 'var(--text2)'}}>
                   {isAudioPlaying ? '🎵 Sound ON' : '🔇 Sound OFF'}
+                  {!['PREMIUM', 'WHITE_LABEL'].includes(planTier) && <span className="ml-1">🔒</span>}
                 </button>
               )}
-              {['PLUS', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier) && (
-                <button onClick={handleDownloadZip} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#fbbf24'}}>📦 Download ZIP</button>
-              )}
+              <button onClick={() => {
+                if (!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier)) {
+                  alert("✨ Bulk ZIP Download is a Standard feature! Upgrade to unlock.");
+                  return;
+                }
+                handleDownloadZip();
+              }} className={`nm-btn px-4 py-2 text-xs font-bold ${!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier) ? 'opacity-60' : ''}`} 
+                 style={{color: '#fbbf24'}}>
+                📦 Download ZIP
+                {!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier) && <span className="ml-1">🔒</span>}
+              </button>
               <button onClick={handleDownloadPdf} className="nm-btn px-4 py-2 text-xs font-bold" style={{color:'#a78bfa'}}>📘 Download PDF</button>
               <button onClick={() => setShowBestShots(!showBestShots)} className="nm-btn px-4 py-2 text-xs font-bold" style={{color: showBestShots ? 'var(--theme-primary)' : 'var(--text2)'}}>{showBestShots ? '🏆 Best Shots' : 'All Photos'}</button>
             </div>
@@ -714,7 +736,7 @@ export default function WallPage() {
                   {planTier === 'WHITE_LABEL' && photo.watermark_url && (
                     <img src={photo.watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
                   )}
-                  {['FREE', 'STARTER', 'PLUS', 'STANDARD', 'PRO', 'PREMIUM'].includes(planTier) && (
+                  {planTier !== 'WHITE_LABEL' && (
                     <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
                       Memento
                     </div>
@@ -797,7 +819,7 @@ export default function WallPage() {
                 {planTier === 'WHITE_LABEL' && photos[0]?.watermark_url && (
                   <img src={photos[0].watermark_url} alt="Watermark" className="absolute bottom-2 right-2 w-1/4 h-auto opacity-50 pointer-events-none" />
                 )}
-                {['FREE', 'STARTER', 'PLUS', 'STANDARD', 'PRO', 'PREMIUM'].includes(planTier) && (
+                {planTier !== 'WHITE_LABEL' && (
                   <div className="absolute bottom-2 right-2 bg-black/40 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white/70 uppercase tracking-widest border border-white/10 pointer-events-none">
                     Memento
                   </div>

@@ -164,8 +164,8 @@ export default function MobilePage() {
     }
 
     const hasVideo = validFiles.some(f => f.type.startsWith('video/'));
-    if (hasVideo && event?.plan_type === 'FREE') {
-      setError('Video uploads are a Premium feature.');
+    if (hasVideo && (event?.plan_type === 'STARTER' || !event?.plan_type)) {
+      setError('Video uploads are a Standard feature.');
       return;
     }
 
