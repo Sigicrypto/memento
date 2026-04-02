@@ -851,7 +851,8 @@ export default function WallPage() {
                 className="w-full h-full flex items-center justify-center" 
                 style={{ 
                   animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both',
-                  padding: '0 400px' // Leave space for side panels
+                  paddingLeft: '460px',
+                  paddingRight: '80px'
                 }}
               >
                 {current.media_type === 'video' ? (
