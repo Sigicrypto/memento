@@ -861,13 +861,9 @@ export default function WallPage() {
               </div>
 
               {/* QR Side Panel */}
-              <div className="slideshow-side-panel qr-side">
+              <div className="slideshow-side-panel qr-side" style={{ padding: 16 }}>
                 <div style={{ background: '#fff', padding: 14, borderRadius: 24, boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}>
                   <QRCodeSVG value={uploadUrl} size={130} bgColor="#ffffff" fgColor="#000" />
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <p style={{ fontSize: 10, fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Scan to Join</p>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginTop: 4 }}>{uploadUrl.replace('https://', '').replace('http://', '')}</p>
                 </div>
               </div>
 
