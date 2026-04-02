@@ -30,7 +30,13 @@ export default function SocialFloat() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/system')) return null;
+  if (pathname?.startsWith('/admin') || 
+      pathname?.startsWith('/system') || 
+      pathname?.startsWith('/wall/') || 
+      pathname?.startsWith('/mobile/') ||
+      pathname?.startsWith('/dashboard') ||
+      pathname?.startsWith('/create')
+  ) return null;
 
   return (
     <div

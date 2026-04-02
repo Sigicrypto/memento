@@ -1,8 +1,14 @@
 "use client";
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 
-const BackgroundDecoration = () => (
+const BackgroundDecoration = () => {
+  const pathname = usePathname();
+  
+  if (pathname?.startsWith('/wall/') || pathname?.startsWith('/mobile/')) return null;
+  
+  return (
   <div style={{ 
     position: 'fixed', inset: 0, zIndex: 0, overflow: 'hidden', pointerEvents: 'none',
     background: '#fafcfe' // Explicit light off-white to prevent "grey" look
@@ -34,7 +40,8 @@ const BackgroundDecoration = () => (
       background: 'linear-gradient(to top, rgba(255,255,255,0.4), transparent)',
       backdropFilter: 'blur(20px)'
     }} />
-  </div>
-);
+    </div>
+  );
+};
 
 export default BackgroundDecoration;

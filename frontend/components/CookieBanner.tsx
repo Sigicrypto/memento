@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function CookieBanner() {
   const [show, setShow] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const consent = localStorage.getItem('memento_cookie_consent');
@@ -23,6 +25,7 @@ export default function CookieBanner() {
   };
 
   if (!show) return null;
+  if (pathname?.startsWith('/wall/') || pathname?.startsWith('/mobile/')) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 shadow-2xl z-50 animate-in slide-in-from-bottom-5">

@@ -5,7 +5,13 @@ import { usePathname } from 'next/navigation';
 export default function WhatsAppFloat() {
   const pathname = usePathname();
 
-  if (pathname?.startsWith('/admin') || pathname?.startsWith('/system')) return null;
+  if (pathname?.startsWith('/admin') || 
+      pathname?.startsWith('/system') || 
+      pathname?.startsWith('/wall/') || 
+      pathname?.startsWith('/mobile/') ||
+      pathname?.startsWith('/dashboard') ||
+      pathname?.startsWith('/create')
+  ) return null;
 
   return (
     <a

@@ -664,7 +664,9 @@ export default function WallPage() {
       if (data) {
         setEventName(data.name);
         setEventId(data.id);
+        const isOwner = user && user.id === data.owner_id;
         setOwnerId(data.owner_id);
+        setIsAdmin(!!isOwner);
         const actualPlan = (data.plan_type || 'STARTER').toUpperCase();
         setPlanTier(actualPlan);
         
@@ -929,7 +931,9 @@ export default function WallPage() {
             <span style={{ fontSize: 9, fontWeight: 900, color: '#000', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Live Experience</span>
             <h1 style={{ fontSize: 28, fontWeight: 800, color: '#000', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
           </div>
-          <button onClick={() => setViewMode(prevViewMode)} className="px-8 py-3 rounded-full font-bold text-[10px] bg-black/5 text-black border border-black/10 hover:bg-black/10 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
+          {isAdmin && (
+            <button onClick={() => setViewMode(prevViewMode)} className="px-8 py-3 rounded-full font-bold text-[10px] bg-black/5 text-black border border-black/10 hover:bg-black/10 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
+          )}
         </div>
 
         {/* Main Content Area */}
@@ -1042,7 +1046,7 @@ export default function WallPage() {
             <div className="qr-box">
               <QRCodeSVG value={uploadUrl} size={200} />
             </div>
-            <p style={{ fontSize: 11, color: 'var(--text2)', wordBreak: 'break-all', marginTop: 16, opacity: 0.6 }}>{uploadUrl}</p>
+            {isAdmin && <p style={{ fontSize: 11, color: 'var(--text2)', wordBreak: 'break-all', marginTop: 16, opacity: 0.6 }}>{uploadUrl}</p>}
           </div>
 
           <div className="glass-card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>

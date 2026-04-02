@@ -7,7 +7,11 @@ import '../app/landing.css';
 export default function Navbar() {
   const pathname = usePathname();
 
-  if (pathname === '/') return null;
+  if (pathname === '/') return <ThemedNav />;
+  if (pathname?.startsWith('/wall/')) return null;
+  if (pathname?.startsWith('/mobile/')) return null;
+  if (pathname?.startsWith('/create')) return null;
+  if (pathname?.startsWith('/dashboard')) return null;
 
   return <ThemedNav />;
 }
