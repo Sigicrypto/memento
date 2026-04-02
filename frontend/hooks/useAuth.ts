@@ -4,23 +4,55 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
+export interface UserProfile {
+  id: string;
+  full_name: string;
+  email: string;
+  plan: 'starter' | 'standard' | 'premium' | 'whitelabel';
+  payment_status: 'pending' | 'paid' | 'trial';
+  created_at: string;
+}
+
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const fetchProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (data) setProfile(data as UserProfile);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) fetchProfile(currentUser.id);
+      else setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) fetchProfile(currentUser.id);
+      else {
+        setProfile(null);
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Update loading state when profile is fetched
+  useEffect(() => {
+    if (user && profile) setLoading(false);
+    else if (!user) setLoading(false);
+  }, [user, profile]);
 
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
@@ -34,9 +66,12 @@ export const useAuth = () => {
         emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`
       } 
     });
+
   const signOut = () => supabase.auth.signOut();
 
-  const plan = (user?.user_metadata?.plan_type as 'FREE' | 'PLUS' | 'PREMIUM' | 'SIGNATURE') || 'FREE';
+  // The plan is now derived from the database profile
+  const plan = profile?.plan || 'starter';
+  const isPaid = profile?.payment_status === 'paid';
 
-  return { user, loading, signIn, signUp, signOut, plan };
+  return { user, profile, loading, signIn, signUp, signOut, plan, isPaid };
 };

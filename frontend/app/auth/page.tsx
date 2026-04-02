@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 function AuthPageContent() {
-  const { user, loading: authLoading, signIn, signUp } = useAuth();
+  const { user, profile, loading: authLoading, signIn, signUp } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
@@ -18,15 +18,20 @@ function AuthPageContent() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && profile) {
       const plan = searchParams.get('plan');
-      if (plan) {
+      const isPaid = profile.payment_status === 'paid';
+
+      if (isPaid) {
+        router.push('/dashboard');
+      } else if (plan) {
         router.push(`/checkout?plan=${plan}`);
       } else {
+        // If not paid and no plan selected, go to dashboard which will now show activation UI
         router.push('/dashboard');
       }
     }
-  }, [user, authLoading, searchParams, router]);
+  }, [user, profile, authLoading, searchParams, router]);
 
   useEffect(() => {
     if (searchParams.get('mode') === 'signup') {

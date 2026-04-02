@@ -55,9 +55,8 @@ const PLAN_INFO: Record<string, { name: string; emoji: string; color: string; fe
 };
 
 export default function DashboardPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, isPaid, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState('');
@@ -65,16 +64,9 @@ export default function DashboardPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.push('/'); return; }
+    if (!isPaid) { setLoading(false); return; }
 
-    const fetchData = async () => {
-      // Fetch profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      if (profileData) setProfile(profileData);
-
+    const fetchEvents = async () => {
       // Fetch events
       const { data: eventData } = await supabase.from('events').select('*')
         .eq('owner_id', user.id).order('created_at', { ascending: false });
@@ -91,8 +83,8 @@ export default function DashboardPage() {
       }
       setLoading(false);
     };
-    fetchData();
-  }, [user, authLoading, router]);
+    fetchEvents();
+  }, [user, authLoading, isPaid, router]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this event and all its photos?')) return;
@@ -107,10 +99,7 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(''), 2000);
   };
 
-  const currentPlan = profile?.plan || 'starter';
-  const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
-
-  if (authLoading || loading) {
+  if (authLoading || (loading && isPaid)) {
     return (
       <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
@@ -120,6 +109,72 @@ export default function DashboardPage() {
     );
   }
 
+  // Activation UI for Unpaid Users
+  if (!isPaid) {
+    return (
+      <div className="lp" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
+        <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+        <div className="grain" />
+        
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 1.5rem 0', textAlign: 'center' }}>
+          <div className="gcard reveal" style={{ padding: '3rem 2rem', marginBottom: '3rem' }}>
+            <div className="gcard-border" />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✨</div>
+              <h1 style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text1)', marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+                Activate Your <span className="gradient-text">Memento account</span>
+              </h1>
+              <p style={{ fontSize: '1.1rem', color: 'var(--text2)', maxWidth: '600px', margin: '0 auto 2rem' }}>
+                Welcome, {profile?.full_name || 'Host'}! To start creating your first live photo wall and collecting memories, please select a plan below.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--text3)' }}>
+                <span className="nm-badge" style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e', borderColor: 'rgba(34,197,94,0.2)' }}>✓ One-time Payment</span>
+                <span className="nm-badge" style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6', borderColor: 'rgba(59,130,246,0.2)' }}>✓ Lifetime Storage Options</span>
+              </div>
+            </div>
+          </div>
+
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text1)', marginBottom: '2rem' }}>Choose Your Tier</h2>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+            {Object.entries(PLAN_INFO).map(([key, info], i) => (
+              <div key={key} className="gcard reveal" style={{ padding: '2.5rem 1.5rem', animationDelay: `${i * 0.1}s`, display: 'flex', flexDirection: 'column' }}>
+                <div className="gcard-border" />
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{info.emoji}</div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: info.color, marginBottom: '0.5rem' }}>{info.name}</h3>
+                  <div style={{ marginBottom: '2rem' }}>
+                    {info.features.map((f, j) => (
+                      <div key={j} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text2)', marginBottom: '0.5rem', textAlign: 'left' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={info.color} strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg>
+                        {f}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 'auto' }}>
+                    <Link href={`/checkout?plan=${key}`} style={{ display: 'block', width: '100%', padding: '0.85rem', borderRadius: '12px', background: i === 1 ? 'linear-gradient(135deg, #fbbf24, #f472b6)' : 'rgba(255,255,255,0.15)', color: i === 1 ? '#0a0600' : 'var(--text1)', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', border: i === 1 ? 'none' : '1px solid rgba(255,255,255,0.2)', transition: 'all 0.2s' }}>
+                      Activate {info.name}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ marginTop: '4rem' }}>
+             <button onClick={() => supabase.auth.signOut()} style={{ fontSize: '0.85rem', color: 'var(--text3)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+               Sign out and return to home
+             </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal Dashboard View for Paid Users
+  const currentPlan = profile?.plan || 'starter';
+  const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
+
   return (
     <div className="lp" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
@@ -128,7 +183,7 @@ export default function DashboardPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 1.5rem 0' }}>
 
         {/* Welcome + Plan Card */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '1.5rem', marginBottom: '2rem' }}>
 
           {/* Welcome */}
           <div className="gcard" style={{ padding: '2rem' }}>
@@ -170,8 +225,8 @@ export default function DashboardPage() {
                     <span style={{ fontSize: '1.3rem', fontWeight: 700, color: planInfo.color }}>{planInfo.name}</span>
                   </div>
                 </div>
-                <span style={{ padding: '0.3rem 0.8rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 600, background: profile?.payment_status === 'paid' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: profile?.payment_status === 'paid' ? '#22c55e' : '#f59e0b', border: `1px solid ${profile?.payment_status === 'paid' ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)'}` }}>
-                  {profile?.payment_status === 'paid' ? 'Active' : 'Pending'}
+                <span style={{ padding: '0.3rem 0.8rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 600, background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)' }}>
+                  Active
                 </span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>

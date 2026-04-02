@@ -10,7 +10,6 @@ type Region = 'IN' | 'GLOBAL';
 const REGION_COOKIE = 'livewall_region';
 
 const PLAN_PRICES: Record<string, { IN: string; GLOBAL: string }> = {
-  FREE:        { IN: '₹0',      GLOBAL: '$0' },
   STARTER:     { IN: '₹2,500',  GLOBAL: '$30' },
   STANDARD:    { IN: '₹5,000',  GLOBAL: '$60' },
   PREMIUM:     { IN: '₹7,500',  GLOBAL: '$90' },
@@ -19,7 +18,7 @@ const PLAN_PRICES: Record<string, { IN: string; GLOBAL: string }> = {
 };
 
 const PLAN_DISPLAY_NAMES: Record<string, string> = {
-  FREE: 'Free', STARTER: 'Starter', STANDARD: 'Standard', PREMIUM: 'Premium',
+  STARTER: 'Starter', STANDARD: 'Standard', PREMIUM: 'Premium',
   'WHITE LABEL': 'White Label', 'WHITE_LABEL': 'White Label',
 };
 
