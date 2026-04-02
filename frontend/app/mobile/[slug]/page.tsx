@@ -405,7 +405,7 @@ export default function MobilePage() {
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
 
   return (
-    <div className="mobile-page pb-40" style={{ paddingTop:'40px' }}>
+    <div className="mobile-page pb-40" style={{ paddingTop:'80px' }}>
       <FontLoader />
       <BackgroundDecoration />
 

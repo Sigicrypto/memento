@@ -1165,7 +1165,7 @@
   color: var(--amber);
   font-size: 0.78rem;
   font-weight: 500;
-  cursor: none;
+  cursor: auto;
   margin-bottom: 2rem;
   transition: background 0.2s;
 }
@@ -1685,7 +1685,7 @@
 :-webkit-full-screen *,
 :-moz-full-screen *,
 :fullscreen * {
-  cursor: none !important;
+  /* cursor removed */
 }
 
 @keyframes modalSlideUp {

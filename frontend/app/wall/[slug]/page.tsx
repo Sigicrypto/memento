@@ -40,6 +40,10 @@ const FontLoader = () => (
       font-family: 'Inter', system-ui, sans-serif;
       position: relative;
       overflow-x: hidden;
+      padding: 80px 64px 140px;
+    }
+    @media (max-width: 1024px) {
+      .wall-page { padding: 40px 20px 100px !important; }
     }
 
     /* ─── BACKGROUND ELEMENTS ─── */
@@ -129,6 +133,14 @@ const FontLoader = () => (
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slideshow-photo {
+      animation: zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .btn-glow {
@@ -316,6 +328,7 @@ export default function WallPage() {
   const [notFound, setNotFound] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
+  const [prevViewMode, setPrevViewMode] = useState<ViewMode>('polaroid');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
   const [moderationMode, setModerationMode] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(false);
@@ -421,6 +434,17 @@ export default function WallPage() {
     }
   }, [viewMode, photos.length]);
 
+  // Handle ESC key to exit slideshow
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && viewMode === 'slideshow') {
+        setViewMode(prevViewMode);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [viewMode, prevViewMode]);
+
   const nextSlide = () => setSlideIndex(i => (i + 1) % photos.length);
   const prevSlide = () => setSlideIndex(i => (i - 1 + photos.length) % photos.length);
 
@@ -516,10 +540,10 @@ export default function WallPage() {
         </div>
         <div className="relative z-10" style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:40 }}>
           {current && (
-            <div className="photo-card" key={current.id} style={{ height:'85%', width:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <div className="slideshow-photo" key={current.id} style={{ height:'85%', width:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
               {current.media_type === 'video' 
-                ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(0,0,0,0.15)' }} autoPlay loop muted />
-                : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(30,41,59,0.15)' }} alt="" />}
+                ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(0,0,0,0.15)', objectFit:'contain' }} autoPlay loop muted />
+                : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(30,41,59,0.15)', objectFit:'contain' }} alt="" />}
               {planTier !== 'WHITE_LABEL' && <Watermark />}
             </div>
           )}
@@ -531,7 +555,7 @@ export default function WallPage() {
   }
 
   return (
-    <div className="wall-page" style={{ padding:'80px 64px 140px' }}>
+    <div className="wall-page">
       <FontLoader />
       <BackgroundDecoration />
       
@@ -575,7 +599,10 @@ export default function WallPage() {
             <div style={{ display:'flex', flexWrap:'wrap', gap:12, alignItems:'center' }}>
               <div style={{ background:'rgba(255,255,255,0.5)', padding:6, borderRadius:18, display:'flex', gap:6, border:'1px solid var(--border)', backdropFilter:'blur(12px)' }}>
                 {(['polaroid','grid','album','slideshow'] as ViewMode[]).map(m => (
-                  <button key={m} onClick={() => setViewMode(m)} style={{
+                  <button key={m} onClick={() => {
+                    if (m === 'slideshow') setPrevViewMode(viewMode);
+                    setViewMode(m);
+                  }} style={{
                     padding:'10px 18px', borderRadius:12, border:'none', fontSize:12, fontWeight:800, transition:'0.3s',
                     background: viewMode === m ? 'linear-gradient(135deg, var(--amber), var(--rose))' : 'transparent',
                     color: viewMode === m ? '#fff' : 'var(--text2)',

@@ -21,6 +21,12 @@ export default function CustomCursor() {
     let lastParticleTime = 0;
     let colorHue = 0;
 
+    // Hide default cursor on desktop
+    const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 1025px)').matches;
+    if (isDesktop) {
+      document.documentElement.style.cursor = 'none';
+    }
+
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
@@ -146,6 +152,9 @@ export default function CustomCursor() {
     raf = requestAnimationFrame(loop);
 
     return () => {
+      if (isDesktop) {
+        document.documentElement.style.cursor = '';
+      }
       window.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf);
       particles.forEach(p => p.element.remove());

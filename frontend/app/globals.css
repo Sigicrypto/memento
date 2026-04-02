@@ -2,10 +2,7 @@
 @import "tailwindcss";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
 
-/* Hide default cursor globally */
-* {
-  cursor: none !important;
-}
+/* Default cursor is managed by CustomCursor.tsx programmatically */
 
 /* Show default cursor on mobile/tablet */
 @media (max-width: 1024px) {
@@ -69,7 +66,7 @@
   .dark .nm-btn,
   .dark .nm-circle,
   .dark .nm-card {
-    cursor: none !important;
+    /* cursor: none managed by component */
   }
 }
 
