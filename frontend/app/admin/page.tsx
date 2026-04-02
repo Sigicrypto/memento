@@ -122,30 +122,31 @@ export default function AdminPage() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        // For now, we'll fetch events and group by owner to simulate user list
-        // since we can't directly access auth.users without admin functions
-        const { data: eventsData } = await supabase
-          .from('events')
-          .select('owner_id, created_at')
+        // Fetch all profiles
+        const { data: profiles, error: profError } = await supabase
+          .from('profiles')
+          .select('*')
           .order('created_at', { ascending: false });
-        
-        if (eventsData) {
-          // Group events by owner and count them
-          const userMap = new Map();
-          eventsData.forEach(event => {
-            if (!userMap.has(event.owner_id)) {
-              userMap.set(event.owner_id, {
-                id: event.owner_id,
-                email: `user-${event.owner_id.slice(0, 8)}@example.com`, // Placeholder
-                created_at: event.created_at,
-                plan: 'STARTER',
-                events_count: 0
-              });
-            }
-            userMap.get(event.owner_id).events_count++;
-          });
-          
-          setUsers(Array.from(userMap.values()));
+
+        if (profError) throw profError;
+
+        // Fetch counts for each profile
+        const { data: eventCounts } = await supabase
+          .from('events')
+          .select('owner_id');
+
+        const countsMap: { [key: string]: number } = {};
+        eventCounts?.forEach(e => {
+          countsMap[e.owner_id] = (countsMap[e.owner_id] || 0) + 1;
+        });
+
+        if (profiles) {
+          const usersWithCounts = profiles.map(p => ({
+            ...p,
+            events_count: countsMap[p.id] || 0,
+            plan: p.plan.toUpperCase()
+          }));
+          setUsers(usersWithCounts);
         }
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -194,6 +195,21 @@ export default function AdminPage() {
     
     fetchEvents();
   }, [isAdmin, activeTab]);
+
+  const handleUpdatePlan = async (userId: string, newPlan: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ plan: newPlan.toLowerCase(), payment_status: 'paid' })
+        .eq('id', userId);
+
+      if (error) throw error;
+      
+      setUsers(users.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase() } : u));
+    } catch (error: any) {
+      alert('Failed to update plan: ' + error.message);
+    }
+  };
 
   const handleDeleteUser = (userId: string) => {
     showConfirm('Delete this user and all their data? This cannot be undone.', async () => {
@@ -339,7 +355,16 @@ export default function AdminPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="nm-badge text-xs">{u.plan || 'STARTER'}</span>
+                      <select 
+                        className="nm-badge text-[11px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-1 cursor-pointer outline-none font-bold uppercase"
+                        value={u.plan || 'STARTER'}
+                        onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
+                      >
+                        <option value="STARTER">Starter</option>
+                        <option value="STANDARD">Standard</option>
+                        <option value="PREMIUM">Premium</option>
+                        <option value="WHITE_LABEL">Partner</option>
+                      </select>
                       <button onClick={() => handleDeleteUser(u.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
                     </div>
                   </div>
