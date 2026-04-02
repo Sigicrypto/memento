@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function SystemAdminPage() {
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,40 +27,47 @@ export default function SystemAdminPage() {
         throw new Error('Invalid access code');
       }
 
-      // Sign in with Supabase
-      const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password: adminCode, // Use admin code as password for simplicity
-      });
+      // If user is already logged in (e.g. Gmail), just update their role
+      if (user) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: 'admin' })
+          .eq('id', user.id);
 
-      if (signInError) {
-        // If user doesn't exist, try to sign them up first
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        if (updateError) throw updateError;
+      } else {
+        // Traditional Email/Password flow (Fallback)
+        const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password: adminCode,
-          options: {
-            emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/system/callback`
-          }
         });
 
-        if (signUpError) throw signUpError;
+        if (signInError) {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password: adminCode,
+            options: {
+              emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/system/callback`
+            }
+          });
 
-        if (signUpData.user) {
-          // Set admin role in profiles table
+          if (signUpError) throw signUpError;
+
+          if (signUpData.user) {
+            await supabase.from('profiles').upsert({
+              id: signUpData.user.id,
+              email: signUpData.user.email || email,
+              role: 'admin',
+              full_name: 'Admin',
+            });
+          }
+        } else if (authData.user) {
           await supabase.from('profiles').upsert({
-            id: signUpData.user.id,
-            email: signUpData.user.email || email,
+            id: authData.user.id,
+            email: authData.user.email || email,
             role: 'admin',
-            full_name: 'Admin',
           });
         }
-      } else if (authData.user) {
-        // Set admin role in profiles table
-        await supabase.from('profiles').upsert({
-          id: authData.user.id,
-          email: authData.user.email || email,
-          role: 'admin',
-        });
       }
 
       // Redirect to admin panel
@@ -78,8 +87,12 @@ export default function SystemAdminPage() {
             <div className="nm-circle w-10 h-10 font-bold text-lg" style={{color:'#f59e0b'}}>M</div>
             <span className="text-xl font-bold" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'}}>Memento</span>
           </Link>
-          <h1 className="text-2xl font-bold mb-1" style={{color:'var(--text1)'}}>System Access</h1>
-          <p className="text-sm" style={{color:'var(--text2)'}}>Administrator authentication required</p>
+          <h1 className="text-2xl font-bold mb-1" style={{color:'var(--text1)'}}>
+            {user ? 'Elevate Account' : 'System Access'}
+          </h1>
+          <p className="text-sm" style={{color:'var(--text2)'}}>
+            {user ? `Grant admin access to ${user.email}` : 'Administrator authentication required'}
+          </p>
         </div>
 
         <div className="nm-card p-8">
@@ -87,11 +100,15 @@ export default function SystemAdminPage() {
             {error && (
               <div className="nm-inset p-3 text-sm" style={{color:'#f87171'}}>{error}</div>
             )}
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Administrator Email</label>
-              <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                className="nm-input" placeholder="system@memento.com" required />
-            </div>
+            
+            {!user && (
+              <div>
+                <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Administrator Email</label>
+                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  className="nm-input" placeholder="system@memento.com" required />
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Access Code</label>
               <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
@@ -100,7 +117,7 @@ export default function SystemAdminPage() {
             <button type="submit" disabled={loading} className="nm-btn nm-btn-accent w-full py-3 font-bold">
               {loading
                 ? <div className="w-5 h-5 border-2 rounded-full animate-spin mx-auto" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-                : '🔐 Access System'}
+                : user ? '🔐 Elevate to Admin' : '🔐 Access System'}
             </button>
           </form>
 
