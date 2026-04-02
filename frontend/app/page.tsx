@@ -1014,47 +1014,6 @@ export default function LandingPage() {
 
 
 
-        {/* NAV */}
-
-        <nav className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
-
-          <Link href="/">
-
-            <AnimatedLogo width={220} height={80} />
-
-          </Link>
-
-          <div className="nav-mid">
-
-            <Link href="#features">Features</Link>
-
-            <Link href="#how">How it works</Link>
-
-            <Link href="#pricing">Pricing</Link>
-
-          </div>
-
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Link href="/dashboard" className="nav-btn">
-                Dashboard
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </Link>
-              <button onClick={handleSignOut} className="nav-link-btn" style={{ fontSize: '0.85rem', color: 'var(--text2)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                Sign Out
-              </button>
-            </div>
-          ) : (
-            <button onClick={() => openAuth('starter')} className="nav-btn">
-              Get Started
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </button>
-          )}
-
-        </nav>
-
-
-
         {/* HERO */}
 
         <section className="hero pt-16 md:pt-20 py-16">
