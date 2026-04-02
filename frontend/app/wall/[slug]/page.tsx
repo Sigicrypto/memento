@@ -747,23 +747,17 @@ export default function WallPage() {
     );
   };
 
-  // ── FIX 4: Logo watermark instead of text ──
   const Watermark = () => (
     <div style={{
-      position: 'absolute', bottom: 12, right: 12,
-      background: 'rgba(255,255,255,0.85)',
-      backdropFilter: 'blur(8px)',
-      padding: '5px 8px',
-      borderRadius: 8,
-      border: '1px solid var(--border)',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      display: 'flex',
-      alignItems: 'center',
+      position: 'absolute', bottom: 16, right: 16,
+      display: 'flex', alignItems: 'center',
+      filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
+      opacity: 0.8, pointerEvents: 'none'
     }}>
       <img
         src="/CC logo.png"
         alt="Memento"
-        style={{ height: 22, width: 'auto', display: 'block', objectFit: 'contain' }}
+        style={{ height: 26, width: 'auto', display: 'block', objectFit: 'contain' }}
       />
     </div>
   );
@@ -795,13 +789,25 @@ export default function WallPage() {
     </div>
   );
 
-  // ── SLIDESHOW MODE ─────────────────────────────────────────
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-black/95">
+      <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-[#050505]">
         <FontLoader />
         <BackgroundDecoration />
+
+        {/* Dynamic Cinematic Background */}
+        {current && (
+          <div style={{ 
+            position: 'absolute', inset: 0, 
+            backgroundImage: `url(${getPublicUrl(current.storage_path)})`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            filter: 'blur(60px) brightness(0.3) saturate(1.1)',
+            transition: 'background-image 1s cubic-bezier(0.4, 0, 0.2, 1)',
+            opacity: 0.6,
+            zIndex: 0
+          }} />
+        )}
 
         {revealPhoto && (
           <NewPhotoReveal
@@ -813,50 +819,65 @@ export default function WallPage() {
         )}
 
         {/* Header Overlay */}
-        <div className="relative z-20" style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)' }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.03em', textShadow: '0 2px 10px rgba(0,0,0,0.5)', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
-          <button onClick={() => setViewMode(prevViewMode)} className="btn-outline px-6 py-2 rounded-xl font-bold text-sm bg-white/10 text-white border-white/20 hover:bg-white/20">✕ EXIT</button>
+        <div className="relative z-20" style={{ padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--amber)', letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.8 }}>Live Experience</span>
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', textShadow: '0 2px 10px rgba(0,0,0,0.3)', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
+          </div>
+          <button onClick={() => setViewMode(prevViewMode)} className="btn-outline px-8 py-2.5 rounded-full font-bold text-xs bg-white/5 text-white/80 border-white/10 hover:bg-white/10 hover:text-white transition-all backdrop-filter blur-sm">✕ EXIT</button>
         </div>
 
         {/* Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-12 overflow-hidden">
           {current && (
-            <div className="w-full h-full flex flex-col items-center justify-center max-w-6xl mx-auto" key={current.id}>
-              {/* Image Container - flex-1 + min-h-0 ensures it shrinks to fit available space */}
-              <div className="relative flex-1 w-full flex items-center justify-center min-h-0">
-                {current.media_type === 'video'
-                  ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 16, boxShadow: '0 30px 80px rgba(0,0,0,0.8)', objectFit: 'contain' }} autoPlay loop muted />
-                  : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 16, boxShadow: '0 30px 80px rgba(0,0,0,0.8)', objectFit: 'contain' }} alt="" />}
-                {planTier !== 'WHITE_LABEL' && <Watermark />}
+            <div className="w-full h-full flex flex-col items-center justify-center max-w-7xl mx-auto" key={current.id}>
+              {/* Image Container */}
+              <div className="relative flex-1 w-full flex items-center justify-center min-h-0" style={{ perspective: 1000 }}>
+                <div style={{ 
+                  position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both'
+                }}>
+                  {current.media_type === 'video'
+                    ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.7)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.08)' }} autoPlay loop muted />
+                    : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.7)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.08)' }} alt="" />}
+                  {planTier !== 'WHITE_LABEL' && <Watermark />}
+                </div>
               </div>
 
               {/* Metadata Footer */}
-              <div className="mt-6 glass-card" style={{ padding: '16px 32px', minWidth: 320, maxWidth: '90%', flexShrink: 0, background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.15)', animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 24 }}>
-                <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 4, opacity: 0.8 }}>Shared by</p>
-                <h2 style={{ fontSize: 24, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
+              <div className="mt-8 glass-card" style={{ padding: '28px 48px', minWidth: 360, maxWidth: '90%', flexShrink: 0, background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(40px)', border: '1px solid rgba(255,255,255,0.08)', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center', borderRadius: 32 }}>
+                <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.9 }}>Captured by</p>
+                <h2 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
                 {current.caption && (
-                  <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.9)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.5, maxWidth: 600 }}>"{current.caption}"</p>
+                  <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, maxWidth: 700 }}>"{current.caption}"</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Nav Buttons */}
-          <button onClick={prevSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', width: 56, height: 56, borderRadius: '50%', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>‹</button>
-          <button onClick={nextSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', width: 56, height: 56, borderRadius: '50%', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>›</button>
+          <button onClick={prevSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', left: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>‹</button>
+          <button onClick={nextSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>›</button>
 
-          {/* QR + URL Join Panel */}
-          <div className="slideshow-join-panel" style={{ transform: 'scale(0.85)', transformOrigin: 'bottom right' }}>
-            <div className="slideshow-join-qr">
-              <QRCodeSVG value={uploadUrl} size={70} bgColor="#ffffff" fgColor="#1e293b" />
+          {/* Join Panel Refinement */}
+          <div className="slideshow-join-panel" style={{ transform: 'scale(0.8)', transformOrigin: 'bottom right', opacity: 0.9, background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 12, borderRadius: 16 }}>
+              <QRCodeSVG value={uploadUrl} size={84} bgColor="#ffffff" fgColor="#000" />
             </div>
             <div className="slideshow-join-text">
-              <span className="slideshow-join-label">Scan to join</span>
-              <span className="slideshow-join-title" style={{ fontSize: 14 }}>Share your memory</span>
-              <span className="slideshow-join-url" style={{ fontSize: 11 }}>{uploadUrl}</span>
+              <span className="slideshow-join-label" style={{ color: 'var(--amber)', fontSize: 9 }}>Join Memory Lane</span>
+              <span className="slideshow-join-title" style={{ fontSize: 16, fontWeight: 900 }}>Share Your Memory</span>
+              <span className="slideshow-join-url" style={{ fontSize: 12, opacity: 0.7 }}>{uploadUrl}</span>
             </div>
           </div>
         </div>
+        
+        <style>{`
+          @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.96) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
