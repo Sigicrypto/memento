@@ -210,6 +210,9 @@ const FontLoader = () => (
       flex-direction: column;
       gap: 24px;
       margin-bottom: 40px;
+      /* ── FIX 2: center-align the title section ── */
+      align-items: center;
+      text-align: center;
     }
 
     .qr-container {
@@ -262,30 +265,26 @@ const FontLoader = () => (
     }
 
     /* ─── GRID META STRIP ─── */
+    /* FIX 1: grid meta is always visible, not just on hover */
     .grid-meta {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: linear-gradient(to top, rgba(10,10,20,0.85) 0%, rgba(10,10,20,0.5) 60%, transparent 100%);
-      padding: 28px 18px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      padding: 14px 16px 14px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255, 255, 255, 0.6);
     }
     .grid-meta-name {
       font-size: 13px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text1);
       letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
     .grid-meta-caption {
-      font-size: 11px;
-      color: rgba(255,255,255,0.75);
+      font-size: 12px;
+      color: var(--text2);
       font-style: italic;
       line-height: 1.4;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+      margin-top: 3px;
     }
 
     /* ─── NEW PHOTO REVEAL ─── */
@@ -325,42 +324,66 @@ const FontLoader = () => (
       animation: reveal-meta 0.7s 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    /* ─── QR FLOAT IN SLIDESHOW ─── */
-    .slideshow-qr {
+    /* ─── FIX 3: QR + URL side-by-side panel in slideshow ─── */
+    .slideshow-join-panel {
       position: absolute;
       bottom: 28px;
       right: 28px;
       z-index: 40;
       animation: qr-appear 1s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 14px 20px 14px 14px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
     }
     @keyframes qr-appear {
       from { opacity: 0; transform: translateY(12px) scale(0.9); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .slideshow-qr-inner {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 16px;
+    .slideshow-join-qr {
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.95);
       padding: 10px;
+      border-radius: 12px;
+    }
+    .slideshow-join-text {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      gap: 4px;
     }
-    .slideshow-qr-inner span {
-      font-size: 9px;
-      font-weight: 800;
-      color: rgba(255,255,255,0.7);
-      letter-spacing: 0.12em;
+    .slideshow-join-label {
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.16em;
       text-transform: uppercase;
+    }
+    .slideshow-join-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .slideshow-join-url {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+      word-break: break-all;
+      margin-top: 2px;
+      max-width: 200px;
+      line-height: 1.4;
     }
 
     /* ─── ALBUM META ─── */
     .album-meta {
       padding: 12px 16px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.92);
       backdrop-filter: blur(8px);
       border-top: 1px solid rgba(255,255,255,0.5);
     }
@@ -432,7 +455,6 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
 
       {/* Photo */}
       <div className="reveal-img" style={{ position: 'relative', maxWidth: 540, width: '100%' }}>
-        {/* Glow behind image */}
         <div style={{
           position: 'absolute', inset: -40,
           background: 'radial-gradient(ellipse, rgba(245,158,11,0.25) 0%, transparent 70%)',
@@ -560,7 +582,6 @@ export default function WallPage() {
   const [moderationMode, setModerationMode] = useState(false);
   const [confettiTrigger, setConfettiTrigger] = useState(false);
   const [showBestShots, setShowBestShots] = useState(false);
-  // NEW: track the incoming photo to reveal
   const [revealPhoto, setRevealPhoto] = useState<Photo | null>(null);
   const [errorStatus, setErrorStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -644,7 +665,6 @@ export default function WallPage() {
           setPhotos(prev => [newPhoto, ...prev]);
           if (!moderationMode) {
             setConfettiTrigger(true);
-            // ── NEW: trigger the fullscreen reveal overlay ──
             setRevealPhoto(newPhoto);
             setTimeout(() => setConfettiTrigger(false), 3000);
           }
@@ -727,9 +747,24 @@ export default function WallPage() {
     );
   };
 
+  // ── FIX 4: Logo watermark instead of text ──
   const Watermark = () => (
-    <div style={{ position: 'absolute', bottom: 12, right: 12, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: 8, fontSize: 10, fontWeight: 800, color: 'var(--text1)', textTransform: 'uppercase', letterSpacing: '0.15em', border: '1px solid var(--border)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-      Memento
+    <div style={{
+      position: 'absolute', bottom: 12, right: 12,
+      background: 'rgba(255,255,255,0.85)',
+      backdropFilter: 'blur(8px)',
+      padding: '5px 8px',
+      borderRadius: 8,
+      border: '1px solid var(--border)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      display: 'flex',
+      alignItems: 'center',
+    }}>
+      <img
+        src="/CC logo.png"
+        alt="Memento"
+        style={{ height: 22, width: 'auto', display: 'block', objectFit: 'contain' }}
+      />
     </div>
   );
 
@@ -768,7 +803,6 @@ export default function WallPage() {
         <FontLoader />
         <BackgroundDecoration />
 
-        {/* New photo reveal overlay (sits above slideshow too) */}
         {revealPhoto && (
           <NewPhotoReveal
             photo={revealPhoto}
@@ -795,7 +829,7 @@ export default function WallPage() {
                 {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
 
-              {/* Metadata Footer — always visible */}
+              {/* Metadata Footer */}
               <div className="mt-8 glass-card" style={{ padding: '24px 40px', minWidth: 320, maxWidth: '85%', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.15)', animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 28 }}>
                 <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.8 }}>Shared by</p>
                 <h2 style={{ fontSize: 28, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
@@ -810,11 +844,15 @@ export default function WallPage() {
           <button onClick={prevSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>‹</button>
           <button onClick={nextSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>›</button>
 
-          {/* ── SUBTLE QR IN SLIDESHOW ── */}
-          <div className="slideshow-qr">
-            <div className="slideshow-qr-inner">
-              <QRCodeSVG value={uploadUrl} size={72} bgColor="transparent" fgColor="rgba(255,255,255,0.9)" />
-              <span>Join the Wall</span>
+          {/* ── FIX 3: QR + URL side-by-side join panel ── */}
+          <div className="slideshow-join-panel">
+            <div className="slideshow-join-qr">
+              <QRCodeSVG value={uploadUrl} size={80} bgColor="#ffffff" fgColor="#1e293b" />
+            </div>
+            <div className="slideshow-join-text">
+              <span className="slideshow-join-label">Scan to join</span>
+              <span className="slideshow-join-title">Share your memory</span>
+              <span className="slideshow-join-url">{uploadUrl}</span>
             </div>
           </div>
         </div>
@@ -872,18 +910,18 @@ export default function WallPage() {
 
         {/* MAIN CONTENT AREA */}
         <main className="wall-main">
+          {/* ── FIX 2: Center-aligned title header ── */}
           <header className="action-bar">
-            {/* ── AESTHETIC HEADING ── */}
-            <div>
+            <div style={{ textAlign: 'center', width: '100%' }}>
               <h1
                 className="wall-heading"
                 data-text={eventName}
               >
                 {eventName}
               </h1>
-              {/* Decorative underline */}
+              {/* Decorative underline — centered */}
               <div style={{
-                marginTop: 12,
+                margin: '12px auto 0',
                 height: 3,
                 width: 120,
                 borderRadius: 100,
@@ -892,7 +930,7 @@ export default function WallPage() {
               }} />
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
               <div style={{ background: 'rgba(255,255,255,0.5)', padding: 6, borderRadius: 18, display: 'flex', gap: 6, border: '1px solid var(--border)', backdropFilter: 'blur(12px)' }}>
                 {(['polaroid', 'grid', 'album', 'slideshow'] as ViewMode[]).map(m => (
                   <button key={m} onClick={() => {
@@ -919,7 +957,7 @@ export default function WallPage() {
             </div>
 
           ) : viewMode === 'polaroid' ? (
-            /* ── POLAROID ── already shows name + caption below image */
+            /* ── POLAROID ── */
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 40, justifyContent: 'center' }}>
               {displayedPhotos.map((p, i) => (
                 <div key={p.id} className="polaroid-card" style={{ transform: `rotate(${(i % 6 - 3) * 2}deg)` }}>
@@ -928,10 +966,10 @@ export default function WallPage() {
                       ? <video src={getPublicUrl(p.storage_path)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted playsInline />
                       : <img src={getPublicUrl(p.storage_path)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                   </div>
-                  {/* Always-visible metadata */}
-                  <div style={{ color: '#333', textAlign: 'center', width: 260 }}>
+                  {/* FIX 1: Always-visible name + caption */}
+                  <div style={{ color: '#333', textAlign: 'center', width: 260, padding: '0 4px' }}>
                     {p.caption && (
-                      <p style={{ fontSize: 13, fontStyle: 'italic', marginBottom: 4, fontWeight: 500, color: '#444', lineHeight: 1.4 }}>
+                      <p style={{ fontSize: 13, fontStyle: 'italic', marginBottom: 6, fontWeight: 500, color: '#444', lineHeight: 1.4 }}>
                         "{p.caption}"
                       </p>
                     )}
@@ -945,7 +983,7 @@ export default function WallPage() {
             </div>
 
           ) : viewMode === 'album' ? (
-            /* ── ALBUM ── grouped by date, name + caption below each photo */
+            /* ── ALBUM ── */
             <div style={{ display: 'flex', flexDirection: 'column', gap: 80 }}>
               {(() => {
                 const groups: { [k: string]: Photo[] } = {};
@@ -961,7 +999,7 @@ export default function WallPage() {
                       {gPhotos.map(p => (
                         <div key={p.id} className="photo-card glass-card" style={{ breakInside: 'avoid', marginBottom: 32, borderRadius: 24, overflow: 'hidden', position: 'relative', border: 'none', padding: 0 }}>
                           <img src={getPublicUrl(p.storage_path)} style={{ width: '100%', display: 'block' }} alt="" />
-                          {/* Always-visible metadata strip */}
+                          {/* FIX 1: Always-visible name + caption in album */}
                           <div className="album-meta">
                             <p className="album-meta-name">by {p.uploader_name}</p>
                             {p.caption && <p className="album-meta-caption">"{p.caption}"</p>}
@@ -976,17 +1014,19 @@ export default function WallPage() {
             </div>
 
           ) : (
-            /* ── GRID ── name + caption always visible at bottom */
+            /* ── GRID ── FIX 1: name + caption always visible below image (not overlay) */
             <div style={{ columns: '3 300px', gap: 32 }}>
               {displayedPhotos.map(p => (
                 <div key={p.id} className="photo-card glass-card" style={{ breakInside: 'avoid', marginBottom: 32, borderRadius: 24, overflow: 'hidden', position: 'relative', border: 'none', padding: 0 }}>
-                  <img
-                    src={getPublicUrl(p.storage_path)}
-                    style={{ width: '100%', display: 'block', transition: 'transform 0.5s' }}
-                    className="wall-img"
-                    alt=""
-                  />
-                  {/* Always-visible gradient meta strip */}
+                  <div style={{ overflow: 'hidden' }}>
+                    <img
+                      src={getPublicUrl(p.storage_path)}
+                      style={{ width: '100%', display: 'block', transition: 'transform 0.5s' }}
+                      className="wall-img"
+                      alt=""
+                    />
+                  </div>
+                  {/* Always-visible meta strip below the image */}
                   <div className="grid-meta">
                     <p className="grid-meta-name">{p.uploader_name}</p>
                     {p.caption && <p className="grid-meta-caption">"{p.caption}"</p>}
