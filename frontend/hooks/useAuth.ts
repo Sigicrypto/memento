@@ -20,8 +20,10 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   const fetchProfile = async (userId: string) => {
+    setProfileLoading(true);
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -37,6 +39,8 @@ export const useAuth = () => {
       if (data) setProfile(data as UserProfile);
     } catch (err) {
       console.error('Unexpected error in fetchProfile:', err);
+    } finally {
+      setProfileLoading(false);
     }
   };
 
@@ -99,5 +103,5 @@ export const useAuth = () => {
   const isApproved = profile?.is_approved === true;
   const isAdmin = profile?.role === 'admin';
 
-  return { user, profile, loading, signIn, signUp, signOut, plan, isPaid, isApproved, isAdmin };
+  return { user, profile, loading, profileLoading, signIn, signUp, signOut, plan, isPaid, isApproved, isAdmin };
 };

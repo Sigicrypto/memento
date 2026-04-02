@@ -22,16 +22,16 @@ const BackgroundDecoration = () => (
 );
 
 export default function PendingApproval() {
-  const { user, profile, isApproved, loading } = useAuth();
+  const { user, profile, isApproved, loading, profileLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user && isApproved) {
+    if (!loading && !profileLoading && user && isApproved) {
       router.push('/dashboard');
     }
-  }, [loading, user, isApproved, router]);
+  }, [loading, profileLoading, user, isApproved, router]);
 
-  if (loading) return null;
+  if (loading || profileLoading) return null;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#fafcfe] relative overflow-hidden">

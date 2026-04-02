@@ -55,14 +55,14 @@ const PLAN_INFO: Record<string, { name: string; emoji: string; color: string; fe
 };
 
 export default function DashboardPage() {
-  const { user, profile, isPaid, isApproved, loading: authLoading } = useAuth();
+  const { user, profile, isPaid, isApproved, loading: authLoading, profileLoading } = useAuth();
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState('');
 
   useEffect(() => {
-    if (authLoading) return;
+    if (authLoading || profileLoading) return;
     if (!user) { router.push('/'); return; }
     if (!isApproved) { router.push('/pending'); return; }
 
