@@ -709,7 +709,7 @@ export default function WallPage() {
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-transparent">
+      <div className="wall-page fixed inset-0 z-[10000] h-screen w-screen overflow-hidden bg-transparent">
       <FontLoader />
 
         {/* Dynamic Cinematic Background */}
@@ -734,51 +734,59 @@ export default function WallPage() {
           />
         )}
 
-        {/* Header Overlay */}
-        <div className="relative z-20" style={{ padding: '8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, opacity: 0.6 }}>
-            <span style={{ fontSize: 7, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Live Experience</span>
-            <h1 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text1)', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
+        {/* Header Overlay — Absolute to stay on top without taking space */}
+        <div className="absolute top-0 left-0 right-0 z-50" style={{ padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.2), transparent)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.12em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Live Experience</span>
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{eventName}</h1>
           </div>
-          <button onClick={() => setViewMode(prevViewMode)} className="btn-outline px-4 py-1 rounded-full font-bold text-[8px] bg-white/20 text-slate-400 border-white/40 hover:bg-white/40 transition-all backdrop-filter blur-sm">✕ EXIT</button>
+          <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-2 rounded-full font-bold text-[10px] bg-white/10 text-white border border-white/20 hover:bg-white/30 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
         </div>
 
-        {/* Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-0 overflow-hidden">
+        {/* Main Content Area — Absolute inset to fulfill the "Full Page" request */}
+        <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
           {current && (
-            <div className="w-full h-full flex flex-col items-center justify-center" key={current.id}>
-              {/* Image Container */}
-              <div className="relative flex-1 w-full flex items-center justify-center min-h-0" style={{ perspective: 1000 }}>
-                <div style={{ 
-                  position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            <div className="w-full h-full flex items-center justify-center relative" key={current.id}>
+              {/* Image/Video Layer */}
+              <div 
+                className="w-full h-full flex items-center justify-center" 
+                style={{ 
                   animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both'
-                }}>
-                  {current.media_type === 'video' ? (
-                    <video 
-                      src={getPublicUrl(current.storage_path)} 
-                      style={{ height: '100%', width: '100%', objectFit: 'contain', boxShadow: '0 40px 100px rgba(0,0,0,0.1)' }} 
-                      autoPlay loop muted 
-                    />
-                  ) : (
-                    <img 
-                      src={getPublicUrl(current.storage_path)} 
-                      style={{ height: '100%', width: '100%', objectFit: 'contain', boxShadow: '0 40px 100px rgba(0,0,0,0.1)' }} 
-                      alt="" 
-                    />
-                  )}
-                  {planTier !== 'WHITE_LABEL' && <Watermark />}
-                </div>
+                }}
+              >
+                {current.media_type === 'video' ? (
+                  <video 
+                    src={getPublicUrl(current.storage_path)} 
+                    style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.15)', borderRadius: 12 }} 
+                    autoPlay loop muted 
+                  />
+                ) : (
+                  <img 
+                    src={getPublicUrl(current.storage_path)} 
+                    style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.15)', borderRadius: 12 }} 
+                    alt="" 
+                  />
+                )}
+                {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
 
-              {/* Metadata Footer — Ultra-minimal to give the photo 95% of the screen */}
-              <div className="mt-1 glass-card" style={{ padding: '6px 20px', minWidth: 200, maxWidth: '85%', flexShrink: 0, background: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(40px)', border: '1px solid var(--border)', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 100 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
-                  <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', opacity: 0.7 }}>SHARED BY</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text1)', letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</span>
+              {/* Metadata Overlay — Positioned at the bottom of the photo */}
+              <div 
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 glass-card" 
+                style={{ 
+                  padding: '12px 32px', minWidth: 260, background: 'rgba(255,255,255,0.4)', 
+                  backdropFilter: 'blur(32px) saturate(180%)', border: '1px solid rgba(255,255,255,0.4)', 
+                  animation: 'fadeInUp 1s cubic-bezier(0.2, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 100,
+                  boxShadow: '0 10px 40px rgba(0,0,0,0.08)'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
+                  <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--rose)', opacity: 0.8, letterSpacing: '0.05em' }}>MOMENT BY</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: '#1e293b', letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</span>
                   {current.caption && (
                     <>
-                      <div style={{ width: 1, height: 12, background: 'var(--border)' }} />
-                      <span style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', fontWeight: 400, maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>"{current.caption}"</span>
+                      <div style={{ width: 1, height: 16, background: 'rgba(30,41,59,0.2)' }} />
+                      <span style={{ fontSize: 15, color: '#475569', fontStyle: 'italic', fontWeight: 400 }}>"{current.caption}"</span>
                     </>
                   )}
                 </div>
@@ -786,19 +794,18 @@ export default function WallPage() {
             </div>
           )}
 
-          {/* Nav Buttons */}
-          <button onClick={prevSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', left: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>‹</button>
-          <button onClick={nextSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>›</button>
-
-          {/* Join Panel Refinement — Ultra-minimal and moved to very corner */}
-          <div className="slideshow-join-panel" style={{ 
-            transform: 'scale(0.6)', transformOrigin: 'bottom left', 
-            left: 20, right: 'auto', bottom: 20, 
-            opacity: 0.5, background: 'rgba(255,255,255,0.1)', 
-            backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' 
-          }}>
-            <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 8, borderRadius: 12 }}>
-              <QRCodeSVG value={uploadUrl} size={60} bgColor="#ffffff" fgColor="#000" />
+          {/* Join Panel Refinement — Absolute at bottom-left */}
+          <div className="absolute left-8 bottom-8 z-50">
+            <div className="slideshow-join-panel" style={{ 
+              padding: 10, borderRadius: 20,
+              background: 'rgba(255,255,255,0.1)', 
+              backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+            }}>
+              <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 12, borderRadius: 14 }}>
+                <QRCodeSVG value={uploadUrl} size={80} bgColor="#ffffff" fgColor="#000" />
+              </div>
+              <p style={{ fontSize: 10, color: '#fff', fontWeight: 800, marginTop: 8, textAlign: 'center', opacity: 0.8, letterSpacing: '0.05em' }}>SCAN TO JOIN</p>
             </div>
           </div>
         </div>
