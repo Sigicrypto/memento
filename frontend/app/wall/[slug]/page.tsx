@@ -531,7 +531,7 @@ export default function WallPage() {
   }
 
   return (
-    <div className="wall-page" style={{ padding:'60px 48px 120px' }}>
+    <div className="wall-page" style={{ padding:'80px 64px 140px' }}>
       <FontLoader />
       <BackgroundDecoration />
       
