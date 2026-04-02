@@ -1,11 +1,13 @@
 -- ═══════════════════════════════════════════════════════════════
--- 026: FIX RLS RECURSION AND ADD MISSING COLUMNS
--- This resolves the 500 (Profiles Recursion) and 400 (Missing Fields) errors
--- Run this in the Supabase SQL Editor
+-- 026: CONSOLIDATED SCHEMA AND RLS FIXES
+-- Resolves: 
+-- 1. Recursive RLS in Profiles (500 Error)
+-- 2. Missing columns in Events (400 Error on watermark_url, music_track)
+-- 3. Missing columns in Photos (400 Error on media_type, is_best_shot, approved)
+-- 4. Forbidden client-side admin call (403 Error) -> Fix requires RLS change below
 -- ═══════════════════════════════════════════════════════════════
 
--- 1. Fix recursive RLS on profiles by using a SECURITY DEFINER function
--- This allows admins to bypass RLS for the role check itself
+-- A. Fix recursive RLS on profiles using a Security Definer function
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -22,21 +24,22 @@ CREATE POLICY "Admins can view all profiles"
   ON public.profiles FOR SELECT
   USING (public.is_admin());
 
--- 2. Add missing columns to help the wall page load
--- Add music_track if it doesn't already exist
+-- B. Allow public read on event owner profiles (needed for branding)
+DROP POLICY IF EXISTS "Anyone can view event owner profiles" ON public.profiles;
+CREATE POLICY "Anyone can view event owner profiles"
+  ON public.profiles FOR SELECT
+  USING (EXISTS (SELECT 1 FROM public.events WHERE events.owner_id = public.profiles.id));
+
+-- C. Add missing columns to help the wall page load
 DO $$ 
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'events' AND column_name = 'music_track'
-  ) THEN
+  -- 1. Events Table
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'music_track') THEN
     ALTER TABLE public.events ADD COLUMN music_track TEXT DEFAULT 'none';
   END IF;
-END $$;
-
--- 3. Ensure other expected columns exist (defensive)
-DO $$ 
-BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'watermark_url') THEN
+    ALTER TABLE public.events ADD COLUMN watermark_url TEXT;
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'theme_primary_color') THEN
     ALTER TABLE public.events ADD COLUMN theme_primary_color TEXT;
   END IF;
@@ -51,5 +54,16 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'events' AND column_name = 'plan_type') THEN
     ALTER TABLE public.events ADD COLUMN plan_type TEXT DEFAULT 'STARTER';
+  END IF;
+
+  -- 2. Photos Table
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'photos' AND column_name = 'media_type') THEN
+    ALTER TABLE public.photos ADD COLUMN media_type TEXT DEFAULT 'image';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'photos' AND column_name = 'is_best_shot') THEN
+    ALTER TABLE public.photos ADD COLUMN is_best_shot BOOLEAN DEFAULT FALSE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'photos' AND column_name = 'approved') THEN
+    ALTER TABLE public.photos ADD COLUMN approved BOOLEAN DEFAULT TRUE;
   END IF;
 END $$;

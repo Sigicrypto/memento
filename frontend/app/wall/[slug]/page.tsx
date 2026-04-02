@@ -217,14 +217,26 @@ export default function WallPage() {
         const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'memento.events';
         const isCustomDomain = hostname !== 'localhost' && hostname !== baseDomain && !hostname.endsWith('.' + baseDomain);
 
-        const { data: ownerData } = await supabase.auth.admin.getUserById(data.owner_id);
-        const owner = ownerData?.user;
+        // Step 2: Fetch owner profile for plan and branding info
+        const { data: ownerProfile, error: ownerErr } = await supabase
+          .from('profiles')
+          .select('plan, role')
+          .eq('id', data.owner_id)
+          .single();
+
+        if (ownerErr) {
+          console.warn('Failed to fetch owner profile:', ownerErr);
+        }
         
-        // Step 2: Set branding if White Label tier
-        if (data.plan_type === 'WHITE_LABEL' || owner?.user_metadata?.plan_tier === 'white_label') {
+        // Step 3: Set branding if White Label tier
+        // Note: Currently branding info is in user_metadata, which isn't accessible 
+        // via public profiles unless we sync it to columns. 
+        // For now, we'll check the plan_type from the event itself.
+        if (data.plan_type === 'WHITE_LABEL' || ownerProfile?.plan === 'whitelabel') {
+          // Fallback branding if not synced to profiles yet
           setBrand({
-            logoUrl: owner?.user_metadata?.brand_logo_url || null,
-            colors: owner?.user_metadata?.brand_colors || null,
+            logoUrl: null, // We need to sync this to profiles table for it to work here
+            colors: null,
           });
         }
       } catch (brandingErr) {
