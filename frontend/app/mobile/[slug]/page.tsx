@@ -83,13 +83,12 @@ export default function MobilePage() {
       console.log("[mobile] fetching event for slug:", slug);
       const { data, error } = await supabase
         .from('events')
-        .select('id, name, enable_smart_privacy, plan_type, enable_safety_filter')
+        .select('id, name, plan_type, enable_safety_filter')
         .eq('slug', slug)
         .single();
 
-      console.log("[mobile] event fetch result:", { data, error });
       if (error || !data) {
-        console.log("[mobile] event not found, redirecting to 404");
+        console.error("[mobile] event fetch error:", error);
         router.push('/404');
         return;
       }
