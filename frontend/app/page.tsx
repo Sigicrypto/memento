@@ -398,7 +398,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
         setCurrentSlide((prev) => (prev + 1) % photos.length);
 
-      }, 3000);
+      }, 4000);
 
       return () => clearInterval(interval);
 
@@ -660,7 +660,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
               </button>
 
-              <button onClick={() => setViewMode('slideshow')} className={`modal-icon-btn ${viewMode === 'slideshow' ? 'active' : ''}`} title="Slideshow View">
+              <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`modal-icon-btn ${viewMode === 'slideshow' ? 'active' : ''}`} title="Slideshow View">
 
                 <Play size={18} />
 
@@ -840,15 +840,15 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
                     {viewMode === 'slideshow' && (
 
-                      <div className="demo-slideshow-view" onMouseEnter={() => setIsPlaying(false)} onMouseLeave={() => setIsPlaying(true)} onTouchStart={() => setIsPlaying(false)}>
+                      <div className="demo-slideshow-view">
 
                          {photos[currentSlide]?.type === 'video' ? (
 
-                            <video src={photos[currentSlide]?.url} className="demo-media-slide" autoPlay muted loop playsInline preload="metadata" />
+                            <video key={photos[currentSlide]?.id || currentSlide} src={photos[currentSlide]?.url} className="demo-media-slide" autoPlay muted loop playsInline preload="metadata" />
 
                           ) : (
 
-                            <img src={photos[currentSlide]?.url} className="demo-media-slide" alt="Upload" />
+                            <img key={photos[currentSlide]?.id || currentSlide} src={photos[currentSlide]?.url} className="demo-media-slide" alt="Upload" />
 
                           )}
 
