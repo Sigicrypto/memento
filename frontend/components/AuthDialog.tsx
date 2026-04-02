@@ -196,7 +196,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
       className="auth-dialog-overlay"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
-      <div className="auth-dialog">
+      <div className="auth-dialog glass-card" style={{ padding: 40, border: 'none', boxShadow: '0 20px 80px rgba(30,10,60,0.15)' }}>
         {/* Close button */}
         <button className="auth-close-btn" onClick={onClose}>
           <X size={20} />
@@ -346,7 +346,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
               {error && <div className="auth-error">{error}</div>}
               {message && <div className="auth-message">{message}</div>}
 
-              <button type="submit" className="auth-submit-btn" disabled={loading}>
+              <button type="submit" className="auth-submit-btn btn-glow" disabled={loading} style={{ height: 54, borderRadius: 16 }}>
                 {loading ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : (

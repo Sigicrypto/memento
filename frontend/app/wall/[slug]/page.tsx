@@ -335,7 +335,97 @@ const FontLoader = () => (
       margin-top: 2px;
       line-height: 1.4;
     }
+    /* ─── DREAMY BACKGROUND ─── */
+    .grain {
+      position: fixed; inset: -50%; width: 200%; height: 200%;
+      pointer-events: none; z-index: 1; opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain 0.5s steps(1) infinite;
+    }
+    @keyframes grain {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-2%, -3%); }
+      50% { transform: translate(3%, 2%); }
+      75% { transform: translate(-1%, 4%); }
+    }
+
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(100px);
+      animation: orb-drift 20s ease-in-out infinite;
+      z-index: 0; opacity: 0.6;
+    }
+    @keyframes orb-drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(40px, -60px) scale(1.1); }
+      66% { transform: translate(-30px, 40px) scale(0.9); }
+    }
+
+    .shape { position: absolute; opacity: 0.1; color: var(--amber); pointer-events: none; }
+    .s-cross { font-size: 2rem; animation: float-slow 15s ease-in-out infinite alternate; }
+    .s-circle { width: 40px; height: 40px; border: 2px solid var(--rose); border-radius: 50%; animation: float-slow 20s ease-in-out infinite alternate reverse; }
+    @keyframes float-slow {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-40px) rotate(180deg); }
+    }
+
+    /* ─── SLIDESHOW REFINEMENTS ─── */
+    .slideshow-side-panel {
+      position: absolute;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 32px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    
+    .qr-side {
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 180px;
+      align-items: center;
+      text-align: center;
+      animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    
+    .meta-side {
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 320px;
+      animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes slideInLeft { from { opacity: 0; transform: translate(-40px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translate(40px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
+
+    @media (max-width: 1200px) {
+      .qr-side, .meta-side { position: relative; top: 0; left: 0; right: 0; transform: none; width: 100% !important; margin-bottom: 20px; flex-direction: row; align-items: center; justify-content: center; }
+      @keyframes slideInLeft { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes slideInRight { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    }
   `}</style>
+)
+
+const DreamyBackground = ({ primary, secondary }: { primary: string; secondary: string }) => (
+  <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+    <div className="grain" />
+    <div className="orb" style={{ width: 800, height: 800, background: `radial-gradient(circle, ${primary}33, transparent)`, top: '-20%', left: '-10%' }} />
+    <div className="orb" style={{ width: 600, height: 600, background: `radial-gradient(circle, ${secondary}22, transparent)`, bottom: '-10%', right: '-5%', animationDelay: '-10s' }} />
+    <div className="orb" style={{ width: 400, height: 400, background: `radial-gradient(circle, ${primary}22, transparent)`, top: '40%', right: '15%', animationDelay: '-5s' }} />
+    
+    <div className="floating-shapes">
+      <div className="shape s-cross" style={{ top: '15%', left: '10%' }}>✚</div>
+      <div className="shape s-circle" style={{ top: '45%', right: '15%' }} />
+      <div className="shape s-cross" style={{ bottom: '20%', left: '15%' }}>✚</div>
+      <div className="shape s-circle" style={{ top: '75%', right: '25%' }} />
+    </div>
+  </div>
 );
 
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
@@ -685,7 +775,6 @@ export default function WallPage() {
 
   if (loading) return (
     <div className="wall-page flex items-center justify-center">
-      <FontLoader />
       <div className="text-center relative z-10">
         <div style={{ width: 48, height: 48, border: '4px solid var(--surface)', borderTopColor: 'var(--amber)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16, margin: '0 auto' }} />
         <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text2)' }}>Entering the Wall…</p>
@@ -696,7 +785,6 @@ export default function WallPage() {
 
   if (notFound || eventExpired) return (
     <div className="wall-page flex items-center justify-center p-6 text-center">
-      <FontLoader />
       <div className="glass-card p-12 max-w-md relative z-10">
         <div style={{ fontSize: 64, marginBottom: 20 }}>{notFound ? '✨' : '📅'}</div>
         <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 16, color: 'var(--text1)' }}>{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
@@ -710,7 +798,8 @@ export default function WallPage() {
     const current = displayedPhotos[slideIndex];
     return (
       <div className="wall-page fixed inset-0 z-[10000] h-screen w-screen overflow-hidden bg-transparent">
-      <FontLoader />
+        <FontLoader />
+        <DreamyBackground primary={themeP} secondary={themeS} />
 
         {/* Dynamic Cinematic Background */}
         {current && (
@@ -720,7 +809,7 @@ export default function WallPage() {
             backgroundSize: 'cover', backgroundPosition: 'center',
             filter: 'blur(100px) brightness(1.1) saturate(1.2)',
             transition: 'background-image 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            opacity: 0.35,
+            opacity: 0.3,
             zIndex: 0
           }} />
         )}
@@ -734,87 +823,90 @@ export default function WallPage() {
           />
         )}
 
-        {/* Header Overlay — Absolute to stay on top without taking space */}
-        <div className="absolute top-0 left-0 right-0 z-50" style={{ padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.2), transparent)' }}>
+        {/* Header Overlay */}
+        <div className="absolute top-0 left-0 right-0 z-50" style={{ padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.12em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Live Experience</span>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{eventName}</h1>
+            <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.15em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Live Experience</span>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>{eventName}</h1>
           </div>
-          <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-2 rounded-full font-bold text-[10px] bg-white/10 text-white border border-white/20 hover:bg-white/30 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
+          <button onClick={() => setViewMode(prevViewMode)} className="px-8 py-3 rounded-full font-bold text-[10px] bg-white/10 text-white border border-white/20 hover:bg-white/30 transition-all backdrop-filter blur-md uppercase tracking-widest">✕ EXIT SLIDESHOW</button>
         </div>
 
-        {/* Main Content Area — Absolute inset to fulfill the "Full Page" request */}
-        <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+        {/* Main Content Area */}
+        <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden px-20">
           {current && (
             <div className="w-full h-full flex items-center justify-center relative" key={current.id}>
               {/* Image/Video Layer */}
               <div 
                 className="w-full h-full flex items-center justify-center" 
                 style={{ 
-                  animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both'
+                  animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both',
+                  padding: '0 400px' // Leave space for side panels
                 }}
               >
                 {current.media_type === 'video' ? (
                   <video 
                     src={getPublicUrl(current.storage_path)} 
-                    style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.15)', borderRadius: 12 }} 
+                    style={{ maxHeight: '85vh', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.5)', borderRadius: 20 }} 
                     autoPlay loop muted 
                   />
                 ) : (
                   <img 
                     src={getPublicUrl(current.storage_path)} 
-                    style={{ maxHeight: '100%', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.15)', borderRadius: 12 }} 
+                    style={{ maxHeight: '85vh', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.5)', borderRadius: 20 }} 
                     alt="" 
                   />
                 )}
                 {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
 
-              {/* Metadata Overlay — Positioned at the FAR BOTTOM-RIGHT to avoid obstructing the photo */}
-              <div 
-                className="absolute bottom-12 right-12 z-50 glass-card" 
-                style={{ 
-                  padding: '12px 28px', minWidth: 220, background: 'rgba(255,255,255,0.4)', 
-                  backdropFilter: 'blur(32px) saturate(180%)', border: '1px solid rgba(255,255,255,0.4)', 
-                  animation: 'fadeInRight 1s cubic-bezier(0.2, 1, 0.3, 1) both', textAlign: 'left', borderRadius: 24,
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.08)'
-                }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', opacity: 0.8, letterSpacing: '0.1em' }}>MOMENT BY</span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: '#1e293b', letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</span>
+              {/* QR Side Panel */}
+              <div className="slideshow-side-panel qr-side">
+                <div style={{ background: '#fff', padding: 14, borderRadius: 24, boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}>
+                  <QRCodeSVG value={uploadUrl} size={130} bgColor="#ffffff" fgColor="#000" />
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <p style={{ fontSize: 10, fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Scan to Join</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginTop: 4 }}>{uploadUrl.replace('https://', '').replace('http://', '')}</p>
+                </div>
+              </div>
+
+              {/* Metadata Side Panel */}
+              <div className="slideshow-side-panel meta-side">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
+                  <div>
+                    <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Moment Shared By</span>
+                    <h2 style={{ fontSize: 36, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginTop: 4 }}>
+                      {current.uploader_name}
+                    </h2>
+                  </div>
+                  
                   {current.caption && (
-                    <span style={{ fontSize: 14, color: '#475569', fontStyle: 'italic', fontWeight: 400, marginTop: 4, lineHeight: 1.4 }}>"{current.caption}"</span>
+                    <div style={{ padding: '20px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                      <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.85)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6 }}>
+                        "{current.caption}"
+                      </p>
+                    </div>
                   )}
+
+                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                    <div className="px-6 py-2 rounded-2xl bg-white/10 border border-white/10 text-white font-bold text-xs">
+                      {current.reaction_count || 0} ❤️
+                    </div>
+                    <div className="px-6 py-2 rounded-2xl bg-white/10 border border-white/10 text-white font-bold text-xs uppercase tracking-widest">
+                      {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
-
-          {/* Join Panel Refinement — Positioned at the FAR BOTTOM-LEFT */}
-          <div className="absolute left-12 bottom-12 z-50">
-            <div className="slideshow-join-panel" style={{ 
-              padding: 12, borderRadius: 24,
-              background: 'rgba(255,255,255,0.1)', 
-              backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-            }}>
-              <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 12, borderRadius: 16 }}>
-                <QRCodeSVG value={uploadUrl} size={100} bgColor="#ffffff" fgColor="#000" />
-              </div>
-              <p style={{ fontSize: 11, color: '#fff', fontWeight: 900, marginTop: 10, textAlign: 'center', opacity: 0.9, letterSpacing: '0.1em' }}>JOIN THE WALL</p>
-            </div>
-          </div>
         </div>
         
         <style>{`
           @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.96) translateY(10px); }
+            from { opacity: 0; transform: scale(0.96) translateY(20px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
-          }
-          @keyframes fadeInRight {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
           }
         `}</style>
       </div>
@@ -825,6 +917,7 @@ export default function WallPage() {
   return (
     <div className="wall-page">
       <FontLoader />
+      <DreamyBackground primary={themeP} secondary={themeS} />
 
       {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
 

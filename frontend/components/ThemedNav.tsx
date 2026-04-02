@@ -51,18 +51,12 @@ export default function ThemedNav({ showAuthButtons = true }: ThemedNavProps) {
               </Link>
               <button 
                 onClick={handleSignOut} 
+                className="glass-pill"
                 style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '6px', 
                   padding: '0.5rem 1rem', 
-                  borderRadius: '12px', 
-                  border: '1px solid rgba(200,210,230,0.4)', 
-                  background: 'rgba(255,255,255,0.5)', 
-                  color: 'var(--text2)', 
+                  color: 'var(--color-text-secondary)', 
                   fontSize: '0.8rem', 
                   cursor: 'pointer', 
-                  backdropFilter: 'blur(12px)',
                   transition: 'all 0.2s'
                 }}
               >
