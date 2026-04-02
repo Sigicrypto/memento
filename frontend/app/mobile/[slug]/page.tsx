@@ -1,9 +1,115 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+
+// ─── BACKGROUND DECORATION ───
+const BackgroundDecoration = () => (
+  <div style={{ position:'fixed', inset:0, zIndex:-1, overflow:'hidden', pointerEvents:'none' }}>
+    <div style={{ position:'absolute', inset:0, background:'var(--bg)', opacity:0.97 }} />
+    <div style={{ position:'absolute', inset:0, background:`url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3C%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`, opacity:0.02, mixBlendMode:'overlay' }} />
+    <div className="orb" style={{ top:'-10%', left:'-10%', width:'60vw', height:'60vw', background:'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }} />
+    <div className="orb" style={{ bottom:'-5%', right:'-5%', width:'70vw', height:'70vw', background:'radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%)' }} />
+  </div>
+);
+
+const FontLoader = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+    
+    :root {
+      --bg: #faf9fd;
+      --text1: #1e293b;
+      --text2: #64748b;
+      --amber: #f59e0b;
+      --rose: #f472b6;
+      --border: rgba(226, 232, 240, 0.8);
+      --glass: rgba(255, 255, 255, 0.7);
+    }
+
+    .mobile-page {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      color: var(--text1);
+      position: relative;
+    }
+
+    .glass-card {
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 32px rgba(148, 163, 184, 0.1);
+      border-radius: 28px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-glow {
+      background: linear-gradient(135deg, var(--amber), var(--rose));
+      color: white;
+      border: none;
+      box-shadow: 0 10px 25px rgba(244, 114, 182, 0.3);
+      position: relative;
+      overflow: hidden;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn-glow:active { transform: scale(0.96); opacity: 0.9; }
+
+    .btn-outline {
+      background: rgba(255,255,255,0.4);
+      border: 1px solid var(--border);
+      color: var(--text1);
+      backdrop-filter: blur(8px);
+      transition: 0.3s;
+    }
+    .btn-outline:active { background: rgba(255,255,255,0.6); }
+
+    .m-input {
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+      transition: 0.3s;
+      font-family: 'Inter', sans-serif;
+    }
+    .m-input:focus {
+      border-color: var(--rose);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(244, 114, 182, 0.1);
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: drift 20s infinite alternate ease-in-out;
+    }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to { transform: translate(10%, 10%) scale(1.1); }
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  `}</style>
+);
 
 // Local storage keys
 const GUEST_ID_KEY = 'memento_guest_id';
@@ -280,84 +386,91 @@ export default function MobilePage() {
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
 
   return (
-    <div className="nm-page pb-40">
-      <div className="nm-card mx-4 mt-12 p-4">
-        <h1 className="text-xl font-bold text-center" style={{color:'var(--text1)'}}>{event?.name || 'Loading...'}</h1>
-      </div>
+    <div className="mobile-page pb-40" style={{ paddingTop:'40px' }}>
+      <FontLoader />
+      <BackgroundDecoration />
 
-      {/* UPLOAD SECTION */}
-      <div className="mx-4 mt-4 nm-card p-4">
-        <h2 className="text-lg font-bold text-center mb-2" style={{color:'var(--text1)'}}>Upload Your Photos</h2>
-        <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" id="photo-upload" />
-        <label htmlFor="photo-upload" className="nm-btn w-full text-center py-3 cursor-pointer">Select Photos/Videos</label>
-        
-        {previews.length > 0 && (
-          <div className="mt-4 space-y-4">
-            <div className="grid grid-cols-3 gap-2">
-              {previews.map((src, i) => <img key={i} src={src} className="w-full h-24 object-cover rounded-lg" />)}
+      <div className="px-6">
+        <div className="glass-card p-6 mb-6 text-center">
+          <h1 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', color:'var(--text1)', marginBottom:4 }}>{event?.name || 'Loading...'}</h1>
+          <div style={{ display:'flex', justifyContent:'center' }}>
+            <div className="status-badge" style={{ background: realtimeStatus === 'SUBSCRIBED' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: realtimeStatus === 'SUBSCRIBED' ? '#10b981' : '#f59e0b' }}>
+              <div style={{ width:6, height:6, borderRadius:'50%', background:'currentColor' }} />
+              {realtimeStatus === 'SUBSCRIBED' ? 'LIVE' : 'CONNECTING...'}
             </div>
-            <input type="text" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)} placeholder="Your Name (Optional)" className="nm-input w-full" />
-            <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Caption (Optional)" className="nm-input w-full" rows={2} />
-            <button onClick={handleUpload} className="nm-btn nm-btn-accent w-full py-3 font-bold" disabled={uploading}>
-              {uploading ? `Uploading ${Math.round(uploadProgress)}%...` : `Upload ${files.length} Item(s)`}
-            </button>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* SMART PRIVACY SECTION */}
-      {event?.enable_smart_privacy && (event.plan_type === 'Premium' || event.plan_type === 'White Label') && (
-        <div className="mx-4 mt-4 nm-card p-4">
-          <h2 className="text-lg font-bold text-center mb-2" style={{color:'var(--text1)'}}>Find My Photos</h2>
-          <p className="text-sm text-center mb-4" style={{color:'var(--text2)'}}>Upload a selfie to find all photos you're in.</p>
-          <input type="file" accept="image/*" onChange={(e) => { setSelfieFile(e.target.files?.[0] || null); setSelfiePreview(URL.createObjectURL(e.target.files?.[0]!)); }} className="hidden" id="selfie-upload" />
-          <label htmlFor="selfie-upload" className="nm-btn w-full text-center py-3">Select Selfie</label>
-          {selfiePreview && (
-            <div className="mt-4 text-center">
-              <img src={selfiePreview} alt="Selfie preview" className="w-32 h-32 object-cover rounded-lg mx-auto mb-4" />
-              <button onClick={handleFindMyPhotos} className="nm-btn nm-btn-accent px-6 py-2" disabled={isSearching}>{isSearching ? 'Searching...' : 'Find My Photos'}</button>
+        {/* UPLOAD SECTION */}
+        <div className="glass-card p-6 mb-8">
+          <h2 style={{ fontSize:18, fontWeight:800, marginBottom:16 }}>Capture a Moment</h2>
+          
+          <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" id="photo-upload" />
+          <label htmlFor="photo-upload" className="btn-glow w-full py-5 rounded-2xl font-bold text-lg cursor-pointer mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            CHOOSE PHOTOS
+          </label>
+          
+          {previews.length > 0 && (
+            <div className="mt-6 space-y-5">
+              <div className="grid grid-cols-3 gap-2">
+                {previews.map((src, i) => (
+                  <div key={i} style={{ aspectRatio:'1/1', position:'relative', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>
+                    <img src={src} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+              <input type="text" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)} placeholder="Your Name (Optional)" className="m-input" />
+              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Add a memory note..." className="m-input" rows={2} />
+              <button onClick={handleUpload} className="btn-glow w-full py-5 rounded-2xl font-black tracking-widest text-sm" disabled={uploading} style={{ background: uploading ? 'var(--text2)' : undefined }}>
+                {uploading ? `UPLOADING ${Math.round(uploadProgress)}%` : `POST TO WALL`}
+              </button>
             </div>
           )}
         </div>
-      )}
 
-      {/* YOUR PHOTOS SECTION */}
-      <div className="px-4 mt-6">
-        <h2 className="text-lg font-bold mb-2" style={{color:'var(--text1)'}}>Your Uploaded Photos</h2>
-        {photos.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-sm" style={{color:'var(--text2)'}}>You haven't uploaded any photos yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
-            {photos.map((photo) => (
-              <div key={photo.id} className="relative group">
-                {photo.media_type === 'video' ? (
-                  <video src={getPublicUrl(photo.storage_path)} className="w-full h-auto object-cover rounded-lg" controls playsInline loop muted />
-                ) : (
-                  <img src={getPublicUrl(photo.storage_path)} className="w-full h-auto object-cover rounded-lg" />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        {/* YOUR PHOTOS SECTION */}
+        <div className="mb-10">
+          <h2 style={{ fontSize:20, fontWeight:900, marginBottom:20, paddingLeft:4 }}>Your Memories</h2>
+          {photos.length === 0 ? (
+            <div className="glass-card py-16 px-8 text-center" style={{ opacity:0.6 }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>✨</div>
+              <p style={{ fontSize:14, fontWeight:600 }}>Your uploads will appear here</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {photos.map((photo) => (
+                <div key={photo.id} className="glass-card" style={{ borderRadius:20, overflow:'hidden', border:'none' }}>
+                  {photo.media_type === 'video' ? (
+                    <video src={getPublicUrl(photo.storage_path)} className="w-full h-48 object-cover" controls playsInline loop muted />
+                  ) : (
+                    <img src={getPublicUrl(photo.storage_path)} className="w-full h-48 object-cover" />
+                  )}
+                  {photo.caption && <div style={{ padding:10, fontSize:11, fontStyle:'italic', color:'var(--text2)' }}>"{photo.caption}"</div>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 z-20 bg-[var(--bg)] border-t border-[var(--border)]">
+      <div className="fixed bottom-0 left-0 right-0 p-6 z-20" style={{ background:'linear-gradient(to top, var(--bg) 60%, transparent)' }}>
         <div className="max-w-4xl mx-auto">
-          <Link href={`/wall/${slug}`} className="nm-btn flex-1 py-3 font-semibold text-center w-full">🖼️ Back to Full Event Wall</Link>
+          <Link href={`/wall/${slug}`} className="btn-outline w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2" style={{ borderRadius:20 }}>
+            <span>🖼️</span> VIEW FULL EVENT WALL
+          </Link>
         </div>
       </div>
 
       {/* Status Messages */}
       {error && (
-        <div className="fixed top-4 left-4 right-4 nm-card p-4 text-center text-red-400 z-50">
+        <div className="fixed top-24 left-6 right-6 glass-card p-4 text-center text-sm font-bold text-red-500 z-50 border-red-100" style={{ background:'rgba(255,241,242,0.9)' }}>
           {error}
         </div>
       )}
       {successMessage && (
-        <div className="fixed top-4 left-4 right-4 nm-card p-4 text-center text-green-400 z-50">
+        <div className="fixed top-24 left-6 right-6 glass-card p-4 text-center text-sm font-bold text-green-600 z-50 border-green-100" style={{ background:'rgba(240,253,244,0.9)' }}>
           {successMessage}
         </div>
       )}
