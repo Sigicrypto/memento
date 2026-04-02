@@ -4,6 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import Webcam from 'react-webcam';
+import { hasFeature } from '@/lib/permissions';
+import { extractFaceDescriptor, fileToImage } from '@/lib/faceEngine';
 
 // ─── BACKGROUND DECORATION ───
 const BackgroundDecoration = () => (
@@ -163,6 +166,8 @@ export default function MobilePage() {
   const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [matchedPhotoIds, setMatchedPhotoIds] = useState<string[] | null>(null);
+  const [showSelfieCam, setShowSelfieCam] = useState(false);
+  const webcamRef = useRef<Webcam>(null);
 
   // Set or get guest ID and name on mount
   useEffect(() => {
@@ -358,6 +363,24 @@ export default function MobilePage() {
       
       if (insertedData?.[0]?.id) {
          setSessionPhotoIds(prev => [...prev, insertedData[0].id]);
+         
+         // ✨ FACE INDEXING (Standard+ Only)
+         if (mediaType === 'image' && hasFeature(event?.plan_type, 'SELFIE_MATCH')) {
+           try {
+             const img = await fileToImage(file);
+             const descriptor = await extractFaceDescriptor(img);
+             if (descriptor) {
+               await supabase.from('photo_faces').insert({
+                 photo_id: insertedData[0].id,
+                 event_id: event.id,
+                 descriptor: Array.from(descriptor)
+               });
+               console.log("Face indexed for photo:", file.name);
+             }
+           } catch (err) {
+             console.error("Face indexing failed:", err);
+           }
+         }
       }
       
       console.log("[mobile] upload success for:", file.name);
@@ -373,30 +396,51 @@ export default function MobilePage() {
   };
 
   const handleFindMyPhotos = async () => {
-    if (!selfieFile || !event) return;
+    if (!hasFeature(event?.plan_type, 'SELFIE_MATCH')) {
+       alert("✨ Face Match is a Standard feature! Upgrade your wall to unlock.");
+       return;
+    }
+    setShowSelfieCam(true);
+  };
 
+  const captureSelfie = async () => {
+    const screenshot = webcamRef.current?.getScreenshot();
+    if (!screenshot) return;
+    
     setIsSearching(true);
+    setShowSelfieCam(false);
+    
     try {
-      const selfiePath = `selfies/${event.id}-${Date.now()}`;
-      const { error: uploadError } = await supabase.storage.from('photos').upload(selfiePath, selfieFile);
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage.from('photos').getPublicUrl(selfiePath);
-      const imageUrl = urlData.publicUrl;
-
-      const { data, error: functionError } = await supabase.functions.invoke('find-my-photos', {
-        body: { eventId: event.id, imageUrl },
+      const img = new Image();
+      img.src = screenshot;
+      await new Promise(resolve => img.onload = resolve);
+      
+      const descriptor = await extractFaceDescriptor(img);
+      if (!descriptor) {
+        alert("We couldn't see your face clearly. Please try again in better light!");
+        return;
+      }
+      
+      // Call the match_photo_faces RPC function I just created
+      const { data, error } = await supabase.rpc('match_photo_faces', {
+        query_embedding: Array.from(descriptor),
+        match_threshold: 0.5,
+        match_count: 50,
+        target_event_id: event?.id
       });
-
-      if (functionError) throw functionError;
-
-      setMatchedPhotoIds(data.photoIds || []);
-
-      await supabase.storage.from('photos').remove([selfiePath]);
-
-    } catch (error: any) {
-      console.error('Error finding photos:', error);
-      alert(`Error: ${error.message}`);
+      
+      if (error) throw error;
+      
+      const photoIds = data.map((d: any) => d.photo_id);
+      setMatchedPhotoIds(photoIds);
+      
+      if (photoIds.length === 0) {
+        alert("We couldn't find any professional shots of you yet—keep posing!");
+      }
+      
+    } catch (err: any) {
+      console.error("Match error:", err);
+      alert("Error searching for photos. Please try again.");
     } finally {
       setIsSearching(false);
     }
@@ -448,9 +492,23 @@ export default function MobilePage() {
           )}
         </div>
 
-        {/* YOUR PHOTOS SECTION */}
+        {/* YOUR MOMENTS SECTION */}
         <div className="mb-10">
-          <h2 style={{ fontSize:20, fontWeight:900, marginBottom:20, paddingLeft:4 }}>Your Memories</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 style={{ fontSize:20, fontWeight:900, paddingLeft:4 }}>
+              {matchedPhotoIds ? 'Found for You' : 'Your Moments'}
+            </h2>
+            <button 
+              onClick={matchedPhotoIds ? () => setMatchedPhotoIds(null) : handleFindMyPhotos}
+              className={`text-[10px] font-black tracking-widest px-4 py-2 rounded-full border transition-all ${
+                matchedPhotoIds 
+                ? 'bg-slate-100 text-slate-500 border-slate-200' 
+                : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+              }`}
+            >
+              {isSearching ? 'SEARCHING…' : matchedPhotoIds ? '✕ CLEAR SEARCH' : '✨ FIND ME'}
+            </button>
+          </div>
           {photos.length === 0 ? (
             <div className="glass-card py-16 px-8 text-center" style={{ opacity:0.6 }}>
               <div style={{ fontSize:40, marginBottom:12 }}>✨</div>
@@ -481,6 +539,35 @@ export default function MobilePage() {
           </Link>
         </div>
       </div>
+
+      {/* Selfie Camera Modal */}
+      {showSelfieCam && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-slate-900/90 backdrop-blur-xl">
+          <div className="w-full max-w-sm glass-card overflow-hidden" style={{ background:'white' }}>
+            <div className="p-4 border-b flex justify-between items-center">
+              <span className="font-bold text-sm">Target Selfie</span>
+              <button onClick={() => setShowSelfieCam(false)} className="text-slate-400">✕</button>
+            </div>
+            <div className="aspect-square bg-black">
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                videoConstraints={{ facingMode: 'user' }}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-6">
+              <button onClick={captureSelfie} className="btn-glow w-full py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">
+                Capture & Match
+              </button>
+              <p className="mt-4 text-[10px] text-center text-slate-400 uppercase font-black tracking-widest">
+                We'll only use this to find your photos
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Status Messages */}
       {error && (

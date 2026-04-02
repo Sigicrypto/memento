@@ -92,7 +92,7 @@ export default function EditEventPage() {
     return (
       <div className="nm-page flex items-center justify-center">
         <div className="nm-circle w-14 h-14">
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: '#252c46', borderTopColor: '#f59e0b' }} />
         </div>
       </div>
     );
@@ -107,19 +107,19 @@ export default function EditEventPage() {
       <div className="w-full max-w-md">
         <div className="nm-card p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>Edit Event</h1>
-            <button onClick={() => router.back()} className="nm-circle w-9 h-9 text-sm" style={{color:'var(--text2)'}}>✕</button>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text1)' }}>Edit Event</h1>
+            <button onClick={() => router.back()} className="nm-circle w-9 h-9 text-sm" style={{ color: 'var(--text2)' }}>✕</button>
           </div>
 
           <form onSubmit={handleUpdate} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Event Name</label>
+              <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text2)' }}>Event Name</label>
               <input type="text" className="nm-input" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-semibold" style={{color:'var(--text2)'}}>Custom Slug (URL)</label>
+                <label className="block text-xs font-semibold" style={{ color: 'var(--text2)' }}>Custom Slug (URL)</label>
                 {!isStandardPlus && (
                   <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 hover:bg-amber-500/20 transition-colors font-bold">
                     ✨ Upgrade to Standard
@@ -127,19 +127,19 @@ export default function EditEventPage() {
                 )}
               </div>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style={{color:'#4a4f6a'}}>/wall/</span>
-                <input type="text" className={`nm-input !pl-14 ${!isStandardPlus ? 'opacity-50' : ''}`} 
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style={{ color: '#4a4f6a' }}>/wall/</span>
+                <input type="text" className={`nm-input !pl-14 ${!isStandardPlus ? 'opacity-50' : ''}`}
                   value={slug}
                   disabled={!isStandardPlus}
-                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} 
+                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   placeholder={!isStandardPlus ? 'Standard required' : ''}
                   required />
               </div>
-              {slugError && <p className="text-[10px] mt-1" style={{color:'#f87171'}}>{slugError}</p>}
+              {slugError && <p className="text-[10px] mt-1" style={{ color: '#f87171' }}>{slugError}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Password</label>
+              <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text2)' }}>Password</label>
               <input type="password" className="nm-input" value={password}
                 onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for public access" />
             </div>
@@ -148,25 +148,25 @@ export default function EditEventPage() {
             <div className="pt-4 border-t border-slate-200/20 space-y-5">
               <div>
                 <label className="block text-xs font-semibold mb-2 flex items-center justify-between">
-                   <span style={{color: isWhiteLabel ? '#f59e0b' : 'var(--text2)'}}>⭐ Custom Domain (White Label)</span>
-                   {!isWhiteLabel && (
-                     <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors font-bold">
-                       🌐 Upgrade to Partner
-                     </Link>
-                   )}
+                  <span style={{ color: isWhiteLabel ? '#f59e0b' : 'var(--text2)' }}>⭐ Custom Domain (White Label)</span>
+                  {!isWhiteLabel && (
+                    <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors font-bold">
+                      🌐 Upgrade to Partner
+                    </Link>
+                  )}
                 </label>
-                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`} 
-                  value={customDomain} 
+                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`}
+                  value={customDomain}
                   disabled={!isWhiteLabel}
                   onChange={(e) => setCustomDomain(e.target.value)} placeholder="e.g. photos.wedding.com" />
-                {isWhiteLabel && <p className="text-[10px] mt-1" style={{color:'var(--text2)'}}>Point your A record to memento.events IP.</p>}
+                {isWhiteLabel && <p className="text-[10px] mt-1" style={{ color: 'var(--text2)' }}>Point your A record to memento.events IP.</p>}
               </div>
               <div>
                 <label className="block text-xs font-semibold mb-2 flex items-center justify-between">
-                   <span style={{color: isWhiteLabel ? '#f59e0b' : 'var(--text2)'}}>⭐ Brand Logo URL</span>
+                  <span style={{ color: isWhiteLabel ? '#f59e0b' : 'var(--text2)' }}>⭐ Brand Logo URL</span>
                 </label>
-                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`} 
-                  value={logoUrl} 
+                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`}
+                  value={logoUrl}
                   disabled={!isWhiteLabel}
                   onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://... logo.png" />
               </div>
@@ -174,7 +174,7 @@ export default function EditEventPage() {
 
             {/* Premium / Standard Features */}
             <div className="pt-4 border-t border-slate-200/20">
-              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{color:'var(--text2)'}}>
+              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{ color: 'var(--text2)' }}>
                 <span className="flex items-center gap-2">Wall Theme</span>
                 {!isStandardPlus && (
                   <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 hover:bg-amber-500/20 transition-colors">
@@ -182,8 +182,8 @@ export default function EditEventPage() {
                   </Link>
                 )}
               </label>
-              <select 
-                className="nm-input w-full" 
+              <select
+                className="nm-input w-full"
                 value={theme}
                 onChange={(e) => setTheme(e.target.value)}
                 disabled={!isStandardPlus}
@@ -195,7 +195,7 @@ export default function EditEventPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{color:'var(--text2)'}}>
+              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{ color: 'var(--text2)' }}>
                 <span className="flex items-center gap-2">Slideshow Music</span>
                 {!isPremiumPlus && (
                   <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors">
@@ -203,8 +203,8 @@ export default function EditEventPage() {
                   </Link>
                 )}
               </label>
-              <select 
-                className="nm-input w-full" 
+              <select
+                className="nm-input w-full"
                 value={musicTrack}
                 onChange={(e) => setMusicTrack(e.target.value)}
                 disabled={!isPremiumPlus}
@@ -217,7 +217,7 @@ export default function EditEventPage() {
             </div>
 
             {error && (
-              <div className="nm-inset p-3 flex items-center gap-2 text-sm" style={{color:'#f87171'}}>
+              <div className="nm-inset p-3 flex items-center gap-2 text-sm" style={{ color: '#f87171' }}>
                 <span>⚠️</span> {error}
               </div>
             )}

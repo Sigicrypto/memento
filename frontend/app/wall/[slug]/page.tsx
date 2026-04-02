@@ -736,8 +736,9 @@ export default function WallPage() {
   };
 
   const handleDownloadZip = async () => {
-    if (!['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier)) {
-      alert('✨ Bulk ZIP Download is a Standard feature! Upgrade to unlock.'); return;
+    // Correcting to match marketing: Starter NOW includes ZIP download.
+    if (!['STARTER', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planTier.toUpperCase())) {
+      alert('✨ Bulk ZIP Download is a Premium feature! Upgrade to unlock.'); return;
     }
     if (!photos.length) return;
     const zip = new JSZip();
@@ -1030,7 +1031,7 @@ export default function WallPage() {
                       : <img src={getPublicUrl(p.storage_path)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
                   </div>
                   {/* FIX 1: Always-visible name + caption */}
-                  <div style={{ color: '#333', textAlign: 'center', width: 260, padding: '0 4px' }}>
+                  <div style={{ color: '#333', textAlign: 'center', width: 260, padding: '0 4px', position: 'relative' }}>
                     {p.caption && (
                       <p style={{ fontSize: 13, fontStyle: 'italic', marginBottom: 6, fontWeight: 500, color: '#444', lineHeight: 1.4 }}>
                         "{p.caption}"
@@ -1039,6 +1040,15 @@ export default function WallPage() {
                     <p style={{ fontSize: 11, fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                       BY {p.uploader_name}
                     </p>
+                    
+                    {/* Individual Download Button */}
+                    <button 
+                      onClick={() => downloadPhoto(p)}
+                      className="absolute -right-2 -bottom-4 p-2 text-slate-400 hover:text-amber-500 transition-colors"
+                      title="Download this photo"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </button>
                   </div>
                   {planTier !== 'WHITE_LABEL' && <Watermark />}
                 </div>
@@ -1063,9 +1073,20 @@ export default function WallPage() {
                         <div key={p.id} className="photo-card glass-card" style={{ breakInside: 'avoid', marginBottom: 32, borderRadius: 24, overflow: 'hidden', position: 'relative', border: 'none', padding: 0 }}>
                           <img src={getPublicUrl(p.storage_path)} style={{ width: '100%', display: 'block' }} alt="" />
                           {/* FIX 1: Always-visible name + caption in album */}
-                          <div className="album-meta">
-                            <p className="album-meta-name">by {p.uploader_name}</p>
-                            {p.caption && <p className="album-meta-caption">"{p.caption}"</p>}
+                           <div className="album-meta">
+                            <div className="flex justify-between items-start w-full">
+                              <div>
+                                <p className="album-meta-name">by {p.uploader_name}</p>
+                                {p.caption && <p className="album-meta-caption">"{p.caption}"</p>}
+                              </div>
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); downloadPhoto(p); }} 
+                                className="p-2 text-slate-400 hover:text-amber-500 transition-colors bg-white/50 rounded-lg"
+                                title="Download"
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                              </button>
+                            </div>
                           </div>
                           {planTier !== 'WHITE_LABEL' && <Watermark />}
                         </div>
