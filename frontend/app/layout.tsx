@@ -10,6 +10,7 @@ import CustomCursor from "@/components/CustomCursor";
 import "../styles/cursor.css";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import CookieBanner from "@/components/CookieBanner";
+import BackgroundDecoration from "@/components/BackgroundDecoration";
 
 const inter = Nunito({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
         <ThemeProvider>
           <PostHogProvider>
             <div className="min-h-screen w-full flex flex-col">
+              <BackgroundDecoration />
               <Navbar />
               <MainContent>
                 {children}

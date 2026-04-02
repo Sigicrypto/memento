@@ -1005,37 +1005,12 @@ export default function LandingPage() {
 
 
 
-        <div className="orbs">
-
-          <div className="orb orb1" />
-
-          <div className="orb orb2" />
-
-          <div className="orb orb3" />
-
-        </div>
 
 
 
-        <div className="floating-shapes">
-
-          <div className="shape s-cross s-1">✦</div>
-
-          <div className="shape s-circle s-2" />
-
-          <div className="shape s-star s-3">★</div>
-
-          <div className="shape s-ring s-4" />
-
-          <div className="shape s-cross s-5">✦</div>
-
-          <div className="shape s-circle s-6" />
-
-        </div>
 
 
 
-        <div className="grain" />
 
 
 

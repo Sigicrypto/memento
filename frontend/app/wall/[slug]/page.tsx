@@ -527,21 +527,6 @@ const Confetti = ({ trigger }: { trigger: boolean }) => {
   );
 };
 
-const BackgroundDecoration = () => (
-  <>
-    <div className="grain" />
-    <div className="orbs">
-      <div className="orb orb1" />
-      <div className="orb orb2" />
-    </div>
-    <div className="floating-shapes">
-      <div className="shape" style={{ top: '15%', left: '10%', fontSize: '2rem' }}>✦</div>
-      <div className="shape" style={{ top: '45%', right: '15%', fontSize: '1.5rem', animationDelay: '-5s' }}>✧</div>
-      <div className="shape" style={{ bottom: '20%', left: '15%', fontSize: '2.5rem', animationDelay: '-10s' }}>✻</div>
-      <div className="shape" style={{ top: '75%', right: '25%', fontSize: '1.2rem', animationDelay: '-15s' }}>✦</div>
-    </div>
-  </>
-);
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -749,15 +734,15 @@ export default function WallPage() {
 
   const Watermark = () => (
     <div style={{
-      position: 'absolute', bottom: 16, right: 16,
+      position: 'absolute', bottom: 12, right: 12,
       display: 'flex', alignItems: 'center',
-      filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
-      opacity: 0.8, pointerEvents: 'none'
+      filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
+      opacity: 0.75, pointerEvents: 'none'
     }}>
       <img
         src="/CC logo.png"
         alt="Memento"
-        style={{ height: 26, width: 'auto', display: 'block', objectFit: 'contain' }}
+        style={{ height: 18, width: 'auto', display: 'block', objectFit: 'contain' }}
       />
     </div>
   );
@@ -767,7 +752,6 @@ export default function WallPage() {
   if (loading) return (
     <div className="wall-page flex items-center justify-center">
       <FontLoader />
-      <BackgroundDecoration />
       <div className="text-center relative z-10">
         <div style={{ width: 48, height: 48, border: '4px solid var(--surface)', borderTopColor: 'var(--amber)', borderRadius: '50%', animation: 'spin 1s linear infinite', marginBottom: 16, margin: '0 auto' }} />
         <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--text2)' }}>Entering the Wall…</p>
@@ -779,7 +763,6 @@ export default function WallPage() {
   if (notFound || eventExpired) return (
     <div className="wall-page flex items-center justify-center p-6 text-center">
       <FontLoader />
-      <BackgroundDecoration />
       <div className="glass-card p-12 max-w-md relative z-10">
         <div style={{ fontSize: 64, marginBottom: 20 }}>{notFound ? '✨' : '📅'}</div>
         <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 16, color: 'var(--text1)' }}>{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
@@ -793,8 +776,7 @@ export default function WallPage() {
     const current = displayedPhotos[slideIndex];
     return (
       <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-[#050505]">
-        <FontLoader />
-        <BackgroundDecoration />
+      <FontLoader />
 
         {/* Dynamic Cinematic Background */}
         {current && (
@@ -844,12 +826,12 @@ export default function WallPage() {
                 </div>
               </div>
 
-              {/* Metadata Footer */}
-              <div className="mt-8 glass-card" style={{ padding: '28px 48px', minWidth: 360, maxWidth: '90%', flexShrink: 0, background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(40px)', border: '1px solid rgba(255,255,255,0.08)', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center', borderRadius: 32 }}>
-                <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.9 }}>Captured by</p>
-                <h2 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
+              {/* Metadata Footer — Reduced footprint to maximize photo size */}
+              <div className="mt-4 glass-card" style={{ padding: '16px 36px', minWidth: 280, maxWidth: '85%', flexShrink: 0, background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.08)', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center', borderRadius: 28 }}>
+                <p style={{ fontSize: 9, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4, opacity: 0.8 }}>Shared by</p>
+                <h2 style={{ fontSize: 20, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
                 {current.caption && (
-                  <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, maxWidth: 700 }}>"{current.caption}"</p>
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.5, maxWidth: 600 }}>"{current.caption}"</p>
                 )}
               </div>
             </div>
@@ -859,15 +841,20 @@ export default function WallPage() {
           <button onClick={prevSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', left: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>‹</button>
           <button onClick={nextSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>›</button>
 
-          {/* Join Panel Refinement */}
-          <div className="slideshow-join-panel" style={{ transform: 'scale(0.8)', transformOrigin: 'bottom right', opacity: 0.9, background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 12, borderRadius: 16 }}>
-              <QRCodeSVG value={uploadUrl} size={84} bgColor="#ffffff" fgColor="#000" />
+          {/* Join Panel Refinement — Moved to bottom-left to avoid logo overlap */}
+          <div className="slideshow-join-panel" style={{ 
+            transform: 'scale(0.75)', transformOrigin: 'bottom left', 
+            left: 32, right: 'auto', bottom: 32, 
+            opacity: 0.85, background: 'rgba(255,255,255,0.06)', 
+            backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.1)' 
+          }}>
+            <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 10, borderRadius: 14 }}>
+              <QRCodeSVG value={uploadUrl} size={70} bgColor="#ffffff" fgColor="#000" />
             </div>
             <div className="slideshow-join-text">
-              <span className="slideshow-join-label" style={{ color: 'var(--amber)', fontSize: 9 }}>Join Memory Lane</span>
-              <span className="slideshow-join-title" style={{ fontSize: 16, fontWeight: 900 }}>Share Your Memory</span>
-              <span className="slideshow-join-url" style={{ fontSize: 12, opacity: 0.7 }}>{uploadUrl}</span>
+              <span className="slideshow-join-label" style={{ color: 'var(--amber)', fontSize: 9 }}>Join & Share</span>
+              <span className="slideshow-join-title" style={{ fontSize: 13, fontWeight: 900 }}>Capture the Moment</span>
+              <span className="slideshow-join-url" style={{ fontSize: 11, opacity: 0.65 }}>{uploadUrl}</span>
             </div>
           </div>
         </div>
@@ -886,7 +873,6 @@ export default function WallPage() {
   return (
     <div className="wall-page">
       <FontLoader />
-      <BackgroundDecoration />
 
       {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
 
