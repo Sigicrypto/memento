@@ -58,8 +58,11 @@ export default function AdminPage() {
       return; 
     }
     
-    // Check admin status from user metadata
-    const isAdminUser = user.user_metadata?.role === 'admin' || user.user_metadata?.is_admin === true;
+    // Check admin status from user metadata or explicit admin email
+    const isAdminUser = 
+      user.user_metadata?.role === 'admin' || 
+      user.user_metadata?.is_admin === true || 
+      user.email === 'sagarfalcon@gmail.com';
     
     if (isAdminUser) {
       setIsAdmin(true);
