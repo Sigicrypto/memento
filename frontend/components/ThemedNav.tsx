@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
 import { LogOut } from 'lucide-react';
 
@@ -14,6 +15,7 @@ interface ThemedNavProps {
 
 export default function ThemedNav({ showAuthButtons = true, mini = false }: ThemedNavProps) {
   const { user, signOut } = useAuth();
+  const { openAuth } = useAuthModal();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
@@ -67,12 +69,30 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               </button>
             </div>
           ) : (
-            <Link href="/#pricing" className="nav-btn">
-              Get Started
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+              <button 
+                onClick={() => openAuth('login')} 
+                className="glass-pill"
+                style={{ 
+                  padding: '1.2rem', 
+                  color: 'var(--color-text-secondary)', 
+                  fontSize: '0.85rem', 
+                  fontWeight: 700,
+                  cursor: 'pointer', 
+                  transition: 'all 0.2s',
+                  background: 'none',
+                  border: 'none'
+                }}
+              >
+                Sign In
+              </button>
+              <button onClick={() => openAuth('signup')} className="nav-btn">
+                Get Started
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           )}
         </>
       )}

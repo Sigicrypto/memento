@@ -13,6 +13,7 @@ interface AuthDialogProps {
   isOpen: boolean;
   onClose: () => void;
   selectedPlan?: PlanType;
+  initialTab?: AuthTab;
   onAuthSuccess?: (userId: string, plan: PlanType) => void;
 }
 
@@ -23,9 +24,9 @@ const PLAN_LABELS: Record<string, { name: string; emoji: string; color: string }
   whitelabel: { name: 'White Label', emoji: '🟡', color: '#eab308' },
 };
 
-export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAuthSuccess }: AuthDialogProps) {
+export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initialTab = 'signup', onAuthSuccess }: AuthDialogProps) {
   const router = useRouter();
-  const [tab, setTab] = useState<AuthTab>('signup');
+  const [tab, setTab] = useState<AuthTab>(initialTab);
   const [step, setStep] = useState<AuthStep>('auth');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -38,10 +39,13 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, onAut
   const [plan, setPlan] = useState<PlanType>(selectedPlan);
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Sync selectedPlan prop
+  // Sync initial state
   useEffect(() => {
-    if (selectedPlan) setPlan(selectedPlan);
-  }, [selectedPlan]);
+    if (isOpen) {
+      if (selectedPlan) setPlan(selectedPlan);
+      setTab(initialTab);
+    }
+  }, [isOpen, selectedPlan, initialTab]);
 
   // Reset state on open
   useEffect(() => {

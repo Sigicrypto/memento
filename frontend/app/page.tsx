@@ -38,7 +38,7 @@ import {
 
 import AnimatedLogo from '@/components/AnimatedLogo';
 
-import AuthDialog from '@/components/AuthDialog';
+import { useAuthModal } from '@/context/AuthModalContext';
 
 import './landing.css';
 
@@ -886,6 +886,8 @@ export default function LandingPage() {
 
   const { user, loading: authLoading, signOut } = useAuth();
 
+  const { openAuth: openGlobalAuth } = useAuthModal();
+
   const router = useRouter();
 
   const [scrolled, setScrolled] = useState(false);
@@ -896,17 +898,24 @@ export default function LandingPage() {
 
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-
   const [selectedPlan, setSelectedPlan] = useState<'starter' | 'standard' | 'premium' | 'whitelabel' | null>(null);
 
+  
+
   const openAuth = (plan: 'starter' | 'standard' | 'premium' | 'whitelabel') => {
+
     setSelectedPlan(plan);
-    setIsAuthOpen(true);
+
+    openGlobalAuth('signup', plan);
+
   };
 
+
+
   const handleSignOut = async () => {
+
     await signOut();
+
   };
 
 
@@ -1961,16 +1970,6 @@ export default function LandingPage() {
       {/* Demo Modal */}
 
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
-
-      <AuthDialog
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        selectedPlan={selectedPlan}
-        onAuthSuccess={(userId, plan) => {
-          console.log('Auth success:', userId, plan);
-          setIsAuthOpen(false);
-        }}
-      />
 
     </div>
 

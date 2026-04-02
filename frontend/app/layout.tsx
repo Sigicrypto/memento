@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { ThemeProvider } from "../components/ThemeProvider";
+import { AppProviders } from "@/components/AppProviders";
 import MainContent from "@/components/MainContent";
 import SocialFloat from "@/components/SocialFloat";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/CustomCursor";
 import "../styles/cursor.css";
-import { PostHogProvider } from "@/components/PostHogProvider";
 import CookieBanner from "@/components/CookieBanner";
 import BackgroundDecoration from "@/components/BackgroundDecoration";
 
@@ -30,21 +29,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.className}`}>
       <body className="min-h-screen w-full antialiased transition-colors duration-300" suppressHydrationWarning={true}>
-        <ThemeProvider>
-          <PostHogProvider>
-            <div className="min-h-screen w-full flex flex-col">
-              <BackgroundDecoration />
-              <Navbar />
-              <MainContent>
-                {children}
-              </MainContent>
-              <WhatsAppFloat />
-              <SocialFloat />
-              <CookieBanner />
-            </div>
-            <CustomCursor />
-          </PostHogProvider>
-        </ThemeProvider>
+        <AppProviders>
+          <div className="min-h-screen w-full flex flex-col">
+            <BackgroundDecoration />
+            <Navbar />
+            <MainContent>
+              {children}
+            </MainContent>
+            <WhatsAppFloat />
+            <SocialFloat />
+            <CookieBanner />
+          </div>
+          <CustomCursor />
+        </AppProviders>
       </body>
     </html>
   );
