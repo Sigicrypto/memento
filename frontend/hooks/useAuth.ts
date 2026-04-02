@@ -11,6 +11,8 @@ export interface UserProfile {
   plan: 'starter' | 'standard' | 'premium' | 'whitelabel';
   payment_status: 'pending' | 'paid' | 'trial';
   role: 'user' | 'admin';
+  is_approved: boolean;
+  approval_status: 'PENDING' | 'APPROVED' | 'REJECTED';
   created_at: string;
 }
 
@@ -75,7 +77,8 @@ export const useAuth = () => {
   // The plan is now derived from the database profile
   const plan = profile?.plan || 'starter';
   const isPaid = profile?.payment_status === 'paid';
+  const isApproved = profile?.is_approved === true;
   const isAdmin = profile?.role === 'admin';
 
-  return { user, profile, loading, signIn, signUp, signOut, plan, isPaid, isAdmin };
+  return { user, profile, loading, signIn, signUp, signOut, plan, isPaid, isApproved, isAdmin };
 };

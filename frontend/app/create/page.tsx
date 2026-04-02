@@ -15,7 +15,7 @@ function generateSlug(name: string): string {
 }
 
 export default function CreateEventPage() {
-  const { user, profile, loading: authLoading, plan, isPaid } = useAuth();
+  const { user, profile, loading: authLoading, plan, isPaid, isApproved } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [customSlug, setCustomSlug] = useState('');
@@ -31,6 +31,7 @@ export default function CreateEventPage() {
     console.log("[create] customSlug:", customSlug);
     
     if (!user) { console.log("[create] no user, redirecting to auth"); router.push('/auth'); return; }
+    if (!isApproved) { router.push('/pending'); return; }
     if (!isPaid) { router.push('/dashboard'); return; }
     setLoading(true);
     setError('');

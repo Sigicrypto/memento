@@ -55,7 +55,7 @@ const PLAN_INFO: Record<string, { name: string; emoji: string; color: string; fe
 };
 
 export default function DashboardPage() {
-  const { user, profile, isPaid, loading: authLoading } = useAuth();
+  const { user, profile, isPaid, isApproved, loading: authLoading } = useAuth();
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,6 +64,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.push('/'); return; }
+    if (!isApproved) { router.push('/pending'); return; }
 
     const fetchEvents = async () => {
       // Fetch events
