@@ -66,7 +66,8 @@ export default function SystemAdminPage() {
         }
       }
 
-      // Redirect to admin page
+      // Refresh session to apply metadata changes and then redirect
+      await supabase.auth.refreshSession();
       router.push('/admin');
     } catch (error: any) {
       setError(error.message || 'Access denied');

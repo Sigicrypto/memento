@@ -62,12 +62,13 @@ export default function AdminPage() {
     const isAdminUser = 
       user.user_metadata?.role === 'admin' || 
       user.user_metadata?.is_admin === true || 
-      user.email === 'sagarfalcon@gmail.com';
+      user.email?.toLowerCase() === 'sagarfalcon@gmail.com';
     
     if (isAdminUser) {
       setIsAdmin(true);
     } else {
       // Redirect to system login if not admin
+      console.log('Access denied for user:', user.email);
       router.push('/system');
     }
   }, [user, authLoading, router]);
