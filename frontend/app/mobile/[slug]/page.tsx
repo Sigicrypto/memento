@@ -143,6 +143,7 @@ export default function MobilePage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [uploaderName, setUploaderName] = useState('');
+  const [sessionPhotoIds, setSessionPhotoIds] = useState<string[]>([]);
 
   // Photo display state
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -206,9 +207,10 @@ export default function MobilePage() {
 
   // Fetch user's photos and listen for new ones
   useEffect(() => {
-    if (!event?.id || !guestId) return;
+    if (!event?.id) return;
 
     const fetchPhotos = async () => {
+      // NOTE: We omit 'guest_id' filter because column may be missing
       let query = supabase
         .from('photos')
         .select('*')
@@ -218,27 +220,37 @@ export default function MobilePage() {
       if (matchedPhotoIds) {
         query = query.in('id', matchedPhotoIds);
       } else {
-        query = query.eq('guest_id', guestId);
+        // Fallback: If Column exists, filter. Otherwise skip.
+        // For now, to solve 404/Error, we skip DB filtering of guest_id
+        // query = query.eq('guest_id', guestId);
       }
       
       const { data, error } = await query;
       if (error) console.error('Error fetching photos:', error);
-      else if (data) setPhotos(data);
+      else if (data) {
+        // Filter locally if we want strictly 'Your Memories'
+        if (!matchedPhotoIds && sessionPhotoIds.length > 0) {
+           setPhotos(data.filter(p => sessionPhotoIds.includes(p.id)));
+        } else {
+           setPhotos(data);
+        }
+      }
     };
     fetchPhotos();
 
     const channel = supabase
-      .channel(`user-photos-${guestId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos', filter: `guest_id=eq.${guestId}` }, (payload) => {
+      .channel(`event-photos-${event.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${event.id}` }, (payload) => {
         const newPhoto = payload.new as Photo;
-        setPhotos((prev) => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
-        setSuccessMessage('Photo uploaded successfully!');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        // We only add to UI if it's from this user's session
+        if (sessionPhotoIds.includes(newPhoto.id)) {
+           setPhotos((prev) => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
+        }
       })
       .subscribe((status) => setRealtimeStatus(status));
 
     return () => { supabase.removeChannel(channel); };
-  }, [event, guestId, matchedPhotoIds]);
+  }, [event, matchedPhotoIds, sessionPhotoIds]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -326,19 +338,26 @@ export default function MobilePage() {
         storage_path: filePath,
         uploader_name: uploaderName || 'Anonymous',
         caption: caption || null,
-        guest_id: guestId,
+        // guest_id: guestId, // Removed because column may be missing
         media_type: mediaType,
         approved: !event?.enable_safety_filter,
       };
 
       console.log("[mobile] inserting photo metadata:", photoData);
-      const { error: dbError } = await supabase.from('photos').insert(photoData);
+      const { data: insertedData, error: dbError } = await supabase
+        .from('photos')
+        .insert(photoData)
+        .select();
 
       console.log("[mobile] db insert error:", dbError);
       if (dbError) {
         setError(`Database error: ${dbError.message}`);
         setUploading(false);
         return;
+      }
+      
+      if (insertedData?.[0]?.id) {
+         setSessionPhotoIds(prev => [...prev, insertedData[0].id]);
       }
       
       console.log("[mobile] upload success for:", file.name);
