@@ -376,75 +376,39 @@ const FontLoader = () => (
       flex-direction: column;
       gap: 20px;
       padding: 24px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 32px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      color: #fff;
     }
     
     .qr-side {
-      right: 40px;
-      right: 45px;
-      top: 50%;
+      left: 45px;
+      top: 30%;
       transform: translateY(-50%);
-      width: 240px;
+      width: 180px;
       align-items: center;
       text-align: center;
-      animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-      background: none !important;
-      border: none !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
-    }
-
-    .cloud-box {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(253, 248, 235, 0.96));
-      backdrop-filter: blur(16px);
-      border-radius: 60px;
-      padding: 36px 40px;
-      position: relative;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      z-index: 1;
-      animation: dream-float 8s ease-in-out infinite;
-    }
-    .cloud-box::before, .cloud-box::after {
-      content: '';
-      position: absolute;
-      background: inherit;
-      border-radius: 50%;
-      z-index: -1;
-      filter: blur(1px);
-    }
-    /* Natural Asymmetrical Cloud Puffs */
-    .cloud-box::before { 
-      width: 160px; height: 160px; top: -75px; left: 10%; 
-      box-shadow: 140px 10px 0 -10px rgba(255,255,255,0.96), 
-                  240px 30px 0 -30px rgba(255,255,255,0.94);
-    }
-    .cloud-box::after { 
-      width: 120px; height: 120px; top: -55px; right: 8%; 
-      box-shadow: -100px 5px 0 -5px rgba(255,255,255,0.96);
-    }
-    
-    @keyframes dream-float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-12px) scale(1.01); }
+      animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
     
     .meta-side {
       left: 45px;
       top: 66%;
       transform: translateY(-50%);
-      width: 380px;
+      width: 360px;
       animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-      background: none !important;
-      border: none !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
+    }
+
+    .float-anim {
+      animation: dream-float 8s ease-in-out infinite;
+    }
+
+    @keyframes dream-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
     }
 
     @keyframes slideInLeft { from { opacity: 0; transform: translate(-40px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
@@ -906,46 +870,42 @@ export default function WallPage() {
                 {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
 
-              {/* Metadata Side Panel (Cloud Shape, Lowered) */}
-              <div className="slideshow-side-panel meta-side">
-                <div className="cloud-box">
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14, textAlign: 'left' }}>
-                    <div>
-                      <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Moment Shared By</span>
-                      <h2 style={{ fontSize: 32, fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginTop: 4 }}>
-                        {current.uploader_name}
-                      </h2>
-                    </div>
-                    
-                    {current.caption && (
-                      <div style={{ padding: '16px 0', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                        <p style={{ fontSize: 18, color: '#475569', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.5 }}>
-                          "{current.caption}"
-                        </p>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
-                      <div className="px-5 py-1.5 rounded-xl bg-slate-100 text-slate-800 font-bold text-[10px]">
-                        {current.reaction_count || 0} ❤️
-                      </div>
-                      <div className="px-5 py-1.5 rounded-xl bg-slate-100 text-slate-800 font-bold text-[10px] uppercase tracking-widest">
-                        {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </div>
-                    </div>
-                  </div>
+              {/* QR Side Panel (Left, Stacked) */}
+              <div className="slideshow-side-panel qr-side float-anim">
+                <div style={{ background: '#fff', padding: 10, borderRadius: 16, boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
+                  <QRCodeSVG value={uploadUrl} size={130} bgColor="#ffffff" fgColor="#000" />
                 </div>
+                <p className="mt-4 text-white font-bold text-[9px] uppercase tracking-widest opacity-80" style={{ maxWidth: 140 }}>
+                  scan the QR to start sharing
+                </p>
               </div>
 
-              {/* QR Side Panel (Now on Right, Cloud Shape) */}
-              <div className="slideshow-side-panel qr-side">
-                <div className="cloud-box">
-                  <div style={{ background: '#fff', padding: 8, borderRadius: 16, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
-                    <QRCodeSVG value={uploadUrl} size={150} bgColor="#ffffff" fgColor="#000" />
+              {/* Metadata Side Panel (Left, Stacked) */}
+              <div className="slideshow-side-panel meta-side float-anim" style={{ animationDelay: '-1.5s' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
+                  <div>
+                    <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--amber)', letterSpacing: '0.15em', textTransform: 'uppercase', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>Moment Shared By</span>
+                    <h2 style={{ fontSize: 32, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginTop: 4, textShadow: '0 2px 10px rgba(0,0,0,0.4)' }}>
+                      {current.uploader_name}
+                    </h2>
                   </div>
-                  <p className="mt-4 text-slate-800 font-extrabold text-xs uppercase tracking-wider leading-tight" style={{ maxWidth: 140 }}>
-                    scan the QR to start sharing
-                  </p>
+                  
+                  {current.caption && (
+                    <div style={{ padding: '16px 0', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                      <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.9)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, textShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
+                        "{current.caption}"
+                      </p>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
+                    <div className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-xs">
+                      {current.reaction_count || 0} ❤️
+                    </div>
+                    <div className="px-5 py-2 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-xs uppercase tracking-widest">
+                      {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
