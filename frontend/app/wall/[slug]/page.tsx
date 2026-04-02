@@ -340,6 +340,11 @@ export default function WallPage() {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [slideIndex, setSlideIndex] = useState(0);
+  const viewModeRef = useRef<ViewMode>(viewMode);
+
+  useEffect(() => {
+    viewModeRef.current = viewMode;
+  }, [viewMode]);
 
   // -- Callbacks --
 
@@ -414,7 +419,19 @@ export default function WallPage() {
           if (!moderationMode) {
             setNewPhotoId(newPhoto.id);
             setConfettiTrigger(true);
-            setTimeout(() => setConfettiTrigger(false), 100);
+            
+            // FLASH NEW PHOTO
+            const modeBeforeFlash = viewModeRef.current;
+            if (modeBeforeFlash !== 'slideshow') {
+              setPrevViewMode(modeBeforeFlash);
+            }
+            setViewMode('slideshow');
+            setSlideIndex(0); // Newest is at index 0
+
+            setTimeout(() => {
+              setViewMode(modeBeforeFlash);
+              setConfettiTrigger(false);
+            }, 6000);
           }
         }
       )
@@ -531,24 +548,41 @@ export default function WallPage() {
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="wall-page fixed inset-0 flex flex-col z-50">
+      <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-black/95">
         <FontLoader />
         <BackgroundDecoration />
-        <div className="relative z-10" style={{ padding:'24px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', background:'rgba(255,255,255,0.4)', backdropFilter:'blur(12px)', borderBottom:'1px solid var(--border)' }}>
-          <h1 style={{ fontSize:28, fontWeight:800, color:'var(--text1)', letterSpacing:'-0.03em' }}>{eventName}</h1>
-          <button onClick={() => setViewMode('polaroid')} className="btn-outline px-6 py-2 rounded-xl font-bold text-sm">✕ EXIT</button>
+        
+        {/* Header Overlay */}
+        <div className="relative z-20" style={{ padding:'20px 40px', display:'flex', justifyContent:'space-between', alignItems:'center', background:'linear-gradient(to bottom, rgba(0,0,0,0.6), transparent)' }}>
+          <h1 style={{ fontSize:22, fontWeight:800, color:'#fff', letterSpacing:'-0.03em', textShadow:'0 2px 10px rgba(0,0,0,0.5)' }}>{eventName}</h1>
+          <button onClick={() => setViewMode(prevViewMode)} className="btn-outline px-6 py-2 rounded-xl font-bold text-sm bg-white/10 text-white border-white/20 hover:bg-white/20">✕ EXIT</button>
         </div>
-        <div className="relative z-10" style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', padding:40 }}>
+
+        {/* Content Area - Fits Image to Screen */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
           {current && (
-            <div className="slideshow-photo" key={current.id} style={{ height:'85%', width:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              {current.media_type === 'video' 
-                ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(0,0,0,0.15)', objectFit:'contain' }} autoPlay loop muted />
-                : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:32, boxShadow:'0 40px 100px rgba(30,41,59,0.15)', objectFit:'contain' }} alt="" />}
-              {planTier !== 'WHITE_LABEL' && <Watermark />}
+            <div className="slideshow-photo w-full h-full flex flex-col items-center justify-center" key={current.id}>
+              <div className="relative flex-1 flex items-center justify-center w-full max-h-[70vh]">
+                {current.media_type === 'video' 
+                  ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:20, boxShadow:'0 30px 80px rgba(0,0,0,0.8)', objectFit:'contain' }} autoPlay loop muted />
+                  : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight:'100%', maxWidth:'100%', borderRadius:20, boxShadow:'0 30px 80px rgba(0,0,0,0.8)', objectFit:'contain' }} alt="" />}
+                {planTier !== 'WHITE_LABEL' && <Watermark />}
+              </div>
+
+              {/* Metadata Footer */}
+              <div className="mt-8 glass-card" style={{ padding:'24px 40px', minWidth:320, maxWidth:'85%', background:'rgba(255,255,255,0.08)', backdropFilter:'blur(32px)', border:'1px solid rgba(255,255,255,0.15)', animation:'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign:'center', borderRadius:28 }}>
+                 <p style={{ fontSize:12, fontWeight:800, color:'var(--amber)', letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:6, opacity:0.8 }}>Shared by</p>
+                 <h2 style={{ fontSize:28, fontWeight:900, color:'#fff', marginBottom:8, letterSpacing:'-0.01em' }}>{current.uploader_name}</h2>
+                 {current.caption && (
+                   <p style={{ fontSize:18, color:'rgba(255,255,255,0.9)', fontStyle:'italic', fontWeight:400, lineHeight:1.6, maxWidth:600 }}>"{current.caption}"</p>
+                 )}
+              </div>
             </div>
           )}
-          <button onClick={prevSlide} className="btn-outline" style={{ position:'absolute', left:40, width:64, height:64, borderRadius:'50%', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center' }}>‹</button>
-          <button onClick={nextSlide} className="btn-outline" style={{ position:'absolute', right:40, width:64, height:64, borderRadius:'50%', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center' }}>›</button>
+          
+          {/* Nav Buttons */}
+          <button onClick={prevSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position:'absolute', left:20, top:'50%', transform:'translateY(-50%)', width:64, height:64, borderRadius:'50%', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center', backdropFilter:'blur(12px)', zIndex:30 }}>‹</button>
+          <button onClick={nextSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position:'absolute', right:20, top:'50%', transform:'translateY(-50%)', width:64, height:64, borderRadius:'50%', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center', backdropFilter:'blur(12px)', zIndex:30 }}>›</button>
         </div>
       </div>
     );
