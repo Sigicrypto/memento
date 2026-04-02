@@ -15,7 +15,7 @@ const FontLoader = () => (
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
     
     :root {
-      --bg: #faf9fd;
+      --bg: #fafcfe;
       --surface: rgba(255, 255, 255, 0.45);
       --border: rgba(255, 255, 255, 0.6);
       --amber: #fbbf24;
@@ -38,72 +38,6 @@ const FontLoader = () => (
     }
     @media (max-width: 1024px) {
       .wall-page { padding: 40px 20px 100px !important; }
-    }
-
-    /* ─── BACKGROUND ELEMENTS ─── */
-    .grain {
-      position: fixed;
-      inset: -50%;
-      width: 200%;
-      height: 200%;
-      pointer-events: none;
-      z-index: 5;
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      animation: grain 0.5s steps(1) infinite;
-    }
-    @keyframes grain {
-      0% { transform: translate(0, 0); }
-      25% { transform: translate(-2%, -3%); }
-      50% { transform: translate(3%, 2%); }
-      75% { transform: translate(-1%, 4%); }
-    }
-
-    .orbs {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
-    }
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      animation: orb-drift 18s ease-in-out infinite;
-    }
-    .orb1 {
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(245, 158, 11, 0.15), transparent 70%);
-      top: -15%; left: -10%;
-    }
-    .orb2 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(244, 114, 182, 0.12), transparent 70%);
-      top: 40%; right: -8%;
-      animation-delay: -6s;
-    }
-    @keyframes orb-drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(30px, -40px) scale(1.05); }
-      66% { transform: translate(-20px, 25px) scale(0.95); }
-    }
-
-    .floating-shapes {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2;
-    }
-    .shape {
-      position: absolute;
-      opacity: 0.1;
-      color: var(--amber);
-      animation: float-slow 20s ease-in-out infinite alternate;
-    }
-    @keyframes float-slow {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-40px) rotate(90deg); }
     }
 
     /* ─── UI COMPONENTS ─── */
@@ -736,13 +670,13 @@ export default function WallPage() {
     <div style={{
       position: 'absolute', bottom: 12, right: 12,
       display: 'flex', alignItems: 'center',
-      filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))',
-      opacity: 0.75, pointerEvents: 'none'
+      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+      opacity: 0.6, pointerEvents: 'none'
     }}>
       <img
         src="/CC logo.png"
         alt="Memento"
-        style={{ height: 18, width: 'auto', display: 'block', objectFit: 'contain' }}
+        style={{ height: 14, width: 'auto', display: 'block', objectFit: 'contain' }}
       />
     </div>
   );
@@ -775,7 +709,7 @@ export default function WallPage() {
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-[#050505]">
+      <div className="wall-page fixed inset-0 flex flex-col z-[100] h-screen overflow-hidden bg-transparent">
       <FontLoader />
 
         {/* Dynamic Cinematic Background */}
@@ -784,9 +718,9 @@ export default function WallPage() {
             position: 'absolute', inset: 0, 
             backgroundImage: `url(${getPublicUrl(current.storage_path)})`,
             backgroundSize: 'cover', backgroundPosition: 'center',
-            filter: 'blur(60px) brightness(0.3) saturate(1.1)',
-            transition: 'background-image 1s cubic-bezier(0.4, 0, 0.2, 1)',
-            opacity: 0.6,
+            filter: 'blur(100px) brightness(1.1) saturate(1.2)',
+            transition: 'background-image 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            opacity: 0.35,
             zIndex: 0
           }} />
         )}
@@ -801,16 +735,16 @@ export default function WallPage() {
         )}
 
         {/* Header Overlay */}
-        <div className="relative z-20" style={{ padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 900, color: 'var(--amber)', letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.8 }}>Live Experience</span>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', textShadow: '0 2px 10px rgba(0,0,0,0.3)', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
+        <div className="relative z-20" style={{ padding: '8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, opacity: 0.6 }}>
+            <span style={{ fontSize: 7, fontWeight: 900, color: 'var(--rose)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Live Experience</span>
+            <h1 style={{ fontSize: 16, fontWeight: 800, color: 'var(--text1)', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif" }}>{eventName}</h1>
           </div>
-          <button onClick={() => setViewMode(prevViewMode)} className="btn-outline px-8 py-2.5 rounded-full font-bold text-xs bg-white/5 text-white/80 border-white/10 hover:bg-white/10 hover:text-white transition-all backdrop-filter blur-sm">✕ EXIT</button>
+          <button onClick={() => setViewMode(prevViewMode)} className="btn-outline px-4 py-1 rounded-full font-bold text-[8px] bg-white/20 text-slate-400 border-white/40 hover:bg-white/40 transition-all backdrop-filter blur-sm">✕ EXIT</button>
         </div>
 
         {/* Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-12 overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-0 overflow-hidden">
           {current && (
             <div className="w-full h-full flex flex-col items-center justify-center max-w-7xl mx-auto" key={current.id}>
               {/* Image Container */}
@@ -819,20 +753,35 @@ export default function WallPage() {
                   position: 'relative', height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both'
                 }}>
-                  {current.media_type === 'video'
-                    ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.7)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.08)' }} autoPlay loop muted />
-                    : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.7)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.08)' }} alt="" />}
+                  {current.media_type === 'video' ? (
+                    <video 
+                      src={getPublicUrl(current.storage_path)} 
+                      style={{ maxHeight: '94vh', maxWidth: '98vw', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.1)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.2)' }} 
+                      autoPlay loop muted 
+                    />
+                  ) : (
+                    <img 
+                      src={getPublicUrl(current.storage_path)} 
+                      style={{ maxHeight: '94vh', maxWidth: '98vw', borderRadius: 12, boxShadow: '0 40px 100px rgba(0,0,0,0.1)', objectFit: 'contain', border: '1px solid rgba(255,255,255,0.2)' }} 
+                      alt="" 
+                    />
+                  )}
                   {planTier !== 'WHITE_LABEL' && <Watermark />}
                 </div>
               </div>
 
-              {/* Metadata Footer — Reduced footprint to maximize photo size */}
-              <div className="mt-4 glass-card" style={{ padding: '16px 36px', minWidth: 280, maxWidth: '85%', flexShrink: 0, background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.08)', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center', borderRadius: 28 }}>
-                <p style={{ fontSize: 9, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4, opacity: 0.8 }}>Shared by</p>
-                <h2 style={{ fontSize: 20, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
-                {current.caption && (
-                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.5, maxWidth: 600 }}>"{current.caption}"</p>
-                )}
+              {/* Metadata Footer — Ultra-minimal to give the photo 95% of the screen */}
+              <div className="mt-1 glass-card" style={{ padding: '6px 20px', minWidth: 200, maxWidth: '85%', flexShrink: 0, background: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(40px)', border: '1px solid var(--border)', animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 100 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                  <span style={{ fontSize: 9, fontWeight: 900, color: 'var(--rose)', opacity: 0.7 }}>SHARED BY</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text1)', letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</span>
+                  {current.caption && (
+                    <>
+                      <div style={{ width: 1, height: 12, background: 'var(--border)' }} />
+                      <span style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', fontWeight: 400, maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>"{current.caption}"</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -841,20 +790,15 @@ export default function WallPage() {
           <button onClick={prevSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', left: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>‹</button>
           <button onClick={nextSlide} className="btn-outline text-white/40 border-white/5 hover:bg-white/10 hover:text-white" style={{ position: 'absolute', right: 32, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(16px)', zIndex: 30, transition: '0.3s' }}>›</button>
 
-          {/* Join Panel Refinement — Moved to bottom-left to avoid logo overlap */}
+          {/* Join Panel Refinement — Ultra-minimal and moved to very corner */}
           <div className="slideshow-join-panel" style={{ 
-            transform: 'scale(0.75)', transformOrigin: 'bottom left', 
-            left: 32, right: 'auto', bottom: 32, 
-            opacity: 0.85, background: 'rgba(255,255,255,0.06)', 
-            backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.1)' 
+            transform: 'scale(0.6)', transformOrigin: 'bottom left', 
+            left: 20, right: 'auto', bottom: 20, 
+            opacity: 0.5, background: 'rgba(255,255,255,0.1)', 
+            backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' 
           }}>
-            <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 10, borderRadius: 14 }}>
-              <QRCodeSVG value={uploadUrl} size={70} bgColor="#ffffff" fgColor="#000" />
-            </div>
-            <div className="slideshow-join-text">
-              <span className="slideshow-join-label" style={{ color: 'var(--amber)', fontSize: 9 }}>Join & Share</span>
-              <span className="slideshow-join-title" style={{ fontSize: 13, fontWeight: 900 }}>Capture the Moment</span>
-              <span className="slideshow-join-url" style={{ fontSize: 11, opacity: 0.65 }}>{uploadUrl}</span>
+            <div className="slideshow-join-qr" style={{ background: 'rgba(255,255,255,0.95)', padding: 8, borderRadius: 12 }}>
+              <QRCodeSVG value={uploadUrl} size={60} bgColor="#ffffff" fgColor="#000" />
             </div>
           </div>
         </div>
