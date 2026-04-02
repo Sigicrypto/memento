@@ -819,40 +819,41 @@ export default function WallPage() {
         </div>
 
         {/* Content Area */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden">
           {current && (
-            <div className="slideshow-photo w-full h-full flex flex-col items-center justify-center" key={current.id}>
-              <div className="relative flex-1 flex items-center justify-center w-full max-h-[70vh]">
+            <div className="w-full h-full flex flex-col items-center justify-center max-w-6xl mx-auto" key={current.id}>
+              {/* Image Container - flex-1 + min-h-0 ensures it shrinks to fit available space */}
+              <div className="relative flex-1 w-full flex items-center justify-center min-h-0">
                 {current.media_type === 'video'
-                  ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 20, boxShadow: '0 30px 80px rgba(0,0,0,0.8)', objectFit: 'contain' }} autoPlay loop muted />
-                  : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 20, boxShadow: '0 30px 80px rgba(0,0,0,0.8)', objectFit: 'contain' }} alt="" />}
+                  ? <video src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 16, boxShadow: '0 30px 80px rgba(0,0,0,0.8)', objectFit: 'contain' }} autoPlay loop muted />
+                  : <img src={getPublicUrl(current.storage_path)} style={{ maxHeight: '100%', maxWidth: '100%', borderRadius: 16, boxShadow: '0 30px 80px rgba(0,0,0,0.8)', objectFit: 'contain' }} alt="" />}
                 {planTier !== 'WHITE_LABEL' && <Watermark />}
               </div>
 
               {/* Metadata Footer */}
-              <div className="mt-8 glass-card" style={{ padding: '24px 40px', minWidth: 320, maxWidth: '85%', background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.15)', animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 28 }}>
-                <p style={{ fontSize: 11, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.8 }}>Shared by</p>
-                <h2 style={{ fontSize: 28, fontWeight: 900, color: '#fff', marginBottom: 8, letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
+              <div className="mt-6 glass-card" style={{ padding: '16px 32px', minWidth: 320, maxWidth: '90%', flexShrink: 0, background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(32px)', border: '1px solid rgba(255,255,255,0.15)', animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both', textAlign: 'center', borderRadius: 24 }}>
+                <p style={{ fontSize: 10, fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 4, opacity: 0.8 }}>Shared by</p>
+                <h2 style={{ fontSize: 24, fontWeight: 900, color: '#fff', marginBottom: 4, letterSpacing: '-0.01em', fontFamily: "'Playfair Display', serif" }}>{current.uploader_name}</h2>
                 {current.caption && (
-                  <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.9)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, maxWidth: 600 }}>"{current.caption}"</p>
+                  <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.9)', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.5, maxWidth: 600 }}>"{current.caption}"</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Nav Buttons */}
-          <button onClick={prevSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>‹</button>
-          <button onClick={nextSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', width: 64, height: 64, borderRadius: '50%', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>›</button>
+          <button onClick={prevSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', width: 56, height: 56, borderRadius: '50%', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>‹</button>
+          <button onClick={nextSlide} className="btn-outline text-white border-white/20 hover:bg-white/10" style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', width: 56, height: 56, borderRadius: '50%', fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(12px)', zIndex: 30 }}>›</button>
 
-          {/* ── FIX 3: QR + URL side-by-side join panel ── */}
-          <div className="slideshow-join-panel">
+          {/* QR + URL Join Panel */}
+          <div className="slideshow-join-panel" style={{ transform: 'scale(0.85)', origin: 'bottom right' }}>
             <div className="slideshow-join-qr">
-              <QRCodeSVG value={uploadUrl} size={80} bgColor="#ffffff" fgColor="#1e293b" />
+              <QRCodeSVG value={uploadUrl} size={70} bgColor="#ffffff" fgColor="#1e293b" />
             </div>
             <div className="slideshow-join-text">
               <span className="slideshow-join-label">Scan to join</span>
-              <span className="slideshow-join-title">Share your memory</span>
-              <span className="slideshow-join-url">{uploadUrl}</span>
+              <span className="slideshow-join-title" style={{ fontSize: 14 }}>Share your memory</span>
+              <span className="slideshow-join-url" style={{ fontSize: 11 }}>{uploadUrl}</span>
             </div>
           </div>
         </div>
