@@ -385,9 +385,10 @@ const FontLoader = () => (
     
     .qr-side {
       right: 40px;
+      right: 45px;
       top: 50%;
       transform: translateY(-50%);
-      width: 220px;
+      width: 240px;
       align-items: center;
       text-align: center;
       animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -398,16 +399,17 @@ const FontLoader = () => (
     }
 
     .cloud-box {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      border-radius: 44px;
-      padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(253, 248, 235, 0.96));
+      backdrop-filter: blur(16px);
+      border-radius: 60px;
+      padding: 36px 40px;
       position: relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.6);
       display: flex;
       flex-direction: column;
       width: 100%;
       z-index: 1;
+      animation: dream-float 8s ease-in-out infinite;
     }
     .cloud-box::before, .cloud-box::after {
       content: '';
@@ -415,16 +417,29 @@ const FontLoader = () => (
       background: inherit;
       border-radius: 50%;
       z-index: -1;
+      filter: blur(1px);
     }
-    /* Dynamic bubble sizing for different width clouds */
-    .cloud-box::before { width: 140px; height: 140px; top: -65px; left: 12%; }
-    .cloud-box::after { width: 100px; height: 100px; top: -45px; right: 22%; }
+    /* Natural Asymmetrical Cloud Puffs */
+    .cloud-box::before { 
+      width: 160px; height: 160px; top: -75px; left: 10%; 
+      box-shadow: 140px 10px 0 -10px rgba(255,255,255,0.96), 
+                  240px 30px 0 -30px rgba(255,255,255,0.94);
+    }
+    .cloud-box::after { 
+      width: 120px; height: 120px; top: -55px; right: 8%; 
+      box-shadow: -100px 5px 0 -5px rgba(255,255,255,0.96);
+    }
+    
+    @keyframes dream-float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.01); }
+    }
     
     .meta-side {
-      left: 40px;
-      top: 68%;
+      left: 45px;
+      top: 66%;
       transform: translateY(-50%);
-      width: 360px;
+      width: 380px;
       animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
       background: none !important;
       border: none !important;
