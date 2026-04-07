@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 import { QRCodeSVG } from 'qrcode.react';
 
+import { motion, AnimatePresence } from 'framer-motion';
 import { X, Maximize2, Minimize2, Image as ImageIcon, Grid, Play } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
@@ -1024,59 +1025,72 @@ export default function LandingPage() {
 
 
         {/* HERO */}
+        <section className="hero pt-16 md:pt-20 py-16 overflow-hidden relative">
+          <motion.div
+            animate={{ rotate: 360, scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] md:w-[800px] md:h-[800px] rounded-full blur-[100px] pointer-events-none -z-10"
+            style={{
+              background: 'conic-gradient(from 0deg, rgba(245,158,11,0.4), rgba(236,72,153,0.4), rgba(124,58,237,0.4), rgba(245,158,11,0.4))'
+            }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10"
+          >
+            <h1 className="hero-h1 leading-tight md:leading-[1.1]">
+              Collect Every Moment.
+              <br />
+              <span className="gradient-text-vibrant">Instantly. Effortlessly.</span>
+            </h1>
+          </motion.div>
 
-        <section className="hero pt-16 md:pt-20 py-16">
-
-          <h1 className="hero-h1 reveal leading-tight md:leading-[1.1]">
-
-            Collect Every Moment.
-
-            <br />
-
-            <span className="gradient-text">Instantly. Effortlessly.</span>
-
-          </h1>
-
-          <p className="hero-p reveal">
-
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="hero-p"
+          >
             QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle.
+          </motion.p>
 
-          </p>
-
-          <div className="hero-btns reveal">
-
-            <button onClick={() => setIsDemoOpen(true)} className="btn-outline">
-
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="hero-btns"
+          >
+            <button 
+              onClick={() => setIsDemoOpen(true)} 
+              className="btn-hero-primary cinematic-glow"
+            >
               <span>🎬 Watch Demo Wall</span>
-
             </button>
+          </motion.div>
 
-          </div>
-
-          <div className="hero-visual reveal">
-
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="hero-visual"
+          >
             <div className="polaroid-float p-1" style={{ '--rot': '-8deg' } as React.CSSProperties}>
-
               <img src="/landing-hero/photo2.jpg" alt="Memory" />
-
             </div>
-
             <div className="polaroid-float p-2" style={{ '--rot': '12deg' } as React.CSSProperties}>
-
               <img src="/landing-hero/photo6.jpg" alt="Memory" />
-
             </div>
-
             <div className="polaroid-float p-3" style={{ '--rot': '-5deg' } as React.CSSProperties}>
-
               <img src="/landing-hero/photo12.jpg" alt="Memory" />
-
             </div>
-
             <div className="polaroid-float p-4" style={{ '--rot': '6deg' } as React.CSSProperties}>
-
               <img src="/landing-hero/photo4.jpg" alt="Memory" />
-
             </div>
 
 
@@ -1224,91 +1238,83 @@ export default function LandingPage() {
                 </div>
 
               </div>
-
             </div>
-
-          </div>
-
+          </motion.div>
         </section>
 
 
 
         {/* STATS */}
 
-        <section className="stats reveal py-16">
-
-          {[
-
-            { val: '∞', label: 'Photos per wall' },
-
-            { val: '0s', label: 'App install time' },
-
-            { val: '<3s', label: 'Upload speed' },
-
-            { val: '0', label: 'Hidden fees' },
-
-          ].map((s, i) => (
-
-            <div key={i} className="stat">
-
-              <span className="stat-val">{s.val}</span>
-
-              <span className="stat-lbl text-sm">{s.label}</span>
-
-            </div>
-
-          ))}
-
+        <section className="stats py-16">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="flex flex-wrap justify-center gap-8 md:gap-16"
+          >
+            {[
+              { val: '∞', label: 'Photos per wall' },
+              { val: '0s', label: 'App install time' },
+              { val: '<3s', label: 'Upload speed' },
+              { val: '0', label: 'Hidden fees' },
+            ].map((s, i) => (
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease: 'backOut' }}
+                className="stat group cursor-default"
+              >
+                <span className="stat-val group-hover:scale-110 transition-transform duration-300 inline-block">{s.val}</span>
+                <span className="stat-lbl text-sm opacity-70 group-hover:opacity-100 transition-opacity">{s.label}</span>
+              </motion.div>
+            ))}
+          </motion.div>
         </section>
 
 
 
         {/* WHY CHOOSE MEMENTO */}
-
         <section id="why" className="sec py-16">
-
-          <span className="kicker reveal">Why Choose Memento?</span>
-
-          <h2 className="sec-h2 reveal">Capture what matters. <span className="gradient-text">Instantly.</span></h2>
-
-          <p className="sec-sub reveal">Your guests take the photos, we collect them all in one place. No missed moments, no lost memories.</p>
-
-
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="kicker">Why Choose Memento?</span>
+            <h2 className="sec-h2">Capture what matters. <span className="gradient-text-vibrant">Instantly.</span></h2>
+            <p className="sec-sub">Your guests take the photos, we collect them all in one place. No missed moments, no lost memories.</p>
+          </motion.div>
 
           <div className="feat-grid">
-
             {[
-
               { icon: '🎉', title: 'Perfect for Weddings', desc: 'From the first look to the last dance, every guest becomes your personal photographer.', big: true },
-
               { icon: '🎂', title: 'Birthdays & Private Parties', desc: 'No more chasing friends for photos. Get them all at once in a beautiful live gallery.' },
-
               { icon: '🏢', title: 'Corporate Events', desc: 'Level up your branding. Show real-time interaction on any screen with full moderation.' },
-
               { icon: '👰', title: 'Anniversaries', desc: 'Celebrate the journey. Let every generation share their memories in one click.' },
-
               { icon: '🎈', title: 'Festivals', desc: 'Capture the scale and energy. Crowdsourced memories that look professional.' },
-
             ].map((f, i) => (
-
-              <div key={i} className={`gcard feat-card ${f.big ? 'feat-big' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
-
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                whileHover={{ y: -5, scale: 1.02 }}
+                className={`gcard feat-card ${f.big ? 'feat-big' : ''} cinematic-glow`}
+              >
                 <div className="gcard-border" />
-
                 <div className="gcard-inner">
-
                   <span className="feat-icon">{f.icon}</span>
-
                   <h3 className="feat-title">{f.title}</h3>
-
                   <p className="feat-desc">{f.desc}</p>
-
                 </div>
-
-              </div>
-
+              </motion.div>
             ))}
-
           </div>
 
         </section>
@@ -1316,16 +1322,27 @@ export default function LandingPage() {
 
 
         {/* FEATURES */}
-
         <section id="features" className="sec py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="kicker">Core Features</span>
+            <h2 className="sec-h2">The Best Experience. <span className="gradient-text-vibrant">Built in.</span></h2>
+          </motion.div>
 
-          <span className="kicker reveal">Core Features</span>
-
-          <h2 className="sec-h2 reveal">The Best Experience. <span className="gradient-text">Built in.</span></h2>
-
-
-
-          <div className="feat-grid">
+          <motion.div 
+            className="feat-grid"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
 
             {[
 
@@ -1343,7 +1360,15 @@ export default function LandingPage() {
 
             ].map((f, i) => (
 
-              <div key={i} className={`gcard feat-card ${f.big ? 'feat-big' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
+              <motion.div 
+                key={i} 
+                className={`gcard feat-card ${f.big ? 'feat-big' : ''} cinematic-glow`}
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
+                }}
+                whileHover={{ scale: 1.03, y: -5 }}
+              >
 
                 <div className="gcard-border" />
 
@@ -1357,283 +1382,200 @@ export default function LandingPage() {
 
                 </div>
 
-              </div>
+              </motion.div>
 
             ))}
 
-          </div>
+          </motion.div>
 
         </section>
 
 
 
         {/* HOW IT WORKS */}
-
-        <section id="how" className="sec py-16">
-
-          <span className="kicker reveal">How it works</span>
-
-          <h2 className="sec-h2 reveal">Three steps. <span className="gradient-text">That&apos;s it.</span></h2>
-
-          <p className="sec-sub reveal">No downloads. No accounts. No friction.</p>
-
-
+        <section id="how" className="sec py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="kicker">How it works</span>
+            <h2 className="sec-h2">Three steps. <span className="gradient-text-vibrant">That&apos;s it.</span></h2>
+            <p className="sec-sub">No downloads. No accounts. No friction.</p>
+          </motion.div>
 
           <div className="steps">
-
             {[
-
               { num: '01', icon: '🎉', title: 'Create Your Event', desc: 'Name it and get a shareable QR code in under a minute.' },
-
               { num: '02', icon: '📲', title: 'Guests Scan & Share', desc: 'No app. No login. Just scan the QR and upload photos instantly.' },
-
               { num: '03', icon: '✨', title: 'Watch It Come Alive', desc: 'Every photo streams live into a beautiful gallery for everyone.' },
-
             ].map((s, i) => (
-
-              <div key={i} className="gcard step-card reveal" style={{ animationDelay: `${i * 0.12}s` }}>
-
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.2, ease: "easeOut" }}
+                whileHover={{ scale: 1.05 }}
+                className="gcard step-card cinematic-glow"
+              >
                 <div className="gcard-border" />
-
                 <div className="gcard-inner">
-
                   <span className="step-num">{s.num}</span>
-
                   <span className="step-icon">{s.icon}</span>
-
                   <h3 className="step-title">{s.title}</h3>
-
                   <p className="step-desc">{s.desc}</p>
-
                 </div>
-
-              </div>
-
+              </motion.div>
             ))}
-
-            <div className="steps-line" />
-
+            <motion.div 
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
+              className="steps-line origin-left" 
+            />
           </div>
-
         </section>
 
 
 
         {/* IMAGE GALLERY */}
+        <section className="sec py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="kicker">Gallery</span>
+            <h2 className="sec-h2">Real <span className="gradient-text-vibrant">Event Walls</span></h2>
+            <p className="sec-sub">See how people are using Memento to capture their special moments</p>
+          </motion.div>
 
-        <section className="sec">
-
-          <span className="kicker reveal">Gallery</span>
-
-          <h2 className="sec-h2 reveal">Real <span className="gradient-text">Event Walls</span></h2>
-
-          <p className="sec-sub reveal">See how people are using Memento to capture their special moments</p>
-
-
-
-          <div className="gallery-grid reveal">
-
+          <div className="gallery-grid">
             {[
-
               { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
-
               { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
-
               { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' },
-
               { title: 'Corporate Gala', src: 'https://picsum.photos/400/300?random=4', count: '234 photos' },
-
               { title: 'Graduation Party', src: 'https://picsum.photos/400/300?random=5', count: '145 photos' },
-
               { title: 'Festival Weekend', src: 'https://picsum.photos/400/300?random=6', count: '512 photos' }
-
             ].map((item, i) => (
-
-              <div key={i} className="gallery-item" style={{ animationDelay: `${i * 0.1}s` }}>
-
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: i * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                className="gallery-item cinematic-glow"
+              >
                 <div className="gallery-img-wrapper">
-
                   <img src={item.src} alt={item.title} className="gallery-img" />
-
                   <div className="gallery-overlay">
-
                     <h3 className="gallery-title">{item.title}</h3>
-
                     <p className="gallery-count">{item.count}</p>
-
                   </div>
-
                 </div>
-
-              </div>
-
+              </motion.div>
             ))}
-
           </div>
-
         </section>
 
 
 
         {/* TESTIMONIALS */}
+        <section className="sec py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="kicker">Testimonials</span>
+            <h2 className="sec-h2">Loved by <span className="gradient-text-vibrant">Event Organizers</span></h2>
+            <p className="sec-sub">See what people are saying about Memento</p>
+          </motion.div>
 
-        <section className="sec">
-
-          <span className="kicker reveal">Testimonials</span>
-
-          <h2 className="sec-h2 reveal">Loved by <span className="gradient-text">Event Organizers</span></h2>
-
-          <p className="sec-sub reveal">See what people are saying about Memento</p>
-
-
-
-          <div className="testimonial-grid reveal">
-
+          <div className="testimonial-grid">
             {[
-
-              {
-
-                quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.",
-
-                author: "Rohan & Priya",
-
-                role: "Happy Couple",
-
-                event: "Mumbai Wedding • 524 photos",
-
-                rating: 5
-
-              },
-
-              {
-
-                quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.",
-
-                author: "Sonia Mehta",
-
-                role: "Wedding Planner",
-
-                event: "Corporate Gala • Bangalore",
-
-                rating: 5
-
-              },
-
-              {
-
-                quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.",
-
-                author: "Vikram Singh",
-
-                role: "Professional Event Organizer",
-
-                event: "Tech Summit • Delhi",
-
-                rating: 5
-
-              }
-
+              { quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.", author: "Rohan & Priya", role: "Happy Couple", event: "Mumbai Wedding • 524 photos", rating: 5 },
+              { quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.", author: "Sonia Mehta", role: "Wedding Planner", event: "Corporate Gala • Bangalore", rating: 5 },
+              { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.", author: "Vikram Singh", role: "Professional Event Organizer", event: "Tech Summit • Delhi", rating: 5 }
             ].map((item, i) => (
-
-              <div key={i} className="gcard testimonial-card" style={{ animationDelay: `${i * 0.1}s` }}>
-
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                whileHover={{ y: -5 }}
+                className="gcard testimonial-card cinematic-glow"
+              >
                 <div className="gcard-border" />
-
                 <div className="gcard-inner">
-
                   <div className="flex gap-1 mb-3">
-
-                    {[...Array(item.rating)].map((_, j) => (
-
-                      <span key={j} className="text-amber-400">⭐</span>
-
-                    ))}
-
+                    {[...Array(item.rating)].map((_, j) => <span key={j} className="text-amber-400">⭐</span>)}
                   </div>
-
-                  <p className="text-slate-700 mb-4 text-base leading-relaxed">&quot;{item.quote}&quot;</p>
-
+                  <p className="text-slate-700 mb-6 text-base leading-relaxed italic">&quot;{item.quote}&quot;</p>
                   <div className="flex items-center gap-3">
-
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white font-semibold text-lg">
-
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white font-semibold text-lg shadow-md">
                       {item.author.split(' ').map(n => n[0]).join('')}
-
                     </div>
-
                     <div>
-
-                      <p className="text-slate-900 font-semibold text-base">{item.author}</p>
-
+                      <p className="text-slate-900 font-bold text-base">{item.author}</p>
                       <p className="text-slate-500 text-sm">{item.role}</p>
-
                     </div>
-
                   </div>
-
-                  <p className="text-amber-500 text-sm mt-3 font-medium">{item.event}</p>
-
+                  <p className="text-amber-500 text-xs mt-4 font-bold tracking-wider uppercase">{item.event}</p>
                 </div>
-
-              </div>
-
+              </motion.div>
             ))}
-
           </div>
-
-
 
           {/* Social Proof Bar */}
-
-          <div className="social-proof-bar reveal">
-
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="social-proof-bar cinematic-glow mt-20"
+          >
             <div className="social-proof-item">
-
-              <span className="text-2xl font-bold gradient-text">10,000+</span>
-
-              <span className="text-slate-600 text-sm block mt-1">Events Created</span>
-
+              <span className="text-3xl font-bold gradient-text-vibrant">10,000+</span>
+              <span className="text-slate-600 text-sm font-medium block mt-1">Events Created</span>
             </div>
-
             <div className="social-proof-item">
-
-              <span className="text-2xl font-bold gradient-text">500K+</span>
-
-              <span className="text-slate-600 text-sm block mt-1">Photos Shared</span>
-
+              <span className="text-3xl font-bold gradient-text-vibrant">500K+</span>
+              <span className="text-slate-600 text-sm font-medium block mt-1">Photos Shared</span>
             </div>
-
             <div className="social-proof-item">
-
-              <span className="text-2xl font-bold gradient-text">50+</span>
-
-              <span className="text-slate-600 text-sm block mt-1">Countries</span>
-
+              <span className="text-3xl font-bold gradient-text-vibrant">50+</span>
+              <span className="text-slate-600 text-sm font-medium block mt-1">Countries</span>
             </div>
-
             <div className="social-proof-item">
-
-              <span className="text-2xl font-bold gradient-text">4.9★</span>
-
-              <span className="text-slate-600 text-sm block mt-1">User Rating</span>
-
+              <span className="text-3xl font-bold gradient-text-vibrant">4.9★</span>
+              <span className="text-slate-600 text-sm font-medium block mt-1">User Rating</span>
             </div>
-
-          </div>
-
+          </motion.div>
         </section>
 
 
 
         {/* PRICING */}
-
-        <section id="pricing" className="sec py-16">
-
-          <span className="kicker reveal">One-time Payment • Per Event</span>
-
-          <h2 className="sec-h2 reveal">Pricing That <span className="gradient-text">Grows With You</span></h2>
-
-          <p className="sec-sub reveal">Simple, transparent pricing. No subscriptions, zero surprises.</p>
+        <section id="pricing" className="sec py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span className="kicker">One-time Payment • Per Event</span>
+            <h2 className="sec-h2">Pricing That <span className="gradient-text-vibrant">Grows With You</span></h2>
+            <p className="sec-sub">Simple, transparent pricing. No subscriptions, zero surprises.</p>
+          </motion.div>
 
 
 
@@ -1649,7 +1591,16 @@ export default function LandingPage() {
 
 
 
-          <div className="price-grid">
+          <motion.div 
+            className="price-grid"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
 
             {[
 
@@ -1793,7 +1744,15 @@ export default function LandingPage() {
 
             ].map((p, i) => (
 
-              <div key={i} className={`gcard price-card ${p.popular ? 'popular' : ''} reveal`} style={{ animationDelay: `${i * 0.08}s` }}>
+              <motion.div 
+                key={i} 
+                className={`gcard price-card ${p.popular ? 'popular' : ''} cinematic-glow`}
+                variants={{
+                  hidden: { opacity: 0, scale: 0.9, y: 30 },
+                  visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
+                }}
+                whileHover={{ scale: 1.03, y: -5, boxShadow: '0 20px 40px rgba(245, 158, 11, 0.2)' }}
+              >
 
                 <div className="gcard-border" />
 
@@ -1867,34 +1826,38 @@ export default function LandingPage() {
 
                 </div>
 
-              </div>
+              </motion.div>
 
             ))}
 
-          </div>
+          </motion.div>
 
         </section>
 
 
 
         {/* CTA */}
-
-        <section className="cta-sec reveal py-12">
-
-          <div className="cta-glow" />
-
-          <h2 className="cta-h2">Ready to collect every moment<br /><span className="gradient-text">instantly?</span></h2>
-
-          <p className="cta-p">Start with just {Sym}{Starter}. One-time payment. Zero hassle.</p>
-
-          <button onClick={() => openAuth('starter')} className="btn-glow btn-lg">
-
-            <span>Get Started Now — {Sym}{Starter}</span>
-
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-
-          </button>
-
+        <section className="py-24 px-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="cta-sec cinematic-glow py-20 px-8 rounded-3xl overflow-hidden relative max-w-5xl mx-auto text-center"
+          >
+            <div className="cta-glow" />
+            <h2 className="cta-h2 relative z-10">Ready to collect every moment<br /><span className="gradient-text-vibrant">instantly?</span></h2>
+            <p className="cta-p relative z-10 mt-6 text-xl">Start with just {Sym}{Starter}. One-time payment. Zero hassle.</p>
+            <motion.button 
+              whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(245, 158, 11, 0.3)' }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => openAuth('starter')} 
+              className="btn-hero-primary mt-10 relative z-10"
+            >
+              <span>Get Started Now — {Sym}{Starter}</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </motion.button>
+          </motion.div>
         </section>
 
 

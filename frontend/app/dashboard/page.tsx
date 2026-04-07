@@ -5,7 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Plus, Camera, Layout, Shield, Copy, ExternalLink, Trash2, Settings } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Camera, Layout, Shield, Copy, ExternalLink, Trash2, Settings, Sparkles } from 'lucide-react';
 import '../landing.css';
 
 interface Profile {
@@ -114,153 +115,203 @@ export default function DashboardPage() {
   const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
 
   return (
-    <div className="lp" style={{ minHeight: '100vh', paddingBottom: '4rem' }}>
-      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
-      <div className="grain" />
+    <div className="lp min-h-screen pb-16 relative overflow-hidden">
+      <div className="aurora-bg fixed inset-0 opacity-40 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
 
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '120px 1.5rem 0' }}>
+      <div className="max-w-[1100px] mx-auto px-6 pt-32 relative z-10">
 
         {/* Welcome + Plan Card */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '1.5rem', marginBottom: '2rem' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
 
           {/* Welcome */}
-          <div className="gcard" style={{ padding: '2rem' }}>
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="gcard cinematic-glow p-8"
+          >
             <div className="gcard-border" />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #fbbf24, #f472b6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '1.2rem', fontWeight: 700 }}>
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-6">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+                  className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white text-2xl font-bold shadow-lg"
+                >
                   {(profile?.full_name || 'U').charAt(0).toUpperCase()}
-                </div>
+                </motion.div>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text1)' }}>
-                      Welcome back, {(profile?.full_name || 'there').split(' ')[0]}!
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-slate-900">
+                      Welcome, {(profile?.full_name || 'there').split(' ')[0]}!
                     </h1>
                     {profile?.role === 'admin' && (
-                      <Link href="/admin" className="nm-badge !bg-amber-500/10 !text-amber-500 !border-amber-500/20 px-3 py-1 flex items-center gap-1 hover:!bg-amber-500/20 transition-all">
+                      <Link href="/admin" className="nm-badge !bg-amber-500/10 !text-amber-500 !border-amber-500/20 px-3 py-1 flex items-center gap-1 hover:!bg-amber-500/20 transition-all text-[10px] font-black tracking-widest">
                         <Shield size={10} /> ADMIN
                       </Link>
                     )}
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>{profile?.email || user?.email}</p>
+                  <p className="text-sm text-slate-500">{profile?.email || user?.email}</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                <div style={{ textAlign: 'center', padding: '0.75rem 1.5rem', borderRadius: '12px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.12)' }}>
-                  <span style={{ display: 'block', fontSize: '1.5rem', fontWeight: 700, color: '#f59e0b' }}>{events.length}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>Events</span>
+              <div className="flex gap-4">
+                <div className="flex-1 text-center py-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 group hover:bg-amber-500/10 transition-colors">
+                  <span className="block text-2xl font-bold text-amber-500 group-hover:scale-110 transition-transform">{events.length}</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Events</span>
                 </div>
-                <div style={{ textAlign: 'center', padding: '0.75rem 1.5rem', borderRadius: '12px', background: 'rgba(244,114,182,0.06)', border: '1px solid rgba(244,114,182,0.12)' }}>
-                  <span style={{ display: 'block', fontSize: '1.5rem', fontWeight: 700, color: '#f472b6' }}>{events.reduce((sum, e) => sum + (e.photo_count || 0), 0)}</span>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text2)' }}>Photos</span>
+                <div className="flex-1 text-center py-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 group hover:bg-rose-500/10 transition-colors">
+                  <span className="block text-2xl font-bold text-rose-500 group-hover:scale-110 transition-transform">{events.reduce((sum, e) => sum + (e.photo_count || 0), 0)}</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Photos</span>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Plan Card */}
-          <div className="gcard" style={{ padding: '2rem' }}>
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+            className="gcard cinematic-glow p-8"
+          >
             <div className="gcard-border" />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
                 <div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text3)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Current Plan</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{planInfo.emoji}</span>
-                    <span style={{ fontSize: '1.3rem', fontWeight: 700, color: planInfo.color }}>{planInfo.name}</span>
+                  <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Current Plan</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-2xl">{planInfo.emoji}</span>
+                    <span className="text-xl font-bold" style={{ color: planInfo.color }}>{planInfo.name}</span>
                   </div>
                 </div>
-                <span style={{ padding: '0.3rem 0.8rem', borderRadius: '100px', fontSize: '0.7rem', fontWeight: 600, background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)' }}>
+                <span className="px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 uppercase">
                   Active
                 </span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div className="space-y-2 mb-6">
                 {planInfo.features.slice(0, 4).map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--text2)' }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={planInfo.color} strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
+                  <div key={i} className="flex items-center gap-3 text-sm text-slate-600">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: `${planInfo.color}15` }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={planInfo.color} strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg>
+                    </div>
                     {f}
                   </div>
                 ))}
               </div>
               {currentPlan !== 'whitelabel' && (
-                <Link href="/#pricing" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', marginTop: '1rem', padding: '0.5rem 1rem', borderRadius: '10px', background: `${planInfo.color}12`, color: planInfo.color, fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', border: `1px solid ${planInfo.color}25` }}>
+                <Link href="/#pricing" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all hover:scale-105" style={{ backgroundColor: `${planInfo.color}15`, color: planInfo.color, borderColor: `${planInfo.color}30`, fontWeight: 700, fontSize: '0.85rem' }}>
                   Upgrade Plan
-                  <ExternalLink size={12} />
+                  <Sparkles size={14} />
                 </Link>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Events Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex items-center justify-between mb-8"
+        >
           <div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text1)' }}>Your Events</h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text2)' }}>Manage your photo walls and sharing</p>
+            <h2 className="text-2xl font-bold text-slate-900">Your Events</h2>
+            <p className="text-sm text-slate-500">Manage your photo walls and sharing</p>
           </div>
-          <Link href="/create" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.7rem 1.25rem', borderRadius: '14px', background: 'linear-gradient(135deg, #fbbf24, #f472b6)', color: '#0a0600', fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none', boxShadow: '0 4px 16px rgba(244,114,182,0.25)', transition: 'transform 0.2s' }}>
-            <Plus size={16} /> Create Event
+          <Link href="/create" className="btn-hero-primary !py-3 !px-6 shadow-xl shadow-amber-500/20">
+            <Plus size={18} /> Create Event
           </Link>
-        </div>
+        </motion.div>
 
         {/* Events Grid */}
         {events.length === 0 ? (
-          <div className="gcard" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="gcard p-20 text-center cinematic-glow"
+          >
             <div className="gcard-border" />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🎈</span>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text1)', marginBottom: '0.5rem' }}>No Events Yet</h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text2)', marginBottom: '1.5rem' }}>Create your first photo wall and start collecting moments!</p>
-              <Link href="/create" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.75rem 1.5rem', borderRadius: '14px', background: 'linear-gradient(135deg, #fbbf24, #f472b6)', color: '#0a0600', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>
-                <Plus size={16} /> Create Your First Wall
+            <div className="relative z-10">
+              <span className="text-5xl block mb-6">🎈</span>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">No Events Yet</h3>
+              <p className="text-slate-500 mb-8 max-w-sm mx-auto">Create your first photo wall and start collecting memories in cinematic quality!</p>
+              <Link href="/create" className="btn-hero-primary">
+                <Plus size={20} /> Create Your First Wall
               </Link>
             </div>
-          </div>
+          </motion.div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.25rem' }}>
-            {events.map((event) => (
-              <div key={event.id} className="gcard" style={{ padding: '1.5rem', transition: 'transform 0.3s' }}>
-                <div className="gcard-border" />
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                    <div>
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text1)', marginBottom: '0.25rem' }}>{event.name}</h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--text2)' }}>
-                        <span>{new Date(event.created_at).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span style={{ color: '#f59e0b', fontWeight: 600 }}>📸 {event.photo_count || 0}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence mode="popLayout">
+              {events.map((event, i) => (
+                <motion.div 
+                  key={event.id}
+                  layout
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  whileHover={{ y: -8 }}
+                  className="gcard p-6 cinematic-glow group"
+                >
+                  <div className="gcard-border" />
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-800 group-hover:gradient-text-vibrant transition-all">{event.name}</h3>
+                        <div className="flex items-center gap-3 text-[11px] font-bold text-slate-400 mt-1">
+                          <span className="uppercase">{new Date(event.created_at).toLocaleDateString()}</span>
+                          <span>•</span>
+                          <span className="text-amber-500">📸 {event.photo_count || 0} PHOTOS</span>
+                        </div>
                       </div>
+                      <button 
+                        onClick={() => handleDelete(event.id)} 
+                        className="w-10 h-10 rounded-xl border border-slate-200 bg-white/50 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                    <button onClick={() => handleDelete(event.id)} style={{ width: 32, height: 32, borderRadius: 10, border: '1px solid rgba(200,210,230,0.4)', background: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text3)' }}>
-                      <Trash2 size={14} />
+
+                    {/* Action buttons */}
+                    <div className="flex gap-2 mb-6">
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
+                        <Link href={`/wall/${event.slug}`} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 text-xs font-bold hover:bg-amber-500/20 hover:shadow-lg hover:shadow-amber-500/20 transition-all group/btn">
+                          <Layout size={14} className="transition-transform duration-300 group-hover/btn:scale-125 group-hover/btn:rotate-6" /> Wall
+                        </Link>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
+                        <Link href={`/upload/${event.slug}`} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs font-bold hover:bg-rose-500/20 hover:shadow-lg hover:shadow-rose-500/20 transition-all group/btn">
+                          <Camera size={14} className="transition-transform duration-300 group-hover/btn:scale-125 group-hover/btn:-rotate-6" /> Upload
+                        </Link>
+                      </motion.div>
+                      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
+                        <Link href={`/moderate/${event.slug}`} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 text-xs font-bold hover:bg-violet-500/20 hover:shadow-lg hover:shadow-violet-500/20 transition-all group/btn">
+                          <Shield size={14} className="transition-transform duration-300 group-hover/btn:scale-125 group-hover/btn:rotate-6" /> Mod
+                        </Link>
+                      </motion.div>
+                    </div>
+
+                    {/* Copy link */}
+                    <button 
+                      onClick={() => copyUrl(event.slug)} 
+                      className="w-100 flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60 transition-all hover:bg-white text-xs text-slate-500 group/btn"
+                    >
+                      <span className="truncate pr-4">
+                        {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
+                      </span>
+                      <span className={`shrink-0 ${copied === event.slug ? 'text-emerald-500' : 'text-slate-400 opacity-0 group-hover/btn:opacity-100 transition-all'}`}>
+                        {copied === event.slug ? '✓ Copied' : <Copy size={14} />}
+                      </span>
                     </button>
                   </div>
-
-                  {/* Action buttons */}
-                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                    <Link href={`/wall/${event.slug}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0.55rem', borderRadius: '10px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.15)', color: '#f59e0b', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}>
-                      <Layout size={13} /> Wall
-                    </Link>
-                    <Link href={`/upload/${event.slug}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0.55rem', borderRadius: '10px', background: 'rgba(244,114,182,0.06)', border: '1px solid rgba(244,114,182,0.15)', color: '#f472b6', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}>
-                      <Camera size={13} /> Upload
-                    </Link>
-                    <Link href={`/moderate/${event.slug}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '0.55rem', borderRadius: '10px', background: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.15)', color: '#a855f7', fontSize: '0.78rem', fontWeight: 600, textDecoration: 'none' }}>
-                      <Shield size={13} /> Mod
-                    </Link>
-                  </div>
-
-                  {/* Copy link */}
-                  <button onClick={() => copyUrl(event.slug)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.85rem', borderRadius: '10px', background: 'rgba(241,245,249,0.5)', border: '1px solid rgba(200,210,230,0.3)', cursor: 'pointer', fontSize: '0.75rem', color: 'var(--text2)' }}>
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
-                    </span>
-                    <span style={{ flexShrink: 0, marginLeft: '0.5rem', color: copied === event.slug ? '#22c55e' : 'var(--text3)' }}>
-                      {copied === event.slug ? '✓ Copied' : <Copy size={13} />}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            ))}
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </div>

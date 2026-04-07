@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
@@ -35,10 +36,11 @@ const FontLoader = () => (
       min-height: 100vh;
       background: var(--bg);
       color: var(--text1);
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Outfit', system-ui, sans-serif;
       position: relative;
       overflow-x: hidden;
-      padding: 80px 64px 140px;
+      padding: 100px 64px 140px;
+      z-index: 1;
     }
     @media (max-width: 1024px) {
       .wall-page { padding: 40px 20px 100px !important; }
@@ -46,399 +48,89 @@ const FontLoader = () => (
 
     /* ─── UI COMPONENTS ─── */
     .glass-card {
-      background: var(--surface);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       border-radius: var(--radius);
-      box-shadow: var(--nm-shadow);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .glass-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 48px rgba(30, 41, 59, 0.08);
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
     }
 
-    .photo-card {
-      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    .btn-hero-primary {
+      background: linear-gradient(135deg, #f59e0b, #f472b6);
+      color: #000;
+      font-weight: 800;
+      padding: 12px 28px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
     }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .slideshow-photo {
-      animation: zoomIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    @keyframes zoomIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .btn-glow {
-      background: linear-gradient(135deg, var(--amber), var(--rose));
-      color: #fff;
-      border: none;
-      box-shadow: 0 4px 16px rgba(244, 114, 182, 0.3);
-      transition: all 0.25s;
-    }
-    .btn-glow:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(244, 114, 182, 0.4);
-    }
-
-    .btn-outline {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      color: var(--text1);
-      transition: all 0.25s;
-    }
-    .btn-outline:hover {
-      background: rgba(255, 255, 255, 0.65);
-      transform: translateY(-2px);
+    .btn-hero-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 15px 35px rgba(245, 158, 11, 0.3);
     }
 
     .polaroid-card {
       background: #ffffff;
-      padding: 12px 12px 48px 12px;
-      box-shadow: 0 15px 45px rgba(30, 41, 59, 0.12);
-      border-radius: 8px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 12px 12px 60px 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      border-radius: 4px;
       position: relative;
     }
-    .polaroid-card:hover {
-      transform: rotate(0deg) scale(1.05) !important;
-      z-index: 20;
-      box-shadow: 0 25px 60px rgba(30, 41, 59, 0.2);
-    }
 
-    /* ─── LAYOUT STRUCTURE ─── */
-    .wall-container {
-      display: flex;
-      gap: 48px;
-      align-items: flex-start;
-      position: relative;
-      z-index: 10;
-    }
-    @media (max-width: 1100px) {
-      .wall-container { flex-direction: column; gap: 32px; }
-    }
-
-    .wall-sidebar {
-      width: 320px;
-      position: sticky;
-      top: 128px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      flex-shrink: 0;
-    }
-    @media (max-width: 1100px) {
-      .wall-sidebar { width: 100%; position: relative; top: 0; }
-    }
-
-    .wall-main {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .action-bar {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-      margin-bottom: 40px;
-      /* ── FIX 2: center-align the title section ── */
-      align-items: center;
-      text-align: center;
-    }
-
-    .qr-container {
-      text-align: center;
-      padding: 32px 24px;
-    }
-    .qr-box {
-      background: white;
-      padding: 16px;
-      border-radius: 20px;
-      display: inline-block;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-      margin-bottom: 16px;
-    }
-
-    .status-dot {
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.7; }
-    }
-
-    /* ─── AESTHETIC HEADING ─── */
     .wall-heading {
       font-family: 'Playfair Display', Georgia, serif;
       font-weight: 900;
-      font-size: clamp(2.8rem, 6vw, 5.5rem);
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      position: relative;
-      display: inline-block;
-      background: linear-gradient(135deg, #1e293b 0%, #f59e0b 40%, #f472b6 70%, #a78bfa 100%);
+      font-size: clamp(3rem, 8vw, 6rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      background: linear-gradient(135deg, #1e293b, #f59e0b, #f472b6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 2px 24px rgba(245, 158, 11, 0.18));
-    }
-    .wall-heading::after {
-      content: attr(data-text);
-      position: absolute;
-      left: 3px;
-      top: 3px;
-      background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(244,114,182,0.10));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      pointer-events: none;
-      z-index: -1;
+      filter: drop-shadow(0 10px 30px rgba(245, 158, 11, 0.15));
     }
 
-    /* ─── GRID META STRIP ─── */
-    /* FIX 1: grid meta is always visible, not just on hover */
-    .grid-meta {
-      padding: 14px 16px 14px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(255, 255, 255, 0.6);
-    }
-    .grid-meta-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text1);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .grid-meta-caption {
-      font-size: 12px;
-      color: var(--text2);
-      font-style: italic;
-      line-height: 1.4;
-      margin-top: 3px;
-    }
-
-    /* ─── NEW PHOTO REVEAL ─── */
-    @keyframes reveal-backdrop {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes reveal-image {
-      from { opacity: 0; transform: scale(0.88) translateY(30px); filter: blur(12px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
-    }
-    @keyframes reveal-badge {
-      from { opacity: 0; transform: translateY(-20px) scale(0.85); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes reveal-meta {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes reveal-out {
-      from { opacity: 1; }
-      to   { opacity: 0; }
-    }
-    .reveal-backdrop {
-      animation: reveal-backdrop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .reveal-backdrop.exiting {
-      animation: reveal-out 0.8s cubic-bezier(0.7, 0, 1, 1) both;
-    }
-    .reveal-img {
-      animation: reveal-image 0.9s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .reveal-badge {
-      animation: reveal-badge 0.7s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    .reveal-meta {
-      animation: reveal-meta 0.7s 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    /* ─── FIX 3: QR + URL side-by-side panel in slideshow ─── */
-    .slideshow-join-panel {
-      position: absolute;
-      bottom: 28px;
-      right: 28px;
-      z-index: 40;
-      animation: qr-appear 1s 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      background: rgba(255,255,255,0.10);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 20px;
-      padding: 14px 20px 14px 14px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
-    }
-    @keyframes qr-appear {
-      from { opacity: 0; transform: translateY(12px) scale(0.9); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    .slideshow-join-qr {
-      flex-shrink: 0;
-      background: rgba(255,255,255,0.95);
-      padding: 10px;
-      border-radius: 12px;
-    }
-    .slideshow-join-text {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .slideshow-join-label {
-      font-size: 10px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-    .slideshow-join-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
-    .slideshow-join-url {
-      font-size: 12px;
-      color: rgba(255,255,255,0.75);
-      font-weight: 500;
-      word-break: break-all;
-      margin-top: 2px;
-      max-width: 200px;
-      line-height: 1.4;
-    }
-
-    /* ─── ALBUM META ─── */
-    .album-meta {
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(8px);
-      border-top: 1px solid rgba(255,255,255,0.5);
-    }
-    .album-meta-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text1);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .album-meta-caption {
-      font-size: 12px;
-      color: var(--text2);
-      font-style: italic;
-      margin-top: 2px;
-      line-height: 1.4;
-    }
     /* ─── DREAMY BACKGROUND ─── */
     .grain {
-      position: fixed; inset: -50%; width: 200%; height: 200%;
-      pointer-events: none; z-index: 1; opacity: 0.04;
+      position: fixed; inset: 0; z-index: 1; opacity: 0.02;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      animation: grain 0.5s steps(1) infinite;
-    }
-    @keyframes grain {
-      0% { transform: translate(0, 0); }
-      25% { transform: translate(-2%, -3%); }
-      50% { transform: translate(3%, 2%); }
-      75% { transform: translate(-1%, 4%); }
-    }
-
-    .orb {
-      position: absolute; border-radius: 50%; filter: blur(100px);
-      animation: orb-drift 20s ease-in-out infinite;
-      z-index: 0; opacity: 0.6;
-    }
-    @keyframes orb-drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(40px, -60px) scale(1.1); }
-      66% { transform: translate(-30px, 40px) scale(0.9); }
-    }
-
-    .shape { position: absolute; opacity: 0.1; color: var(--amber); pointer-events: none; }
-    .s-cross { font-size: 2rem; animation: float-slow 15s ease-in-out infinite alternate; }
-    .s-circle { width: 40px; height: 40px; border: 2px solid var(--rose); border-radius: 50%; animation: float-slow 20s ease-in-out infinite alternate reverse; }
-    @keyframes float-slow {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-40px) rotate(180deg); }
-    }
-
-    /* ─── SLIDESHOW REFINEMENTS ─── */
-    .slideshow-side-panel {
-      position: absolute;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 24px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 28px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-      color: #000;
-    }
-    
-    .qr-side {
-      left: 45px;
-      top: 30%;
-      transform: translateY(-50%);
-      width: 180px;
-      align-items: center;
-      text-align: center;
-      animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    
-    .meta-side {
-      left: 45px;
-      top: 66%;
-      transform: translateY(-50%);
-      width: 280px;
-      animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-
-    .float-anim {
-      animation: dream-float 8s ease-in-out infinite;
-    }
-
-    @keyframes dream-float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-
-    @keyframes slideInLeft { from { opacity: 0; transform: translate(-40px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
-    @keyframes slideInRight { from { opacity: 0; transform: translate(40px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
-
-    @media (max-width: 1200px) {
-      .qr-side, .meta-side { position: relative; top: 0; left: 0; right: 0; transform: none; width: 100% !important; margin-bottom: 20px; flex-direction: row; align-items: center; justify-content: center; }
-      @keyframes slideInLeft { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-      @keyframes slideInRight { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      pointer-events: none;
     }
   `}</style>
 )
 
 const DreamyBackground = ({ primary, secondary }: { primary: string; secondary: string }) => (
-  <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+  <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div className="aurora-bg absolute inset-0 opacity-50" />
     <div className="grain" />
-    <div className="orb" style={{ width: 800, height: 800, background: `radial-gradient(circle, ${primary}33, transparent)`, top: '-20%', left: '-10%' }} />
-    <div className="orb" style={{ width: 600, height: 600, background: `radial-gradient(circle, ${secondary}22, transparent)`, bottom: '-10%', right: '-5%', animationDelay: '-10s' }} />
-    <div className="orb" style={{ width: 400, height: 400, background: `radial-gradient(circle, ${primary}22, transparent)`, top: '40%', right: '15%', animationDelay: '-5s' }} />
     
-    <div className="floating-shapes">
-      <div className="shape s-cross" style={{ top: '15%', left: '10%' }}>✚</div>
-      <div className="shape s-circle" style={{ top: '45%', right: '15%' }} />
-      <div className="shape s-cross" style={{ bottom: '20%', left: '15%' }}>✚</div>
-      <div className="shape s-circle" style={{ top: '75%', right: '25%' }} />
-    </div>
+    <motion.div 
+      animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }}
+      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+      className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] md:w-[800px] md:h-[800px] rounded-full opacity-30"
+      style={{ background: `radial-gradient(circle, ${primary}, transparent 70%)`, filter: 'blur(100px)' }}
+    />
+    <motion.div 
+      animate={{ x: [0, -80, 0], y: [0, 60, 0], scale: [1, 1.1, 1] }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
+      className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] md:w-[700px] md:h-[700px] rounded-full opacity-30"
+      style={{ background: `radial-gradient(circle, ${secondary}, transparent 70%)`, filter: 'blur(100px)' }}
+    />
+    <motion.div 
+      animate={{ x: [0, 60, 0], y: [0, -100, 0], scale: [0.8, 1.3, 0.8] }}
+      transition={{ duration: 22, repeat: Infinity, ease: "linear", delay: 5 }}
+      className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] md:w-[500px] md:h-[500px] rounded-full opacity-20"
+      style={{ background: `radial-gradient(circle, #fcd34d, transparent 70%)`, filter: 'blur(80px)' }}
+    />
+    <motion.div 
+      animate={{ x: [0, -120, 0], y: [0, 80, 0], scale: [0.9, 1.4, 0.9] }}
+      transition={{ duration: 28, repeat: Infinity, ease: "linear", delay: 8 }}
+      className="absolute bottom-[20%] left-[20%] w-[45vw] h-[45vw] md:w-[600px] md:h-[600px] rounded-full opacity-20"
+      style={{ background: `radial-gradient(circle, #06b6d4, transparent 70%)`, filter: 'blur(90px)' }}
+    />
   </div>
 );
 
@@ -466,46 +158,67 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
   if (!photo) return null;
 
   return (
-    <div
-      className={`reveal-backdrop ${exiting ? 'exiting' : ''}`}
+    <motion.div
+      initial={{ opacity: 0, scale: 1.05 }}
+      animate={{ opacity: exiting ? 0 : 1, scale: exiting ? 1.05 : 1 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="reveal-backdrop"
       style={{
         position: 'fixed', inset: 0, zIndex: 200,
-        background: 'linear-gradient(135deg, rgba(0,0,0,0.96) 0%, rgba(15,10,30,0.98) 100%)',
+        background: 'linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(15,10,30,0.98) 100%)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         padding: 32,
       }}
     >
       {/* "NEW MEMORY" badge */}
-      <div className="reveal-badge" style={{
-        marginBottom: 28,
-        background: 'linear-gradient(135deg, #fbbf24, #f472b6)',
-        borderRadius: 100,
-        padding: '8px 28px',
-        fontSize: 11,
-        fontWeight: 900,
-        color: '#fff',
-        letterSpacing: '0.2em',
-        textTransform: 'uppercase',
-        boxShadow: '0 4px 24px rgba(244,114,182,0.5)',
-      }}>
+      <motion.div 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+        className="reveal-badge" 
+        style={{
+          marginBottom: 28,
+          background: 'linear-gradient(135deg, #fbbf24, #f472b6)',
+          borderRadius: 100,
+          padding: '8px 28px',
+          fontSize: 11,
+          fontWeight: 900,
+          color: '#fff',
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          boxShadow: '0 4px 24px rgba(244,114,182,0.5)',
+        }}
+      >
         ✦ New Memory Just Arrived ✦
-      </div>
+      </motion.div>
 
       {/* Photo */}
-      <div className="reveal-img" style={{ position: 'relative', maxWidth: 540, width: '100%' }}>
+      <motion.div 
+        initial={{ y: 40, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="reveal-img" 
+        style={{ position: 'relative', maxWidth: 540, width: '100%' }}
+      >
         <div style={{
           position: 'absolute', inset: -40,
           background: 'radial-gradient(ellipse, rgba(245,158,11,0.25) 0%, transparent 70%)',
           borderRadius: '50%', filter: 'blur(20px)',
         }} />
         {photo.media_type === 'video'
-          ? <video src={getPublicUrl(photo.storage_path)} style={{ width: '100%', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.8)', display: 'block', objectFit: 'contain', maxHeight: '55vh' }} autoPlay loop muted />
-          : <img src={getPublicUrl(photo.storage_path)} style={{ width: '100%', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.8)', display: 'block', objectFit: 'contain', maxHeight: '55vh' }} alt="" />
+          ? <video src={getPublicUrl(photo.storage_path)} style={{ width: '100%', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.8)', display: 'block', objectFit: 'contain', maxHeight: '55vh', position: 'relative', zIndex: 10 }} autoPlay loop muted />
+          : <img src={getPublicUrl(photo.storage_path)} style={{ width: '100%', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.8)', display: 'block', objectFit: 'contain', maxHeight: '55vh', position: 'relative', zIndex: 10 }} alt="" />
         }
-      </div>
+      </motion.div>
 
       {/* Meta */}
-      <div className="reveal-meta" style={{ marginTop: 32, textAlign: 'center' }}>
+      <motion.div 
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.6 }}
+        className="reveal-meta" 
+        style={{ marginTop: 32, textAlign: 'center' }}
+      >
         <p style={{ fontSize: 11, fontWeight: 800, color: '#fbbf24', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.85 }}>Shared by</p>
         <h2 style={{ fontSize: 36, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginBottom: photo.caption ? 10 : 0 }}>
           {photo.uploader_name}
@@ -515,23 +228,19 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
             "{photo.caption}"
           </p>
         )}
-      </div>
+      </motion.div>
 
       {/* Skip */}
-      <button
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
         onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
         style={{ position: 'absolute', top: 28, right: 28, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 18px', borderRadius: 12, fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.06em' }}
       >
         SKIP ✕
-      </button>
-
-      <style>{`
-        @keyframes particle-rise {
-          0%   { transform: translateY(0) scale(1); opacity: 0.7; }
-          100% { transform: translateY(-120px) scale(0); opacity: 0; }
-        }
-      `}</style>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 
@@ -957,73 +666,107 @@ export default function WallPage() {
 
         {/* Main Content Area */}
         <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden px-20">
-          {current && (
-            <div className="w-full h-full flex items-center justify-center relative" key={current.id}>
-              {/* Image/Video Layer */}
-              <div 
-                className="w-full h-full flex items-center justify-center" 
-                style={{ 
-                  animation: 'fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) both',
-                  paddingLeft: '460px',
-                  paddingRight: '80px'
-                }}
+          <AnimatePresence mode="wait">
+            {current && (
+              <motion.div 
+                key={current.id}
+                initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 1.1, x: -20 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full h-full flex items-center justify-center relative"
               >
-                {current.media_type === 'video' ? (
-                  <video 
-                    src={getPublicUrl(current.storage_path)} 
-                    style={{ maxHeight: '85vh', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.5)', borderRadius: 20 }} 
-                    autoPlay loop muted 
-                  />
-                ) : (
-                  <img 
-                    src={getPublicUrl(current.storage_path)} 
-                    style={{ maxHeight: '85vh', maxWidth: '100%', width: 'auto', height: 'auto', objectFit: 'contain', boxShadow: '0 40px 120px rgba(0,0,0,0.5)', borderRadius: 20 }} 
-                    alt="" 
-                  />
-                )}
-                {planTier !== 'WHITE_LABEL' && <Watermark />}
-              </div>
-
-              {/* QR Side Panel (Left, Stacked) */}
-              <div className="slideshow-side-panel qr-side float-anim">
-                <div style={{ background: '#fff', padding: 10, borderRadius: 16, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                  <QRCodeSVG value={uploadUrl} size={130} bgColor="#ffffff" fgColor="#000" />
+                {/* Image/Video Layer */}
+                <div 
+                  className="w-full h-full flex items-center justify-center" 
+                  style={{ 
+                    paddingLeft: '460px',
+                    paddingRight: '80px'
+                  }}
+                >
+                  <motion.div
+                    initial={{ y: 40, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.8 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-rose-500/20 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {current.media_type === 'video' ? (
+                      <video 
+                        src={getPublicUrl(current.storage_path)} 
+                        className="max-h-[85vh] max-w-full w-auto h-auto object-contain rounded-3xl shadow-[0_40px_120px_rgba(0,0,0,0.5)] relative z-10"
+                        autoPlay loop muted 
+                      />
+                    ) : (
+                      <img 
+                        src={getPublicUrl(current.storage_path)} 
+                        className="max-h-[85vh] max-w-full w-auto h-auto object-contain rounded-3xl shadow-[0_40px_120px_rgba(0,0,0,0.5)] relative z-10"
+                        alt="" 
+                      />
+                    )}
+                    {planTier !== 'WHITE_LABEL' && <Watermark />}
+                  </motion.div>
                 </div>
-                <p className="mt-4 text-black font-bold text-[9px] uppercase tracking-widest opacity-90" style={{ maxWidth: 140 }}>
-                  scan the QR to start sharing
-                </p>
-              </div>
 
-              {/* Metadata Side Panel (Left, Stacked) */}
-              <div className="slideshow-side-panel meta-side float-anim" style={{ animationDelay: '-1.5s' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'left' }}>
-                  <div>
-                    <span style={{ fontSize: 9, fontWeight: 900, color: '#000', letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.6 }}>Moment Shared By</span>
-                    <h2 style={{ fontSize: 32, fontWeight: 900, color: '#000', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginTop: 4 }}>
-                      {current.uploader_name}
-                    </h2>
+                {/* QR Side Panel (Left, Stacked) */}
+                <motion.div 
+                  initial={{ x: -100, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="slideshow-side-panel qr-side float-anim"
+                >
+                  <div className="bg-white p-3 rounded-2xl shadow-2xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-50 to-rose-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <QRCodeSVG value={uploadUrl} size={130} bgColor="transparent" fgColor="#000" className="relative z-10" />
                   </div>
-                  
-                  {current.caption && (
-                    <div style={{ padding: '16px 0', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                      <p style={{ fontSize: 18, color: '#000', fontStyle: 'italic', fontWeight: 400, lineHeight: 1.6, opacity: 0.8 }}>
-                        "{current.caption}"
-                      </p>
-                    </div>
-                  )}
+                  <p className="mt-6 text-black font-black text-[10px] uppercase tracking-[0.2em] opacity-80 leading-relaxed" style={{ maxWidth: 140 }}>
+                    Scan to <span className="text-amber-600">Join the Memory Wall</span>
+                  </p>
+                </motion.div>
 
-                  <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
-                    <div className="px-5 py-2 rounded-xl bg-black/5 border border-black/5 text-black font-bold text-xs">
-                      {current.reaction_count || 0} ❤️
+                {/* Metadata Side Panel (Left, Stacked) */}
+                <motion.div 
+                  initial={{ x: -100, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.8 }}
+                  className="slideshow-side-panel meta-side float-anim" 
+                  style={{ animationDelay: '-1.5s' }}
+                >
+                  <div className="flex flex-col gap-6 text-left">
+                    <div>
+                      <span className="text-[10px] font-black text-amber-600 tracking-[0.2em] uppercase opacity-80">Moment Shared By</span>
+                      <h2 className="text-4xl font-black text-slate-900 tracking-tight font-serif mt-2 leading-tight">
+                        {current.uploader_name}
+                      </h2>
                     </div>
-                    <div className="px-5 py-2 rounded-xl bg-black/5 border border-black/5 text-black font-bold text-xs uppercase tracking-widest text-[10px]">
-                      {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    
+                    {current.caption && (
+                      <div className="py-6 border-y border-slate-900/5">
+                        <p className="text-xl text-slate-800 italic font-medium leading-relaxed opacity-90">
+                          &quot;{current.caption}&quot;
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex gap-3 mt-2">
+                       <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="px-6 py-2.5 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/50 text-slate-900 font-black text-[10px] tracking-widest uppercase shadow-sm"
+                       >
+                        {current.reaction_count || 0} ❤️
+                      </motion.div>
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="px-6 py-2.5 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/50 text-slate-900 font-black text-[10px] tracking-widest uppercase shadow-sm"
+                      >
+                        {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </motion.div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         
         <style>{`
@@ -1145,116 +888,152 @@ export default function WallPage() {
           </header>
 
           {/* ── VIEWS ── */}
-          {displayedPhotos.length === 0 ? (
-            <div className="glass-card" style={{ padding: 100, textAlign: 'center' }}>
-              <div style={{ fontSize: 100, marginBottom: 32, opacity: 0.8 }}>✨</div>
-              <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16, color: 'var(--text1)' }}>Your Wall Awaits</h2>
-              <p style={{ color: 'var(--text2)', marginBottom: 40, fontSize: 18, maxWidth: 500, margin: '0 auto 40px' }}>Waiting for the first magical moment to be shared. The memories you capture here will last a lifetime.</p>
-            </div>
+          <AnimatePresence mode="wait">
+            {displayedPhotos.length === 0 ? (
+              <motion.div 
+                key="empty"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                className="glass-card" 
+                style={{ padding: 100, textAlign: 'center' }}
+              >
+                <div style={{ fontSize: 100, marginBottom: 32, opacity: 0.8 }}>✨</div>
+                <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16, color: 'var(--text1)' }}>Your Wall Awaits</h2>
+                <p style={{ color: 'var(--text2)', marginBottom: 40, fontSize: 18, maxWidth: 500, margin: '0 auto 40px' }}>Waiting for the first magical moment to be shared. The memories you capture here will last a lifetime.</p>
+              </motion.div>
 
-          ) : viewMode === 'polaroid' ? (
-            /* ── POLAROID ── */
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 40, justifyContent: 'center' }}>
-              {displayedPhotos.map((p, i) => (
-                <div key={p.id} className="polaroid-card" style={{ transform: `rotate(${(i % 6 - 3) * 2}deg)` }}>
-                  <div style={{ width: 260, height: 260, overflow: 'hidden', marginBottom: 12 }}>
-                    {p.media_type === 'video'
-                      ? <video src={getPublicUrl(p.storage_path)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted playsInline />
-                      : <img src={getPublicUrl(p.storage_path)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />}
-                  </div>
-                  {/* FIX 1: Always-visible name + caption */}
-                  <div style={{ color: '#333', textAlign: 'center', width: 260, padding: '0 4px', position: 'relative' }}>
-                    {p.caption && (
-                      <p style={{ fontSize: 13, fontStyle: 'italic', marginBottom: 6, fontWeight: 500, color: '#444', lineHeight: 1.4 }}>
-                        "{p.caption}"
-                      </p>
-                    )}
-                    <p style={{ fontSize: 11, fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      BY {p.uploader_name}
-                    </p>
-                    
-                    {/* Individual Download Button */}
-                    <button 
-                      onClick={() => downloadPhoto(p)}
-                      className="absolute -right-2 -bottom-4 p-2 text-slate-400 hover:text-amber-500 transition-colors"
-                      title="Download this photo"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    </button>
-                  </div>
-                  {planTier !== 'WHITE_LABEL' && <Watermark />}
-                </div>
-              ))}
-            </div>
-
-          ) : viewMode === 'album' ? (
-            /* ── ALBUM ── */
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 80 }}>
-              {(() => {
-                const groups: { [k: string]: Photo[] } = {};
-                displayedPhotos.forEach(p => {
-                  const label = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                  groups[label] = groups[label] || [];
-                  groups[label].push(p);
-                });
-                return Object.entries(groups).map(([label, gPhotos]) => (
-                  <div key={label}>
-                    <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 32, color: 'var(--text2)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</h3>
-                    <div style={{ columns: '3 300px', gap: 32 }}>
-                      {gPhotos.map(p => (
-                        <div key={p.id} className="photo-card glass-card" style={{ breakInside: 'avoid', marginBottom: 32, borderRadius: 24, overflow: 'hidden', position: 'relative', border: 'none', padding: 0 }}>
-                          <img src={getPublicUrl(p.storage_path)} style={{ width: '100%', display: 'block' }} alt="" />
-                          {/* FIX 1: Always-visible name + caption in album */}
-                           <div className="album-meta">
-                            <div className="flex justify-between items-start w-full">
-                              <div>
-                                <p className="album-meta-name">by {p.uploader_name}</p>
-                                {p.caption && <p className="album-meta-caption">"{p.caption}"</p>}
-                              </div>
-                              <button 
-                                onClick={(e) => { e.stopPropagation(); downloadPhoto(p); }} 
-                                className="p-2 text-slate-400 hover:text-amber-500 transition-colors bg-white/50 rounded-lg"
-                                title="Download"
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                              </button>
-                            </div>
-                          </div>
-                          {planTier !== 'WHITE_LABEL' && <Watermark />}
-                        </div>
-                      ))}
+            ) : viewMode === 'polaroid' ? (
+              /* ── POLAROID ── */
+              <motion.div 
+                key="polaroid"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-wrap gap-10 justify-center"
+              >
+                {displayedPhotos.map((p, i) => (
+                  <motion.div 
+                    key={p.id} 
+                    initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 5 }}
+                    animate={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 2 }}
+                    whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
+                    transition={{ duration: 0.6, delay: i * 0.05 }}
+                    className="polaroid-card group cursor-pointer"
+                  >
+                    <div className="w-[260px] h-[260px] overflow-hidden mb-4 rounded-sm bg-slate-50">
+                      {p.media_type === 'video'
+                        ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
+                        : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500" alt="" />}
                     </div>
-                  </div>
-                ));
-              })()}
-            </div>
+                    <div className="w-[260px] text-center px-2">
+                      {p.caption && (
+                        <p className="text-sm italic mb-2 font-medium text-slate-700 line-clamp-2 leading-relaxed">
+                          &quot;{p.caption}&quot;
+                        </p>
+                      )}
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        BY <span className="text-amber-500">{p.uploader_name}</span>
+                      </p>
+                    </div>
+                    {planTier !== 'WHITE_LABEL' && <Watermark />}
+                  </motion.div>
+                ))}
+              </motion.div>
 
-          ) : (
-            /* ── GRID ── FIX 1: name + caption always visible below image (not overlay) */
-            <div style={{ columns: '3 300px', gap: 32 }}>
-              {displayedPhotos.map(p => (
-                <div key={p.id} className="photo-card glass-card" style={{ breakInside: 'avoid', marginBottom: 32, borderRadius: 24, overflow: 'hidden', position: 'relative', border: 'none', padding: 0 }}>
-                  <div style={{ overflow: 'hidden' }}>
-                    <img
-                      src={getPublicUrl(p.storage_path)}
-                      style={{ width: '100%', display: 'block', transition: 'transform 0.5s' }}
-                      className="wall-img"
-                      alt=""
-                    />
-                  </div>
-                  {/* Always-visible meta strip below the image */}
-                  <div className="grid-meta">
-                    <p className="grid-meta-name">{p.uploader_name}</p>
-                    {p.caption && <p className="grid-meta-caption">"{p.caption}"</p>}
-                  </div>
-                  {planTier !== 'WHITE_LABEL' && <Watermark />}
-                  <style>{`
-                    .photo-card:hover .wall-img { transform: scale(1.04); }
-                  `}</style>
-                </div>
-              ))}
-            </div>
-          )}
+            ) : viewMode === 'album' ? (
+              /* ── ALBUM ── */
+              <motion.div 
+                key="album"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex flex-col gap-20"
+              >
+                {(() => {
+                  const groups: { [k: string]: Photo[] } = {};
+                  displayedPhotos.forEach(p => {
+                    const label = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    groups[label] = groups[label] || [];
+                    groups[label].push(p);
+                  });
+                  return Object.entries(groups).map(([label, gPhotos]) => (
+                    <div key={label}>
+                      <h3 className="text-xl font-black mb-8 text-slate-400 tracking-widest uppercase flex items-center gap-4">
+                        {label}
+                        <div className="h-px flex-1 bg-slate-900/5" />
+                      </h3>
+                      <div className="columns-1 md:columns-2 lg:columns-3 gap-8">
+                        {gPhotos.map((p, i) => (
+                          <motion.div 
+                            key={p.id} 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                            whileHover={{ y: -5 }}
+                            className="photo-card glass-card break-inside-avoid mb-8 rounded-3xl overflow-hidden relative border-none p-0 group"
+                          >
+                            <img src={getPublicUrl(p.storage_path)} className="w-full block group-hover:scale-105 transition-transform duration-700" alt="" />
+                             <div className="album-meta p-4 bg-white/90 backdrop-blur-md">
+                              <div className="flex justify-between items-start w-full">
+                                <div>
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">by <span className="text-amber-500">{p.uploader_name}</span></p>
+                                  {p.caption && <p className="text-xs text-slate-600 italic mt-1">&quot;{p.caption}&quot;</p>}
+                                </div>
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); downloadPhoto(p); }} 
+                                  className="p-2 text-slate-300 hover:text-amber-500 transition-colors bg-slate-50 rounded-lg"
+                                >
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
+                              </div>
+                            </div>
+                            {planTier !== 'WHITE_LABEL' && <Watermark />}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </motion.div>
+
+            ) : (
+              /* ── GRID ── */
+              <motion.div 
+                key="grid"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="columns-1 md:columns-2 lg:columns-3 gap-8"
+              >
+                {displayedPhotos.map((p, i) => (
+                  <motion.div 
+                    key={p.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.05 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="photo-card glass-card break-inside-avoid mb-8 rounded-3xl overflow-hidden relative border-none p-0 group"
+                  >
+                    <div className="overflow-hidden">
+                      <img
+                        src={getPublicUrl(p.storage_path)}
+                        className="w-full block transition-transform duration-700 group-hover:scale-110"
+                        alt=""
+                      />
+                    </div>
+                    <div className="grid-meta p-4 bg-white/90 backdrop-blur-md">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">BY <span className="text-amber-500">{p.uploader_name}</span></p>
+                      {p.caption && <p className="text-xs text-slate-600 italic mt-1 line-clamp-2">&quot;{p.caption}&quot;</p>}
+                    </div>
+                    {planTier !== 'WHITE_LABEL' && <Watermark />}
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
       </div>
 
