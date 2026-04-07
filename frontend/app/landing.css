@@ -1,19 +1,19 @@
 :root {
-  --bg: #faf9fd;
-  --bg2: rgba(255, 255, 255, 0.4);
-  --bg3: rgba(255, 255, 255, 0.6);
-  --surface: rgba(255, 255, 255, 0.45);
-  --nm-light: rgba(255, 255, 255, 0.8);
-  --nm-dark: rgba(200, 210, 230, 0.3);
-  --nm-shadow: 0 8px 32px rgba(30, 41, 59, 0.05);
-  --nm-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-  --border: rgba(255, 255, 255, 0.6);
-  --amber: #fbbf24;
-  --rose: #f472b6;
-  --gold: #fcd34d;
-  --text1: #1e293b;
-  --text2: #64748b;
-  --text3: #94a3b8;
+  --bg: #f8fafc;
+  --bg2: rgba(255, 255, 255, 0.5);
+  --bg3: rgba(255, 255, 255, 0.7);
+  --surface: rgba(255, 255, 255, 0.55);
+  --nm-light: rgba(255, 255, 255, 0.9);
+  --nm-dark: rgba(200, 210, 230, 0.4);
+  --nm-shadow: 0 10px 40px rgba(30, 41, 59, 0.08);
+  --nm-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  --border: rgba(255, 255, 255, 0.7);
+  --amber: #f59e0b;
+  --rose: #f43f5e;
+  --gold: #f59e0b;
+  --text1: #0f172a;
+  --text2: #475569;
+  --text3: #64748b;
   --radius: 24px;
 }
 
@@ -311,7 +311,7 @@
   inset: 0;
   border-radius: var(--radius);
   padding: 1px;
-  background: radial-gradient(600px circle at var(--mx) var(--my), rgba(251, 191, 36, 0.5), rgba(244, 114, 182, 0.3), transparent 50%);
+  background: radial-gradient(600px circle at var(--mx) var(--my), rgba(245, 158, 11, 0.8), rgba(244, 63, 94, 0.6), transparent 50%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;

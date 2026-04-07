@@ -32,19 +32,19 @@
 
   /* Shared Memento Palette — VIBRANT UPGRADE */
   --amber: #f59e0b;
-  --rose: #e11d48;
-  --violet: #7c3aed;
-  --indigo: #4f46e5;
+  --rose: #f43f5e;
+  --violet: #8b5cf6;
+  --indigo: #6366f1;
   --cyan: #06b6d4;
-  --gold: #eab308;
+  --gold: #f59e0b;
   --primary: #f59e0b;
-  --accent: #ec4899;
+  --accent: #f43f5e;
 
   /* Premium Glassmorphism Enhanced */
-  --glass-blur: 24px;
-  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px rgba(30, 41, 59, 0.05);
-  --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+  --glass-blur: 32px;
+  --glass-border: 1px solid rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 12px 40px rgba(30, 41, 59, 0.08);
+  --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -213,14 +213,14 @@ body {
   width: 200%;
   height: 200%;
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(245, 158, 11, 0.35) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 60% 80%, rgba(124, 58, 237, 0.25) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 10%, rgba(6, 182, 212, 0.2) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(245, 158, 11, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(244, 63, 94, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(139, 92, 246, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 10%, rgba(6, 182, 212, 0.3) 0%, transparent 50%);
   animation: aurora 20s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.85;
+  opacity: 0.95;
 }
 
 .dark .aurora-bg::before {

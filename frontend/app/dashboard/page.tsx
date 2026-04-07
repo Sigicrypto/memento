@@ -157,13 +157,13 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="flex gap-4">
-                <div className="flex-1 text-center py-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 group hover:bg-amber-500/10 transition-colors">
+                <div className="flex-1 text-center py-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 group hover:bg-amber-500/20 transition-colors">
                   <span className="block text-2xl font-bold text-amber-500 group-hover:scale-110 transition-transform">{events.length}</span>
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Events</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Events</span>
                 </div>
-                <div className="flex-1 text-center py-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 group hover:bg-rose-500/10 transition-colors">
+                <div className="flex-1 text-center py-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 group hover:bg-rose-500/20 transition-colors">
                   <span className="block text-2xl font-bold text-rose-500 group-hover:scale-110 transition-transform">{events.reduce((sum, e) => sum + (e.photo_count || 0), 0)}</span>
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Photos</span>
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500">Photos</span>
                 </div>
               </div>
             </div>
@@ -299,7 +299,7 @@ export default function DashboardPage() {
                     {/* Copy link */}
                     <button 
                       onClick={() => copyUrl(event.slug)} 
-                      className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60 transition-all hover:bg-white text-xs text-slate-500 group/btn"
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-amber-500/5 border border-amber-500/10 transition-all hover:bg-amber-500/10 text-xs text-slate-600 group/btn"
                     >
                       <span className="truncate pr-4">
                         {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}

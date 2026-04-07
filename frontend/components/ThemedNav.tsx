@@ -45,7 +45,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="lp-nav !px-0"
     >
-      <div className="max-w-[1100px] mx-auto px-6 w-full flex items-center justify-between">
+      <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-24">
         <Link href="/">
           <motion.div
             whileHover={{ scale: 1.05 }}
