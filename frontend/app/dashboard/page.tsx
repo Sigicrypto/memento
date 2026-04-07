@@ -129,7 +129,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
-            className="gcard cinematic-glow p-8"
+            className="gcard cinematic-glow p-8 flex flex-col h-full"
           >
             <div className="gcard-border" />
             <div className="relative z-10">
@@ -174,7 +174,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-            className="gcard cinematic-glow p-8"
+            className="gcard cinematic-glow p-8 flex flex-col h-full"
           >
             <div className="gcard-border" />
             <div className="relative z-10">
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   whileHover={{ y: -8 }}
-                  className="gcard p-6 cinematic-glow group"
+                  className="gcard p-6 cinematic-glow group flex flex-col h-full"
                 >
                   <div className="gcard-border" />
                   <div className="relative z-10">
@@ -299,7 +299,7 @@ export default function DashboardPage() {
                     {/* Copy link */}
                     <button 
                       onClick={() => copyUrl(event.slug)} 
-                      className="w-100 flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60 transition-all hover:bg-white text-xs text-slate-500 group/btn"
+                      className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60 transition-all hover:bg-white text-xs text-slate-500 group/btn"
                     >
                       <span className="truncate pr-4">
                         {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
