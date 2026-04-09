@@ -76,6 +76,12 @@ export default function SystemAdminPage() {
         }
       }
 
+      // Set session cookie for middleware
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        document.cookie = `sb-access-token=${session.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; Secure`;
+      }
+
       setMessage('Access granted! Redirecting to admin panel...');
       setTimeout(() => {
         router.push('/admin');
