@@ -115,7 +115,7 @@ export const useAuth = () => {
 
   // ── Super Admin Override ──────────────────────────────────
   const SUPER_ADMIN_EMAIL = 'sagarfalcon@gmail.com';
-  const isSuperAdmin = user?.email === SUPER_ADMIN_EMAIL;
+  const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
 
   // The plan is now derived from the database profile
   // Super admin always gets whitelabel (max tier) with full access

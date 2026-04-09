@@ -241,12 +241,21 @@ export default function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center text-white">
-        <div className="text-center">
-          <div className="text-5xl mb-4">🚫</div>
-          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-slate-400 mb-6">You don't have admin privileges.</p>
-          <Link href="/" className="px-6 py-3 bg-amber-500 text-black font-bold rounded-xl">Go Home</Link>
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center text-white p-4">
+        <div className="text-center max-w-sm">
+          <div className="text-5xl mb-6 drop-shadow-[0_0_15px_rgba(244,63,94,0.3)]">🚫</div>
+          <h1 className="text-3xl font-black mb-3 tracking-tight">Access Denied</h1>
+          <p className="text-slate-400 mb-8 leading-relaxed">
+            This workspace is for administrators only. Please sign in with an authorized account or return to the main site.
+          </p>
+          <div className="flex flex-col gap-3">
+            <Link href="/auth" className="w-full px-6 py-3.5 bg-amber-500 text-black font-black rounded-xl hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20">
+              🔐 Login as Admin
+            </Link>
+            <Link href="/" className="w-full px-6 py-3.5 bg-white/5 border border-white/10 text-slate-300 font-bold rounded-xl hover:bg-white/10 transition-all">
+              🏠 Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     );

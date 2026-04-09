@@ -7,9 +7,10 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function SystemAdminPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -27,14 +28,19 @@ export default function SystemAdminPage() {
         throw new Error('Invalid access code');
       }
 
-      // If user is already logged in (e.g. Gmail), just update their role
+      // If user is already logged in (e.g. Google), ensure profile exists with admin role
       if (user) {
-        const { error: updateError } = await supabase
+        const { error: upsertError } = await supabase
           .from('profiles')
-          .update({ role: 'admin' })
-          .eq('id', user.id);
+          .upsert({ 
+            id: user.id, 
+            email: user.email,
+            role: 'admin',
+            // Preserve existing data if any
+            full_name: profile?.full_name || user.user_metadata?.full_name || 'Admin',
+          });
 
-        if (updateError) throw updateError;
+        if (upsertError) throw upsertError;
       } else {
         // Traditional Email/Password flow (Fallback)
         const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -70,8 +76,10 @@ export default function SystemAdminPage() {
         }
       }
 
-      // Redirect to admin panel
-      router.push('/admin');
+      setMessage('Access granted! Redirecting to admin panel...');
+      setTimeout(() => {
+        router.push('/admin');
+      }, 1000);
     } catch (error: any) {
       setError(error.message || 'Access denied');
     } finally {
@@ -103,34 +111,66 @@ export default function SystemAdminPage() {
         <div className="gcard cinematic-glow shadow-2xl">
           <div className="gcard-border" />
           <div className="gcard-inner p-8">
-            <form onSubmit={handleLogin} className="space-y-6">
-              {error && (
-                <div className="p-3 text-sm rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
-                  {error}
-                </div>
-              )}
-              
-              {!user && (
+            {user ? (
+              <form onSubmit={handleLogin} className="space-y-6">
+                {error && (
+                  <div className="p-3 text-sm rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                    {error}
+                  </div>
+                )}
+                {message && (
+                  <div className="p-3 text-sm rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                    {message}
+                  </div>
+                )}
+                
                 <div>
-                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-slate-400">Administrator Email</label>
-                  <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
-                    placeholder="system@memento.com" required />
+                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-slate-500">Authenticated As</label>
+                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-300 font-medium">
+                    {user.email}
+                  </div>
                 </div>
-              )}
 
-              <div>
-                <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-slate-400">Access Code</label>
-                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
-                  placeholder="Enter system access code" required />
+                <div>
+                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-amber-500/80">Access Code</label>
+                  <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
+                    placeholder="Enter system access code" required />
+                </div>
+
+                <button type="submit" disabled={loading} className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                  {loading
+                    ? <div className="w-5 h-5 border-2 rounded-full animate-spin border-white/20 border-t-white" />
+                    : <>🔐 Elevate to Admin</>}
+                </button>
+              </form>
+            ) : (
+              <div className="space-y-6 text-center">
+                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 text-sm text-slate-400 leading-relaxed">
+                  You must be <span className="text-white font-bold">logged in to your main account</span> before you can elevate to Administrator status using the system code.
+                </div>
+                
+                <Link href="/auth" className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2">
+                  🔑 Login with your Account
+                </Link>
+
+                <div className="pt-4">
+                  <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 mb-4">Or use emergency fallback</p>
+                  <form onSubmit={handleLogin} className="space-y-4 text-left">
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none text-sm" 
+                      placeholder="Admin Email" required />
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none text-sm" 
+                      placeholder="Access Code" required />
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all text-sm">
+                      Access System
+                    </button>
+                    {error && <p className="text-[10px] text-rose-400 text-center">{error}</p>}
+                  </form>
+                </div>
               </div>
-              <button type="submit" disabled={loading} className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20">
-                {loading
-                  ? <div className="w-5 h-5 border-2 rounded-full animate-spin mx-auto border-white/20 border-t-white" />
-                  : user ? '🔐 Elevate to Admin' : '🔐 Access System'}
-              </button>
-            </form>
+            )}
 
             <div className="mt-8 pt-6 text-center">
               <div className="w-full h-px bg-white/10 mb-6" />
