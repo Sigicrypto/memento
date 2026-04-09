@@ -39,7 +39,7 @@ const BackgroundDecoration = () => {
   return (
     <div style={{ 
       position: 'fixed', inset: 0, zIndex: 0, overflow: 'hidden', pointerEvents: 'none',
-      background: '#fafcfe' 
+      background: '#0A0A0B' 
     }}>
       {/* Animated Orbs Wrapped for Parallax */}
       {isClient && (
@@ -50,7 +50,7 @@ const BackgroundDecoration = () => {
               transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
               style={{ 
                 position: 'absolute', top: '-15%', left: '-10%', width: '70%', height: '70%', 
-                background: 'radial-gradient(circle, rgba(245,158,11,0.35) 0%, transparent 70%)', 
+                background: 'radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 70%)', 
                 filter: 'blur(80px)' 
               }}
             />
@@ -62,7 +62,7 @@ const BackgroundDecoration = () => {
               transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
               style={{ 
                 position: 'absolute', bottom: '-20%', right: '-15%', width: '80%', height: '80%', 
-                background: 'radial-gradient(circle, rgba(244,63,94,0.3) 0%, transparent 70%)', 
+                background: 'radial-gradient(circle, rgba(236,72,153,0.18) 0%, transparent 70%)', 
                 filter: 'blur(100px)' 
               }}
             />
@@ -74,7 +74,7 @@ const BackgroundDecoration = () => {
               transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 5 }}
               style={{ 
                 position: 'absolute', top: '25%', right: '5%', width: '45%', height: '45%', 
-                background: 'radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%)', 
+                background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)', 
                 filter: 'blur(70px)' 
               }}
             />
@@ -84,7 +84,7 @@ const BackgroundDecoration = () => {
               transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 8 }}
               style={{ 
                 position: 'absolute', bottom: '10%', left: '10%', width: '40%', height: '40%', 
-                background: 'radial-gradient(circle, rgba(6,182,212,0.25) 0%, transparent 70%)', 
+                background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%)', 
                 filter: 'blur(80px)' 
               }}
             />
@@ -95,7 +95,7 @@ const BackgroundDecoration = () => {
       {/* Subtle Glass Bottom Fog */}
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0, height: '30%',
-        background: 'linear-gradient(to top, rgba(255,255,255,0.7), transparent)',
+        background: 'linear-gradient(to top, rgba(10,10,11,0.9), transparent)',
         backdropFilter: 'blur(20px)'
       }} />
     </div>

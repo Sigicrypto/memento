@@ -1009,7 +1009,7 @@ export default function LandingPage() {
 
   return (
 
-    <div className="lp pt-[calc(140px+env(safe-area-inset-top))]">
+    <div className="lp aurora-bg pt-[calc(140px+env(safe-area-inset-top))]">
 
       <div className="flex flex-col gap-16">
 
@@ -1031,14 +1031,14 @@ export default function LandingPage() {
             transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] md:w-[800px] md:h-[800px] rounded-full blur-[100px] pointer-events-none -z-10"
             style={{
-              background: 'conic-gradient(from 0deg, rgba(245,158,11,0.4), rgba(236,72,153,0.4), rgba(124,58,237,0.4), rgba(245,158,11,0.4))'
+              background: 'conic-gradient(from 0deg, rgba(6,182,212,0.4), rgba(236,72,153,0.4), rgba(99,102,241,0.4), rgba(6,182,212,0.4))'
             }}
           />
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
             className="relative z-10"
           >
             <h1 className="hero-h1 leading-tight md:leading-[1.1]">
@@ -1052,7 +1052,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 100, damping: 15 }}
             className="hero-p"
           >
             QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle.
@@ -1062,22 +1062,24 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 0.4, type: 'spring', stiffness: 100, damping: 15 }}
             className="hero-btns"
           >
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsDemoOpen(true)} 
               className="btn-hero-primary cinematic-glow"
             >
               <span>🎬 Watch Demo Wall</span>
-            </button>
+            </motion.button>
           </motion.div>
 
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, delay: 0.6, type: 'spring', stiffness: 100, damping: 15 }}
             className="hero-visual"
           >
             <div className="polaroid-float p-1" style={{ '--rot': '-8deg' } as React.CSSProperties}>
@@ -1283,7 +1285,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
           >
             <span className="kicker">Why Choose Memento?</span>
             <h2 className="sec-h2">Capture what matters. <span className="gradient-text-vibrant">Instantly.</span></h2>
@@ -1327,7 +1329,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
           >
             <span className="kicker">Core Features</span>
             <h2 className="sec-h2">The Best Experience. <span className="gradient-text-vibrant">Built in.</span></h2>
@@ -1398,7 +1400,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
           >
             <span className="kicker">How it works</span>
             <h2 className="sec-h2">Three steps. <span className="gradient-text-vibrant">That&apos;s it.</span></h2>
@@ -1447,7 +1449,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
           >
             <span className="kicker">Gallery</span>
             <h2 className="sec-h2">Real <span className="gradient-text-vibrant">Event Walls</span></h2>
@@ -1492,7 +1494,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
           >
             <span className="kicker">Testimonials</span>
             <h2 className="sec-h2">Loved by <span className="gradient-text-vibrant">Event Organizers</span></h2>
@@ -1570,7 +1572,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
           >
             <span className="kicker">One-time Payment • Per Event</span>
             <h2 className="sec-h2">Pricing That <span className="gradient-text-vibrant">Grows With You</span></h2>
@@ -1842,7 +1844,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, type: 'spring', stiffness: 100, damping: 15 }}
             className="cta-sec cinematic-glow py-20 px-8 rounded-3xl overflow-hidden relative max-w-5xl mx-auto text-center"
           >
             <div className="cta-glow" />
