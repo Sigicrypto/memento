@@ -80,30 +80,45 @@ export default function ModeratePage() {
     <main className="lp min-h-screen relative overflow-hidden px-4 py-12 pb-40">
       <div className="aurora-bg fixed inset-0 z-0" />
       <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+      <div className="orbs fixed inset-0 z-0 pointer-events-none">
+        <div className="orb orb1" />
+        <div className="orb orb2" />
+        <div className="orb orb3" />
+      </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
-        <div className="gcard cinematic-glow mb-8 p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header className="flex items-center justify-between mb-12">
+           <button onClick={() => router.push(`/wall/${slug}`)} className="btn-outline flex items-center gap-2 group px-6">
+            <svg className="group-hover:-translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to Wall
+          </button>
+          <img src="/CC logo.png" alt="Memento" className="h-8 md:h-10 w-auto" />
+        </header>
+
+        <div className="gcard cinematic-glow mb-8 p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 overflow-hidden">
           <div className="gcard-border" />
-          <div className="relative z-10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="relative z-10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                <span className="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">🛡️</span>
-                Moderate: <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-rose-400">{eventName}</span>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xl">🛡️</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Moderation Portal</span>
+              </div>
+              <h1 className="text-3xl font-black text-white tracking-tight">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">{eventName}</span>
               </h1>
-              <p className="text-sm mt-2 text-slate-400 flex items-center gap-2">
+              <p className="text-sm mt-3 text-slate-400 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full animate-pulse bg-amber-500" />
-                {photos.filter(p => !p.approved).length} pending photos
+                {photos.filter(p => !p.approved).length} pending photos awaiting approval
               </p>
-              <div className="flex gap-2 mt-4 bg-white/5 p-1 rounded-xl border border-white/10 w-fit">
-                <button onClick={() => setFilter('pending')} className={`text-xs px-4 py-2 rounded-lg font-bold transition-all ${filter === 'pending' ? 'bg-amber-500/20 text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.2)]' : 'text-slate-400 hover:text-white'}`}>Pending</button>
-                <button onClick={() => setFilter('approved')} className={`text-xs px-4 py-2 rounded-lg font-bold transition-all ${filter === 'approved' ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'text-slate-400 hover:text-white'}`}>Approved</button>
-                <button onClick={() => setFilter('all')} className={`text-xs px-4 py-2 rounded-lg font-bold transition-all ${filter === 'all' ? 'bg-white/10 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]' : 'text-slate-400 hover:text-white'}`}>All</button>
+            </div>
+
+            <div className="flex flex-col items-end gap-4">
+              <div className="flex gap-1 bg-white/5 p-1.5 rounded-2xl border border-white/10 backdrop-blur-2xl">
+                <button onClick={() => setFilter('pending')} className={`text-[10px] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${filter === 'pending' ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>Pending</button>
+                <button onClick={() => setFilter('approved')} className={`text-[10px] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${filter === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>Approved</button>
+                <button onClick={() => setFilter('all')} className={`text-[10px] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${filter === 'all' ? 'bg-white/10 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]' : 'text-slate-400 hover:text-white'}`}>All</button>
               </div>
             </div>
-            <button onClick={() => router.push(`/wall/${slug}`)} className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 font-bold text-sm text-slate-300 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              Back to Wall
-            </button>
           </div>
         </div>
 

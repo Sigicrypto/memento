@@ -20,16 +20,16 @@ const FontLoader = () => (
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
     
     :root {
-      --bg: #fafcfe;
-      --surface: rgba(255, 255, 255, 0.45);
-      --border: rgba(255, 255, 255, 0.6);
+      --bg: #0a0a0e;
+      --surface: rgba(13, 17, 23, 0.45);
+      --border: rgba(255, 255, 255, 0.08);
       --amber: #fbbf24;
       --rose: #f472b6;
       --gold: #fcd34d;
-      --text1: #1e293b;
-      --text2: #64748b;
-      --radius: 24px;
-      --nm-shadow: 0 8px 32px rgba(30, 41, 59, 0.05);
+      --text1: #ffffff;
+      --text2: #94a3b8;
+      --radius: 20px;
+      --nm-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     .wall-page {
@@ -84,13 +84,11 @@ const FontLoader = () => (
     .wall-heading {
       font-family: 'Playfair Display', Georgia, serif;
       font-weight: 900;
-      font-size: clamp(3rem, 8vw, 6rem);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
       letter-spacing: -0.04em;
-      line-height: 1;
-      background: linear-gradient(135deg, #1e293b, #f59e0b, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 10px 30px rgba(245, 158, 11, 0.15));
+      line-height: 1.1;
+      color: #ffffff;
+      text-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
     }
 
     /* ─── DREAMY BACKGROUND ─── */
@@ -104,33 +102,13 @@ const FontLoader = () => (
 
 const DreamyBackground = ({ primary, secondary }: { primary: string; secondary: string }) => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-    <div className="aurora-bg absolute inset-0 opacity-50" />
-    <div className="grain" />
-    
-    <motion.div 
-      animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }}
-      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-      className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] md:w-[800px] md:h-[800px] rounded-full opacity-30"
-      style={{ background: `radial-gradient(circle, ${primary}, transparent 70%)`, filter: 'blur(100px)' }}
-    />
-    <motion.div 
-      animate={{ x: [0, -80, 0], y: [0, 60, 0], scale: [1, 1.1, 1] }}
-      transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
-      className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] md:w-[700px] md:h-[700px] rounded-full opacity-30"
-      style={{ background: `radial-gradient(circle, ${secondary}, transparent 70%)`, filter: 'blur(100px)' }}
-    />
-    <motion.div 
-      animate={{ x: [0, 60, 0], y: [0, -100, 0], scale: [0.8, 1.3, 0.8] }}
-      transition={{ duration: 22, repeat: Infinity, ease: "linear", delay: 5 }}
-      className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] md:w-[500px] md:h-[500px] rounded-full opacity-20"
-      style={{ background: `radial-gradient(circle, #fcd34d, transparent 70%)`, filter: 'blur(80px)' }}
-    />
-    <motion.div 
-      animate={{ x: [0, -120, 0], y: [0, 80, 0], scale: [0.9, 1.4, 0.9] }}
-      transition={{ duration: 28, repeat: Infinity, ease: "linear", delay: 8 }}
-      className="absolute bottom-[20%] left-[20%] w-[45vw] h-[45vw] md:w-[600px] md:h-[600px] rounded-full opacity-20"
-      style={{ background: `radial-gradient(circle, #06b6d4, transparent 70%)`, filter: 'blur(90px)' }}
-    />
+    <div className="aurora-bg absolute inset-0" />
+    <div className="grain fixed inset-0 opacity-[0.03]" />
+    <div className="orbs fixed inset-0">
+      <div className="orb orb1" />
+      <div className="orb orb2" />
+      <div className="orb orb3" />
+    </div>
   </div>
 );
 
@@ -589,13 +567,13 @@ export default function WallPage() {
       <div style={{
         position: 'absolute', bottom: 12, right: 12,
         display: 'flex', alignItems: 'center',
-        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-        opacity: 0.6, pointerEvents: 'none'
+        filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.5))',
+        opacity: 0.8, pointerEvents: 'none'
       }}>
         <img
           src="/CC logo.png"
           alt="Memento"
-          style={{ height: 14, width: 'auto', display: 'block', objectFit: 'contain' }}
+          style={{ height: 16, width: 'auto', display: 'block', objectFit: 'contain' }}
         />
       </div>
     );
@@ -781,7 +759,7 @@ export default function WallPage() {
 
   // ── NORMAL PAGE ────────────────────────────────────────────
   return (
-    <div className="wall-page">
+    <div className="wall-page min-h-screen relative">
       <FontLoader />
       <DreamyBackground primary={themeP} secondary={themeS} />
 
@@ -799,245 +777,278 @@ export default function WallPage() {
         />
       )}
 
-      <div className="wall-container" style={{ maxWidth: 1440, margin: '0 auto' }}>
-        {/* SIDEBAR */}
-        <aside className="wall-sidebar">
-          <div className="glass-card qr-container">
-            <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 8, color: 'var(--text1)' }}>Join the Wall</h3>
-            <p style={{ fontSize: 13, color: 'var(--text2)', marginBottom: 24 }}>Scan to share your memories</p>
-            <div className="qr-box">
-              <QRCodeSVG value={uploadUrl} size={200} />
-            </div>
-            {isAdmin && <p style={{ fontSize: 11, color: 'var(--text2)', wordBreak: 'break-all', marginTop: 16, opacity: 0.6 }}>{uploadUrl}</p>}
-          </div>
+      {/* ── Header ── */}
+      <header className="fixed top-0 left-0 right-0 z-[100] px-6 py-4 md:px-12 md:py-6 flex items-center justify-between border-b border-white/[0.05] bg-black/40 backdrop-blur-xl">
+        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <img src="/CC logo.png" alt="Memento" className="h-8 md:h-10 w-auto" />
+        </Link>
+        <div className="flex items-center gap-4">
+          <StatusBadge />
+          {isAdmin && (
+            <Link href="/admin" className="btn-outline hidden md:flex text-[10px] tracking-widest font-black uppercase py-2">
+              Dashboard
+            </Link>
+          )}
+        </div>
+      </header>
 
-          <div className="glass-card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text2)' }}>STATUS</span>
-              <StatusBadge />
-            </div>
-            <div style={{ height: 1, background: 'var(--border)', opacity: 0.3 }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text2)' }}>PHOTOS</span>
-              <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text1)' }}>{displayedPhotos.length}</span>
+      <main className="relative z-10 pt-32 pb-40 px-6 md:px-12 max-w-[1700px] mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-20">
+          <div className="flex-1">
+            <h1 className="wall-heading mb-6 drop-shadow-[0_10px_30px_rgba(255,255,255,0.1)]">{eventName}</h1>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link href={uploadUrl} target="_blank" className="btn-glow text-sm px-8 py-3.5">
+                Join Memory Wall ✦
+              </Link>
+              <button onClick={handleSelfieSearch} className="btn-outline text-sm px-8 py-3.5 font-black uppercase tracking-widest bg-white/5">
+                Find My Photos 👤
+              </button>
             </div>
           </div>
-
-          <div className="glass-card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <button 
-              onClick={matchedPhotoIds ? () => setMatchedPhotoIds(null) : handleSelfieSearch}
-              className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
-                matchedPhotoIds 
-                ? 'bg-slate-100 text-slate-500 hover:bg-slate-200' 
-                : 'bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20'
-              }`}
+          
+          <div className="flex flex-wrap items-center gap-3 md:justify-end">
+            <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-2xl">
+              {(['grid', 'polaroid', 'album'] as ViewMode[]).map(m => (
+                <button
+                  key={m}
+                  onClick={() => setViewMode(m)}
+                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === m ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }}
+              className="bg-white/5 border border-white/10 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white hover:bg-white/10 transition-all backdrop-blur-2xl flex items-center gap-2"
             >
-              {isSearching ? 'SEARCHING...' : matchedPhotoIds ? '✕ CLEAR SEARCH' : '✨ FIND MY PHOTOS'}
+              <span className="text-lg">📽️</span> Slideshow
             </button>
-            <button 
-              onClick={handleDownloadZip} 
-              className="btn-glow w-full py-4 rounded-2xl font-bold tracking-wider text-sm flex items-center justify-center gap-2"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-              {user && user.id === ownerId ? 'DOWNLOAD MASTER ZIP' : 'DOWNLOAD MY PHOTOS'}
-            </button>
-            {matchedPhotoIds && (
-               <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">{matchedPhotoIds.length} photos found</p>
+            
+            {isAdmin && (
+              <Link
+                href={`/moderate/${slug}`}
+                className="bg-amber-500/10 border border-amber-500/20 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-amber-500 hover:bg-amber-500/20 transition-all backdrop-blur-2xl flex items-center gap-2"
+              >
+                <span className="text-lg">🛡️</span> Moderate
+              </Link>
             )}
           </div>
-        </aside>
+        </div>
 
-        {/* MAIN CONTENT AREA */}
-        <main className="wall-main">
-          {/* ── FIX 2: Center-aligned title header ── */}
-          <header className="action-bar">
-            <div style={{ textAlign: 'center', width: '100%' }}>
-              <h1
-                className="wall-heading"
-                data-text={eventName}
+        {/* Search Feedback / Best Shots Toggle */}
+        <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowBestShots(!showBestShots)}
+              className={`px-6 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 border ${showBestShots ? 'bg-amber-500 text-black border-amber-600 shadow-lg shadow-amber-500/20' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'}`}
+            >
+              {showBestShots ? '🌟 Best Shots Filter Active' : '🏆 Filter Best Shots'}
+            </button>
+          </div>
+          
+          {matchedPhotoIds && (
+            <div className="flex items-center gap-4 animate-fadeIn">
+              <span className="text-xs font-bold text-amber-500 uppercase tracking-widest px-5 py-2.5 rounded-full bg-amber-500/10 border border-amber-500/20 backdrop-blur-md">✨ Found {matchedPhotoIds.length} Photos for You</span>
+              <button 
+                onClick={() => setMatchedPhotoIds(null)}
+                className="text-[10px] font-black uppercase text-slate-500 hover:text-white transition-colors"
               >
-                {eventName}
-              </h1>
-              {/* Decorative underline — centered */}
-              <div style={{
-                margin: '12px auto 0',
-                height: 3,
-                width: 120,
-                borderRadius: 100,
-                background: 'linear-gradient(90deg, #fbbf24, #f472b6, transparent)',
-                opacity: 0.8,
-              }} />
+                Show All ×
+              </button>
+              <button 
+                onClick={handleDownloadZip}
+                className="btn-glow text-[10px] px-6 py-2.5 shadow-amber-500/20"
+              >
+                Download My Collection 📥
+              </button>
             </div>
+          )}
+        </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ background: 'rgba(255,255,255,0.5)', padding: 6, borderRadius: 18, display: 'flex', gap: 6, border: '1px solid var(--border)', backdropFilter: 'blur(12px)' }}>
-                {(['polaroid', 'grid', 'album', 'slideshow'] as ViewMode[]).map(m => (
-                  <button key={m} onClick={() => {
-                    if (m === 'slideshow') setPrevViewMode(viewMode);
-                    setViewMode(m);
-                  }} style={{
-                    padding: '10px 18px', borderRadius: 12, border: 'none', fontSize: 12, fontWeight: 800, transition: '0.3s',
-                    background: viewMode === m ? 'linear-gradient(135deg, var(--amber), var(--rose))' : 'transparent',
-                    color: viewMode === m ? '#fff' : 'var(--text2)',
-                    boxShadow: viewMode === m ? '0 4px 12px rgba(244,114,182,0.3)' : 'none',
-                    letterSpacing: '0.03em', cursor: 'pointer',
-                  }}>{m.toUpperCase()}</button>
-                ))}
+        {/* ── VIEWS ── */}
+        <AnimatePresence mode="wait">
+          {displayedPhotos.length === 0 ? (
+            <motion.div 
+              key="empty"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              className="gcard cinematic-glow p-24 text-center"
+            >
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <div className="text-8xl mb-8 opacity-40">✨</div>
+                <h2 className="text-3xl font-black mb-4 text-white">Your Wall Awaits</h2>
+                <p className="text-slate-400 mb-0 max-w-lg mx-auto leading-relaxed">Waiting for the first magical moment to be shared. The memories you capture here will last a lifetime.</p>
               </div>
-            </div>
-          </header>
+            </motion.div>
 
-          {/* ── VIEWS ── */}
-          <AnimatePresence mode="wait">
-            {displayedPhotos.length === 0 ? (
-              <motion.div 
-                key="empty"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
-                className="glass-card" 
-                style={{ padding: 100, textAlign: 'center' }}
-              >
-                <div style={{ fontSize: 100, marginBottom: 32, opacity: 0.8 }}>✨</div>
-                <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16, color: 'var(--text1)' }}>Your Wall Awaits</h2>
-                <p style={{ color: 'var(--text2)', marginBottom: 40, fontSize: 18, maxWidth: 500, margin: '0 auto 40px' }}>Waiting for the first magical moment to be shared. The memories you capture here will last a lifetime.</p>
-              </motion.div>
+          ) : viewMode === 'polaroid' ? (
+            /* ── POLAROID ── */
+            <motion.div 
+              key="polaroid"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-wrap gap-12 justify-center"
+            >
+              {displayedPhotos.map((p, i) => (
+                <motion.div 
+                  key={p.id} 
+                  initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 5 }}
+                  animate={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 2 }}
+                  whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
+                  transition={{ duration: 0.6, delay: (i % 20) * 0.05 }}
+                  className="bg-white p-3 pb-16 shadow-2xl relative cursor-pointer"
+                  style={{ borderRadius: '2px' }}
+                >
+                  <div className="w-[280px] h-[280px] overflow-hidden bg-slate-900 border border-black/5">
+                    {p.media_type === 'video'
+                      ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
+                      : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" alt="" loading="lazy" />}
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-center">
+                    {p.caption && (
+                      <p className="text-black text-sm font-medium italic truncate mb-1 px-4">&quot;{p.caption}&quot;</p>
+                    )}
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      Shared by <span className="text-amber-600">{p.uploader_name}</span>
+                    </p>
+                  </div>
+                  {planTier !== 'WHITE_LABEL' && <Watermark />}
+                </motion.div>
+              ))}
+            </motion.div>
 
-            ) : viewMode === 'polaroid' ? (
-              /* ── POLAROID ── */
-              <motion.div 
-                key="polaroid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-wrap gap-10 justify-center"
-              >
-                {displayedPhotos.map((p, i) => (
-                  <motion.div 
-                    key={p.id} 
-                    initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 5 }}
-                    animate={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 2 }}
-                    whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
-                    transition={{ duration: 0.6, delay: i * 0.05 }}
-                    className="polaroid-card group cursor-pointer"
-                  >
-                    <div className="w-[260px] h-[260px] overflow-hidden mb-4 rounded-sm bg-slate-50">
-                      {p.media_type === 'video'
-                        ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
-                        : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500" alt="" />}
-                    </div>
-                    <div className="w-[260px] text-center px-2">
-                      {p.caption && (
-                        <p className="text-sm italic mb-2 font-medium text-slate-700 line-clamp-2 leading-relaxed">
-                          &quot;{p.caption}&quot;
-                        </p>
-                      )}
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        BY <span className="text-amber-500">{p.uploader_name}</span>
-                      </p>
-                    </div>
-                    {planTier !== 'WHITE_LABEL' && <Watermark />}
-                  </motion.div>
-                ))}
-              </motion.div>
-
-            ) : viewMode === 'album' ? (
-              /* ── ALBUM ── */
-              <motion.div 
-                key="album"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col gap-20"
-              >
-                {(() => {
-                  const groups: { [k: string]: Photo[] } = {};
-                  displayedPhotos.forEach(p => {
-                    const label = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                    groups[label] = groups[label] || [];
-                    groups[label].push(p);
-                  });
-                  return Object.entries(groups).map(([label, gPhotos]) => (
-                    <div key={label}>
-                      <h3 className="text-xl font-black mb-8 text-slate-400 tracking-widest uppercase flex items-center gap-4">
+          ) : viewMode === 'album' ? (
+            /* ── ALBUM ── */
+            <motion.div 
+              key="album"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-24"
+            >
+              {(() => {
+                const groups: { [k: string]: Photo[] } = {};
+                displayedPhotos.forEach(p => {
+                  const label = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                  groups[label] = groups[label] || [];
+                  groups[label].push(p);
+                });
+                return Object.entries(groups).map(([label, gPhotos]) => (
+                  <div key={label}>
+                    <div className="flex items-center gap-6 mb-10">
+                      <h3 className="text-lg font-black text-slate-500 tracking-[0.2em] uppercase whitespace-nowrap">
                         {label}
-                        <div className="h-px flex-1 bg-slate-900/5" />
                       </h3>
-                      <div className="columns-1 md:columns-2 lg:columns-3 gap-8">
-                        {gPhotos.map((p, i) => (
-                          <motion.div 
-                            key={p.id} 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: i * 0.1 }}
-                            whileHover={{ y: -5 }}
-                            className="photo-card glass-card break-inside-avoid mb-8 rounded-3xl overflow-hidden relative border-none p-0 group"
-                          >
-                            <img src={getPublicUrl(p.storage_path)} className="w-full block group-hover:scale-105 transition-transform duration-700" alt="" />
-                             <div className="album-meta p-4 bg-white/90 backdrop-blur-md">
-                              <div className="flex justify-between items-start w-full">
-                                <div>
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">by <span className="text-amber-500">{p.uploader_name}</span></p>
-                                  {p.caption && <p className="text-xs text-slate-600 italic mt-1">&quot;{p.caption}&quot;</p>}
-                                </div>
-                                <button 
-                                  onClick={(e) => { e.stopPropagation(); downloadPhoto(p); }} 
-                                  className="p-2 text-slate-300 hover:text-amber-500 transition-colors bg-slate-50 rounded-lg"
-                                >
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                </button>
-                              </div>
+                      <div className="h-px w-full bg-white/10" />
+                    </div>
+                    <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-8">
+                      {gPhotos.map((p, i) => (
+                        <motion.div 
+                          key={p.id} 
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: (i % 10) * 0.1 }}
+                          className="gcard p-0 cinematic-glow break-inside-avoid mb-8 overflow-hidden group border-none shadow-none"
+                        >
+                          <div className="gcard-border" />
+                          <div className="relative z-10 w-full h-full">
+                            <img src={getPublicUrl(p.storage_path)} className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" alt="" />
+                            <div className="absolute inset-x-0 bottom-0 p-4 bg-black/60 backdrop-blur-md border-t border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-amber-500">{p.uploader_name}</span></p>
                             </div>
-                            {planTier !== 'WHITE_LABEL' && <Watermark />}
-                          </motion.div>
-                        ))}
-                      </div>
+                          </div>
+                          {planTier !== 'WHITE_LABEL' && <Watermark />}
+                        </motion.div>
+                      ))}
                     </div>
-                  ));
-                })()}
-              </motion.div>
+                  </div>
+                ));
+              })()}
+            </motion.div>
 
-            ) : (
-              /* ── GRID ── */
-              <motion.div 
-                key="grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="columns-1 md:columns-2 lg:columns-3 gap-8"
-              >
-                {displayedPhotos.map((p, i) => (
-                  <motion.div 
-                    key={p.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.05 }}
-                    whileHover={{ scale: 1.02 }}
-                    className="photo-card glass-card break-inside-avoid mb-8 rounded-3xl overflow-hidden relative border-none p-0 group"
-                  >
-                    <div className="overflow-hidden">
-                      <img
-                        src={getPublicUrl(p.storage_path)}
-                        className="w-full block transition-transform duration-700 group-hover:scale-110"
-                        alt=""
-                      />
+          ) : (
+            /* ── GRID ── */
+            <motion.div 
+              key="grid"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-8"
+            >
+              {displayedPhotos.map((p, i) => (
+                <motion.div 
+                  key={p.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: (i % 20) * 0.05 }}
+                  className="gcard p-0 cinematic-glow break-inside-avoid mb-8 overflow-hidden group relative border-none shadow-none"
+                >
+                  <div className="gcard-border" />
+                  <div className="relative z-10 w-full h-full">
+                    <img
+                      src={getPublicUrl(p.storage_path)}
+                      className="w-full block transition-transform duration-700 group-hover:scale-110"
+                      alt=""
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">Shared by <span className="text-amber-500">{p.uploader_name}</span></p>
                     </div>
-                    <div className="grid-meta p-4 bg-white/90 backdrop-blur-md">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">BY <span className="text-amber-500">{p.uploader_name}</span></p>
-                      {p.caption && <p className="text-xs text-slate-600 italic mt-1 line-clamp-2">&quot;{p.caption}&quot;</p>}
-                    </div>
-                    {planTier !== 'WHITE_LABEL' && <Watermark />}
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </main>
-      </div>
+                  </div>
+                  {planTier !== 'WHITE_LABEL' && <Watermark />}
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
 
       <Confetti trigger={confettiTrigger} />
+      
+      {showSelfieCam && (
+        <div className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="gcard cinematic-glow max-w-xl w-full p-8 text-center">
+            <div className="gcard-border" />
+            <div className="gcard-inner">
+              <h2 className="text-2xl font-black mb-2">Find My Photos</h2>
+              <p className="text-slate-400 text-sm mb-8">Smile! Our AI will find every photo you're in.</p>
+              
+              <div className="aspect-square w-full max-w-[400px] mx-auto overflow-hidden rounded-full border-4 border-amber-500/30 mb-8 relative">
+                 <Webcam
+                  audio={false}
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 border-8 border-transparent border-t-amber-500/50 animate-spin" style={{ animationDuration: '3s' }} />
+              </div>
+              
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setShowSelfieCam(false)}
+                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-500 bg-white/5 rounded-2xl hover:bg-white/10 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={captureSelfieAndSearch}
+                  disabled={isSearching}
+                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest bg-amber-500 text-black rounded-2xl shadow-lg shadow-amber-500/20 hover:scale-105 transition-all disabled:opacity-50"
+                >
+                  {isSearching ? 'Searching...' : 'Scan My Face ✦'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
