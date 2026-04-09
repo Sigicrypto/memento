@@ -2,15 +2,8 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import { AppProviders } from "@/components/AppProviders";
-import MainContent from "@/components/MainContent";
-import SocialFloat from "@/components/SocialFloat";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
-import CustomCursor from "@/components/CustomCursor";
-import "../styles/cursor.css";
-import CookieBanner from "@/components/CookieBanner";
-import BackgroundDecoration from "@/components/BackgroundDecoration";
+import LayoutShell from "@/components/LayoutShell";
 
 const inter = Nunito({
   subsets: ["latin"],
@@ -18,8 +11,51 @@ const inter = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Memento — Capture Every Moment",
+  title: {
+    default: "Memento — Capture Every Moment",
+    template: "%s | Memento"
+  },
   description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
+  keywords: ["photo sharing", "event photos", "wedding photo wall", "live gallery", "QR photo upload", "event app"],
+  authors: [{ name: "Memento Team" }],
+  creator: "Memento",
+  publisher: "Memento",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://memento.app'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "Memento — Capture Every Moment",
+    description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
+    url: 'https://memento.app',
+    siteName: 'Memento',
+    images: [
+      {
+        url: '/og-image.jpg', // User should add this to public/
+        width: 1200,
+        height: 630,
+        alt: 'Memento - Live Event Photo Sharing',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Memento — Capture Every Moment",
+    description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
+    images: ['/og-image.jpg'],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
@@ -31,17 +67,9 @@ export default function RootLayout({
     <html lang="en" className={`${inter.className}`}>
       <body className="min-h-screen w-full antialiased transition-colors duration-300" suppressHydrationWarning={true}>
         <AppProviders>
-          <div className="min-h-screen w-full flex flex-col">
-            <BackgroundDecoration />
-            <Navbar />
-            <MainContent>
-              {children}
-            </MainContent>
-            <WhatsAppFloat />
-            <SocialFloat />
-            <CookieBanner />
-          </div>
-          <CustomCursor />
+          <LayoutShell>
+            {children}
+          </LayoutShell>
         </AppProviders>
       </body>
     </html>

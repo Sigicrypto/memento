@@ -8,6 +8,26 @@ import { supabase } from '@/lib/supabase';
 type PlanType = 'starter' | 'standard' | 'premium' | 'whitelabel' | null;
 type AuthTab = 'login' | 'signup';
 type AuthStep = 'auth' | 'payment' | 'success';
+type Region = 'IN' | 'OM' | 'GLOBAL';
+
+function getRegion(): Region {
+  if (typeof document === 'undefined') return 'GLOBAL';
+  const match = document.cookie.match(/(^| )livewall_region=([^;]+)/);
+  const val = match?.[2];
+  if (val === 'IN') return 'IN';
+  if (val === 'OM') return 'OM';
+  return 'GLOBAL';
+}
+
+const WA_NUMBER = '96896095692'; // +968 96095692
+
+function buildWhatsAppUrl(name: string, plan: PlanType): string {
+  const planLabel = plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'a plan';
+  const msg = encodeURIComponent(
+    `Hi! I just signed up for Memento.\n\nName: ${name}\nPlan: ${planLabel}\n\nPlease guide me on how to proceed with the payment.`
+  );
+  return `https://wa.me/${WA_NUMBER}?text=${msg}`;
+}
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -105,6 +125,17 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
           email: email.trim(),
           plan: plan || 'starter',
         });
+
+        // ── Oman: redirect to WhatsApp for manual payment ──
+        const region = getRegion();
+        if (region === 'OM' && plan && plan !== 'starter') {
+          setMessage('Account created! Redirecting you to WhatsApp for payment...');
+          setStep('success');
+          setTimeout(() => {
+            window.open(buildWhatsAppUrl(name.trim(), plan), '_blank');
+          }, 1500);
+          return;
+        }
 
         setMessage('Check your email for a confirmation link!');
         // If email confirmation is disabled in Supabase, proceed directly

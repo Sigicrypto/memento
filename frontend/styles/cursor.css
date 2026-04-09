@@ -5,8 +5,8 @@
 /* ─── Core Cursor Dot ─── */
 .cursor-dot {
   position: fixed;
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
   pointer-events: none;
   z-index: 10001;
   transform: translate(-50%, -50%);
@@ -26,10 +26,10 @@
   background-size: 200% 200%;
   animation: cursor-gradient-shift 3s ease infinite, cursor-pulse 2s ease-in-out infinite;
   box-shadow: 
-    0 0 20px rgba(245,158,11,0.8),
-    0 0 40px rgba(244,114,182,0.6),
-    0 0 60px rgba(252,211,77,0.4),
-    inset 0 0 10px rgba(255,255,255,0.5);
+    0 0 10px rgba(245,158,11,0.6),
+    0 0 20px rgba(244,114,182,0.4),
+    0 0 30px rgba(252,211,77,0.3),
+    inset 0 0 5px rgba(255,255,255,0.4);
   position: relative;
 }
 
@@ -47,8 +47,8 @@
 /* ─── Outer Ring ─── */
 .cursor-outer {
   position: fixed;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   pointer-events: none;
   z-index: 10000;
   transform: translate(-50%, -50%);
@@ -99,17 +99,18 @@
 /* ─── Glow Layer (Background) ─── */
 .cursor-glow {
   position: fixed;
-  width: 100px;
-  height: 100px;
+  width: 60px;
+  height: 60px;
   pointer-events: none;
   z-index: 9999;
-  transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.5s ease;
+  transform: translate(-50%, -50%) scale(0.8);
 }
 
 .cursor-glow.visible {
-  opacity: 1;
+  opacity: 0.6;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .cursor-glow::before {
@@ -146,8 +147,8 @@
 }
 
 .cursor-outer.cursor-hover {
-  width: 60px;
-  height: 60px;
+  width: 44px;
+  height: 44px;
 }
 
 .cursor-outer.cursor-hover .cursor-outer-ring {
@@ -165,16 +166,16 @@
   0%, 100% { 
     transform: scale(1);
     box-shadow: 
-      0 0 20px rgba(245,158,11,0.8),
-      0 0 40px rgba(244,114,182,0.6),
-      0 0 60px rgba(252,211,77,0.4);
+      0 0 10px rgba(245,158,11,0.6),
+      0 0 20px rgba(244,114,182,0.4),
+      0 0 30px rgba(252,211,77,0.3);
   }
   50% { 
-    transform: scale(1.2);
+    transform: scale(1.15);
     box-shadow: 
-      0 0 30px rgba(245,158,11,1),
-      0 0 60px rgba(244,114,182,0.8),
-      0 0 90px rgba(252,211,77,0.6);
+      0 0 15px rgba(245,158,11,0.8),
+      0 0 30px rgba(244,114,182,0.6),
+      0 0 45px rgba(252,211,77,0.4);
   }
 }
 
@@ -236,8 +237,8 @@ body:has(.gcard:hover) .cursor-dot .cursor-dot-inner {
 body:has(.nm-card:hover) .cursor-outer,
 body:has(.card:hover) .cursor-outer,
 body:has(.gcard:hover) .cursor-outer {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
 }
 
 body:has(.nm-card:hover) .cursor-outer-ring,

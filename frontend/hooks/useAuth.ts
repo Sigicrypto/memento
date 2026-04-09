@@ -113,11 +113,16 @@ export const useAuth = () => {
     return supabase.auth.signOut();
   };
 
-  // The plan is now derived from the database profile
-  const plan = profile?.plan || 'starter';
-  const isPaid = profile?.payment_status === 'paid';
-  const isApproved = profile?.is_approved === true;
-  const isAdmin = profile?.role === 'admin';
+  // ── Super Admin Override ──────────────────────────────────
+  const SUPER_ADMIN_EMAIL = 'sagarfalcon@gmail.com';
+  const isSuperAdmin = user?.email === SUPER_ADMIN_EMAIL;
 
-  return { user, profile, isLoading, signIn, signUp, signInWithGoogle, signOut, plan, isPaid, isApproved, isAdmin };
+  // The plan is now derived from the database profile
+  // Super admin always gets whitelabel (max tier) with full access
+  const plan = isSuperAdmin ? 'whitelabel' : (profile?.plan || 'starter');
+  const isPaid = isSuperAdmin ? true : (profile?.payment_status === 'paid');
+  const isApproved = isSuperAdmin ? true : (profile?.is_approved === true);
+  const isAdmin = isSuperAdmin ? true : (profile?.role === 'admin');
+
+  return { user, profile, isLoading, signIn, signUp, signInWithGoogle, signOut, plan, isPaid, isApproved, isAdmin, isSuperAdmin };
 };

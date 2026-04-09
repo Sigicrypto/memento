@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /moderate
+Disallow: /dashboard
+
+Sitemap: https://memento.app/sitemap.xml

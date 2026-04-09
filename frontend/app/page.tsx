@@ -893,9 +893,11 @@ export default function LandingPage() {
 
   const [scrolled, setScrolled] = useState(false);
 
-  const [currency, setCurrency] = useState({ showINR: false });
+  const [currency, setCurrency] = useState({ showINR: false, showOMR: false });
 
   const [showingINR, setShowingINR] = useState(false);
+
+  const [showingOMR, setShowingOMR] = useState(false);
 
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
@@ -963,19 +965,30 @@ export default function LandingPage() {
 
     (async () => {
 
-      let isIndia = false;
+      let countryCode = 'GLOBAL';
 
       try {
 
         const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
 
-        isIndia = (await res.json()).country_code === 'IN';
+        countryCode = (await res.json()).country_code || 'GLOBAL';
 
-      } catch { isIndia = (Intl.DateTimeFormat().resolvedOptions().timeZone || '').includes('Kolkata'); }
+      } catch {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        if (tz.includes('Kolkata')) countryCode = 'IN';
+        else if (tz.includes('Muscat')) countryCode = 'OM';
+      }
 
-      setCurrency({ showINR: isIndia });
+      const isIndia = countryCode === 'IN';
+      const isOman = countryCode === 'OM';
+
+      // Set region cookie for checkout page
+      document.cookie = `livewall_region=${isOman ? 'OM' : isIndia ? 'IN' : 'GLOBAL'}; path=/; max-age=86400`;
+
+      setCurrency({ showINR: isIndia, showOMR: isOman });
 
       if (isIndia) setShowingINR(true);
+      if (isOman) setShowingOMR(true);
 
     })();
 
@@ -989,21 +1002,21 @@ export default function LandingPage() {
 
   const Free = "0";
 
-  const Starter = showingINR ? "2,500" : "30";
+  const Starter = showingOMR ? "15" : showingINR ? "2,499" : "30";
 
-  const Pro = showingINR ? "5,000" : "60";
+  const Pro = showingOMR ? "29" : showingINR ? "4,999" : "60";
 
-  const Premium = showingINR ? "7,500" : "90";
+  const Premium = showingOMR ? "39" : showingINR ? "7,499" : "90";
 
-  const WhiteLabel = showingINR ? "10,000" : "120";
+  const WhiteLabel = showingOMR ? "59" : showingINR ? "9,999" : "120";
 
-  const PhotoBookPrice = showingINR ? "1,000" : "12";
+  const PhotoBookPrice = showingOMR ? "5" : showingINR ? "1,000" : "12";
 
-  const ExtraStoragePrice = showingINR ? "500" : "6";
+  const ExtraStoragePrice = showingOMR ? "2" : showingINR ? "500" : "6";
 
-  const SocialFeedPrice = showingINR ? "1,000" : "12";
+  const SocialFeedPrice = showingOMR ? "5" : showingINR ? "1,000" : "12";
 
-  const Sym = showingINR ? "₹" : "$";
+  const Sym = showingOMR ? "ر.ع. " : showingINR ? "₹" : "$";
 
 
 
@@ -1581,14 +1594,16 @@ export default function LandingPage() {
 
 
 
+          {/* Currency toggles */}
           {!showingINR && currency.showINR && (
-
             <button className="currency-toggle reveal" onClick={() => setShowingINR(!showingINR)}>
-
-              Switch to {showingINR ? '$ USD' : '₹ INR'}
-
+              Switch to ₹ INR
             </button>
-
+          )}
+          {!showingOMR && currency.showOMR && (
+            <button className="currency-toggle reveal" onClick={() => setShowingOMR(!showingOMR)}>
+              Switch to ر.ع. OMR
+            </button>
           )}
 
 
@@ -1670,7 +1685,11 @@ export default function LandingPage() {
 
                 tagline: 'Bring your event to life with interactive features.',
 
-                popular: true
+                popular: true,
+
+                badge: '⭐ Most Popular',
+
+                featured: true
 
               },
 
@@ -1706,7 +1725,11 @@ export default function LandingPage() {
 
                 tagline: 'A premium, fully featured photo experience.',
 
-                popular: false
+                popular: false,
+
+                badge: '🔥 Best Value',
+
+                featured: false
 
               },
 
@@ -1748,21 +1771,35 @@ export default function LandingPage() {
 
               <motion.div 
                 key={i} 
-                className={`gcard price-card ${p.popular ? 'popular' : ''} cinematic-glow`}
+                className={`gcard price-card ${p.popular ? 'popular' : ''} ${(p as any).featured ? 'featured-plan' : ''} cinematic-glow`}
                 variants={{
                   hidden: { opacity: 0, scale: 0.9, y: 30 },
                   visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
                 }}
-                whileHover={{ scale: 1.03, y: -5, boxShadow: '0 20px 40px rgba(245, 158, 11, 0.2)' }}
+                whileHover={{ scale: (p as any).featured ? 1.06 : 1.03, y: -5, boxShadow: '0 20px 40px rgba(245, 158, 11, 0.2)' }}
               >
 
                 <div className="gcard-border" />
 
                 <div className="gcard-inner">
 
-                  {p.popular && <span className="popular-tag">⭐ Most Popular</span>}
-
-
+                  {/* Badge row: Most Popular tag + Best Value badge */}
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                    {p.popular && <span className="popular-tag">⭐ Most Popular</span>}
+                    {(p as any).badge && !p.popular && (
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '4px 12px',
+                        borderRadius: 100,
+                        fontSize: 11,
+                        fontWeight: 800,
+                        letterSpacing: '0.05em',
+                        background: 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(245,158,11,0.15))',
+                        border: '1px solid rgba(239,68,68,0.3)',
+                        color: '#dc2626'
+                      }}>{(p as any).badge}</span>
+                    )}
+                  </div>
 
                   <div className="flex items-center gap-2 mb-2">
 
@@ -1873,9 +1910,9 @@ export default function LandingPage() {
             <div className="footer-brand">
 
               <Link href="/">
-
-                <AnimatedLogo width={180} height={60} />
-
+                <div className="mb-4">
+                  <AnimatedLogo width={320} height={106} />
+                </div>
               </Link>
 
             </div>
@@ -1910,9 +1947,9 @@ export default function LandingPage() {
 
                 <h4>Legal</h4>
 
-                <Link href="#">Privacy</Link>
+                <Link href="/privacy">Privacy</Link>
 
-                <Link href="#">Terms</Link>
+                <Link href="/terms">Terms</Link>
 
               </div>
 

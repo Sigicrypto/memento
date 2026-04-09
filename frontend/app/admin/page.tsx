@@ -1,21 +1,26 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-interface User {
+// ── Types ─────────────────────────────────────────────────────
+interface UserRow {
   id: string;
   email: string;
+  full_name: string;
   created_at: string;
   plan: string;
+  payment_status: string;
   is_approved: boolean;
+  role: string;
   events_count?: number;
+  phone?: string;
 }
 
-interface Event {
+interface EventRow {
   id: string;
   name: string;
   slug: string;
@@ -23,6 +28,20 @@ interface Event {
   owner_id: string;
   owner_email?: string;
   photo_count?: number;
+  plan_type?: string;
+  expires_at?: string;
+}
+
+interface PaymentRequest {
+  id: string;
+  user_id: string;
+  user_email: string;
+  plan: string;
+  amount: string;
+  currency: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  notes?: string;
 }
 
 interface Stats {
@@ -30,406 +49,638 @@ interface Stats {
   totalEvents: number;
   totalPhotos: number;
   activeToday: number;
+  pendingApprovals: number;
+  paidUsers: number;
 }
 
-export default function AdminPage() {
-  const { user, profile, isLoading, isAdmin } = useAuth();
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'events'>('overview');
-  const [stats, setStats] = useState<Stats>({
-    totalUsers: 0,
-    totalEvents: 0,
-    totalPhotos: 0,
-    activeToday: 0
-  });
-  const [users, setUsers] = useState<User[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [confirmDialog, setConfirmDialog] = useState<{open: boolean; message: string; onConfirm: () => void}>({open: false, message: '', onConfirm: () => {}});
+type Tab = 'overview' | 'users' | 'events' | 'payments' | 'settings';
 
+// ── Component ─────────────────────────────────────────────────
+export default function AdminPage() {
+  const { user, profile, isLoading, isAdmin, isSuperAdmin } = useAuth();
+  const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalEvents: 0, totalPhotos: 0, activeToday: 0, pendingApprovals: 0, paidUsers: 0 });
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [events, setEvents] = useState<EventRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [confirmDialog, setConfirmDialog] = useState<{open: boolean; message: string; onConfirm: () => void}>({open: false, message: '', onConfirm: () => {}});
+  const [toast, setToast] = useState<{show: boolean; message: string; type: 'success' | 'error'}>({show: false, message: '', type: 'success'});
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({show: true, message, type});
+    setTimeout(() => setToast(prev => ({...prev, show: false})), 3000);
+  };
   const showConfirm = (message: string, onConfirm: () => void) => setConfirmDialog({open: true, message, onConfirm});
   const closeConfirm = () => setConfirmDialog(prev => ({...prev, open: false}));
 
-  // Check if user is admin
+  // ── Auth Gate ──
   useEffect(() => {
     if (isLoading) return;
-    if (!user) { 
-      router.push('/system'); 
-      return; 
-    }
-    
-    // Wait for profile to load, then check admin role
-    if (profile && !isAdmin) {
-      console.log('Access denied for user:', user.email);
-      router.push('/system');
-    }
+    if (!user) { router.push('/auth'); return; }
+    if (profile && !isAdmin) { router.push('/'); }
   }, [user, profile, isLoading, isAdmin, router]);
 
-  // Fetch stats
-  useEffect(() => {
-    if (!isAdmin) return;
-    
-    const fetchStats = async () => {
-      try {
-        // Get total events count
-        const { count: eventsCount } = await supabase
-          .from('events')
-          .select('*', { count: 'exact', head: true });
-        
-        // Get total photos count
-        const { count: photosCount } = await supabase
-          .from('photos')
-          .select('*', { count: 'exact', head: true });
-        
-        // Get today's active users (unique users who created events today)
-        const today = new Date().toISOString().split('T')[0];
-        const { data: todayEvents } = await supabase
-          .from('events')
-          .select('owner_id')
-          .gte('created_at', today);
-        
-        const uniqueUsersToday = new Set(todayEvents?.map(e => e.owner_id)).size;
-        
-        // Get total unique users (unique owners)
-        const { data: allEvents } = await supabase
-          .from('events')
-          .select('owner_id');
-        
-        const totalUniqueUsers = new Set(allEvents?.map(e => e.owner_id)).size;
-        
-        setStats({
-          totalUsers: totalUniqueUsers,
-          totalEvents: eventsCount || 0,
-          totalPhotos: photosCount || 0,
-          activeToday: uniqueUsersToday
-        });
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      }
-    };
-    
-    fetchStats();
-  }, [isAdmin]);
+  // ── Fetch Stats ──
+  const fetchStats = useCallback(async () => {
+    try {
+      const [
+        { count: eventsCount },
+        { count: photosCount },
+        { data: profiles },
+      ] = await Promise.all([
+        supabase.from('events').select('*', { count: 'exact', head: true }),
+        supabase.from('photos').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('id, payment_status, is_approved'),
+      ]);
 
-  // Fetch users with event counts
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todayEvents } = await supabase.from('events').select('owner_id').gte('created_at', today);
+
+      const totalUsers = profiles?.length || 0;
+      const paidUsers = profiles?.filter(p => p.payment_status === 'paid').length || 0;
+      const pendingApprovals = profiles?.filter(p => !p.is_approved).length || 0;
+      const activeToday = new Set(todayEvents?.map(e => e.owner_id)).size;
+
+      setStats({
+        totalUsers,
+        totalEvents: eventsCount || 0,
+        totalPhotos: photosCount || 0,
+        activeToday,
+        pendingApprovals,
+        paidUsers,
+      });
+    } catch (err) {
+      console.error('Stats error:', err);
+    }
+  }, []);
+
+  useEffect(() => { if (isAdmin) fetchStats(); }, [isAdmin, fetchStats]);
+
+  // ── Fetch Users ──
   useEffect(() => {
     if (!isAdmin || activeTab !== 'users') return;
-    
     const fetchUsers = async () => {
       setLoading(true);
-      try {
-        // Fetch all profiles
-        const { data: profiles, error: profError } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (profError) throw profError;
-
-        // Fetch counts for each profile
-        const { data: eventCounts } = await supabase
-          .from('events')
-          .select('owner_id');
-
-        const countsMap: { [key: string]: number } = {};
-        eventCounts?.forEach(e => {
-          countsMap[e.owner_id] = (countsMap[e.owner_id] || 0) + 1;
-        });
-
-        if (profiles) {
-          const usersWithCounts = profiles.map(p => ({
-            ...p,
-            events_count: countsMap[p.id] || 0,
-            plan: p.plan.toUpperCase()
-          }));
-          setUsers(usersWithCounts);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
+      const { data: profiles } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      const { data: eventCounts } = await supabase.from('events').select('owner_id');
+      const countsMap: Record<string, number> = {};
+      eventCounts?.forEach(e => { countsMap[e.owner_id] = (countsMap[e.owner_id] || 0) + 1; });
+      if (profiles) {
+        setUsers(profiles.map(p => ({ ...p, events_count: countsMap[p.id] || 0, plan: (p.plan || 'starter').toUpperCase() })));
       }
       setLoading(false);
     };
-    
     fetchUsers();
   }, [isAdmin, activeTab]);
 
-  // Fetch all events
+  // ── Fetch Events ──
   useEffect(() => {
     if (!isAdmin || activeTab !== 'events') return;
-    
     const fetchEvents = async () => {
       setLoading(true);
-      try {
-        const { data: eventsData } = await supabase
-          .from('events')
-          .select('*')
-          .order('created_at', { ascending: false });
-        
-        if (eventsData) {
-          // Get photo counts for each event
-          const eventsWithCounts = await Promise.all(
-            eventsData.map(async (event) => {
-              const { count } = await supabase
-                .from('photos')
-                .select('*', { count: 'exact', head: true })
-                .eq('event_id', event.id);
-              
-              return {
-                ...event,
-                owner_email: `user-${event.owner_id.slice(0, 8)}@example.com`, // Placeholder
-                photo_count: count || 0
-              };
-            })
-          );
-          setEvents(eventsWithCounts);
-        }
-      } catch (error) {
-        console.error('Error fetching events:', error);
+      const { data: eventsData } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+      if (eventsData) {
+        // Fetch owner emails
+        const ownerIds = [...new Set(eventsData.map(e => e.owner_id))];
+        const { data: ownerProfiles } = await supabase.from('profiles').select('id, email').in('id', ownerIds);
+        const emailMap: Record<string, string> = {};
+        ownerProfiles?.forEach(p => { emailMap[p.id] = p.email; });
+
+        const eventsWithCounts = await Promise.all(
+          eventsData.map(async (event) => {
+            const { count } = await supabase.from('photos').select('*', { count: 'exact', head: true }).eq('event_id', event.id);
+            return { ...event, owner_email: emailMap[event.owner_id] || 'Unknown', photo_count: count || 0 };
+          })
+        );
+        setEvents(eventsWithCounts);
       }
       setLoading(false);
     };
-    
     fetchEvents();
   }, [isAdmin, activeTab]);
 
-  const handleToggleApproval = async (userId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_approved: !currentStatus })
-        .eq('id', userId);
-
-      if (error) throw error;
-      
-      setUsers(users.map(u => u.id === userId ? { ...u, is_approved: !currentStatus } : u));
-    } catch (error: any) {
-      alert('Failed to update status: ' + error.message);
-    }
+  // ── Actions ──
+  const handleToggleApproval = async (userId: string, current: boolean) => {
+    const { error } = await supabase.from('profiles').update({ is_approved: !current }).eq('id', userId);
+    if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_approved: !current } : u));
+    showToast(!current ? 'User approved ✅' : 'User unapproved');
+    fetchStats();
   };
 
   const handleUpdatePlan = async (userId: string, newPlan: string) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ plan: newPlan.toLowerCase(), payment_status: 'paid' })
-        .eq('id', userId);
-
-      if (error) throw error;
-      
-      setUsers(users.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase() } : u));
-    } catch (error: any) {
-      alert('Failed to update plan: ' + error.message);
-    }
+    const { error } = await supabase.from('profiles').update({ plan: newPlan.toLowerCase(), payment_status: 'paid' }).eq('id', userId);
+    if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase(), payment_status: 'paid' } : u));
+    showToast(`Plan upgraded to ${newPlan} ✅`);
   };
 
-  const handleDeleteUser = (userId: string) => {
-    showConfirm('Delete this user and all their data? This cannot be undone.', async () => {
-    
-      // Delete user's events (cascade will delete photos)
+  const handleUpdateRole = async (userId: string, newRole: string) => {
+    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
+    if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+    showToast(`Role updated to ${newRole} ✅`);
+  };
+
+  const handleDeleteUser = (userId: string, email: string) => {
+    showConfirm(`Delete user "${email}" and ALL their events/photos? This cannot be undone.`, async () => {
       await supabase.from('events').delete().eq('owner_id', userId);
-    
-    // Note: To fully delete auth user, you need admin API or server function
-    // For now, we'll just remove their events
-    setUsers(users.filter(u => u.id !== userId));
+      await supabase.from('profiles').delete().eq('id', userId);
+      setUsers(prev => prev.filter(u => u.id !== userId));
+      showToast('User deleted');
       closeConfirm();
+      fetchStats();
     });
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    showConfirm('Delete this event and all its photos?', async () => {
+  const handleDeleteEvent = (eventId: string, eventName: string) => {
+    showConfirm(`Delete event "${eventName}" and all its photos?`, async () => {
+      await supabase.from('photos').delete().eq('event_id', eventId);
       await supabase.from('events').delete().eq('id', eventId);
-      setEvents(events.filter(e => e.id !== eventId));
+      setEvents(prev => prev.filter(e => e.id !== eventId));
+      showToast('Event deleted');
       closeConfirm();
+      fetchStats();
     });
   };
 
-  if (isLoading || loading) {
+  const handleBulkApproveAll = async () => {
+    showConfirm('Approve ALL pending users?', async () => {
+      const { error } = await supabase.from('profiles').update({ is_approved: true }).eq('is_approved', false);
+      if (error) { showToast('Failed: ' + error.message, 'error'); closeConfirm(); return; }
+      setUsers(prev => prev.map(u => ({ ...u, is_approved: true })));
+      showToast('All users approved ✅');
+      closeConfirm();
+      fetchStats();
+    });
+  };
+
+  // ── Filter ──
+  const filteredUsers = users.filter(u =>
+    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (u.full_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const filteredEvents = events.filter(e =>
+    e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    e.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (e.owner_email || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // ── Render ──
+
+  if (isLoading) {
     return (
-      <div className="nm-page flex items-center justify-center">
-        <div className="nm-circle w-14 h-14">
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-        </div>
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="nm-page flex items-center justify-center px-4">
-        <div className="nm-card text-center p-10">
-          <p className="text-xl mb-4">🚫 Access Denied</p>
-          <p className="text-sm mb-6" style={{color:'var(--text2)'}}>You don't have admin privileges.</p>
-          <Link href="/" className="nm-btn nm-btn-accent px-6 py-2.5 font-bold">Go Home</Link>
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center text-white">
+        <div className="text-center">
+          <div className="text-5xl mb-4">🚫</div>
+          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+          <p className="text-slate-400 mb-6">You don't have admin privileges.</p>
+          <Link href="/" className="px-6 py-3 bg-amber-500 text-black font-bold rounded-xl">Go Home</Link>
         </div>
       </div>
     );
   }
 
+  // ── Styles ──
+  const cardClass = "bg-[#111827]/80 border border-white/[0.06] rounded-2xl backdrop-blur-xl";
+  const statCard = (icon: string, label: string, value: number, accent: string) => (
+    <div className={`${cardClass} p-6`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-2xl">{icon}</span>
+        <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" style={{color: accent, background: `${accent}15`, border: `1px solid ${accent}30`}}>Live</span>
+      </div>
+      <p className="text-3xl font-black text-white tracking-tight">{value.toLocaleString()}</p>
+      <p className="text-xs text-slate-500 mt-1 font-medium">{label}</p>
+    </div>
+  );
+
+  const tabs: {id: Tab; label: string; icon: string}[] = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'users', label: 'Users', icon: '👥' },
+    { id: 'events', label: 'Events', icon: '🎉' },
+    { id: 'payments', label: 'Payments', icon: '💳' },
+    { id: 'settings', label: 'Settings', icon: '⚙️' },
+  ];
+
   return (
-    <div className="nm-page px-4 py-12 pb-40">
-      {/* Confirm Dialog */}
+    <div className="min-h-screen bg-[#0a0e1a] text-white">
+
+      {/* ── Toast ── */}
+      {toast.show && (
+        <div className={`fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl text-sm font-bold shadow-2xl transition-all ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+          {toast.message}
+        </div>
+      )}
+
+      {/* ── Confirm Dialog ── */}
       {confirmDialog.open && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center px-4" style={{background:'rgba(14,18,40,0.7)', backdropFilter:'blur(4px)'}}>
-          <div className="nm-card p-8 max-w-md w-full text-center">
-            <div className="text-3xl mb-4">⚠️</div>
-            <p className="text-sm mb-6" style={{color:'var(--text1)'}}>{confirmDialog.message}</p>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4" style={{background:'rgba(0,0,0,0.7)', backdropFilter:'blur(8px)'}}>
+          <div className={`${cardClass} p-8 max-w-md w-full text-center`}>
+            <div className="text-4xl mb-4">⚠️</div>
+            <p className="text-sm text-slate-300 mb-6 leading-relaxed">{confirmDialog.message}</p>
             <div className="flex gap-3">
-              <button onClick={closeConfirm} className="nm-btn flex-1 py-3 text-sm">Cancel</button>
-              <button onClick={confirmDialog.onConfirm} className="nm-btn flex-1 py-3 text-sm font-bold" style={{color:'#f87171',background:'rgba(248,113,113,0.1)'}}>Delete</button>
+              <button onClick={closeConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">Cancel</button>
+              <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition">Confirm Delete</button>
             </div>
           </div>
         </div>
       )}
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="nm-card p-8 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <span className="text-2xl">🔐</span>
-              <h1 className="text-2xl font-bold" style={{color:'var(--text1)'}}>Admin Dashboard</h1>
+
+      {/* ── Sidebar + Content Layout ── */}
+      <div className="flex min-h-screen">
+
+        {/* ── Sidebar ── */}
+        <aside className="w-64 border-r border-white/[0.06] bg-[#0d1117] flex flex-col shrink-0 sticky top-0 h-screen">
+          {/* Brand */}
+          <div className="p-6 border-b border-white/[0.06]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-lg font-black text-white shadow-lg shadow-amber-500/20">M</div>
+              <div>
+                <h1 className="text-sm font-black tracking-tight">Memento</h1>
+                <p className="text-[10px] text-amber-500 font-bold tracking-widest uppercase">Admin Panel</p>
+              </div>
             </div>
-            <p className="text-sm" style={{color:'var(--text2)'}}>Manage users, events, and view platform analytics</p>
           </div>
-          <Link href="/dashboard" className="nm-btn px-5 py-3 text-xs" style={{color:'var(--text2)'}}>📊 My Dashboard</Link>
-        </div>
 
-        {/* Navigation Tabs */}
-        <div className="nm-inset p-1.5 rounded-2xl flex gap-1 mb-8 max-w-sm">
-          {[
-            { id: 'overview', label: '📊 Overview' },
-            { id: 'users', label: '👥 Users' },
-            { id: 'events', label: '🎉 Events' },
-          ].map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl transition"
-              style={{
-                background: activeTab === tab.id ? 'linear-gradient(135deg,#f59e0b,#f472b6)' : 'transparent',
-                color: activeTab === tab.id ? 'var(--surface)' : 'var(--text2)'
-              }}>
-              {tab.label}
-            </button>
-          ))}
-        </div>
+          {/* Nav */}
+          <nav className="flex-1 p-4 space-y-1">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setSearchTerm(''); }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                }`}
+              >
+                <span className="text-lg">{tab.icon}</span>
+                {tab.label}
+                {tab.id === 'users' && stats.pendingApprovals > 0 && (
+                  <span className="ml-auto text-[10px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full">{stats.pendingApprovals}</span>
+                )}
+              </button>
+            ))}
+          </nav>
 
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Users', value: stats.totalUsers, icon: '👤' },
-                { label: 'Total Events', value: stats.totalEvents, icon: '🎉' },
-                { label: 'Total Photos', value: stats.totalPhotos, icon: '📸' },
-                { label: 'Active Today', value: stats.activeToday, icon: '⚡' },
-              ].map((stat) => (
-                <div key={stat.label} className="nm-card p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="nm-circle w-12 h-12 text-2xl">{stat.icon}</div>
-                    <span className="nm-badge text-xs">Live</span>
-                  </div>
-                  <p className="text-3xl font-bold" style={{color:'var(--text1)'}}>{stat.value.toLocaleString()}</p>
-                  <p className="text-sm mt-1" style={{color:'var(--text2)'}}>{stat.label}</p>
+          {/* Profile chip */}
+          <div className="p-4 border-t border-white/[0.06]">
+            <div className="flex items-center gap-3 px-3 py-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-xs font-black text-white">S</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold truncate">{user?.email}</p>
+                <p className="text-[10px] text-amber-500 font-bold">{isSuperAdmin ? '⚡ Super Admin' : 'Admin'}</p>
+              </div>
+            </div>
+            <Link href="/" className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs text-slate-500 hover:text-white hover:bg-white/5 transition">
+              ← Back to Site
+            </Link>
+          </div>
+        </aside>
+
+        {/* ── Main Content ── */}
+        <main className="flex-1 p-8 overflow-y-auto">
+
+          {/* ── Search Bar (for users/events) ── */}
+          {(activeTab === 'users' || activeTab === 'events') && (
+            <div className="mb-6">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={`Search ${activeTab}...`}
+                className="w-full max-w-md px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-white placeholder-slate-500 outline-none focus:border-amber-500/40 transition"
+              />
+            </div>
+          )}
+
+          {/* ═══════════════════ OVERVIEW ═══════════════════ */}
+          {activeTab === 'overview' && (
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-black tracking-tight mb-1">Dashboard</h2>
+                <p className="text-sm text-slate-500">Platform overview at a glance</p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {statCard('👤', 'Total Users', stats.totalUsers, '#3b82f6')}
+                {statCard('🎉', 'Total Events', stats.totalEvents, '#f59e0b')}
+                {statCard('📸', 'Total Photos', stats.totalPhotos, '#a855f7')}
+                {statCard('⚡', 'Active Today', stats.activeToday, '#22c55e')}
+                {statCard('⏳', 'Pending Approvals', stats.pendingApprovals, '#ef4444')}
+                {statCard('💎', 'Paid Users', stats.paidUsers, '#06b6d4')}
+              </div>
+
+              {/* Quick Actions */}
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Quick Actions</h3>
+                <div className="flex flex-wrap gap-3">
+                  <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">👥 Manage Users</button>
+                  <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">🎉 Manage Events</button>
+                  <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">✅ Approve All Pending</button>
+                  <Link href="/create" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">✨ Create Event</Link>
+                  <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">🔄 Refresh Stats</button>
                 </div>
-              ))}
-            </div>
-
-            <div className="nm-card p-6">
-              <h3 className="text-lg font-semibold mb-4" style={{color:'var(--text1)'}}>Quick Actions</h3>
-              <div className="flex flex-wrap gap-3">
-                <button onClick={() => setActiveTab('users')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>👥 View Users</button>
-                <button onClick={() => setActiveTab('events')} className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>🎉 View Events</button>
-                <Link href="/admin/analytics" className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>📊 View Analytics</Link>
-                <Link href="/admin/branding" className="nm-btn px-5 py-2.5 text-sm" style={{color:'var(--text2)'}}>🎨 Branding</Link>
-                <Link href="/create" className="nm-btn nm-btn-accent px-5 py-2.5 text-sm">✨ Create New Event</Link>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Users Tab */}
-        {activeTab === 'users' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold" style={{color:'var(--text1)'}}>All Users ({users.length})</h2>
-            {users.length === 0 ? (
-              <div className="nm-card text-center p-12" style={{color:'var(--text2)'}}>No users found</div>
-            ) : (
-              <div className="grid gap-3">
-                {users.map((u) => (
-                  <div key={u.id} className="nm-card p-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="nm-circle w-10 h-10 font-bold" style={{color:'#f59e0b'}}>{u.email.charAt(0).toUpperCase()}</div>
-                      <div>
-                        <p className="font-medium text-sm" style={{color:'var(--text1)'}}>{u.email}</p>
-                        <p className="text-xs" style={{color:'var(--text2)'}}>
-                          Joined {new Date(u.created_at).toLocaleDateString()} &bull;
-                          <span className="ml-1" style={{color:'#f59e0b'}}>{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
-                        </p>
+          {/* ═══════════════════ USERS ═══════════════════ */}
+          {activeTab === 'users' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight mb-1">User Management</h2>
+                  <p className="text-sm text-slate-500">{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</p>
+                </div>
+                {stats.pendingApprovals > 0 && (
+                  <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
+                    ✅ Approve All ({stats.pendingApprovals})
+                  </button>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="py-20 text-center text-slate-500">Loading users...</div>
+              ) : filteredUsers.length === 0 ? (
+                <div className={`${cardClass} text-center py-16 text-slate-500`}>No users found</div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredUsers.map(u => (
+                    <div key={u.id} className={`${cardClass} p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-rose-500/20 border border-amber-500/20 flex items-center justify-center text-sm font-black text-amber-400 shrink-0">
+                          {u.email.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold truncate">{u.email}</p>
+                          <p className="text-[11px] text-slate-500">
+                            {u.full_name || 'No name'} • Joined {new Date(u.created_at).toLocaleDateString()} • 
+                            <span className="text-amber-400 ml-1">{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
+                            {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                        {/* Role Selector */}
+                        <select
+                          className="text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-slate-300 outline-none font-bold cursor-pointer"
+                          value={u.role || 'user'}
+                          onChange={(e) => handleUpdateRole(u.id, e.target.value)}
+                        >
+                          <option value="user">👤 User</option>
+                          <option value="admin">🔐 Admin</option>
+                        </select>
+
+                        {/* Plan Selector */}
+                        <select
+                          className="text-[11px] bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1.5 text-amber-400 outline-none font-bold uppercase cursor-pointer"
+                          value={(u.plan || 'STARTER').toUpperCase()}
+                          onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
+                        >
+                          <option value="STARTER">Starter</option>
+                          <option value="STANDARD">Standard</option>
+                          <option value="PREMIUM">Premium</option>
+                          <option value="WHITELABEL">White Label</option>
+                        </select>
+
+                        {/* Approve/Unapprove */}
+                        <button
+                          onClick={() => handleToggleApproval(u.id, u.is_approved)}
+                          className={`text-[10px] px-3 py-1.5 rounded-lg font-black transition ${
+                            u.is_approved
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                              : 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse'
+                          }`}
+                        >
+                          {u.is_approved ? '✓ APPROVED' : '⚡ APPROVE'}
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => handleDeleteUser(u.id, u.email)}
+                          className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition"
+                          title="Delete user"
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <select 
-                        className="nm-badge text-[11px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-1 cursor-pointer outline-none font-bold uppercase"
-                        value={(u.plan || 'STARTER').toUpperCase()}
-                        onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
-                      >
-                        <option value="STARTER">Starter</option>
-                        <option value="STANDARD">Standard</option>
-                        <option value="PREMIUM">Premium</option>
-                        <option value="WHITELABEL">Partner</option>
-                      </select>
-                      
-                      <button 
-                        onClick={() => handleToggleApproval(u.id, u.is_approved)}
-                        className={`nm-badge text-[10px] px-3 py-1 font-bold transition-all ${
-                          u.is_approved 
-                          ? 'bg-green-500/10 text-green-500 border-green-500/20' 
-                          : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-                        }`}
-                      >
-                        {u.is_approved ? '✓ APPROVED' : '⚡ APPROVE'}
-                      </button>
-                      <button onClick={() => handleDeleteUser(u.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-        {/* Events Tab */}
-        {activeTab === 'events' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold" style={{color:'var(--text1)'}}>All Events ({events.length})</h2>
-            {events.length === 0 ? (
-              <div className="nm-card text-center p-12" style={{color:'var(--text2)'}}>No events found</div>
-            ) : (
-              <div className="grid gap-3">
-                {events.map((event) => (
-                  <div key={event.id} className="nm-card p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-semibold" style={{color:'var(--text1)'}}>{event.name}</h3>
-                        <p className="text-xs" style={{color:'var(--text2)'}}>
-                          By {event.owner_email} on {new Date(event.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <button onClick={() => handleDeleteEvent(event.id)} className="nm-circle w-8 h-8 text-sm" style={{color:'#f87171'}} title="Delete">🗑️</button>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 text-xs">
-                      <span className="nm-badge">📸 {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</span>
-                      <Link href={`/wall/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#f59e0b'}}>🖼️ Wall</Link>
-                      <Link href={`/upload/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'var(--text2)'}}>📱 Upload</Link>
-                      <Link href={`/moderate/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'var(--text2)'}}>🛡️ Moderate</Link>
-                      <Link href={`/admin/edit-event/${event.slug}`} className="nm-btn px-3 py-1" style={{color:'#818cf8'}}>✏️ Edit</Link>
-                    </div>
-                  </div>
-                ))}
+          {/* ═══════════════════ EVENTS ═══════════════════ */}
+          {activeTab === 'events' && (
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-2xl font-black tracking-tight mb-1">Event Management</h2>
+                <p className="text-sm text-slate-500">{filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}</p>
               </div>
-            )}
-          </div>
-        )}
+
+              {loading ? (
+                <div className="py-20 text-center text-slate-500">Loading events...</div>
+              ) : filteredEvents.length === 0 ? (
+                <div className={`${cardClass} text-center py-16 text-slate-500`}>No events found</div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredEvents.map(event => (
+                    <div key={event.id} className={`${cardClass} p-5`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="text-sm font-bold text-white">{event.name}</h3>
+                          <p className="text-[11px] text-slate-500">
+                            By <span className="text-amber-400">{event.owner_email}</span> • {new Date(event.created_at).toLocaleDateString()}
+                            {event.plan_type && <span className="ml-2 text-slate-400">({event.plan_type})</span>}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteEvent(event.id, event.name)}
+                          className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition shrink-0"
+                          title="Delete event"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold">📸 {event.photo_count} photos</span>
+                        <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-mono">/{event.slug}</span>
+                        <Link href={`/wall/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold hover:bg-amber-500/20 transition">🖼️ Wall</Link>
+                        <Link href={`/mobile/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold hover:bg-white/10 transition">📱 Upload</Link>
+                        <Link href={`/moderate/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold hover:bg-white/10 transition">🛡️ Moderate</Link>
+                        <Link href={`/admin/edit-event/${event.slug}`} className="text-[11px] px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20 transition">✏️ Edit</Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══════════════════ PAYMENTS ═══════════════════ */}
+          {activeTab === 'payments' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-black tracking-tight mb-1">Payment Management</h2>
+                <p className="text-sm text-slate-500">Manual payment approvals for Oman bank transfers and pending Indian payments</p>
+              </div>
+
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">How It Works</h3>
+                <div className="space-y-3 text-sm text-slate-400">
+                  <p>1. Omani users register and are redirected to WhatsApp (+968 96095692) to confirm their bank transfer.</p>
+                  <p>2. Once you receive confirmation and verify the payment, come here and go to the <button onClick={() => setActiveTab('users')} className="text-amber-400 underline font-bold">Users tab</button>.</p>
+                  <p>3. Find the user, set their <strong className="text-white">Plan</strong> to the tier they paid for, and click <strong className="text-emerald-400">✓ APPROVE</strong>.</p>
+                  <p>4. The user will automatically gain access to all features of their plan.</p>
+                </div>
+              </div>
+
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Omani Payment Details (Your Account)</h3>
+                <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Bank Transfer (IBAN)</p>
+                    <p className="text-white font-bold">Sagar Shaik Trade LLC</p>
+                    <p className="text-slate-400 font-mono text-xs mt-1">0364073422230017</p>
+                    <p className="text-slate-500 text-xs mt-1">Bank Muscat</p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Mobile Transfer</p>
+                    <p className="text-white font-bold font-mono text-lg tracking-widest">9609 5692</p>
+                    <p className="text-slate-500 text-xs mt-1">Bank Muscat Mobile</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Pricing Reference</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-slate-500 border-b border-white/10">
+                        <th className="pb-3 font-bold">Plan</th>
+                        <th className="pb-3 font-bold">🇴🇲 OMR</th>
+                        <th className="pb-3 font-bold">🇮🇳 INR</th>
+                        <th className="pb-3 font-bold">🌐 USD</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-slate-300">
+                      <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Starter</td><td>15</td><td>₹2,499</td><td>$30</td></tr>
+                      <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td>29</td><td>₹4,999</td><td>$60</td></tr>
+                      <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td>39</td><td>₹7,499</td><td>$90</td></tr>
+                      <tr><td className="py-2.5 font-bold">White Label</td><td>59</td><td>₹9,999</td><td>$120</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════ SETTINGS ═══════════════════ */}
+          {activeTab === 'settings' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-black tracking-tight mb-1">System Settings</h2>
+                <p className="text-sm text-slate-500">Platform configuration and environment info</p>
+              </div>
+
+              {/* Super Admin Info */}
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-amber-400 mb-4">⚡ Super Admin</h3>
+                <div className="space-y-2 text-sm text-slate-400">
+                  <p><span className="text-slate-500 w-28 inline-block">Email:</span> <span className="text-white font-bold">sagarfalcon@gmail.com</span></p>
+                  <p><span className="text-slate-500 w-28 inline-block">Plan Override:</span> <span className="text-amber-400 font-bold">White Label (All Features)</span></p>
+                  <p><span className="text-slate-500 w-28 inline-block">Walls:</span> <span className="text-emerald-400 font-bold">Unlimited</span></p>
+                  <p><span className="text-slate-500 w-28 inline-block">Status:</span> <span className="text-emerald-400 font-bold">Always Approved, Always Paid</span></p>
+                </div>
+              </div>
+
+              {/* Environment */}
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">🔑 Environment</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Supabase URL</span>
+                    <span className="text-slate-300 font-mono text-xs truncate max-w-[300px]">{process.env.NEXT_PUBLIC_SUPABASE_URL || '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Supabase Anon Key</span>
+                    <span className="text-slate-300 font-mono text-xs">{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '••••' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.slice(-8) : '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Node Env</span>
+                    <span className="text-slate-300 font-mono text-xs">{process.env.NODE_ENV}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Useful Links */}
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">🔗 Quick Links</h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { label: 'Supabase Dashboard', url: process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('.supabase.co', '.supabase.co') || '#', icon: '🗄️' },
+                    { label: 'Vercel Dashboard', url: 'https://vercel.com', icon: '▲' },
+                    { label: 'Razorpay Dashboard', url: 'https://dashboard.razorpay.com', icon: '💳' },
+                    { label: 'WhatsApp Business', url: 'https://wa.me/96896095692', icon: '💬' },
+                  ].map(link => (
+                    <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-slate-300 font-medium">
+                      <span className="text-lg">{link.icon}</span>
+                      {link.label}
+                      <span className="ml-auto text-slate-500">↗</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Platform Info */}
+              <div className={`${cardClass} p-6`}>
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">ℹ️ Platform</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Framework</span>
+                    <span className="text-slate-300">Next.js 16 (Turbopack)</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Database</span>
+                    <span className="text-slate-300">Supabase (PostgreSQL)</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Storage</span>
+                    <span className="text-slate-300">Supabase Storage (S3)</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">Auth</span>
+                    <span className="text-slate-300">Supabase Auth + Google OAuth</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-white/5">
+                    <span className="text-slate-500">AI Engine</span>
+                    <span className="text-slate-300">face-api.js (TensorFlow)</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-500">Payments</span>
+                    <span className="text-slate-300">Razorpay (IN) / Manual (OM)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
 }
-

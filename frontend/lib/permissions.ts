@@ -31,10 +31,19 @@ const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
 };
 
 /**
+ * Super admin email — has access to everything.
+ */
+const SUPER_ADMIN_EMAIL = 'sagarfalcon@gmail.com';
+
+/**
  * Check if a plan tier has access to a specific feature.
  * Tiers are hierarchical: higher tiers include all lower tier features.
+ * Super admin always returns true.
  */
-export function hasFeature(currentPlan: string | null | undefined, feature: Feature): boolean {
+export function hasFeature(currentPlan: string | null | undefined, feature: Feature, userEmail?: string | null): boolean {
+  // Super admin bypass
+  if (userEmail === SUPER_ADMIN_EMAIL) return true;
+  
   if (!currentPlan) return false;
   
   const normalizedPlan = currentPlan.toUpperCase() as PlanTier;

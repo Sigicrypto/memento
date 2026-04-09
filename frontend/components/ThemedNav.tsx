@@ -37,10 +37,10 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
       animate={{ 
         y: 0, 
         opacity: 1,
-        backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.65)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(32px) saturate(200%)' : 'blur(0px)',
-        boxShadow: scrolled ? '0 10px 40px rgba(245, 158, 11, 0.15)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid transparent'
+        backgroundColor: scrolled ? 'rgba(10, 10, 11, 0.8)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(0px)',
+        boxShadow: scrolled ? '0 10px 40px rgba(0, 0, 0, 0.3)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid transparent'
       }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="lp-nav !px-0"
@@ -52,7 +52,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <AnimatedLogo width={180} height={60} />
+            <AnimatedLogo width={260} height={86} />
           </motion.div>
         </Link>
 
@@ -98,7 +98,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   style={{ 
                     padding: '1.2rem', 
                     color: 'var(--color-text-secondary)', 
-                    fontSize: '0.8rem', 
+                    fontSize: '1rem', 
                     cursor: 'pointer', 
                     transition: 'all 0.2s'
                   }}
@@ -114,7 +114,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   style={{ 
                     padding: '1.2rem', 
                     color: 'var(--color-text-secondary)', 
-                    fontSize: '0.85rem', 
+                    fontSize: '1rem', 
                     fontWeight: 700,
                     cursor: 'pointer', 
                     background: 'none',
