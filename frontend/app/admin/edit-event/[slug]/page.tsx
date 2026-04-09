@@ -241,5 +241,4 @@ export default function EditEventPage() {
       </div>
     </div>
   );
-  );
 }

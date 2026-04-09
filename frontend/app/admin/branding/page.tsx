@@ -128,6 +128,5 @@ export default function BrandingPage() {
       </div>
     </div>
   );
-  );
 }
 
