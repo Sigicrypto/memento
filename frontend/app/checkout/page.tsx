@@ -174,88 +174,93 @@ function CheckoutContent() {
   };
 
   if (isLoading) return (
-    <div className="nm-page flex items-center justify-center">
-      <div className="nm-circle w-14 h-14">
-        <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-      </div>
+    <div className="lp min-h-screen relative overflow-hidden flex items-center justify-center">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+      <div className="relative z-10 w-14 h-14 border-4 rounded-full border-white/10 border-t-amber-500 animate-spin" />
     </div>
   );
 
   return (
-    <div className="nm-page flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="nm-card p-8 text-center">
-          {status === 'IDLE' && (
-            <>
-              <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">💳</div>
-              <h1 className="text-2xl font-bold mb-2" style={{color:'var(--text1)'}}>Checkout</h1>
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <span className="nm-badge" style={{background:'linear-gradient(135deg,#f59e0b,#f472b6)',color:'var(--surface)',boxShadow:'none'}}>One-time</span>
-                <span className="nm-badge">{regionLabel} price</span>
-              </div>
-              <p className="text-sm mb-6" style={{color:'var(--text2)'}}>
-                Upgrading {eventData ? <span className="font-bold text-slate-800">"{eventData.name}"</span> : 'account'} to <span className="font-bold" style={{color:'#f59e0b'}}>{planLabel}</span>.
-              </p>
+    <main className="lp min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-12">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
 
-              <div className="nm-inset p-4 mb-8 text-left rounded-2xl">
-                <div className="flex justify-between text-sm mb-2">
-                  <span style={{color:'var(--text2)'}}>Memento {planLabel}</span>
-                  <span className="font-bold text-xs" style={{color:'#4a4f6a'}}>Demo checkout</span>
+      <div className="relative z-10 w-full max-w-md">
+        <div className="gcard cinematic-glow text-center">
+          <div className="gcard-border" />
+          <div className="gcard-inner p-8 md:p-10">
+            {status === 'IDLE' && (
+              <>
+                <div className="w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/20 text-4xl mx-auto mb-6 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.2)]">💳</div>
+                <h1 className="text-3xl font-bold mb-2 text-white">Checkout</h1>
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-gradient-to-r from-amber-500 to-rose-500 text-white">One-time</span>
+                  <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/10 text-slate-300">{regionLabel} price</span>
                 </div>
-                <div className="nm-divider my-2" />
-                <div className="flex justify-between font-bold">
-                  <span style={{color:'var(--text1)'}}>Total Due</span>
-                  <span style={{color:'#f59e0b'}}>{priceDisplay}</span>
+                <p className="text-sm mb-8 text-slate-400">
+                  Upgrading {eventData ? <span className="font-bold text-slate-200">&quot;{eventData.name}&quot;</span> : 'account'} to <span className="font-bold text-amber-400">{planLabel}</span>.
+                </p>
+
+                <div className="p-5 mb-8 text-left rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                  <div className="flex justify-between text-sm mb-3">
+                    <span className="text-slate-300">Memento {planLabel}</span>
+                    <span className="font-bold text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/20">Demo</span>
+                  </div>
+                  <div className="w-full h-px bg-white/10 my-4" />
+                  <div className="flex justify-between font-bold text-lg">
+                    <span className="text-white">Total Due</span>
+                    <span className="text-amber-400">{priceDisplay}</span>
+                  </div>
+                  <p className="text-xs mt-3 text-slate-500 font-medium">One-time payment. No subscriptions, no recurring charges.</p>
                 </div>
-                <p className="text-xs mt-2" style={{color:'#4a4f6a'}}>One-time payment. No subscriptions, no recurring charges.</p>
-              </div>
 
-              <button onClick={handlePayment} className="nm-btn nm-btn-accent w-full py-4 text-base font-bold mb-4">
-                {region === 'IN' ? '🇮🇳 Pay with Razorpay' : '🌐 Pay with Stripe'}
-              </button>
-              <Link href="/#pricing" className="text-xs" style={{color:'#4a4f6a'}}>Cancel and go back</Link>
-            </>
-          )}
+                <button onClick={handlePayment} className="btn-hero-primary w-full py-4 text-base font-bold mb-4 shadow-lg shadow-amber-500/20">
+                  {region === 'IN' ? '🇮🇳 Pay with Razorpay' : '🌐 Pay with Stripe'}
+                </button>
+                <Link href="/#pricing" className="text-xs text-slate-500 hover:text-white transition-colors font-semibold">Cancel and go back</Link>
+              </>
+            )}
 
-          {status === 'PROCESSING' && (
-            <div className="py-10">
-              <div className="nm-circle w-16 h-16 mx-auto mb-6">
-                <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
+            {status === 'PROCESSING' && (
+              <div className="py-10">
+                <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20 mx-auto mb-6 flex items-center justify-center">
+                  <div className="w-8 h-8 border-4 rounded-full animate-spin border-transparent border-t-amber-500" />
+                </div>
+                <h2 className="text-2xl font-bold mb-3 text-white">Processing Payment...</h2>
+                <p className="text-sm text-slate-400">Please do not refresh the page.</p>
               </div>
-              <h2 className="text-xl font-bold mb-2" style={{color:'var(--text1)'}}>Processing Payment...</h2>
-              <p className="text-sm" style={{color:'var(--text2)'}}>Please do not refresh the page.</p>
-            </div>
-          )}
+            )}
 
-          {status === 'SUCCESS' && (
-            <div className="py-10">
-              <div className="nm-circle w-20 h-20 mx-auto mb-6 text-4xl">✅</div>
-              <h2 className="text-2xl font-bold mb-2" style={{color:'var(--text1)'}}>Upgrade Successful!</h2>
-              <p className="text-sm mb-8" style={{color:'var(--text2)'}}>
-                Your account has been upgraded to {planLabel}. Redirecting...
-              </p>
-              <div className="nm-inset h-2 rounded-full overflow-hidden">
-                <div className="h-full w-full transition-all duration-500" style={{background:'linear-gradient(90deg,#f59e0b,#f472b6)'}} />
+            {status === 'SUCCESS' && (
+              <div className="py-10">
+                <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 mx-auto mb-6 text-4xl flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]">✅</div>
+                <h2 className="text-2xl font-bold mb-3 text-white">Upgrade Successful!</h2>
+                <p className="text-sm mb-8 text-slate-400">
+                  Your account has been upgraded to <span className="font-bold text-amber-400">{planLabel}</span>. Redirecting...
+                </p>
+                <div className="h-2 rounded-full overflow-hidden bg-white/5 border border-white/10">
+                  <div className="h-full w-full transition-all duration-1000 ease-out bg-gradient-to-r from-amber-500 to-rose-500 origin-left animate-pulse" />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
 export default function CheckoutPage() {
   return (
     <Suspense fallback={
-      <div className="nm-page flex items-center justify-center">
-        <div className="nm-circle w-14 h-14">
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-        </div>
+      <div className="lp min-h-screen relative overflow-hidden flex items-center justify-center">
+        <div className="aurora-bg fixed inset-0 z-0" />
+        <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+        <div className="relative z-10 w-14 h-14 border-4 rounded-full border-white/10 border-t-amber-500 animate-spin" />
       </div>
     }>
       <CheckoutContent />
     </Suspense>
   );
 }
-

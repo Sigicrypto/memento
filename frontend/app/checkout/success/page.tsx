@@ -44,57 +44,62 @@ function SuccessContent() {
   }, [plan, eventId, router]);
 
   return (
-    <div className="nm-page flex items-center justify-center px-4 py-24 relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-20 pointer-events-none" style={{background: 'radial-gradient(circle, #f59e0b, transparent)'}} />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-20 pointer-events-none" style={{background: 'radial-gradient(circle, #f472b6, transparent)'}} />
+    <main className="lp min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-24">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+
+      {/* Additional glows for success page */}
+      <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] opacity-20 pointer-events-none bg-emerald-500/40" />
 
       <div className="w-full max-w-xl relative z-10">
-        <div className="nm-card p-12 text-center backdrop-blur-xl border border-white/5 shadow-2xl">
-          <div className="nm-circle w-24 h-24 mx-auto mb-8 text-5xl flex items-center justify-center animate-bounce" style={{background:'rgba(34,197,94,0.1)', color:'#22c55e'}}>
-            ✨
-          </div>
-          <h1 className="text-4xl font-black mb-4 tracking-tight" style={{color:'var(--text1)'}}>
-            Welcome to <span style={{background:'linear-gradient(135deg, #f59e0b, #f472b6)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent'}}>Premium</span>
-          </h1>
-          <p className="text-lg mb-8 leading-relaxed" style={{color:'var(--text2)'}}>
-            Your account and {eventId ? 'event' : 'dashboard'} have been upgraded to <span className="font-bold underline decoration-amber-500/30 underline-offset-4">{PLAN_DISPLAY[plan] || plan}</span>.
-          </p>
-          
-          <div className="nm-inset p-6 mb-10 rounded-2xl border border-white/5 group transition-all hover:bg-white/5">
-            <h3 className="text-sm font-bold uppercase tracking-widest mb-4 opacity-50" style={{color:'var(--text1)'}}>Now Unlocked</h3>
-            <div className="grid grid-cols-2 gap-4 text-left">
-              <div className="flex items-center gap-3">
-                <span className="text-amber-500">✓</span>
-                <span className="text-xs" style={{color:'var(--text2)'}}>Extended Storage</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-amber-500">✓</span>
-                <span className="text-xs" style={{color:'var(--text2)'}}>High-Res Exports</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-amber-500">✓</span>
-                <span className="text-xs" style={{color:'var(--text2)'}}>Custom Branding</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-amber-500">✓</span>
-                <span className="text-xs" style={{color:'var(--text2)'}}>Priority Support</span>
+        <div className="gcard cinematic-glow text-center backdrop-blur-xl border border-white/5 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]">
+          <div className="gcard-border" />
+          <div className="gcard-inner p-12">
+            <div className="w-24 h-24 rounded-full mx-auto mb-8 text-5xl flex items-center justify-center animate-bounce bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+              ✨
+            </div>
+            <h1 className="text-4xl font-black mb-4 tracking-tight text-white">
+              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-400">Premium</span>
+            </h1>
+            <p className="text-lg mb-8 leading-relaxed text-slate-300">
+              Your account and {eventId ? 'event' : 'dashboard'} have been upgraded to <span className="font-bold underline decoration-amber-500/50 underline-offset-4 text-emerald-400">{PLAN_DISPLAY[plan] || plan}</span>.
+            </p>
+            
+            <div className="bg-white/5 p-6 mb-10 rounded-2xl border border-white/10 shadow-inner group transition-all hover:bg-white/10">
+              <h3 className="text-sm font-bold uppercase tracking-widest mb-4 text-slate-500">Now Unlocked</h3>
+              <div className="grid grid-cols-2 gap-4 text-left">
+                <div className="flex items-center gap-3">
+                  <span className="text-amber-500">✓</span>
+                  <span className="text-xs font-semibold text-slate-300">Extended Storage</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-amber-500">✓</span>
+                  <span className="text-xs font-semibold text-slate-300">High-Res Exports</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-amber-500">✓</span>
+                  <span className="text-xs font-semibold text-slate-300">Custom Branding</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-amber-500">✓</span>
+                  <span className="text-xs font-semibold text-slate-300">Priority Support</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <p className="text-sm mb-4" style={{color:'#7f849c'}}>Redirecting you in a few seconds...</p>
-          <div className="nm-inset h-1.5 rounded-full overflow-hidden mb-8 max-w-xs mx-auto">
-            <div className="h-full bg-gradient-to-r from-amber-500 to-pink-500 transition-all duration-[5000ms] ease-linear w-0 animate-progress" />
-          </div>
-          
-          <div className="flex gap-4">
-            <Link href="/dashboard" className="nm-btn flex-1 py-4 font-bold text-sm tracking-wide">
-              Dashboard
-            </Link>
-            <Link href={eventId ? `/wall/${eventId}` : '/create'} className="nm-btn nm-btn-accent flex-[1.5] py-4 font-bold text-sm tracking-wide flex items-center justify-center gap-2">
-              Launch Live Wall <span className="text-lg">→</span>
-            </Link>
+            <p className="text-sm mb-4 text-slate-400">Redirecting you in a few seconds...</p>
+            <div className="h-1.5 rounded-full overflow-hidden mb-8 max-w-xs mx-auto bg-white/10">
+              <div className="h-full bg-gradient-to-r from-amber-500 to-pink-500 transition-all duration-[5000ms] ease-linear w-0 animate-progress" />
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/dashboard" className="flex-1 py-4 font-bold text-sm tracking-wide rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all text-center">
+                Dashboard
+              </Link>
+              <Link href={eventId ? `/wall/${eventId}` : '/create'} className="btn-hero-primary flex-[1.5] !py-4 text-sm flex items-center justify-center gap-2">
+                Launch Live Wall <span className="text-lg">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -107,21 +112,20 @@ function SuccessContent() {
           animation: progress 5s linear forwards;
         }
       `}</style>
-    </div>
+    </main>
   );
 }
 
 export default function StripeSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="nm-page flex items-center justify-center">
-        <div className="nm-circle w-14 h-14">
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-        </div>
+      <div className="lp min-h-screen relative overflow-hidden flex items-center justify-center">
+        <div className="aurora-bg fixed inset-0 z-0" />
+        <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+        <div className="relative z-10 w-14 h-14 border-4 rounded-full border-white/10 border-t-amber-500 animate-spin" />
       </div>
     }>
       <SuccessContent />
     </Suspense>
   );
 }
-

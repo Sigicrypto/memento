@@ -14,12 +14,13 @@ export default function PricingPage({
   const eventId = searchParams?.eventId;
 
   return (
-    <main className="min-h-screen bg-[#0e1228]">
+    <main className="lp min-h-screen relative overflow-hidden flex flex-col">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+
       <Suspense fallback={
-        <div className="nm-page flex items-center justify-center">
-          <div className="nm-circle w-14 h-14">
-            <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{borderColor:'#252c46',borderTopColor:'#f59e0b'}} />
-          </div>
+        <div className="min-h-screen flex items-center justify-center relative z-10">
+          <div className="w-14 h-14 border-4 rounded-full animate-spin border-white/10 border-t-amber-500" />
         </div>
       }>
         <Pricing isEmbedded={false} eventId={eventId} />

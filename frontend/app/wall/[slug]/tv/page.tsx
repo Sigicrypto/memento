@@ -82,33 +82,50 @@ export default function TVModePage() {
 
   if (!currentPhoto) {
     return (
-      <div className="fixed inset-0 bg-[#14182a] flex items-center justify-center text-white">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">{eventName}</h1>
-          <p>Waiting for photos...</p>
+      <div className="lp min-h-screen relative overflow-hidden flex items-center justify-center text-white">
+        <div className="aurora-bg fixed inset-0 z-0" />
+        <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+        
+        <div className="relative z-10 text-center flex flex-col items-center">
+          <div className="w-16 h-16 border-4 rounded-full border-white/10 border-t-amber-500 animate-spin mb-6" />
+          <h1 className="text-4xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-rose-400">{eventName}</h1>
+          <p className="text-slate-400 text-lg uppercase tracking-widest font-bold animate-pulse">Waiting for photos...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-[#14182a] text-white flex flex-col items-center justify-center overflow-hidden">
-      <div className="absolute top-4 right-4 z-10">
-        <Link href={`/wall/${slug}`} className="nm-btn px-4 py-2 text-sm">✕ Exit TV Mode</Link>
+    <div className="lp min-h-screen relative overflow-hidden text-white flex flex-col items-center justify-center">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
+      
+      <div className="absolute top-6 right-6 z-50">
+        <Link href={`/wall/${slug}`} className="px-5 py-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/10 transition-all font-bold text-sm text-slate-300 hover:text-white flex items-center gap-2">
+          ✕ Exit TV Mode
+        </Link>
       </div>
 
-      <div className="w-full h-full flex items-center justify-center">
-        {currentPhoto.media_type === 'video' ? (
-          <video key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} autoPlay muted loop playsInline className="max-h-full max-w-full object-contain" />
-        ) : (
-          <img key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} alt="" className="max-h-full max-w-full object-contain" />
-        )}
+      <div className="relative z-10 w-full h-full flex items-center justify-center p-8">
+        <div className="relative w-full h-full flex items-center justify-center">
+          {currentPhoto.media_type === 'video' ? (
+            <video key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} autoPlay muted loop playsInline className="max-h-full max-w-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10" />
+          ) : (
+            <img key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} alt="" className="max-h-full max-w-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10" />
+          )}
+        </div>
       </div>
 
       {(currentPhoto.caption || currentPhoto.uploader_name) && (
-        <div className="absolute bottom-10 left-10 right-10 bg-black/50 p-4 rounded-lg text-center">
-          {currentPhoto.caption && <p className="text-xl italic mb-2">\"{currentPhoto.caption}\"</p>}
-          <p className="text-lg font-bold">— {currentPhoto.uploader_name}</p>
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-4xl px-6">
+          <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-6 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+            
+            {currentPhoto.caption && <p className="text-2xl md:text-3xl font-medium mb-3 text-white leading-relaxed tracking-wide">"{currentPhoto.caption}"</p>}
+            <div className="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-white/10">
+              <p className="text-base font-bold text-amber-400 uppercase tracking-widest">{currentPhoto.uploader_name}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
