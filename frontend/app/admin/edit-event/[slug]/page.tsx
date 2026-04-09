@@ -75,7 +75,7 @@ export default function EditEventPage() {
         setPrimaryColor(data.theme_primary_color || '#f59e0b');
         setSecondaryColor(data.theme_secondary_color || '#f472b6');
         setEnableSafetyFilter(data.enable_safety_filter || false);
-        setExpiresAt(data.expires_at ? new Date(data.expires_at).toISOString().split('T')[0] : null);
+        setExpiresAt(data.expires_at ? new Date(data.expires_at).toISOString().substring(0, 16) : null);
         setEnableAiAlbum(data.enable_ai_album || false);
         setEnableSmartPrivacy(data.enable_smart_privacy || false);
         setWatermarkPreview(data.watermark_url || null);
@@ -183,8 +183,9 @@ export default function EditEventPage() {
               </label>
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Expiration Date</label>
-              <input type="date" value={expiresAt || ''} onChange={e => setExpiresAt(e.target.value)} className="nm-input" />
+              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Wall Active Until (Live Window)</label>
+              <input type="datetime-local" value={expiresAt || ''} onChange={e => setExpiresAt(e.target.value)} className="nm-input" />
+              <p className="text-[10px] mt-2 opacity-60" style={{color:'var(--text2)'}}>Determine when the live wall stops accepting new uploads. Photos are still stored for the full plan duration.</p>
             </div>
             <div>
               <label className="flex items-center justify-between nm-input p-4">

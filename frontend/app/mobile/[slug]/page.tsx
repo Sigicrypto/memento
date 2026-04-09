@@ -132,9 +132,10 @@ interface Photo {
 interface Event {
   id: string;
   name: string;
-  enable_smart_privacy?: boolean;
   plan_type?: string;
   enable_safety_filter?: boolean;
+  enable_smart_privacy?: boolean;
+  expires_at?: string | null;
 }
 
 export default function MobilePage() {
@@ -195,7 +196,7 @@ export default function MobilePage() {
       console.log("[mobile] fetching event for slug:", slug);
       const { data, error } = await supabase
         .from('events')
-        .select('id, name, plan_type, enable_safety_filter')
+        .select('id, name, plan_type, enable_safety_filter, enable_smart_privacy, expires_at')
         .eq('slug', slug)
         .single();
 
@@ -470,6 +471,23 @@ export default function MobilePage() {
   };
 
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
+
+  const isExpired = event?.expires_at && new Date(event.expires_at) < new Date();
+
+  if (isExpired) return (
+    <div className="mobile-page flex items-center justify-center p-6 text-center">
+      <FontLoader />
+      <BackgroundDecoration />
+      <div className="glass-card p-12 max-w-sm w-full">
+        <div style={{ fontSize: 64, marginBottom: 20 }}>📅</div>
+        <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16, color: 'var(--text1)' }}>Event Concluded</h1>
+        <p style={{ color: 'var(--text2)', marginBottom: 32, fontSize: 14 }}>
+          The active window for this wall has closed. You can no longer upload photos, but your shared memories are safe!
+        </p>
+        <Link href="/" className="btn-glow block py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">Return Home</Link>
+      </div>
+    </div>
+  );
 
   return (
     <div className="mobile-page pb-40" style={{ paddingTop:'80px' }}>

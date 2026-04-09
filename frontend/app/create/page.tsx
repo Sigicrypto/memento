@@ -61,6 +61,7 @@ export default function CreateEventPage() {
       name, slug, owner_id: user.id, owner_email: user.email, created_at: new Date().toISOString(),
       password: password || null,
       plan_type: (plan || 'STARTER').toUpperCase(),
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     });
 
     console.log("[create] insert error:", dbError);
