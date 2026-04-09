@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 export default function BrandingPage() {
   const { user, isLoading } = useAuth();
@@ -67,46 +68,66 @@ export default function BrandingPage() {
   };
 
   if (loading || isLoading) {
-    return <div className="nm-page flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="lp min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="nm-page px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <Link href="/admin" className="nm-btn text-sm">← Back to Admin</Link>
+    <div className="lp min-h-screen text-white relative overflow-hidden flex flex-col pt-24 pb-12 px-4">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.04] pointer-events-none" />
+
+      <div className="relative z-10 max-w-2xl w-full mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/admin" className="btn-outline">
+            ← Back to Admin
+          </Link>
+          <AnimatedLogo width={140} height={45} />
         </div>
-        <div className="nm-card p-8">
-          <h1 className="text-2xl font-bold mb-6" style={{color: 'var(--text1)'}}>White-Label Branding</h1>
-          <form onSubmit={handleUpdate} className="space-y-6">
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Brand Logo</label>
-              <input type="file" accept="image/png, image/jpeg" onChange={(e) => setBrandLogoFile(e.target.files?.[0] || null)} className="nm-input" />
-              {brandLogoPreview && <img src={brandLogoPreview} alt="Logo preview" className="w-32 h-auto object-contain mt-4" />}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Primary Color</label>
-                <div className="flex items-center gap-2 nm-input p-2">
-                  <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8" />
-                  <span>{primaryColor}</span>
+
+        <div className="gcard cinematic-glow shadow-2xl">
+          <div className="gcard-border" />
+          <div className="gcard-inner p-8 lg:p-12">
+            <h1 className="text-3xl font-black mb-8 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              White-Label Branding
+            </h1>
+            <form onSubmit={handleUpdate} className="space-y-8">
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <label className="block text-xs font-bold mb-4 uppercase tracking-widest text-slate-500">Brand Logo</label>
+                <input type="file" accept="image/png, image/jpeg" onChange={(e) => setBrandLogoFile(e.target.files?.[0] || null)} 
+                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-400 hover:file:bg-amber-500/20 cursor-pointer transition-all" />
+                {brandLogoPreview && <img src={brandLogoPreview} alt="Logo preview" className="w-32 h-auto object-contain mt-6 mx-auto rounded-xl bg-black/40 p-4 border border-white/5 shadow-inner" />}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                  <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Primary Color</label>
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                    <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" />
+                    <span className="text-xs font-mono font-bold tracking-widest">{primaryColor.toUpperCase()}</span>
+                  </div>
+                </div>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                  <label className="block text-[10px] font-bold mb-4 uppercase tracking-widest text-slate-500">Secondary Color</label>
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                    <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" />
+                    <span className="text-xs font-mono font-bold tracking-widest">{secondaryColor.toUpperCase()}</span>
+                  </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Secondary Color</label>
-                <div className="flex items-center gap-2 nm-input p-2">
-                  <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8" />
-                  <span>{secondaryColor}</span>
-                </div>
+              <div className="pt-6">
+                <button type="submit" className="btn-glow w-full py-4 font-black uppercase tracking-[0.2em] shadow-amber-500/20">
+                  Save Branding Settings
+                </button>
               </div>
-            </div>
-            <div>
-              <button type="submit" className="nm-btn nm-btn-accent w-full py-3 font-bold">Save Branding</button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+  );
   );
 }
 

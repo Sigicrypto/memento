@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 export default function SystemAdminPage() {
   const { user, profile } = useAuth();
@@ -100,11 +101,8 @@ export default function SystemAdminPage() {
 
       <div className="relative z-10 max-w-md w-full">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 mb-4 justify-center group">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 font-bold text-lg text-amber-500 flex items-center justify-center group-hover:bg-amber-500/20 transition-all shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-              M
-            </div>
-            <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-rose-400 tracking-tight">Memento</span>
+          <Link href="/" className="inline-flex items-center gap-3 mb-6 justify-center group transform hover:scale-105 transition-all">
+            <AnimatedLogo width={220} height={70} />
           </Link>
           <h1 className="text-3xl font-bold mb-2 text-white tracking-tight">
             {user ? 'Elevate Account' : 'System Access'}

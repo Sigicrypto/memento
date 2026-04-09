@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 interface DownloadStat {
   photo_id: string;
@@ -60,25 +61,49 @@ export default function AnalyticsPage() {
   };
 
   if (loading || isLoading || !isAdmin) {
-    return <div className="nm-page flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="lp min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="nm-page px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <Link href="/admin" className="nm-btn text-sm">← Back to Admin</Link>
+    <div className="lp min-h-screen text-white relative overflow-hidden flex flex-col pt-24 pb-12 px-4">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.04] pointer-events-none" />
+
+      <div className="relative z-10 max-w-5xl w-full mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/admin" className="btn-outline">
+            ← Back to Admin
+          </Link>
+          <AnimatedLogo width={140} height={45} />
         </div>
-        <div className="nm-card p-8 mb-8">
-          <h1 className="text-2xl font-bold mb-2" style={{color: 'var(--text1)'}}>Download Analytics</h1>
-          <p className="text-sm" style={{color:'var(--text2)'}}>Total Downloads: {totalDownloads}</p>
+
+        <div className="gcard cinematic-glow mb-8 overflow-hidden">
+          <div className="gcard-border" />
+          <div className="gcard-inner p-8 lg:p-12">
+            <h1 className="text-3xl font-black mb-2 tracking-tight">Download Analytics</h1>
+            <p className="text-sm font-bold uppercase tracking-widest text-amber-500">
+              Total Community Downloads: <span className="text-white text-xl ml-2">{totalDownloads.toLocaleString()}</span>
+            </p>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {stats.map(stat => (
-            <div key={stat.photo_id} className="nm-card p-4 text-center">
-              <img src={getPublicUrl(stat.storage_path)} alt="Photo" className="w-full h-auto object-cover rounded-lg mb-2" />
-              <p className="text-lg font-bold" style={{color: 'var(--text1)'}}>{stat.download_count}</p>
-              <p className="text-xs" style={{color: 'var(--text2)'}}>Downloads</p>
+            <div key={stat.photo_id} className="gcard cinematic-glow group overflow-hidden transition-all duration-300 hover:scale-[1.05]">
+              <div className="gcard-border" />
+              <div className="gcard-inner">
+                <div className="aspect-square w-full overflow-hidden">
+                  <img src={getPublicUrl(stat.storage_path)} alt="Photo" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                </div>
+                <div className="p-4 text-center bg-black/40 backdrop-blur-md">
+                  <p className="text-2xl font-black text-white">{stat.download_count}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Downloads</p>
+                </div>
+              </div>
             </div>
           ))}
         </div>

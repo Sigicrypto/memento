@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 interface Event {
   id: string;
@@ -126,97 +127,119 @@ export default function EditEventPage() {
   };
 
   if (loading || isLoading || !isAdmin) {
-    return <div className="nm-page flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="lp min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
-    <div className="nm-page px-4 py-12">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <Link href="/admin?tab=events" className="nm-btn text-sm">← Back to Events</Link>
-        </div>
-        <div className="nm-card p-8">
-          <h1 className="text-2xl font-bold mb-6" style={{color: 'var(--text1)'}}>Edit Event: {event?.name}</h1>
-          <form onSubmit={handleUpdate} className="space-y-6">
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Event Name</label>
-              <input type="text" value={name} onChange={e => setName(e.target.value)} className="nm-input" />
-            </div>
-            {/* Branding - White Label Only */}
-            <div className={`p-4 rounded-2xl ${event?.plan_type === 'WHITE_LABEL' ? 'nm-inset' : 'opacity-50 grayscale pointer-events-none'}`}>
-              <div className="flex items-center justify-between mb-4">
-                <label className="text-xs font-bold uppercase tracking-widest" style={{color:'var(--text2)'}}>🎨 Custom Branding</label>
-                {event?.plan_type !== 'WHITE_LABEL' && <span className="nm-badge text-[10px] bg-amber-500/20 text-amber-500">Upgrade to White Label</span>}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[10px] font-semibold mb-2" style={{color:'var(--text2)'}}>Primary Color</label>
-                  <div className="flex items-center gap-2 nm-input p-2">
-                    <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8" disabled={event?.plan_type !== 'WHITE_LABEL'} />
-                    <span className="text-xs">{primaryColor}</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[10px] font-semibold mb-2" style={{color:'var(--text2)'}}>Secondary Color</label>
-                  <div className="flex items-center gap-2 nm-input p-2">
-                    <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8" disabled={event?.plan_type !== 'WHITE_LABEL'} />
-                    <span className="text-xs">{secondaryColor}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className="lp min-h-screen text-white relative overflow-hidden flex flex-col pt-24 pb-12 px-4">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.04] pointer-events-none" />
 
-            <div className={`p-4 rounded-2xl ${event?.plan_type === 'WHITE_LABEL' ? 'nm-inset' : 'opacity-50 grayscale pointer-events-none'}`}>
-              <div className="flex items-center justify-between mb-4">
-                <label className="text-xs font-bold uppercase tracking-widest" style={{color:'var(--text2)'}}>💧 Custom Watermark</label>
-                {event?.plan_type !== 'WHITE_LABEL' && <span className="nm-badge text-[10px] bg-amber-500/20 text-amber-500">Locked</span>}
+      <div className="relative z-10 max-w-2xl w-full mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <Link href="/admin?tab=events" className="btn-outline">
+            ← Back to Events
+          </Link>
+          <AnimatedLogo width={140} height={45} />
+        </div>
+
+        <div className="gcard cinematic-glow shadow-2xl">
+          <div className="gcard-border" />
+          <div className="gcard-inner p-8 lg:p-12">
+            <h1 className="text-3xl font-black mb-8 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              Edit Event: {event?.name}
+            </h1>
+            
+            <form onSubmit={handleUpdate} className="space-y-8">
+              <div>
+                <label className="block text-xs font-bold mb-3 uppercase tracking-widest text-slate-500">Event Name</label>
+                <input type="text" value={name} onChange={e => setName(e.target.value)} 
+                  className="w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/40 transition-all" />
               </div>
-              <input type="file" accept="image/png, image/jpeg" onChange={(e) => setWatermarkFile(e.target.files?.[0] || null)} className="nm-input text-xs" disabled={event?.plan_type !== 'WHITE_LABEL'} />
-              {watermarkPreview && <img src={watermarkPreview} alt="Watermark preview" className="w-24 h-24 object-contain mt-4 mx-auto" />}
-            </div>
-            <div>
-              <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>🛡️ Automatic Safety Filter</span>
-                <div onClick={() => setEnableSafetyFilter(!enableSafetyFilter)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${enableSafetyFilter ? 'bg-green-400' : 'bg-gray-600'}`}>
-                  <span className={`w-5 h-5 bg-white rounded-full transition-transform ${enableSafetyFilter ? 'translate-x-6' : 'translate-x-1'}`} />
+              {/* Branding - White Label Only */}
+              <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-white/5 border border-white/10' : 'bg-white/[0.02] border border-dashed border-white/5 opacity-40 grayscale pointer-events-none'}`}>
+                <div className="flex items-center justify-between mb-6">
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-amber-500">🎨 Custom Branding</label>
+                  {event?.plan_type !== 'WHITE_LABEL' && <span className="text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full border border-amber-500/20">Upgrade Required</span>}
                 </div>
-              </label>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{color:'var(--text2)'}}>Wall Active Until (Live Window)</label>
-              <input type="datetime-local" value={expiresAt || ''} onChange={e => setExpiresAt(e.target.value)} className="nm-input" />
-              <p className="text-[10px] mt-2 opacity-60" style={{color:'var(--text2)'}}>Determine when the live wall stops accepting new uploads. Photos are still stored for the full plan duration.</p>
-            </div>
-            <div>
-              <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>🤖 AI Auto Album</span>
-                <div onClick={() => setEnableAiAlbum(!enableAiAlbum)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${enableAiAlbum ? 'bg-green-400' : 'bg-gray-600'}`}>
-                  <span className={`w-5 h-5 bg-white rounded-full transition-transform ${enableAiAlbum ? 'translate-x-6' : 'translate-x-1'}`} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Primary Color</label>
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                      <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" disabled={event?.plan_type !== 'WHITE_LABEL'} />
+                      <span className="text-xs font-mono font-bold tracking-widest">{primaryColor.toUpperCase()}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Secondary Color</label>
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                      <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" disabled={event?.plan_type !== 'WHITE_LABEL'} />
+                      <span className="text-xs font-mono font-bold tracking-widest">{secondaryColor.toUpperCase()}</span>
+                    </div>
+                  </div>
                 </div>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>🔒 Smart Privacy Downloads</span>
-                <div onClick={() => setEnableSmartPrivacy(!enableSmartPrivacy)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${enableSmartPrivacy ? 'bg-green-400' : 'bg-gray-600'}`}>
-                  <span className={`w-5 h-5 bg-white rounded-full transition-transform ${enableSmartPrivacy ? 'translate-x-6' : 'translate-x-1'}`} />
+              </div>
+
+              <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-white/5 border border-white/10' : 'bg-white/[0.02] border border-dashed border-white/5 opacity-40 grayscale pointer-events-none'}`}>
+                <div className="flex items-center justify-between mb-6">
+                  <label className="text-xs font-black uppercase tracking-[0.2em] text-rose-500">💧 Custom Watermark</label>
+                  {event?.plan_type !== 'WHITE_LABEL' && <span className="text-[10px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-500 px-3 py-1 rounded-full border border-rose-500/20">Locked</span>}
                 </div>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center justify-between nm-input p-4">
-                <span className="font-semibold text-sm" style={{color:'var(--text1)'}}>☁️ Google Drive Sync</span>
-                <div onClick={() => setGoogleDriveSync(!googleDriveSync)} className={`w-12 h-6 rounded-full flex items-center transition-colors cursor-pointer ${googleDriveSync ? 'bg-green-400' : 'bg-gray-600'}`}>
-                  <span className={`w-5 h-5 bg-white rounded-full transition-transform ${googleDriveSync ? 'translate-x-6' : 'translate-x-1'}`} />
-                </div>
-              </label>
-            </div>
-            <div>
-              <button type="submit" className="nm-btn nm-btn-accent w-full py-3 font-bold">Save Changes</button>
-            </div>
-          </form>
+                <input type="file" accept="image/png, image/jpeg" onChange={(e) => setWatermarkFile(e.target.files?.[0] || null)} className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-500 hover:file:bg-amber-500/20 cursor-pointer transition-all" disabled={event?.plan_type !== 'WHITE_LABEL'} />
+                {watermarkPreview && <img src={watermarkPreview} alt="Watermark preview" className="w-32 h-32 object-contain mt-6 mx-auto rounded-xl bg-black/40 p-4 border border-white/5 shadow-inner" />}
+              </div>
+              <div>
+                <label className="flex items-center justify-between px-6 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
+                  <div>
+                    <span className="font-bold text-sm block mb-1">🛡️ Automatic Safety Filter</span>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Pro Edition Protection</p>
+                  </div>
+                  <div onClick={() => setEnableSafetyFilter(!enableSafetyFilter)} className={`w-14 h-7 rounded-full flex items-center transition-all duration-300 ${enableSafetyFilter ? 'bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-slate-700'}`}>
+                    <span className={`w-5 h-5 bg-white rounded-full mx-1 transition-all duration-300 transform ${enableSafetyFilter ? 'translate-x-7' : 'translate-x-0'}`} />
+                  </div>
+                </label>
+              </div>
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                <label className="block text-xs font-bold mb-3 uppercase tracking-[0.2em] text-cyan-400">📅 Wall Active Until</label>
+                <input type="datetime-local" value={expiresAt || ''} onChange={e => setExpiresAt(e.target.value)} 
+                  className="w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-cyan-500/40 transition-all font-mono text-sm" />
+                <p className="text-[10px] mt-4 text-slate-400 leading-relaxed font-medium">Determines when the live wall stops accepting new guest uploads. Photos are safely retained for your plan's full storage duration.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
+                  <span className="font-bold text-xs uppercase tracking-widest">🤖 AI Album</span>
+                  <div onClick={() => setEnableAiAlbum(!enableAiAlbum)} className={`w-10 h-5 rounded-full flex items-center transition-all ${enableAiAlbum ? 'bg-emerald-500' : 'bg-slate-700'}`}>
+                    <span className={`w-3.5 h-3.5 bg-white rounded-full mx-1 transition-all transform ${enableAiAlbum ? 'translate-x-4.5' : 'translate-x-0'}`} />
+                  </div>
+                </label>
+                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
+                  <span className="font-bold text-xs uppercase tracking-widest">🔒 Privacy</span>
+                  <div onClick={() => setEnableSmartPrivacy(!enableSmartPrivacy)} className={`w-10 h-5 rounded-full flex items-center transition-all ${enableSmartPrivacy ? 'bg-emerald-500' : 'bg-slate-700'}`}>
+                    <span className={`w-3.5 h-3.5 bg-white rounded-full mx-1 transition-all transform ${enableSmartPrivacy ? 'translate-x-4.5' : 'translate-x-0'}`} />
+                  </div>
+                </label>
+                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer col-span-1 sm:col-span-2">
+                  <span className="font-bold text-xs uppercase tracking-widest">☁️ Google Drive Sync</span>
+                  <div onClick={() => setGoogleDriveSync(!googleDriveSync)} className={`w-10 h-5 rounded-full flex items-center transition-all ${googleDriveSync ? 'bg-indigo-500' : 'bg-slate-700'}`}>
+                    <span className={`w-3.5 h-3.5 bg-white rounded-full mx-1 transition-all transform ${googleDriveSync ? 'translate-x-4.5' : 'translate-x-0'}`} />
+                  </div>
+                </label>
+              </div>
+
+              <div className="pt-6">
+                <button type="submit" className="btn-glow w-full py-4 font-black uppercase tracking-[0.2em] shadow-amber-500/20">
+                  Save Event Changes
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+  );
   );
 }

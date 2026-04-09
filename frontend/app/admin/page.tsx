@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AnimatedLogo from '@/components/AnimatedLogo';
 
 // ── Types ─────────────────────────────────────────────────────
 interface UserRow {
@@ -262,15 +263,18 @@ export default function AdminPage() {
   }
 
   // ── Styles ──
-  const cardClass = "bg-[#111827]/80 border border-white/[0.06] rounded-2xl backdrop-blur-xl";
+  const cardClass = "gcard cinematic-glow relative group overflow-hidden transition-all duration-300 hover:scale-[1.02]";
   const statCard = (icon: string, label: string, value: number, accent: string) => (
-    <div className={`${cardClass} p-6`}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-2xl">{icon}</span>
-        <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" style={{color: accent, background: `${accent}15`, border: `1px solid ${accent}30`}}>Live</span>
+    <div className={cardClass}>
+      <div className="gcard-border" />
+      <div className="gcard-inner p-6">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-2xl filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">{icon}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" style={{color: accent, background: `${accent}15`, border: `1px solid ${accent}30`}}>Live</span>
+        </div>
+        <p className="text-3xl font-black text-white tracking-tight">{value.toLocaleString()}</p>
+        <p className="text-xs text-slate-500 mt-1 font-medium">{label}</p>
       </div>
-      <p className="text-3xl font-black text-white tracking-tight">{value.toLocaleString()}</p>
-      <p className="text-xs text-slate-500 mt-1 font-medium">{label}</p>
     </div>
   );
 
@@ -283,7 +287,9 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] text-white">
+    <div className="lp min-h-screen text-white relative overflow-hidden">
+      <div className="aurora-bg fixed inset-0 z-0" />
+      <div className="grain fixed inset-0 z-1 opacity-[0.04] pointer-events-none" />
 
       {/* ── Toast ── */}
       {toast.show && (
@@ -295,31 +301,30 @@ export default function AdminPage() {
       {/* ── Confirm Dialog ── */}
       {confirmDialog.open && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4" style={{background:'rgba(0,0,0,0.7)', backdropFilter:'blur(8px)'}}>
-          <div className={`${cardClass} p-8 max-w-md w-full text-center`}>
-            <div className="text-4xl mb-4">⚠️</div>
-            <p className="text-sm text-slate-300 mb-6 leading-relaxed">{confirmDialog.message}</p>
-            <div className="flex gap-3">
-              <button onClick={closeConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">Cancel</button>
-              <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition">Confirm Delete</button>
+          <div className="gcard cinematic-glow p-8 max-w-md w-full text-center relative overflow-hidden">
+            <div className="gcard-border" />
+            <div className="gcard-inner relative z-10">
+              <div className="text-4xl mb-4">⚠️</div>
+              <p className="text-sm text-slate-300 mb-6 leading-relaxed">{confirmDialog.message}</p>
+              <div className="flex gap-3">
+                <button onClick={closeConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">Cancel</button>
+                <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition">Confirm Delete</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {/* ── Sidebar + Content Layout ── */}
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen relative z-10">
 
         {/* ── Sidebar ── */}
-        <aside className="w-64 border-r border-white/[0.06] bg-[#0d1117] flex flex-col shrink-0 sticky top-0 h-screen">
+        <aside className="w-64 border-r border-white/[0.08] bg-[#0d1117]/40 backdrop-blur-2xl flex flex-col shrink-0 sticky top-0 h-screen">
           {/* Brand */}
-          <div className="p-6 border-b border-white/[0.06]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-lg font-black text-white shadow-lg shadow-amber-500/20">M</div>
-              <div>
-                <h1 className="text-sm font-black tracking-tight">Memento</h1>
-                <p className="text-[10px] text-amber-500 font-bold tracking-widest uppercase">Admin Panel</p>
-              </div>
-            </div>
+          <div className="p-6 border-b border-white/[0.08]">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all">
+              <AnimatedLogo width={160} height={50} />
+            </Link>
           </div>
 
           {/* Nav */}
@@ -359,7 +364,7 @@ export default function AdminPage() {
         </aside>
 
         {/* ── Main Content ── */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-8 lg:p-12 overflow-y-auto">
 
           {/* ── Search Bar (for users/events) ── */}
           {(activeTab === 'users' || activeTab === 'events') && (
@@ -392,14 +397,17 @@ export default function AdminPage() {
               </div>
 
               {/* Quick Actions */}
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Quick Actions</h3>
-                <div className="flex flex-wrap gap-3">
-                  <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">👥 Manage Users</button>
-                  <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">🎉 Manage Events</button>
-                  <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">✅ Approve All Pending</button>
-                  <Link href="/create" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">✨ Create Event</Link>
-                  <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">🔄 Refresh Stats</button>
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Quick Actions</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">👥 Manage Users</button>
+                    <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">🎉 Manage Events</button>
+                    <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">✅ Approve All Pending</button>
+                    <Link href="/create" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">✨ Create Event</Link>
+                    <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition">🔄 Refresh Stats</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -427,64 +435,67 @@ export default function AdminPage() {
               ) : (
                 <div className="space-y-2">
                   {filteredUsers.map(u => (
-                    <div key={u.id} className={`${cardClass} p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-rose-500/20 border border-amber-500/20 flex items-center justify-center text-sm font-black text-amber-400 shrink-0">
-                          {u.email.charAt(0).toUpperCase()}
+                    <div key={u.id} className={cardClass}>
+                      <div className="gcard-border" />
+                      <div className="gcard-inner p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-rose-500/20 border border-amber-500/20 flex items-center justify-center text-sm font-black text-amber-400 shrink-0">
+                            {u.email.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold truncate">{u.email}</p>
+                            <p className="text-[11px] text-slate-500">
+                              {u.full_name || 'No name'} • Joined {new Date(u.created_at).toLocaleDateString()} • 
+                              <span className="text-amber-400 ml-1">{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
+                              {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold truncate">{u.email}</p>
-                          <p className="text-[11px] text-slate-500">
-                            {u.full_name || 'No name'} • Joined {new Date(u.created_at).toLocaleDateString()} • 
-                            <span className="text-amber-400 ml-1">{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
-                            {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
-                          </p>
+
+                        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                          {/* Role Selector */}
+                          <select
+                            className="text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-slate-300 outline-none font-bold cursor-pointer"
+                            value={u.role || 'user'}
+                            onChange={(e) => handleUpdateRole(u.id, e.target.value)}
+                          >
+                            <option value="user">👤 User</option>
+                            <option value="admin">🔐 Admin</option>
+                          </select>
+
+                          {/* Plan Selector */}
+                          <select
+                            className="text-[11px] bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1.5 text-amber-400 outline-none font-bold uppercase cursor-pointer"
+                            value={(u.plan || 'STARTER').toUpperCase()}
+                            onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
+                          >
+                            <option value="STARTER">Starter</option>
+                            <option value="STANDARD">Standard</option>
+                            <option value="PREMIUM">Premium</option>
+                            <option value="WHITELABEL">White Label</option>
+                          </select>
+
+                          {/* Approve/Unapprove */}
+                          <button
+                            onClick={() => handleToggleApproval(u.id, u.is_approved)}
+                            className={`text-[10px] px-3 py-1.5 rounded-lg font-black transition ${
+                              u.is_approved
+                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                : 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse'
+                            }`}
+                          >
+                            {u.is_approved ? '✓ APPROVED' : '⚡ APPROVE'}
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            onClick={() => handleDeleteUser(u.id, u.email)}
+                            className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition"
+                            title="Delete user"
+                          >
+                            🗑️
+                          </button>
                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                        {/* Role Selector */}
-                        <select
-                          className="text-[11px] bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-slate-300 outline-none font-bold cursor-pointer"
-                          value={u.role || 'user'}
-                          onChange={(e) => handleUpdateRole(u.id, e.target.value)}
-                        >
-                          <option value="user">👤 User</option>
-                          <option value="admin">🔐 Admin</option>
-                        </select>
-
-                        {/* Plan Selector */}
-                        <select
-                          className="text-[11px] bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1.5 text-amber-400 outline-none font-bold uppercase cursor-pointer"
-                          value={(u.plan || 'STARTER').toUpperCase()}
-                          onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
-                        >
-                          <option value="STARTER">Starter</option>
-                          <option value="STANDARD">Standard</option>
-                          <option value="PREMIUM">Premium</option>
-                          <option value="WHITELABEL">White Label</option>
-                        </select>
-
-                        {/* Approve/Unapprove */}
-                        <button
-                          onClick={() => handleToggleApproval(u.id, u.is_approved)}
-                          className={`text-[10px] px-3 py-1.5 rounded-lg font-black transition ${
-                            u.is_approved
-                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                              : 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse'
-                          }`}
-                        >
-                          {u.is_approved ? '✓ APPROVED' : '⚡ APPROVE'}
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                          onClick={() => handleDeleteUser(u.id, u.email)}
-                          className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition"
-                          title="Delete user"
-                        >
-                          🗑️
-                        </button>
                       </div>
                     </div>
                   ))}
@@ -508,30 +519,33 @@ export default function AdminPage() {
               ) : (
                 <div className="space-y-2">
                   {filteredEvents.map(event => (
-                    <div key={event.id} className={`${cardClass} p-5`}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div>
-                          <h3 className="text-sm font-bold text-white">{event.name}</h3>
-                          <p className="text-[11px] text-slate-500">
-                            By <span className="text-amber-400">{event.owner_email}</span> • {new Date(event.created_at).toLocaleDateString()}
-                            {event.plan_type && <span className="ml-2 text-slate-400">({event.plan_type})</span>}
-                          </p>
+                    <div key={event.id} className={cardClass}>
+                      <div className="gcard-border" />
+                      <div className="gcard-inner p-5">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="text-sm font-bold text-white">{event.name}</h3>
+                            <p className="text-[11px] text-slate-500">
+                              By <span className="text-amber-400">{event.owner_email}</span> • {new Date(event.created_at).toLocaleDateString()}
+                              {event.plan_type && <span className="ml-2 text-slate-400">({event.plan_type})</span>}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id, event.name)}
+                            className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition shrink-0"
+                            title="Delete event"
+                          >
+                            🗑️
+                          </button>
                         </div>
-                        <button
-                          onClick={() => handleDeleteEvent(event.id, event.name)}
-                          className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition shrink-0"
-                          title="Delete event"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold">📸 {event.photo_count} photos</span>
-                        <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-mono">/{event.slug}</span>
-                        <Link href={`/wall/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold hover:bg-amber-500/20 transition">🖼️ Wall</Link>
-                        <Link href={`/mobile/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold hover:bg-white/10 transition">📱 Upload</Link>
-                        <Link href={`/moderate/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold hover:bg-white/10 transition">🛡️ Moderate</Link>
-                        <Link href={`/admin/edit-event/${event.slug}`} className="text-[11px] px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20 transition">✏️ Edit</Link>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold">📸 {event.photo_count} photos</span>
+                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-mono">/{event.slug}</span>
+                          <Link href={`/wall/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold hover:bg-amber-500/20 transition">🖼️ Wall</Link>
+                          <Link href={`/mobile/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold hover:bg-white/10 transition">📱 Upload</Link>
+                          <Link href={`/moderate/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold hover:bg-white/10 transition">🛡️ Moderate</Link>
+                          <Link href={`/admin/edit-event/${event.slug}`} className="text-[11px] px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20 transition">✏️ Edit</Link>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -548,52 +562,61 @@ export default function AdminPage() {
                 <p className="text-sm text-slate-500">Manual payment approvals for Oman bank transfers and pending Indian payments</p>
               </div>
 
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">How It Works</h3>
-                <div className="space-y-3 text-sm text-slate-400">
-                  <p>1. Omani users register and are redirected to WhatsApp (+968 96095692) to confirm their bank transfer.</p>
-                  <p>2. Once you receive confirmation and verify the payment, come here and go to the <button onClick={() => setActiveTab('users')} className="text-amber-400 underline font-bold">Users tab</button>.</p>
-                  <p>3. Find the user, set their <strong className="text-white">Plan</strong> to the tier they paid for, and click <strong className="text-emerald-400">✓ APPROVE</strong>.</p>
-                  <p>4. The user will automatically gain access to all features of their plan.</p>
-                </div>
-              </div>
-
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Omani Payment Details (Your Account)</h3>
-                <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Bank Transfer (IBAN)</p>
-                    <p className="text-white font-bold">Sagar Shaik Trade LLC</p>
-                    <p className="text-slate-400 font-mono text-xs mt-1">0364073422230017</p>
-                    <p className="text-slate-500 text-xs mt-1">Bank Muscat</p>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Mobile Transfer</p>
-                    <p className="text-white font-bold font-mono text-lg tracking-widest">9609 5692</p>
-                    <p className="text-slate-500 text-xs mt-1">Bank Muscat Mobile</p>
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">How It Works</h3>
+                  <div className="space-y-3 text-sm text-slate-400">
+                    <p>1. Omani users register and are redirected to WhatsApp (+968 96095692) to confirm their bank transfer.</p>
+                    <p>2. Once you receive confirmation and verify the payment, come here and go to the <button onClick={() => setActiveTab('users')} className="text-amber-400 underline font-bold">Users tab</button>.</p>
+                    <p>3. Find the user, set their <strong className="text-white">Plan</strong> to the tier they paid for, and click <strong className="text-emerald-400">✓ APPROVE</strong>.</p>
+                    <p>4. The user will automatically gain access to all features of their plan.</p>
                   </div>
                 </div>
               </div>
 
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Pricing Reference</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-slate-500 border-b border-white/10">
-                        <th className="pb-3 font-bold">Plan</th>
-                        <th className="pb-3 font-bold">🇴🇲 OMR</th>
-                        <th className="pb-3 font-bold">🇮🇳 INR</th>
-                        <th className="pb-3 font-bold">🌐 USD</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-slate-300">
-                      <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Starter</td><td>15</td><td>₹2,499</td><td>$30</td></tr>
-                      <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td>29</td><td>₹4,999</td><td>$60</td></tr>
-                      <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td>39</td><td>₹7,499</td><td>$90</td></tr>
-                      <tr><td className="py-2.5 font-bold">White Label</td><td>59</td><td>₹9,999</td><td>$120</td></tr>
-                    </tbody>
-                  </table>
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Omani Payment Details (Your Account)</h3>
+                  <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Bank Transfer (IBAN)</p>
+                      <p className="text-white font-bold">Sagar Shaik Trade LLC</p>
+                      <p className="text-slate-400 font-mono text-xs mt-1">0364073422230017</p>
+                      <p className="text-slate-500 text-xs mt-1">Bank Muscat</p>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Mobile Transfer</p>
+                      <p className="text-white font-bold font-mono text-lg tracking-widest">9609 5692</p>
+                      <p className="text-slate-500 text-xs mt-1">Bank Muscat Mobile</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Pricing Reference</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-slate-500 border-b border-white/10">
+                          <th className="pb-3 font-bold">Plan</th>
+                          <th className="pb-3 font-bold">🇴🇲 OMR</th>
+                          <th className="pb-3 font-bold">🇮🇳 INR</th>
+                          <th className="pb-3 font-bold">🌐 USD</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-slate-300">
+                        <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Starter</td><td>15</td><td>₹2,499</td><td>$30</td></tr>
+                        <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td>29</td><td>₹4,999</td><td>$60</td></tr>
+                        <tr className="border-b border-white/5"><td className="py-2.5 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td>39</td><td>₹7,499</td><td>$90</td></tr>
+                        <tr><td className="py-2.5 font-bold">White Label</td><td>59</td><td>₹9,999</td><td>$120</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -608,81 +631,93 @@ export default function AdminPage() {
               </div>
 
               {/* Super Admin Info */}
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-amber-400 mb-4">⚡ Super Admin</h3>
-                <div className="space-y-2 text-sm text-slate-400">
-                  <p><span className="text-slate-500 w-28 inline-block">Email:</span> <span className="text-white font-bold">sagarfalcon@gmail.com</span></p>
-                  <p><span className="text-slate-500 w-28 inline-block">Plan Override:</span> <span className="text-amber-400 font-bold">White Label (All Features)</span></p>
-                  <p><span className="text-slate-500 w-28 inline-block">Walls:</span> <span className="text-emerald-400 font-bold">Unlimited</span></p>
-                  <p><span className="text-slate-500 w-28 inline-block">Status:</span> <span className="text-emerald-400 font-bold">Always Approved, Always Paid</span></p>
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-amber-400 mb-4">⚡ Super Admin</h3>
+                  <div className="space-y-2 text-sm text-slate-400">
+                    <p><span className="text-slate-500 w-28 inline-block">Email:</span> <span className="text-white font-bold">sagarfalcon@gmail.com</span></p>
+                    <p><span className="text-slate-500 w-28 inline-block">Plan Override:</span> <span className="text-amber-400 font-bold">White Label (All Features)</span></p>
+                    <p><span className="text-slate-500 w-28 inline-block">Walls:</span> <span className="text-emerald-400 font-bold">Unlimited</span></p>
+                    <p><span className="text-slate-500 w-28 inline-block">Status:</span> <span className="text-emerald-400 font-bold">Always Approved, Always Paid</span></p>
+                  </div>
                 </div>
               </div>
 
               {/* Environment */}
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">🔑 Environment</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Supabase URL</span>
-                    <span className="text-slate-300 font-mono text-xs truncate max-w-[300px]">{process.env.NEXT_PUBLIC_SUPABASE_URL || '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Supabase Anon Key</span>
-                    <span className="text-slate-300 font-mono text-xs">{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '••••' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.slice(-8) : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Node Env</span>
-                    <span className="text-slate-300 font-mono text-xs">{process.env.NODE_ENV}</span>
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">🔑 Environment</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Supabase URL</span>
+                      <span className="text-slate-300 font-mono text-xs truncate max-w-[300px]">{process.env.NEXT_PUBLIC_SUPABASE_URL || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Supabase Anon Key</span>
+                      <span className="text-slate-300 font-mono text-xs">{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '••••' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.slice(-8) : '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Node Env</span>
+                      <span className="text-slate-300 font-mono text-xs">{process.env.NODE_ENV}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Useful Links */}
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">🔗 Quick Links</h3>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {[
-                    { label: 'Supabase Dashboard', url: process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('.supabase.co', '.supabase.co') || '#', icon: '🗄️' },
-                    { label: 'Vercel Dashboard', url: 'https://vercel.com', icon: '▲' },
-                    { label: 'Razorpay Dashboard', url: 'https://dashboard.razorpay.com', icon: '💳' },
-                    { label: 'WhatsApp Business', url: 'https://wa.me/96896095692', icon: '💬' },
-                  ].map(link => (
-                    <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-slate-300 font-medium">
-                      <span className="text-lg">{link.icon}</span>
-                      {link.label}
-                      <span className="ml-auto text-slate-500">↗</span>
-                    </a>
-                  ))}
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">🔗 Quick Links</h3>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {[
+                      { label: 'Supabase Dashboard', url: process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('.supabase.co', '.supabase.co') || '#', icon: '🗄️' },
+                      { label: 'Vercel Dashboard', url: 'https://vercel.com', icon: '▲' },
+                      { label: 'Razorpay Dashboard', url: 'https://dashboard.razorpay.com', icon: '💳' },
+                      { label: 'WhatsApp Business', url: 'https://wa.me/96896095692', icon: '💬' },
+                    ].map(link => (
+                      <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm text-slate-300 font-medium">
+                        <span className="text-lg">{link.icon}</span>
+                        {link.label}
+                        <span className="ml-auto text-slate-500">↗</span>
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Platform Info */}
-              <div className={`${cardClass} p-6`}>
-                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">ℹ️ Platform</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Framework</span>
-                    <span className="text-slate-300">Next.js 16 (Turbopack)</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Database</span>
-                    <span className="text-slate-300">Supabase (PostgreSQL)</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Storage</span>
-                    <span className="text-slate-300">Supabase Storage (S3)</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">Auth</span>
-                    <span className="text-slate-300">Supabase Auth + Google OAuth</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2 border-b border-white/5">
-                    <span className="text-slate-500">AI Engine</span>
-                    <span className="text-slate-300">face-api.js (TensorFlow)</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-slate-500">Payments</span>
-                    <span className="text-slate-300">Razorpay (IN) / Manual (OM)</span>
+              <div className={cardClass}>
+                <div className="gcard-border" />
+                <div className="gcard-inner p-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">ℹ️ Platform</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Framework</span>
+                      <span className="text-slate-300">Next.js 16 (Turbopack)</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Database</span>
+                      <span className="text-slate-300">Supabase (PostgreSQL)</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Storage</span>
+                      <span className="text-slate-300">Supabase Storage (S3)</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">Auth</span>
+                      <span className="text-slate-300">Supabase Auth + Google OAuth</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2 border-b border-white/5">
+                      <span className="text-slate-500">AI Engine</span>
+                      <span className="text-slate-300">face-api.js (TensorFlow)</span>
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-slate-500">Payments</span>
+                      <span className="text-slate-300">Razorpay (IN) / Manual (OM)</span>
+                    </div>
                   </div>
                 </div>
               </div>
