@@ -40,7 +40,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
         backgroundColor: scrolled ? 'rgba(10, 10, 11, 0.8)' : 'transparent',
         backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(0px)',
         boxShadow: scrolled ? '0 10px 40px rgba(0, 0, 0, 0.3)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid transparent'
+        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.03)' : '1px solid transparent'
       }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="lp-nav !px-0"
@@ -94,13 +94,15 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.8)' }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSignOut} 
-                  className="glass-pill"
+                  className="glass-pill hover:bg-white/10"
                   style={{ 
-                    padding: '1.2rem', 
+                    padding: '0.45rem 1rem', 
                     color: 'var(--color-text-secondary)', 
-                    fontSize: '1rem', 
+                    fontSize: '0.85rem', 
+                    fontWeight: 600,
                     cursor: 'pointer', 
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    border: '1px solid rgba(255,255,255,0.1)'
                   }}
                 >
                   <LogOut size={14} /> Sign Out
@@ -110,15 +112,15 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                 <button 
                   onClick={() => openAuth('login')} 
-                  className="glass-pill hover:text-primary transition-colors"
+                  className="glass-pill hover:text-primary transition-colors hover:bg-white/5"
                   style={{ 
-                    padding: '1.2rem', 
+                    padding: '0.45rem 1.25rem', 
                     color: 'var(--color-text-secondary)', 
-                    fontSize: '1rem', 
-                    fontWeight: 700,
+                    fontSize: '0.85rem', 
+                    fontWeight: 600,
                     cursor: 'pointer', 
-                    background: 'none',
-                    border: 'none'
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)'
                   }}
                 >
                   Sign In
