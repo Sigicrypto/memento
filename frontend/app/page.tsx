@@ -1517,8 +1517,8 @@ export default function LandingPage() {
           <div className="testimonial-grid">
             {[
               { quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.", author: "Rohan & Priya", role: "Happy Couple", event: "Mumbai Wedding • 524 photos", rating: 5 },
-              { quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.", author: "Sonia Mehta", role: "Wedding Planner", event: "Corporate Gala • Bangalore", rating: 5 },
-              { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.", author: "Vikram Singh", role: "Professional Event Organizer", event: "Tech Summit • Delhi", rating: 5 }
+              { quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.", author: "Fatima Al Balushi", role: "Event Coordinator", event: "Muscat Corporate Gala • 320 photos", rating: 5 },
+              { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.", author: "Sarah Jenkins", role: "Wedding Planner", event: "London Destination Wedding • 450 photos", rating: 5 }
             ].map((item, i) => (
               <motion.div 
                 key={i} 

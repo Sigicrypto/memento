@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
@@ -700,21 +700,21 @@ export default function LandingPage() {
                 quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.",
                 author: "Rohan & Priya",
                 role: "Happy Couple",
-                event: "Mumbai Wedding ΓÇó 524 photos",
+                event: "Mumbai Wedding • 524 photos",
                 rating: 5
               },
               {
                 quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.",
-                author: "Sonia Mehta",
-                role: "Wedding Planner",
-                event: "Corporate Gala ΓÇó Bangalore",
+                author: "Fatima Al Balushi",
+                role: "Event Coordinator",
+                event: "Muscat Corporate Gala • 320 photos",
                 rating: 5
               },
               {
                 quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.",
-                author: "Vikram Singh",
-                role: "Professional Event Organizer",
-                event: "Tech Summit ΓÇó Delhi",
+                author: "Sarah Jenkins",
+                role: "Wedding Planner",
+                event: "London Destination Wedding • 450 photos",
                 rating: 5
               }
             ].map((item, i) => (
