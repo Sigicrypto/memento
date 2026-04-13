@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { cookies, headers } from 'next/headers';
-import '../styles/neumorphic.css';
+// import '../styles/neumorphic.css';
 
 type Region = 'IN' | 'GLOBAL';
 

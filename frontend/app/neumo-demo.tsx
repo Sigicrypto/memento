@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import './styles/neumorphic.css';
+// import './styles/neumorphic.css';
 
 export default function NeumorphicDemo() {
   const [toggle1, setToggle1] = useState(false);

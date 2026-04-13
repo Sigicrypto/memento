@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import '../styles/neumorphic.css';
+// import '../styles/neumorphic.css';
 
 interface Event {
   id: string;

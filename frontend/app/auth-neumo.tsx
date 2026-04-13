@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import '../styles/neumorphic.css';
+// import '../styles/neumorphic.css';
 
 export default function NeumorphicAuthPage() {
   const { signIn, signUp } = useAuth();

@@ -20,16 +20,16 @@ const FontLoader = () => (
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
     
     :root {
-      --bg: #0a0a0e;
-      --surface: rgba(13, 17, 23, 0.45);
+      --bg: #0A0A0B;
+      --surface: rgba(20, 20, 26, 0.45);
       --border: rgba(255, 255, 255, 0.08);
-      --amber: #fbbf24;
-      --rose: #f472b6;
-      --gold: #fcd34d;
-      --text1: #ffffff;
-      --text2: #94a3b8;
-      --radius: 20px;
-      --nm-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --amber: #06b6d4;
+      --rose: #ec4899;
+      --gold: #6366f1;
+      --text1: #F8FAFC;
+      --text2: #94A3B8;
+      --radius: 24px;
+      --nm-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     }
 
     .wall-page {
@@ -44,12 +44,12 @@ const FontLoader = () => (
 
     /* ─── UI COMPONENTS ─── */
     .glass-card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: var(--surface);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+      box-shadow: var(--nm-shadow);
     }
 
     .wall-heading {
@@ -58,8 +58,8 @@ const FontLoader = () => (
       font-size: clamp(2.5rem, 6vw, 4.5rem);
       letter-spacing: -0.04em;
       line-height: 1.1;
-      color: #ffffff;
-      text-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+      color: #F8FAFC;
+      text-shadow: 0 0 40px rgba(6, 182, 212, 0.3);
     }
 
     /* ─── DREAMY BACKGROUND ─── */
@@ -127,7 +127,7 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
         className="reveal-badge"
         style={{
           marginBottom: 28,
-          background: 'linear-gradient(135deg, #fbbf24, #f472b6)',
+          background: 'linear-gradient(135deg, #06b6d4, #ec4899)',
           borderRadius: 100,
           padding: '8px 28px',
           fontSize: 11,
@@ -135,7 +135,7 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
           color: '#fff',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          boxShadow: '0 4px 24px rgba(244,114,182,0.5)',
+          boxShadow: '0 4px 24px rgba(236,72,153,0.5)',
         }}
       >
         ✦ New Memory Just Arrived ✦
@@ -151,7 +151,7 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
       >
         <div style={{
           position: 'absolute', inset: -40,
-          background: 'radial-gradient(ellipse, rgba(245,158,11,0.25) 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(6,182,212,0.25) 0%, transparent 70%)',
           borderRadius: '50%', filter: 'blur(20px)',
         }} />
         {photo.media_type === 'video'
@@ -168,7 +168,7 @@ const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoReve
         className="reveal-meta"
         style={{ marginTop: 32, textAlign: 'center' }}
       >
-        <p style={{ fontSize: 11, fontWeight: 800, color: '#fbbf24', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.85 }}>Shared by</p>
+        <p style={{ fontSize: 11, fontWeight: 800, color: '#06b6d4', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.85 }}>Shared by</p>
         <h2 style={{ fontSize: 36, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginBottom: photo.caption ? 10 : 0 }}>
           {photo.uploader_name}
         </h2>
@@ -197,7 +197,7 @@ const Confetti = ({ trigger }: { trigger: boolean }) => {
   const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; size: number }>>([]);
   useEffect(() => {
     if (!trigger) return;
-    const palette = ['#f59e0b', '#fb923c', '#f472b6', '#a78bfa', '#fcd34d', '#34d399'];
+    const palette = ['#06b6d4', '#3b82f6', '#ec4899', '#8b5cf6', '#6366f1', '#34d399'];
     setParticles(Array.from({ length: 50 }, (_, i) => ({
       id: Date.now() + i,
       x: Math.random() * 100,
@@ -483,8 +483,8 @@ export default function WallPage() {
     const isLive = realtimeStatus === 'SUBSCRIBED';
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, background: 'var(--surface)', padding: '6px 14px', borderRadius: 100, border: '1px solid var(--border)', fontWeight: 600 }}>
-        <div className="status-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#4ade80' : 'var(--amber)' }} />
-        <span style={{ color: isLive ? '#4ade80' : 'var(--amber)' }}>{isLive ? 'LIVE' : 'POLLING'}</span>
+        <div className="status-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#4ade80' : '#06b6d4' }} />
+        <span style={{ color: isLive ? '#4ade80' : '#06b6d4' }}>{isLive ? 'LIVE' : 'POLLING'}</span>
       </div>
     );
   };
@@ -501,7 +501,7 @@ export default function WallPage() {
   if (loading) return (
     <div className="wall-page flex items-center justify-center">
       <div className="text-center">
-        <div style={{ width: 48, height: 48, border: '4px solid var(--surface)', borderTopColor: 'var(--amber)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+        <div style={{ width: 48, height: 48, border: '4px solid var(--surface)', borderTopColor: '#06b6d4', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
         <p style={{ color: 'var(--text2)' }}>Entering the Wall…</p>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -532,7 +532,7 @@ export default function WallPage() {
 
         <div className="absolute top-0 left-0 right-0 z-50 p-10 flex justify-between items-center bg-gradient-to-b from-black/40 to-transparent">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-500">Live Experience</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-500">Live Experience</span>
             <h1 className="text-2xl font-black font-serif text-white">{eventName}</h1>
           </div>
           {isAdmin && (
@@ -560,7 +560,7 @@ export default function WallPage() {
                   </div>
                   <div className="space-y-6">
                     <div>
-                      <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Shared By</span>
+                      <span className="text-[10px] font-black text-cyan-500 uppercase tracking-widest">Shared By</span>
                       <h2 className="text-5xl font-black font-serif text-white mt-2">{current.uploader_name}</h2>
                     </div>
                     {current.caption && (
@@ -593,7 +593,7 @@ export default function WallPage() {
         <NewPhotoReveal photo={revealPhoto} uploadUrl={uploadUrl} getPublicUrl={getPublicUrl} onDone={() => setRevealPhoto(null)} />
       )}
 
-      <header className="fixed top-0 left-0 right-0 z-[100] px-6 py-4 md:px-12 md:py-6 flex items-center justify-between border-b border-white/[0.05] bg-black/40 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-[100] px-6 py-4 md:px-12 md:py-6 flex items-center justify-between border-b border-white/[0.03] bg-black/40 backdrop-blur-xl">
         <Link href="/" className="flex items-center gap-3">
           <img src="/CC logo.png" alt="Memento" className="h-8 md:h-10 w-auto" />
         </Link>
@@ -621,7 +621,7 @@ export default function WallPage() {
                 <button
                   key={m}
                   onClick={() => setViewMode(m)}
-                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === m ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === m ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
                 >
                   {m}
                 </button>
@@ -636,7 +636,7 @@ export default function WallPage() {
             </button>
             
             {isAdmin && (
-              <Link href={`/moderate/${slug}`} className="bg-amber-500/10 border border-amber-500/20 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-amber-500 flex items-center gap-2">
+              <Link href={`/moderate/${slug}`} className="bg-cyan-500/10 border border-cyan-500/20 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-cyan-500 flex items-center gap-2">
                 🛡️ Moderate
               </Link>
             )}
@@ -646,7 +646,7 @@ export default function WallPage() {
         <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
           <button
             onClick={() => setShowBestShots(!showBestShots)}
-            className={`px-6 py-2.5 rounded-2xl text-xs font-bold border transition-all ${showBestShots ? 'bg-amber-500 text-black border-amber-600' : 'bg-white/5 border-white/10 text-slate-400'}`}
+            className={`px-6 py-2.5 rounded-2xl text-xs font-bold border transition-all ${showBestShots ? 'bg-cyan-500 text-black border-cyan-600' : 'bg-white/5 border-white/10 text-slate-400'}`}
           >
             {showBestShots ? '🌟 Best Shots Filter Active' : '🏆 Filter Best Shots'}
           </button>
@@ -654,7 +654,7 @@ export default function WallPage() {
           <AnimatePresence>
             {matchedPhotoIds && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex items-center gap-4">
-                <span className="text-xs font-bold text-amber-500 uppercase tracking-widest px-5 py-2.5 rounded-full bg-amber-500/10 border border-amber-500/20 backdrop-blur-md">✨ Found {matchedPhotoIds.length} Photos for You</span>
+                <span className="text-xs font-bold text-cyan-500 uppercase tracking-widest px-5 py-2.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 backdrop-blur-md">✨ Found {matchedPhotoIds.length} Photos for You</span>
                 <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black uppercase text-slate-500 hover:text-white">Show All ×</button>
                 <button onClick={handleDownloadZip} className="btn-glow text-[10px] px-6 py-2.5">Download Collection 📥</button>
               </motion.div>
@@ -682,7 +682,7 @@ export default function WallPage() {
                   </div>
                   <div className="absolute inset-x-0 bottom-0 p-4 text-center">
                     {p.caption && <p className="text-black text-sm font-medium italic truncate mb-1 px-4">&quot;{p.caption}&quot;</p>}
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-amber-600">{p.uploader_name}</span></p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-cyan-500">{p.uploader_name}</span></p>
                   </div>
                   <Watermark />
                 </motion.div>
@@ -710,7 +710,7 @@ export default function WallPage() {
                           <div className="relative z-10">
                             <img src={getPublicUrl(p.storage_path)} className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" alt="" />
                             <div className="absolute inset-x-0 bottom-0 p-4 bg-black/60 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all">
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-amber-500">{p.uploader_name}</span></p>
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-cyan-500">{p.uploader_name}</span></p>
                             </div>
                           </div>
                           <Watermark />
@@ -729,7 +729,7 @@ export default function WallPage() {
                   <div className="relative z-10">
                     <img src={getPublicUrl(p.storage_path)} className="w-full h-auto block group-hover:scale-110 transition-transform duration-700" alt="" loading="lazy" />
                     <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-all">
-                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Shared by <span className="text-amber-500">{p.uploader_name}</span></p>
+                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Shared by <span className="text-cyan-500">{p.uploader_name}</span></p>
                     </div>
                   </div>
                   <Watermark />
@@ -749,14 +749,14 @@ export default function WallPage() {
               <h2 className="text-2xl font-black mb-2">Find My Photos</h2>
               <p className="text-slate-400 text-sm mb-8">Smile! Our AI will find every photo you're in.</p>
               
-              <div className="aspect-square w-full max-w-[340px] mx-auto overflow-hidden rounded-full border-4 border-amber-500/30 mb-8 relative">
+              <div className="aspect-square w-full max-w-[340px] mx-auto overflow-hidden rounded-full border-4 border-cyan-500/30 mb-8 relative">
                  <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full h-full object-cover" />
-                 <div className="absolute inset-0 border-8 border-transparent border-t-amber-500/50 animate-spin" style={{ animationDuration: '3s' }} />
+                 <div className="absolute inset-0 border-8 border-transparent border-t-cyan-500/50 animate-spin" style={{ animationDuration: '3s' }} />
               </div>
               
               <div className="flex gap-4">
                 <button onClick={() => setShowSelfieCam(false)} className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-500 bg-white/5 rounded-2xl">Cancel</button>
-                <button onClick={captureSelfieAndSearch} disabled={isSearching} className="flex-1 py-4 text-xs font-black uppercase tracking-widest bg-amber-500 text-black rounded-2xl hover:scale-105 transition-all disabled:opacity-50">
+                <button onClick={captureSelfieAndSearch} disabled={isSearching} className="flex-1 py-4 text-xs font-black uppercase tracking-widest bg-cyan-500 text-black rounded-2xl hover:scale-105 transition-all disabled:opacity-50">
                   {isSearching ? 'Searching...' : 'Scan My Face ✦'}
                 </button>
               </div>

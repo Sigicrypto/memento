@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import './styles/neumorphic.css';
+// import './styles/neumorphic.css';
 
 export default function NeumorphicLandingPage() {
   const [scrolled, setScrolled] = useState(false);
