@@ -699,9 +699,8 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
                <div className="qr-container-glass">
 
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">Scan to Upload</h3>
-
-                  <p className="text-xs text-slate-500 mb-4">Point your camera to join the wall</p>
+                  <h3 className="text-lg font-black text-white mb-1">Scan to Upload</h3>
+                  <p className="text-xs text-slate-400 mb-4">Point your camera to join the wall</p>
 
                   <div className="qr-box">
 
@@ -749,9 +748,8 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
                      <span className="text-5xl mb-4 block">📷</span>
 
-                     <h2 className="text-2xl font-bold text-slate-800 mb-2">The wall is empty!</h2>
-
-                     <p className="text-slate-600">Scan the QR code to upload the first photo.</p>
+                     <h2 className="text-2xl font-black text-white mb-2">The wall is empty!</h2>
+                     <p className="text-slate-400">Scan the QR code to upload the first photo.</p>
 
                   </div>
 

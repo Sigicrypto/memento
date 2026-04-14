@@ -555,8 +555,10 @@ export default function WallPage() {
                 </div>
 
                 <div className="absolute left-20 top-1/2 -translate-y-1/2 flex flex-col gap-12 w-[340px]">
-                  <div className="bg-white p-4 rounded-3xl shadow-2xl w-fit">
-                    <QRCodeSVG value={uploadUrl} size={150} />
+                  <div className="bg-white/10 backdrop-blur-3xl p-6 rounded-[32px] border border-white/10 shadow-2xl w-fit">
+                    <div className="bg-white p-3 rounded-2xl">
+                      <QRCodeSVG value={uploadUrl} size={150} />
+                    </div>
                   </div>
                   <div className="space-y-6">
                     <div>
@@ -741,6 +743,19 @@ export default function WallPage() {
       </main>
 
       <Confetti trigger={confettiTrigger} />
+      
+      {/* WhatsApp QR Message Me */}
+      <div className="fixed bottom-8 right-32 z-[100] hidden lg:block">
+        <div className="glass-card p-4 flex items-center gap-4 border-white/10 bg-black/40 backdrop-blur-2xl">
+          <div className="bg-white p-2 rounded-xl">
+            <QRCodeSVG value="https://api.whatsapp.com/send?phone=96896095692&text=Hi%20Memento!%20I%27d%20like%20to%20know%20more." size={80} />
+          </div>
+          <div className="pr-2">
+            <p className="text-[10px] font-black text-cyan-500 uppercase tracking-widest mb-1">Message Me</p>
+            <p className="text-xs font-bold text-white w-24 leading-tight">Scan to chat on WhatsApp</p>
+          </div>
+        </div>
+      </div>
       
       <AnimatePresence>
         {showSelfieCam && (
