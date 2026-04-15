@@ -61,6 +61,11 @@ export default function DashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState('');
+  
+  // Custom Delete Modal State
+  const [deleteEvent, setDeleteEvent] = useState<Event | null>(null);
+  const [deleteText, setDeleteText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (isLoading) return;
@@ -87,10 +92,19 @@ export default function DashboardPage() {
     fetchEvents();
   }, [user, isLoading, router]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this event and all its photos?')) return;
-    await supabase.from('events').delete().eq('id', id);
-    setEvents((prev) => prev.filter((e) => e.id !== id));
+  const confirmDelete = (event: Event) => {
+    setDeleteEvent(event);
+    setDeleteText('');
+  };
+
+  const executeDelete = async () => {
+    if (!deleteEvent) return;
+    if (deleteText !== deleteEvent.name) return;
+    setIsDeleting(true);
+    await supabase.from('events').delete().eq('id', deleteEvent.id);
+    setEvents((prev) => prev.filter((e) => e.id !== deleteEvent.id));
+    setDeleteEvent(null);
+    setIsDeleting(false);
   };
 
   const copyUrl = (slug: string) => {
@@ -270,7 +284,7 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <button 
-                        onClick={() => handleDelete(event.id)} 
+                        onClick={() => confirmDelete(event)} 
                         className="w-10 h-10 rounded-xl border border-slate-200 bg-white/50 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100 shadow-sm"
                       >
                         <Trash2 size={16} />
@@ -315,6 +329,67 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteEvent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-rose-500 to-rose-400" />
+              
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-500 flex items-center justify-center shrink-0">
+                  <Trash2 size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 leading-tight">Delete Folder</h3>
+                  <p className="text-sm text-rose-500 font-bold">This action cannot be undone.</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">
+                <p className="text-sm text-slate-600 mb-2">You are about to permanently delete:</p>
+                <p className="font-black text-slate-900">{deleteEvent.name}</p>
+                <p className="text-xs text-slate-400 mt-2">({deleteEvent.photo_count || 0} photos will be erased)</p>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">
+                  Type <span className="text-slate-900 select-all">{deleteEvent.name}</span> to confirm
+                </label>
+                <input 
+                  type="text"
+                  value={deleteText}
+                  onChange={(e) => setDeleteText(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-500/10 transition-all font-medium text-slate-900"
+                  placeholder="Event name..."
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setDeleteEvent(null)}
+                  className="flex-1 py-3 px-4 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={executeDelete}
+                  disabled={deleteText !== deleteEvent.name || isDeleting}
+                  className="flex-1 py-3 px-4 rounded-xl font-bold text-white bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all relative overflow-hidden"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Forever'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

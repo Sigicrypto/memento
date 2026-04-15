@@ -159,6 +159,7 @@ export default function MobilePage() {
   const [caption, setCaption] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [processingFiles, setProcessingFiles] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -258,15 +259,42 @@ export default function MobilePage() {
     return () => { supabase.removeChannel(channel); };
   }, [event, matchedPhotoIds, sessionPhotoIds]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     if (selectedFiles.length === 0) return;
 
-    // Filter invalid types
-    const validFiles = selectedFiles.filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
-    if (validFiles.length < selectedFiles.length) {
-      setError('Only photos and videos are allowed.');
-      return;
+    setError('');
+    setSuccessMessage('');
+    setProcessingFiles(true);
+
+    const validFiles: File[] = [];
+
+    // Filter invalid types and convert HEIC
+    for (const f of selectedFiles) {
+      const ext = f.name.toLowerCase();
+      if (ext.endsWith('.heic') || ext.endsWith('.heif')) {
+        try {
+          // Dynamically import heic2any to avoid SSR issues
+          const heic2anyFn = (await import('heic2any')).default;
+          // Use 'image/jpeg' or 'image/png' since browsers natively support them
+          const convertedBlob = await heic2anyFn({ blob: f, toType: 'image/jpeg', quality: 0.8 });
+          const blobArray = Array.isArray(convertedBlob) ? convertedBlob : [convertedBlob];
+          const newName = f.name.replace(/\.heic$|\.heif$/i, '.jpg');
+          const newFile = new File([blobArray[0]], newName, { type: 'image/jpeg' });
+          validFiles.push(newFile);
+        } catch (err) {
+          console.error("HEIC conversion error:", err);
+          setError(`Failed to process ${f.name}. Please try a different photo.`);
+          setProcessingFiles(false);
+          return;
+        }
+      } else if (f.type.startsWith('image/') || f.type.startsWith('video/')) {
+        validFiles.push(f);
+      } else {
+        setError('Only photos and videos are allowed.');
+        setProcessingFiles(false);
+        return;
+      }
     }
 
     // Checking MB constraints to protect storage buckets
@@ -278,10 +306,12 @@ export default function MobilePage() {
        const fileSizeMB = file.size / (1024 * 1024);
        if (isVideo && fileSizeMB > MAX_VIDEO_MB) {
          setError(`Video ${file.name} is too large. Max size is ${MAX_VIDEO_MB}MB.`);
+         setProcessingFiles(false);
          return;
        }
        if (!isVideo && fileSizeMB > MAX_IMAGE_MB) {
          setError(`Photo ${file.name} is too large. Max size is ${MAX_IMAGE_MB}MB.`);
+         setProcessingFiles(false);
          return;
        }
     }
@@ -289,13 +319,13 @@ export default function MobilePage() {
     const hasVideo = validFiles.some(f => f.type.startsWith('video/'));
     if (hasVideo && !hasFeature(event?.plan_type, 'VIDEO_UPLOAD')) {
       setError('Video uploads are a Standard feature.');
+      setProcessingFiles(false);
       return;
     }
 
     setFiles(validFiles);
     setPreviews(validFiles.map(f => URL.createObjectURL(f)));
-    setError('');
-    setSuccessMessage('');
+    setProcessingFiles(false);
   };
 
   const handleUpload = async () => {
@@ -509,10 +539,10 @@ export default function MobilePage() {
         <div className="glass-card p-6 mb-8">
           <h2 style={{ fontSize:18, fontWeight:800, marginBottom:16 }}>Capture a Moment</h2>
           
-          <input type="file" accept="image/*,video/*" multiple onChange={handleFileChange} className="hidden" id="photo-upload" />
-          <label htmlFor="photo-upload" className="btn-glow w-full py-5 rounded-2xl font-bold text-lg cursor-pointer mb-4">
+          <input type="file" accept="image/*,video/*,.heic,.heif" multiple onChange={handleFileChange} className="hidden" id="photo-upload" disabled={processingFiles} />
+          <label htmlFor="photo-upload" className="btn-glow w-full py-5 rounded-2xl font-bold text-lg cursor-pointer mb-4" style={{ opacity: processingFiles ? 0.6 : 1, pointerEvents: processingFiles ? 'none' : 'auto' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            CHOOSE PHOTOS
+            {processingFiles ? 'PROCESSING...' : 'CHOOSE PHOTOS'}
           </label>
           
           {previews.length > 0 && (

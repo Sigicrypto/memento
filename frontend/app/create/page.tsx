@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
+import jsPDF from 'jspdf';
 import Link from 'next/link';
 import '../landing.css';
 
@@ -125,8 +126,73 @@ export default function CreateEventPage() {
                 canvas.toBlob((blob) => {
                   if (blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `memento-${createdSlug}-qr.png`; a.click(); URL.revokeObjectURL(url); }
                 });
-              }} className="nm-btn w-full py-3">
-                📱 Download QR Code
+              }} className="nm-btn w-full py-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+                🖼️ Save QR Image
+              </button>
+              <button 
+                onClick={async () => {
+                  const qrCanvas = qrCanvasRef.current;
+                  if (!qrCanvas) return;
+                  const qrDataUrl = qrCanvas.toDataURL('image/png');
+                  
+                  const container = document.createElement('div');
+                  container.style.width = '794px';
+                  container.style.height = '1123px';
+                  container.style.background = '#0a0a0c'; // Midnight theme
+                  container.style.color = '#fff';
+                  container.style.display = 'flex';
+                  container.style.flexDirection = 'column';
+                  container.style.alignItems = 'center';
+                  container.style.justifyContent = 'center';
+                  container.style.padding = '40px';
+                  container.style.fontFamily = 'system-ui, sans-serif';
+                  container.style.position = 'fixed';
+                  container.style.left = '-9999px';
+                  container.style.top = '0';
+                  
+                  container.innerHTML = `
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%; border: 2px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 60px; box-sizing: border-box; background: linear-gradient(180deg, rgba(20,20,26,0.6) 0%, rgba(10,10,12,0.8) 100%);">
+                      <h1 style="font-size: 64px; font-weight: 900; background: linear-gradient(135deg, #06b6d4, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; text-align: center; line-height: 1.2;">
+                        ${name || 'Event Photo Wall'}
+                      </h1>
+                      <p style="font-size: 28px; color: #94a3b8; font-weight: 500; margin-bottom: 80px; text-align: center; max-width: 600px; line-height: 1.4;">
+                        Point your phone's camera at the code below to share your favorite moments with everyone!
+                      </p>
+                      
+                      <div style="background: white; padding: 48px; border-radius: 36px; margin-bottom: 80px; box-shadow: 0 40px 100px rgba(0,0,0,0.8);">
+                          <img src="${qrDataUrl}" style="width: 400px; height: 400px; display: block;" />
+                      </div>
+                      
+                      <h2 style="font-size: 42px; font-weight: 800; margin-bottom: 16px; color: #f8fafc;">Scan to Join</h2>
+                      <p style="font-size: 24px; color: #64748b; font-family: monospace; letter-spacing: 1px;">${uploadUrl}</p>
+                      
+                      <div style="margin-top: auto; padding-top: 40px;">
+                         <p style="font-size: 16px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: 3px;">Powered by Memento</p>
+                      </div>
+                    </div>
+                  `;
+                  
+                  document.body.appendChild(container);
+                  
+                  try {
+                    const html2canvas = (await import('html2canvas')).default;
+                    const canvas = await html2canvas(container, { scale: 2 });
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    
+                    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                    doc.save(`Memento-Sign-${createdSlug}.pdf`);
+                  } catch (err) {
+                    console.error('PDF generation failed:', err);
+                    alert('Failed to generate PDF. Please use the Save QR Image button instead.');
+                  } finally {
+                    document.body.removeChild(container);
+                  }
+                }} 
+                className="nm-btn w-full py-3 border-amber-500/30 text-amber-500 font-bold hover:bg-amber-500/10 transition-colors"
+                title="Download an A4 poster for your event tables"
+              >
+                🖨️ Download Printable Sign (PDF)
               </button>
               <button onClick={() => router.push(`/wall/${createdSlug}`)} className="nm-btn nm-btn-accent w-full py-3 font-bold">
                 🖼️ Open Live Wall
