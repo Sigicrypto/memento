@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Webcam from 'react-webcam';
+import AnimatedLogo from '@/components/AnimatedLogo';
 import { hasFeature, getRequiredTier } from '@/lib/permissions';
 import { extractFaceDescriptor, fileToImage } from '@/lib/faceEngine';
 
@@ -531,19 +532,26 @@ export default function MobilePage() {
   );
 
   return (
-    <div className="mobile-page pb-40" style={{ paddingTop:'80px' }}>
+    <div className="mobile-page pb-40" style={{ paddingTop:'20px' }}>
       <FontLoader />
       <BackgroundDecoration />
 
+      {/* ── HEADER ── */}
+      <header className="px-6 mb-8 flex items-center justify-between">
+        <Link href="/">
+          <AnimatedLogo width={120} height={40} />
+        </Link>
+        <div style={{ display:'flex', gap:8 }}>
+           <div className="status-badge" style={{ background: realtimeStatus === 'SUBSCRIBED' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: realtimeStatus === 'SUBSCRIBED' ? '#10b981' : '#f59e0b', fontSize:'9px', padding:'4px 10px' }}>
+            <div style={{ width:4, height:4, borderRadius:'50%', background:'currentColor' }} />
+            {realtimeStatus === 'SUBSCRIBED' ? 'LIVE' : 'SYNCING'}
+          </div>
+        </div>
+      </header>
+
       <div className="px-6">
         <div className="glass-card p-6 mb-6 text-center">
-          <h1 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', color:'var(--text1)', marginBottom:4 }}>{event?.name || 'Loading...'}</h1>
-          <div style={{ display:'flex', justifyContent:'center' }}>
-            <div className="status-badge" style={{ background: realtimeStatus === 'SUBSCRIBED' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: realtimeStatus === 'SUBSCRIBED' ? '#10b981' : '#f59e0b' }}>
-              <div style={{ width:6, height:6, borderRadius:'50%', background:'currentColor' }} />
-              {realtimeStatus === 'SUBSCRIBED' ? 'LIVE' : 'CONNECTING...'}
-            </div>
-          </div>
+          <h1 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', color:'var(--text1)', marginBottom:0 }}>{event?.name || 'Loading...'}</h1>
         </div>
 
         {/* UPLOAD SECTION */}
