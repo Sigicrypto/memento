@@ -8,6 +8,17 @@ import Webcam from 'react-webcam';
 import { hasFeature, getRequiredTier } from '@/lib/permissions';
 import { extractFaceDescriptor, fileToImage } from '@/lib/faceEngine';
 
+const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v']);
+const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4', 'mov', 'webm', 'm4v']);
+
+function getFileExtension(fileName: string) {
+  return fileName.split('.').pop()?.toLowerCase() || '';
+}
+
+function isAcceptedVideo(file: File) {
+  return file.type.startsWith('video/') || ACCEPTED_VIDEO_TYPES.has(file.type) || ACCEPTED_VIDEO_EXTENSIONS.has(getFileExtension(file.name));
+}
+
 // ─── BACKGROUND DECORATION ───
 const BackgroundDecoration = () => (
   <div style={{ position:'fixed', inset:0, zIndex:-1, overflow:'hidden', pointerEvents:'none' }}>
@@ -288,10 +299,10 @@ export default function MobilePage() {
           setProcessingFiles(false);
           return;
         }
-      } else if (f.type.startsWith('image/') || f.type.startsWith('video/')) {
+      } else if (f.type.startsWith('image/') || isAcceptedVideo(f)) {
         validFiles.push(f);
       } else {
-        setError('Only photos and videos are allowed.');
+        setError('Only photos and videos (MP4, MOV, WEBM) are allowed.');
         setProcessingFiles(false);
         return;
       }
@@ -302,7 +313,7 @@ export default function MobilePage() {
     const MAX_VIDEO_MB = 50;
 
     for (const file of validFiles) {
-       const isVideo = file.type.startsWith('video/');
+       const isVideo = isAcceptedVideo(file);
        const fileSizeMB = file.size / (1024 * 1024);
        if (isVideo && fileSizeMB > MAX_VIDEO_MB) {
          setError(`Video ${file.name} is too large. Max size is ${MAX_VIDEO_MB}MB.`);
@@ -316,7 +327,7 @@ export default function MobilePage() {
        }
     }
 
-    const hasVideo = validFiles.some(f => f.type.startsWith('video/'));
+    const hasVideo = validFiles.some(f => isAcceptedVideo(f));
     if (hasVideo && !hasFeature(event?.plan_type, 'VIDEO_UPLOAD')) {
       setError('Video uploads are a Standard feature.');
       setProcessingFiles(false);
@@ -368,7 +379,7 @@ export default function MobilePage() {
         return;
       }
 
-      const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+      const mediaType = isAcceptedVideo(file) ? 'video' : 'image';
       const photoData = {
         event_id: event.id,
         storage_path: filePath,
