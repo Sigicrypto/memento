@@ -205,6 +205,14 @@ export default function MobilePage() {
     }
   };
 
+  const handleFindMyPhotos = async () => {
+    if (!hasFeature(event?.plan_type, 'SELFIE_MATCH')) {
+       alert("✨ Face Match is a Premium feature! Upgrade your wall to unlock.");
+       return;
+    }
+    setShowSelfieCam(true);
+  };
+
   // ── Face Match ──
   const captureSelfie = async () => {
     const screenshot = webcamRef.current?.getScreenshot();
