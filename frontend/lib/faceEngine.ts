@@ -14,7 +14,7 @@ export async function loadModels() {
   console.log("AI Vision: Loading models from", MODEL_URL);
   
   await Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+    faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
     faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
   ]);
@@ -30,9 +30,9 @@ export async function extractFaceDescriptor(imageElement: HTMLImageElement | HTM
   await loadModels();
   
   // Detect a single face and get its markings/descriptor
-  // Lowered the scoreThreshold to make it more sensitive to webcam captures (prevents 'low light' errors)
+  // Using higher accuracy SSD MobileNet v1 instead of Tiny detector
   const detection = await faceapi
-    .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.2 }))
+    .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.3 }))
     .withFaceLandmarks()
     .withFaceDescriptor();
     
