@@ -133,7 +133,8 @@ export default function DashboardPage() {
       <div className="aurora-bg fixed inset-0 opacity-40 z-0" />
       <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
 
-      <div className="max-w-[1240px] mx-auto px-6 pt-32 pb-24 relative z-10">
+      <div className="flex flex-col items-center w-full relative z-10">
+        <div className="w-full max-w-[1240px] px-6 pt-32 pb-24">
 
         {/* Welcome + Plan Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
@@ -329,6 +330,7 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+    </div>
 
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
