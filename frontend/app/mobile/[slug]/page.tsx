@@ -183,16 +183,22 @@ export default function MobilePage() {
         if (dbError) throw dbError;
         if (inserted) setSessionPhotoIds(prev => [...prev, inserted.id]);
         
-        // Face indexing
-        if (isAcceptedVideo(file) === false && hasFeature(event.plan_type, 'SELFIE_MATCH')) {
+        // Face indexing (Forced indexing for all tiers to diagnose issues)
+        if (isAcceptedVideo(file) === false) {
            try {
              setStatusText(`AI Scanning ${i + 1}/${files.length}...`);
              const img = await fileToImage(file);
              const descriptor = await extractFaceDescriptor(img);
              if (descriptor) {
-               await supabase.from('photo_faces').insert({ photo_id: inserted.id, event_id: event.id, descriptor: Array.from(descriptor) });
+               const { error: idxErr } = await supabase.from('photo_faces').insert({ photo_id: inserted.id, event_id: event.id, descriptor: Array.from(descriptor) });
+               if (idxErr) console.error("Index DB Error:", idxErr);
+             } else {
+               console.warn("AI didn't see a face in this photo.");
              }
-           } catch (e) { console.warn("Face indexing failed", e); }
+           } catch (e: any) { 
+             console.error("Face indexing crash", e);
+             alert("AI Scan Error: " + (e.message || "Unknown issue"));
+           }
         }
         setUploadProgress(((i + 1) / files.length) * 100);
       }
