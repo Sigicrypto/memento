@@ -373,16 +373,20 @@ export default function WallPage() {
   }, [eventId, startPolling]);
 
   useEffect(() => {
-    if (viewMode === 'slideshow' && photos.length > 0) {
-      const current = photos[slideIndex];
+    if (viewMode === 'slideshow' && displayedPhotos.length > 0) {
+      const current = displayedPhotos[slideIndex];
+      
       // If current is a video, don't set an auto-advance timer.
       // The video's onEnded handler will advance to the next slide.
       if (current?.media_type === 'video') return;
 
-      const timer = setInterval(() => setSlideIndex(i => (i + 1) % photos.length), 5500);
-      return () => clearInterval(timer);
+      const timer = setTimeout(() => {
+        setSlideIndex(prev => (prev + 1) % displayedPhotos.length);
+      }, 6000);
+      
+      return () => clearTimeout(timer);
     }
-  }, [viewMode, photos, slideIndex]);
+  }, [viewMode, slideIndex, displayedPhotos.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -552,7 +556,7 @@ export default function WallPage() {
                 <div className="pl-[420px] pr-20 flex items-center justify-center w-full h-full">
                   <div className="relative group">
                     {current.media_type === 'video' 
-                      ? <video src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" autoPlay muted onEnded={() => setSlideIndex(prev => (prev + 1) % photos.length)} />
+                      ? <video src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" autoPlay muted onEnded={() => setSlideIndex(prev => (prev + 1) % displayedPhotos.length)} />
                       : <img src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" alt="" />
                     }
                     <Watermark />

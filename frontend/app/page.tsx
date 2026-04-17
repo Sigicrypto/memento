@@ -403,17 +403,17 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
       // If current item is a video, let the video element's onEnded handle the transition
       if (current?.type === 'video') return;
 
-      const interval = setInterval(() => {
+      const timer = setTimeout(() => {
 
         setCurrentSlide((prev) => (prev + 1) % photos.length);
 
       }, 6000);
 
-      return () => clearInterval(interval);
+      return () => clearTimeout(timer);
 
     }
 
-  }, [viewMode, isPlaying, photos, currentSlide, isOpen]);
+  }, [viewMode, isPlaying, currentSlide, photos.length, isOpen]);
 
 
 
