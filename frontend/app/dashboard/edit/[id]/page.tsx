@@ -5,6 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Globe, Music, Palette, Lock, Link2, Star, Sparkles } from 'lucide-react';
+import '../../../../landing.css';
 
 export default function EditEventPage() {
   const params = useParams();
@@ -30,21 +33,9 @@ export default function EditEventPage() {
     if (!user) { router.push('/auth'); return; }
 
     const fetchEvent = async () => {
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error || !data) {
-        router.push('/dashboard');
-        return;
-      }
-
-      if (data.owner_id !== user.id) {
-        router.push('/dashboard');
-        return;
-      }
+      const { data, error } = await supabase.from('events').select('*').eq('id', id).single();
+      if (error || !data) { router.push('/dashboard'); return; }
+      if (data.owner_id !== user.id) { router.push('/dashboard'); return; }
 
       setName(data.name);
       setSlug(data.slug);
@@ -65,35 +56,25 @@ export default function EditEventPage() {
     setSaving(true);
     setError('');
 
-    // Update event
-    const { error: updateError } = await supabase
-      .from('events')
-      .update({
-        name,
-        slug,
-        password: password || null,
-        theme,
-        music_track: musicTrack !== 'none' ? musicTrack : null,
-        custom_domain: planType === 'WHITE_LABEL' ? customDomain : null,
-        brand_logo_url: planType === 'WHITE_LABEL' ? logoUrl : null,
-      })
-      .eq('id', id);
+    const { error: updateError } = await supabase.from('events').update({
+      name, slug,
+      password: password || null,
+      theme,
+      music_track: musicTrack !== 'none' ? musicTrack : null,
+      custom_domain: planType === 'WHITE_LABEL' ? customDomain : null,
+      brand_logo_url: planType === 'WHITE_LABEL' ? logoUrl : null,
+    }).eq('id', id);
 
-    if (updateError) {
-      setError(updateError.message);
-      setSaving(false);
-      return;
-    }
-
+    if (updateError) { setError(updateError.message); setSaving(false); return; }
     router.push('/dashboard');
   };
 
   if (isLoading || loading) {
     return (
-      <div className="nm-page flex items-center justify-center">
-        <div className="nm-circle w-14 h-14">
-          <div className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: '#252c46', borderTopColor: '#f59e0b' }} />
-        </div>
+      <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+        <div style={{ width: 44, height: 44, border: '3px solid rgba(6,182,212,0.15)', borderTopColor: '#06b6d4', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -103,131 +84,297 @@ export default function EditEventPage() {
   const isStandardPlus = ['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planType);
 
   return (
-    <div className="nm-page flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="nm-card p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold" style={{ color: 'var(--text1)' }}>Edit Event</h1>
-            <button onClick={() => router.back()} className="nm-circle w-9 h-9 text-sm" style={{ color: 'var(--text2)' }}>✕</button>
+    <div className="lp min-h-screen relative overflow-hidden">
+      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+      <div className="grain" />
+
+      {/* ── NAV ── */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 2.5rem', height: '64px',
+        background: 'rgba(10,10,11,0.72)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 10,
+            background: 'linear-gradient(135deg, #06b6d4, #ec4899)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1rem', boxShadow: '0 0 16px rgba(6,182,212,0.4)',
+          }}>📸</div>
+          <span style={{ fontWeight: 800, fontSize: '1rem', color: '#F8FAFC', letterSpacing: '-0.02em' }}>memento</span>
+        </Link>
+        <button
+          onClick={() => router.back()}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '0.4rem 1rem', borderRadius: 100,
+            background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+            color: '#94A3B8', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          <ArrowLeft size={13} /> Back
+        </button>
+      </nav>
+
+      {/* ── CONTENT ── */}
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '96px 24px 60px', position: 'relative', zIndex: 10 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          style={{ width: '100%', maxWidth: 520 }}
+        >
+          {/* Page title */}
+          <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '0.35rem 1rem', borderRadius: 100,
+              background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.18)',
+              color: '#06b6d4', fontSize: '0.7rem', fontWeight: 800,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              marginBottom: '1rem',
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#06b6d4', display: 'inline-block' }} />
+              Event Settings
+            </div>
+            <h1 style={{ fontSize: '2rem', fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+              Edit <span className="gradient-text">Event</span>
+            </h1>
+            <p style={{ color: '#64748b', fontSize: '0.85rem', marginTop: 8 }}>Customise your photo wall settings below.</p>
           </div>
 
-          <form onSubmit={handleUpdate} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text2)' }}>Event Name</label>
-              <input type="text" className="nm-input" value={name} onChange={(e) => setName(e.target.value)} required />
-            </div>
+          {/* Card */}
+          <div className="gcard" style={{ padding: '2.25rem', position: 'relative' }}>
+            <div className="gcard-border" />
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-semibold" style={{ color: 'var(--text2)' }}>Custom Slug (URL)</label>
-                {!isStandardPlus && (
-                  <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 hover:bg-amber-500/20 transition-colors font-bold">
-                    ✨ Upgrade to Standard
-                  </Link>
-                )}
-              </div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style={{ color: '#4a4f6a' }}>/wall/</span>
-                <input type="text" className={`nm-input !pl-14 ${!isStandardPlus ? 'opacity-50' : ''}`}
-                  value={slug}
+            <form onSubmit={handleUpdate} style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '1.4rem' }}>
+
+              {/* Event Name */}
+              <FieldGroup label="Event Name" icon={<Star size={13} />}>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  placeholder="My Amazing Event"
+                  style={inputStyle}
+                  onFocus={e => (e.target.style.borderColor = 'rgba(6,182,212,0.4)')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                />
+              </FieldGroup>
+
+              {/* Slug */}
+              <FieldGroup
+                label="Custom Slug (URL)"
+                icon={<Link2 size={13} />}
+                badge={!isStandardPlus ? (
+                  <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade to Standard" color="#06b6d4" />
+                ) : undefined}
+              >
+                <div style={{ position: 'relative' }}>
+                  <span style={{
+                    position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)',
+                    fontSize: '0.8rem', color: '#475569', pointerEvents: 'none', userSelect: 'none',
+                  }}>/wall/</span>
+                  <input
+                    type="text"
+                    value={slug}
+                    disabled={!isStandardPlus}
+                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                    placeholder={!isStandardPlus ? 'Standard plan required' : 'your-event-slug'}
+                    style={{ ...inputStyle, paddingLeft: '3.75rem', opacity: !isStandardPlus ? 0.45 : 1 }}
+                    onFocus={e => { if (isStandardPlus) e.target.style.borderColor = 'rgba(6,182,212,0.4)'; }}
+                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                  />
+                </div>
+                {slugError && <p style={{ fontSize: '0.72rem', color: '#f87171', marginTop: 4 }}>{slugError}</p>}
+              </FieldGroup>
+
+              {/* Password */}
+              <FieldGroup label="Password Protection" icon={<Lock size={13} />}>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Leave blank for public access"
+                  style={inputStyle}
+                  onFocus={e => (e.target.style.borderColor = 'rgba(6,182,212,0.4)')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                />
+              </FieldGroup>
+
+              {/* Divider */}
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '0.25rem 0' }} />
+
+              {/* Wall Theme */}
+              <FieldGroup
+                label="Wall Theme"
+                icon={<Palette size={13} />}
+                badge={!isStandardPlus ? (
+                  <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade to Unlock" color="#06b6d4" />
+                ) : undefined}
+              >
+                <select
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
                   disabled={!isStandardPlus}
-                  onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  placeholder={!isStandardPlus ? 'Standard required' : ''}
-                  required />
-              </div>
-              {slugError && <p className="text-[10px] mt-1" style={{ color: '#f87171' }}>{slugError}</p>}
-            </div>
+                  style={{ ...inputStyle, opacity: !isStandardPlus ? 0.45 : 1, cursor: !isStandardPlus ? 'not-allowed' : 'pointer' }}
+                >
+                  <option value="light">Classic Light</option>
+                  <option value="dark">Cinematic Dark</option>
+                  <option value="dreamy">Dreamy Glassmorphism</option>
+                </select>
+              </FieldGroup>
 
-            <div>
-              <label className="block text-xs font-semibold mb-2" style={{ color: 'var(--text2)' }}>Password</label>
-              <input type="password" className="nm-input" value={password}
-                onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for public access" />
-            </div>
+              {/* Music */}
+              <FieldGroup
+                label="Slideshow Music"
+                icon={<Music size={13} />}
+                badge={!isPremiumPlus ? (
+                  <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade to Unlock" color="#ec4899" />
+                ) : undefined}
+              >
+                <select
+                  value={musicTrack}
+                  onChange={(e) => setMusicTrack(e.target.value)}
+                  disabled={!isPremiumPlus}
+                  style={{ ...inputStyle, opacity: !isPremiumPlus ? 0.45 : 1, cursor: !isPremiumPlus ? 'not-allowed' : 'pointer' }}
+                >
+                  <option value="none">No Music</option>
+                  <option value="lofi">Lofi Chill</option>
+                  <option value="acoustic">Acoustic Sunset</option>
+                  <option value="upbeat">Upbeat Party</option>
+                </select>
+              </FieldGroup>
 
-            {/* White Label Section (Visible but Locked) */}
-            <div className="pt-4 border-t border-slate-200/20 space-y-5">
-              <div>
-                <label className="block text-xs font-semibold mb-2 flex items-center justify-between">
-                  <span style={{ color: isWhiteLabel ? '#f59e0b' : 'var(--text2)' }}>⭐ Custom Domain (White Label)</span>
+              {/* White Label Section */}
+              <div style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.12)', borderRadius: 16, padding: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: '1.1rem' }}>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6366f1' }}>👑 White Label</span>
                   {!isWhiteLabel && (
-                    <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors font-bold">
-                      🌐 Upgrade to Partner
-                    </Link>
+                    <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade to Partner" color="#6366f1" />
                   )}
-                </label>
-                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`}
-                  value={customDomain}
-                  disabled={!isWhiteLabel}
-                  onChange={(e) => setCustomDomain(e.target.value)} placeholder="e.g. photos.wedding.com" />
-                {isWhiteLabel && <p className="text-[10px] mt-1" style={{ color: 'var(--text2)' }}>Point your A record to memento.events IP.</p>}
-              </div>
-              <div>
-                <label className="block text-xs font-semibold mb-2 flex items-center justify-between">
-                  <span style={{ color: isWhiteLabel ? '#f59e0b' : 'var(--text2)' }}>⭐ Brand Logo URL</span>
-                </label>
-                <input type="text" className={`nm-input ${!isWhiteLabel ? 'opacity-50' : ''}`}
-                  value={logoUrl}
-                  disabled={!isWhiteLabel}
-                  onChange={(e) => setLogoUrl(e.target.value)} placeholder="https://... logo.png" />
-              </div>
-            </div>
+                </div>
 
-            {/* Premium / Standard Features */}
-            <div className="pt-4 border-t border-slate-200/20">
-              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{ color: 'var(--text2)' }}>
-                <span className="flex items-center gap-2">Wall Theme</span>
-                {!isStandardPlus && (
-                  <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-full border border-amber-500/20 hover:bg-amber-500/20 transition-colors">
-                    ✨ Upgrade to Unlock
-                  </Link>
-                )}
-              </label>
-              <select
-                className="nm-input w-full"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                disabled={!isStandardPlus}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <FieldGroup label="Custom Domain" icon={<Globe size={13} />}>
+                    <input
+                      type="text"
+                      value={customDomain}
+                      disabled={!isWhiteLabel}
+                      onChange={(e) => setCustomDomain(e.target.value)}
+                      placeholder="photos.yourdomain.com"
+                      style={{ ...inputStyle, opacity: !isWhiteLabel ? 0.4 : 1 }}
+                      onFocus={e => { if (isWhiteLabel) e.target.style.borderColor = 'rgba(99,102,241,0.4)'; }}
+                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                    />
+                    {isWhiteLabel && (
+                      <p style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 4 }}>Point your A record to memento.events IP.</p>
+                    )}
+                  </FieldGroup>
+
+                  <FieldGroup label="Brand Logo URL">
+                    <input
+                      type="text"
+                      value={logoUrl}
+                      disabled={!isWhiteLabel}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      placeholder="https://…/logo.png"
+                      style={{ ...inputStyle, opacity: !isWhiteLabel ? 0.4 : 1 }}
+                      onFocus={e => { if (isWhiteLabel) e.target.style.borderColor = 'rgba(99,102,241,0.4)'; }}
+                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                    />
+                  </FieldGroup>
+                </div>
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '0.75rem 1rem', borderRadius: 12,
+                  background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)',
+                  color: '#f87171', fontSize: '0.8rem',
+                }}>
+                  ⚠️ {error}
+                </div>
+              )}
+
+              {/* Submit */}
+              <motion.button
+                type="submit"
+                disabled={saving}
+                whileHover={{ scale: 1.015 }}
+                whileTap={{ scale: 0.985 }}
+                className="btn-hero-primary"
+                style={{ width: '100%', padding: '0.9rem', fontSize: '0.9rem', fontWeight: 800, opacity: saving ? 0.7 : 1, cursor: saving ? 'wait' : 'pointer' }}
               >
-                <option value="light">Classic Light</option>
-                <option value="dark">Cinematic Dark</option>
-                <option value="dreamy">Dreamy Glassmorphism</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold mb-2 flex items-center justify-between" style={{ color: 'var(--text2)' }}>
-                <span className="flex items-center gap-2">Slideshow Music</span>
-                {!isPremiumPlus && (
-                  <Link href={`/pricing?eventId=${id}`} className="text-[9px] px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded-full border border-purple-500/20 hover:bg-purple-500/20 transition-colors">
-                    💎 Upgrade to Unlock
-                  </Link>
+                {saving ? (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} />
+                    Saving changes…
+                  </span>
+                ) : (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    <Sparkles size={15} /> Save Changes
+                  </span>
                 )}
-              </label>
-              <select
-                className="nm-input w-full"
-                value={musicTrack}
-                onChange={(e) => setMusicTrack(e.target.value)}
-                disabled={!isPremiumPlus}
-              >
-                <option value="none">No Music</option>
-                <option value="lofi">Lofi Chill (Free default)</option>
-                <option value="acoustic">Acoustic Sunset</option>
-                <option value="upbeat">Upbeat Party</option>
-              </select>
-            </div>
-
-            {error && (
-              <div className="nm-inset p-3 flex items-center gap-2 text-sm" style={{ color: '#f87171' }}>
-                <span>⚠️</span> {error}
-              </div>
-            )}
-
-            <button type="submit" className="nm-btn nm-btn-accent w-full py-3 font-bold" disabled={saving}>
-              {saving ? 'Saving changes…' : 'Save Changes'}
-            </button>
-          </form>
-        </div>
+              </motion.button>
+            </form>
+          </div>
+        </motion.div>
       </div>
     </div>
+  );
+}
+
+/* ── HELPERS ── */
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '0.75rem 1rem',
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 14, color: '#F8FAFC',
+  fontSize: '0.875rem', outline: 'none',
+  transition: 'border-color 0.2s',
+  fontFamily: 'inherit',
+  appearance: 'none',
+  WebkitAppearance: 'none',
+};
+
+function FieldGroup({ label, icon, badge, children }: {
+  label: string;
+  icon?: React.ReactNode;
+  badge?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+          {icon && <span style={{ color: '#475569' }}>{icon}</span>}
+          {label}
+        </label>
+        {badge}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function UpgradeBadge({ href, label, color }: { href: string; label: string; color: string }) {
+  return (
+    <Link href={href} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: '0.2rem 0.65rem', borderRadius: 100,
+      background: `${color}10`, color,
+      border: `1px solid ${color}25`,
+      fontSize: '0.62rem', fontWeight: 800,
+      letterSpacing: '0.06em', textDecoration: 'none',
+      transition: 'all 0.2s', whiteSpace: 'nowrap',
+    }}>
+      ✨ {label}
+    </Link>
   );
 }
