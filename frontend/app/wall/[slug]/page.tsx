@@ -430,7 +430,7 @@ export default function WallPage() {
 
       const { data, error } = await supabase.rpc('match_photo_faces', {
         query_embedding: Array.from(descriptor),
-        match_threshold: 0.65,
+        match_threshold: 0.35,
         match_count: 50,
         target_event_id: eventId
       });
