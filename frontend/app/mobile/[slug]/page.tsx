@@ -224,7 +224,7 @@ export default function MobilePage() {
       const descriptor = await extractFaceDescriptor(img);
       if (!descriptor) { alert("Couldn't see your face clearly. Try better light!"); return; }
       const { data, error } = await supabase.rpc('match_photo_faces', {
-        query_embedding: Array.from(descriptor), match_threshold: 0.5, match_count: 50, target_event_id: event?.id
+        query_embedding: Array.from(descriptor), match_threshold: 0.65, match_count: 50, target_event_id: event?.id
       });
       if (error) throw error;
       const ids = data.map((d: any) => d.photo_id);
