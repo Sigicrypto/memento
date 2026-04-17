@@ -590,7 +590,7 @@
 }
 
 .phone-mockup {
-  width: 220px;
+  width: clamp(180px, 20vw, 220px);
   flex-shrink: 0;
   background: var(--surface);
   backdrop-filter: blur(24px);
@@ -602,22 +602,34 @@
   animation: phone-float 6s ease-in-out infinite;
   position: relative;
 }
+@media (max-width: 640px) {
+  .phone-mockup {
+    width: 250px;
+    max-width: 80vw;
+  }
+}
 
 .phone-mockup.phone-r {
   animation-delay: -3s;
 }
 
 .phone-mockup.phone-c {
-  width: 260px;
+  width: clamp(200px, 22vw, 260px);
   animation-name: phone-float-c;
   z-index: 2;
   box-shadow: 0 24px 64px rgba(30, 41, 59, 0.1), 0 0 40px rgba(244, 114, 182, 0.1);
+}
+@media (max-width: 640px) {
+  .phone-mockup.phone-c {
+    width: 280px;
+    max-width: 90vw;
+  }
 }
 
 /* Floating Polaroids (Dreamy memories) */
 .polaroid-float {
   position: absolute;
-  width: 170px;
+  width: clamp(120px, 12vw, 170px);
   padding: 8px 8px 24px 8px;
   background: var(--surface);
   backdrop-filter: blur(24px);
@@ -628,6 +640,11 @@
   animation: polaroid-drift 8s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 5;
+}
+@media (max-width: 768px) {
+  .polaroid-float {
+    display: none;
+  }
 }
 
 .polaroid-float.p-1 {

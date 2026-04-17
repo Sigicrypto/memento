@@ -42,8 +42,16 @@ import AnimatedLogo from '@/components/AnimatedLogo';
 import { useAuthModal } from '@/context/AuthModalContext';
 
 import './landing.css';
-
 import './auth-dialog.css';
+
+import Hero from '@/components/sections/Hero';
+import Stats from '@/components/sections/Stats';
+import WhyChoose from '@/components/sections/WhyChoose';
+import Features from '@/components/sections/Features';
+import Steps from '@/components/sections/Steps';
+import Gallery from '@/components/sections/Gallery';
+import Testimonials from '@/components/sections/Testimonials';
+import PricingSection from '@/components/sections/PricingSection';
 
 
 
@@ -1020,780 +1028,99 @@ export default function LandingPage() {
 
   return (
 
-    <div className="lp aurora-bg pt-[calc(140px+env(safe-area-inset-top))]">
-
-      <div className="flex flex-col gap-16">
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* HERO */}
-        <section className="hero pt-16 md:pt-20 py-16 overflow-hidden relative">
-          <motion.div
-            animate={{ rotate: 360, scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] md:w-[800px] md:h-[800px] rounded-full blur-[100px] pointer-events-none -z-10"
-            style={{
-              background: 'conic-gradient(from 0deg, rgba(6,182,212,0.4), rgba(236,72,153,0.4), rgba(99,102,241,0.4), rgba(6,182,212,0.4))'
-            }}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-            className="relative z-10"
-          >
-            <h1 className="hero-h1 leading-tight md:leading-[1.1]">
-              Collect Every Moment.
-              <br />
-              <span className="gradient-text-vibrant">Instantly. Effortlessly.</span>
-            </h1>
-          </motion.div>
-
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 100, damping: 15 }}
-            className="hero-p"
-          >
-            QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle.
-          </motion.p>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4, type: 'spring', stiffness: 100, damping: 15 }}
-            className="hero-btns"
-          >
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsDemoOpen(true)} 
-              className="btn-hero-primary cinematic-glow"
-            >
-              <span>🎬 Watch Demo Wall</span>
-            </motion.button>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.6, type: 'spring', stiffness: 100, damping: 15 }}
-            className="hero-visual"
-          >
-            <div className="polaroid-float p-1" style={{ '--rot': '-8deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo2.jpg" alt="Memory" />
-            </div>
-            <div className="polaroid-float p-2" style={{ '--rot': '12deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo6.jpg" alt="Memory" />
-            </div>
-            <div className="polaroid-float p-3" style={{ '--rot': '-5deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo12.jpg" alt="Memory" />
-            </div>
-            <div className="polaroid-float p-4" style={{ '--rot': '6deg' } as React.CSSProperties}>
-              <img src="/landing-hero/photo4.jpg" alt="Memory" />
-            </div>
-
-
-
-            {/* Left phone — Upload view */}
-
-            <div className="phone-mockup">
-
-              <div className="phone-notch" />
-
-              <div className="phone-screen">
-
-                <div className="phone-header">
-
-                  <span className="phone-title">Upload</span>
-
-                  <span className="phone-live"><span className="pulse-dot" /> Live</span>
-
-                </div>
-
-                <div className="phone-grid">
-
-                  {[
-
-                    { src: '/landing-hero/photo1.jpg', alt: 'Guest photo 1' },
-
-                    { src: '/landing-hero/photo2.jpg', alt: 'Guest photo 2' },
-
-                    { src: '/landing-hero/photo3.jpg', alt: 'Guest photo 3' },
-
-                    { src: '/landing-hero/photo4.jpg', alt: 'Guest photo 4' }
-
-                  ].map((img, i) => (
-
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(245,158,11,${0.15 + i * 0.05}), rgba(244,114,182,${0.1 + i * 0.05}))`, animationDelay: `${0.8 + i * 0.2}s` }}>
-
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-                <div className="phone-upload-bar">
-
-                  ⬆ Uploading...
-
-                  <div className="upload-progress"><div className="upload-progress-bar" /></div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-
-            {/* Center phone — Live Wall */}
-
-            <div className="phone-mockup phone-c">
-
-              <div className="phone-notch" />
-
-              <div className="phone-screen">
-
-                <div className="phone-header">
-
-                  <span className="phone-title">Sarah&apos;s Wedding</span>
-
-                  <span className="phone-live"><span className="pulse-dot" /> 24 Live</span>
-
-                </div>
-
-                <div className="phone-grid">
-
-                  {[
-
-                    { src: '/landing-hero/photo5.jpg', alt: 'Wedding photo 1' },
-
-                    { src: '/landing-hero/photo6.jpg', alt: 'Wedding photo 2' },
-
-                    { src: '/landing-hero/photo7.jpg', alt: 'Wedding photo 3' },
-
-                    { src: '/landing-hero/photo8.jpg', alt: 'Wedding photo 4' },
-
-                    { src: '/landing-hero/photo9.jpg', alt: 'Wedding photo 5' },
-
-                    { src: '/landing-hero/photo10.jpg', alt: 'Wedding photo 6' }
-
-                  ].map((img, i) => (
-
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(${200 + i * 10},${100 + i * 15},${50 + i * 20},0.3), rgba(244,114,182,0.15))`, animationDelay: `${0.5 + i * 0.15}s` }}>
-
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-
-            {/* Right phone — QR Scan */}
-
-            <div className="phone-mockup phone-r">
-
-              <div className="phone-notch" />
-
-              <div className="phone-screen">
-
-                <div className="phone-header">
-
-                  <span className="phone-title">Join Wall</span>
-
-                </div>
-
-                <div className="phone-qr">QR</div>
-
-                <p className="phone-scan-text">Scan to join the live wall</p>
-
-                <div className="phone-grid" style={{ marginTop: '0.75rem' }}>
-
-                  {[
-
-                    { src: '/landing-hero/photo11.jpg', alt: 'Guest photo 1' },
-
-                    { src: '/landing-hero/photo12.jpg', alt: 'Guest photo 2' }
-
-                  ].map((img, i) => (
-
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(252,211,77,0.2), rgba(245,158,11,0.15))`, animationDelay: `${1.2 + i * 0.2}s` }}>
-
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-              </div>
-            </div>
-          </motion.div>
-        </section>
-
-
-
-        {/* STATS */}
-
-        <section className="stats py-16">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="flex flex-wrap justify-center gap-8 md:gap-16"
-          >
-            {[
-              { val: '∞', label: 'Photos per wall' },
-              { val: '0s', label: 'App install time' },
-              { val: '<3s', label: 'Upload speed' },
-              { val: '0', label: 'Hidden fees' },
-            ].map((s, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1, ease: 'backOut' }}
-                className="stat group cursor-default"
-              >
-                <span className="stat-val group-hover:scale-110 transition-transform duration-300 inline-block">{s.val}</span>
-                <span className="stat-lbl text-sm opacity-70 group-hover:opacity-100 transition-opacity">{s.label}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-        </section>
-
-
-
-        {/* WHY CHOOSE MEMENTO */}
-        <section id="why" className="sec py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          >
-            <span className="kicker">Why Choose Memento?</span>
-            <h2 className="sec-h2">Capture what matters. <span className="gradient-text-vibrant">Instantly.</span></h2>
-            <p className="sec-sub">Your guests take the photos, we collect them all in one place. No missed moments, no lost memories.</p>
-          </motion.div>
-
-          <div className="feat-grid">
-            {[
-              { icon: '🎉', title: 'Perfect for Weddings', desc: 'From the first look to the last dance, every guest becomes your personal photographer.', big: true },
-              { icon: '🎂', title: 'Birthdays & Private Parties', desc: 'No more chasing friends for photos. Get them all at once in a beautiful live gallery.' },
-              { icon: '🏢', title: 'Corporate Events', desc: 'Level up your branding. Show real-time interaction on any screen with full moderation.' },
-              { icon: '👰', title: 'Anniversaries', desc: 'Celebrate the journey. Let every generation share their memories in one click.' },
-              { icon: '🎈', title: 'Festivals', desc: 'Capture the scale and energy. Crowdsourced memories that look professional.' },
-            ].map((f, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className={`gcard feat-card ${f.big ? 'feat-big' : ''} cinematic-glow`}
-              >
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <span className="feat-icon">{f.icon}</span>
-                  <h3 className="feat-title">{f.title}</h3>
-                  <p className="feat-desc">{f.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-        </section>
-
-
-
-        {/* FEATURES */}
-        <section id="features" className="sec py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          >
-            <span className="kicker">Core Features</span>
-            <h2 className="sec-h2">The Best Experience. <span className="gradient-text-vibrant">Built in.</span></h2>
-          </motion.div>
-
-          <motion.div 
-            className="feat-grid"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-
-            {[
-
-              { icon: '✨', title: 'Selfie-Safe Matching', desc: 'The ultimate privacy feature. Guests scan their face to instantly find and download only their photos—no manual searching required.', big: true },
-
-              { icon: '📺', title: 'Live Slideshow', desc: 'Auto-plays on any screen. Cast to TV or projector for a stunning real-time display.' },
-
-              { icon: '📷', title: 'Mirror Grid & Album', desc: 'Beautiful high-res photo gallery with automated albums and grid views.' },
-
-              { icon: '🔒', title: 'Private Walls', desc: 'Password-protect your memory wall. Full moderation allows you to approve every shot before it goes live.' },
-
-              { icon: '📱', title: 'Zero Friction', desc: 'No apps. No accounts. No logins. Just scan a QR and start sharing within 3 seconds.' },
-
-              { icon: '🛡️', title: 'Safety & Moderation', desc: 'Control your event. Remove or approve photos with one tap to keep the energy positive.' },
-
-            ].map((f, i) => (
-
-              <motion.div 
-                key={i} 
-                className={`gcard feat-card ${f.big ? 'feat-big' : ''} cinematic-glow`}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
-                }}
-                whileHover={{ scale: 1.03, y: -5 }}
-              >
-
-                <div className="gcard-border" />
-
-                <div className="gcard-inner">
-
-                  <span className="feat-icon">{f.icon}</span>
-
-                  <h3 className="feat-title">{f.title}</h3>
-
-                  <p className="feat-desc">{f.desc}</p>
-
-                </div>
-
-              </motion.div>
-
-            ))}
-
-          </motion.div>
-
-        </section>
-
-
-
-        {/* HOW IT WORKS */}
-        <section id="how" className="sec py-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          >
-            <span className="kicker">How it works</span>
-            <h2 className="sec-h2">Three steps. <span className="gradient-text-vibrant">That&apos;s it.</span></h2>
-            <p className="sec-sub">No downloads. No accounts. No friction.</p>
-          </motion.div>
-
-          <div className="steps">
-            {[
-              { num: '01', icon: '🎉', title: 'Create Your Event', desc: 'Name it and get a shareable QR code in under a minute.' },
-              { num: '02', icon: '📲', title: 'Guests Scan & Share', desc: 'No app. No login. Just scan the QR and upload photos instantly.' },
-              { num: '03', icon: '✨', title: 'Watch It Come Alive', desc: 'Every photo streams live into a beautiful gallery for everyone.' },
-            ].map((s, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.2, ease: "easeOut" }}
-                whileHover={{ scale: 1.05 }}
-                className="gcard step-card cinematic-glow"
-              >
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <span className="step-num">{s.num}</span>
-                  <span className="step-icon">{s.icon}</span>
-                  <h3 className="step-title">{s.title}</h3>
-                  <p className="step-desc">{s.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-            <motion.div 
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
-              className="steps-line origin-left" 
-            />
-          </div>
-        </section>
-
-
-
-        {/* IMAGE GALLERY */}
-        <section className="sec py-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          >
-            <span className="kicker">Gallery</span>
-            <h2 className="sec-h2">Real <span className="gradient-text-vibrant">Event Walls</span></h2>
-            <p className="sec-sub">See how people are using Memento to capture their special moments</p>
-          </motion.div>
-
-          <div className="gallery-grid">
-            {[
-              { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
-              { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
-              { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' },
-              { title: 'Corporate Gala', src: 'https://picsum.photos/400/300?random=4', count: '234 photos' },
-              { title: 'Graduation Party', src: 'https://picsum.photos/400/300?random=5', count: '145 photos' },
-              { title: 'Festival Weekend', src: 'https://picsum.photos/400/300?random=6', count: '512 photos' }
-            ].map((item, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.7, delay: i * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="gallery-item cinematic-glow"
-              >
-                <div className="gallery-img-wrapper">
-                  <img src={item.src} alt={item.title} className="gallery-img" />
-                  <div className="gallery-overlay">
-                    <h3 className="gallery-title">{item.title}</h3>
-                    <p className="gallery-count">{item.count}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-
-
-        {/* TESTIMONIALS */}
-        <section className="sec py-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          >
-            <span className="kicker">Testimonials</span>
-            <h2 className="sec-h2">Loved by <span className="gradient-text-vibrant">Event Organizers</span></h2>
-            <p className="sec-sub">See what people are saying about Memento</p>
-          </motion.div>
-
-          <div className="testimonial-grid">
-            {[
-              { quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free.", author: "Rohan & Priya", role: "Happy Couple", event: "Mumbai Wedding • 524 photos", rating: 5 },
-              { quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.", author: "Fatima Al Balushi", role: "Event Coordinator", event: "Muscat Corporate Gala • 320 photos", rating: 5 },
-              { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.", author: "Sarah Jenkins", role: "Wedding Planner", event: "London Destination Wedding • 450 photos", rating: 5 }
-            ].map((item, i) => (
-              <motion.div 
-                key={i} 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
-                whileHover={{ y: -5 }}
-                className="gcard testimonial-card cinematic-glow"
-              >
-                <div className="gcard-border" />
-                <div className="gcard-inner">
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(item.rating)].map((_, j) => <span key={j} className="text-amber-400">⭐</span>)}
-                  </div>
-                  <p className="text-slate-700 mb-6 text-base leading-relaxed italic">&quot;{item.quote}&quot;</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-rose-400 flex items-center justify-center text-white font-semibold text-lg shadow-md">
-                      {item.author.split(' ').map(n => n[0]).join('')}
-                    </div>
-                    <div>
-                      <p className="text-slate-900 font-bold text-base">{item.author}</p>
-                      <p className="text-slate-500 text-sm">{item.role}</p>
-                    </div>
-                  </div>
-                  <p className="text-amber-500 text-xs mt-4 font-bold tracking-wider uppercase">{item.event}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Social Proof Bar */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="social-proof-bar cinematic-glow mt-20"
-          >
-            <div className="social-proof-item">
-              <span className="text-3xl font-bold gradient-text-vibrant">10,000+</span>
-              <span className="text-slate-600 text-sm font-medium block mt-1">Events Created</span>
-            </div>
-            <div className="social-proof-item">
-              <span className="text-3xl font-bold gradient-text-vibrant">500K+</span>
-              <span className="text-slate-600 text-sm font-medium block mt-1">Photos Shared</span>
-            </div>
-            <div className="social-proof-item">
-              <span className="text-3xl font-bold gradient-text-vibrant">50+</span>
-              <span className="text-slate-600 text-sm font-medium block mt-1">Countries</span>
-            </div>
-            <div className="social-proof-item">
-              <span className="text-3xl font-bold gradient-text-vibrant">4.9★</span>
-              <span className="text-slate-600 text-sm font-medium block mt-1">User Rating</span>
-            </div>
-          </motion.div>
-        </section>
-
-
-
-        {/* PRICING */}
-        <section id="pricing" className="sec py-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          >
-            <span className="kicker">One-time Payment • Per Event</span>
-            <h2 className="sec-h2">Pricing That <span className="gradient-text-vibrant">Grows With You</span></h2>
-            <p className="sec-sub">Simple, transparent pricing. No subscriptions, zero surprises.</p>
-          </motion.div>
-
-
-
-          {/* Currency toggles */}
-          {!showingINR && currency.showINR && (
-            <button className="currency-toggle reveal" onClick={() => setShowingINR(!showingINR)}>
-              Switch to ₹ INR
-            </button>
-          )}
-          {!showingOMR && currency.showOMR && (
-            <button className="currency-toggle reveal" onClick={() => setShowingOMR(!showingOMR)}>
-              Switch to ر.ع. OMR
-            </button>
-          )}
-
-
-
-          <motion.div 
-            className="price-grid"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-
-            {[
-
-              {
-
-                name: 'Starter',
-
-                price: Starter,
-
-                emoji: '🟢',
-
-                description: 'Perfect for small, basic events',
-
-                stats: 'Up to 150 guests',
-
-                features: [
-
-                  '✓ Collect guest photos instantly',
-
-                  '✓ Live photo wall',
-
-                  '✓ Unlimited uploads',
-
-                  '✓ Download all photos as ZIP',
-
-                  '1 Month Storage'
-
-                ],
-
-                tagline: 'Simple, fast photo sharing for your event.',
-
-                popular: false
-
-              },
-
-              {
-
-                name: 'Standard',
-
-                price: Pro,
-
-                emoji: '🔵',
-
-                description: 'For interactive and lively events',
-
-                stats: 'Up to 300 guests',
-
-                features: [
-
-                  'Everything in Starter +',
-
-                  '🎥 Auto album creation',
-
-                  '🎨 Custom wall theme',
-
-                  '📊 Simple analytics',
-
-                  '📺 Slideshow TV Mode',
-
-                  '❤️ Live reactions',
-
-                  '3 Months Storage'
-
-                ],
-
-                tagline: 'Bring your event to life with interactive features.',
-
-                popular: true,
-
-                badge: '⭐ Most Popular',
-
-                featured: true
-
-              },
-
-              {
-
-                name: 'Premium',
-
-                price: Premium,
-
-                emoji: '🟣',
-
-                description: 'For weddings & luxury experiences',
-
-                stats: 'Unlimited guests',
-
-                features: [
-
-                  'Everything in Standard +',
-
-                  '🎶 Music slideshow',
-
-                  '⏳ Expiring galleries',
-
-                  '🛡️ Priority support',
-
-                  '🔒 Advanced privacy options',
-
-                  '☁️ Google Drive sync',
-
-                  '6 Months Storage'
-
-                ],
-
-                tagline: 'A premium, fully featured photo experience.',
-
-                popular: false,
-
-                badge: '🔥 Best Value',
-
-                featured: false
-
-              },
-
-              {
-
-                name: 'White Label',
-
-                price: WhiteLabel,
-
-                emoji: '🟡',
-
-                description: 'For agencies & photographers',
-
-                stats: 'Multi-event dashboard',
-
-                features: [
-
-                  'Everything in Premium +',
-
-                  '🔥 Full branding removal',
-
-                  '🌐 Custom domain (e.g. photos.you.com)',
-
-                  '💰 Partner resell rights',
-
-                  '📊 Client management',
-
-                  '🚀 Training & Priority Setup'
-
-                ],
-
-                tagline: 'Launch your own branded platform.',
-
-                popular: false
-
-              }
-
-            ].map((p, i) => (
-
-              <motion.div 
-                key={i} 
-                className={`gcard price-card ${p.popular ? 'popular' : ''} ${(p as any).featured ? 'featured-plan' : ''} cinematic-glow`}
-                variants={{
-                  hidden: { opacity: 0, scale: 0.9, y: 30 },
-                  visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
-                }}
-                whileHover={{ scale: (p as any).featured ? 1.06 : 1.03, y: -5, boxShadow: '0 20px 40px rgba(245, 158, 11, 0.2)' }}
-              >
-
-                <div className="gcard-border" />
-
-                <div className="gcard-inner">
-
-                  {/* Badge row: Most Popular tag + Best Value badge */}
-                  <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-                    {p.popular && <span className="popular-tag">⭐ Most Popular</span>}
-                    {(p as any).badge && !p.popular && (
-                      <span style={{
-                        display: 'inline-block',
-                        padding: '4px 12px',
-                        borderRadius: 100,
-                        fontSize: 11,
-                        fontWeight: 800,
-                        letterSpacing: '0.05em',
-                        background: 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(245,158,11,0.15))',
-                        border: '1px solid rgba(239,68,68,0.3)',
+    <div className="lp aurora-bg pt-[calc(140px+env(safe-area-ins      <div className="flex flex-col gap-16">
+        <Hero setIsDemoOpen={setIsDemoOpen} />
+        <Stats />
+        <WhyChoose />
+        <Features />
+        <Steps />
+        <Gallery />
+        <Testimonials />
+        <PricingSection 
+          showingINR={showingINR}
+          showingOMR={showingOMR}
+          setShowingINR={setShowingINR}
+          setShowingOMR={setShowingOMR}
+          currency={currency}
+          Sym={Sym}
+          plans={[
+            {
+              name: 'Starter',
+              price: Starter,
+              emoji: '🟢',
+              description: 'Perfect for small, basic events',
+              stats: 'Up to 150 guests',
+              features: [
+                '✓ Collect guest photos instantly',
+                '✓ Live photo wall',
+                '✓ Unlimited uploads',
+                '✓ Download all photos as ZIP',
+                '1 Month Storage'
+              ],
+              tagline: 'Simple, fast photo sharing for your event.',
+              popular: false
+            },
+            {
+              name: 'Standard',
+              price: Pro,
+              emoji: '🔵',
+              description: 'For interactive and lively events',
+              stats: 'Up to 300 guests',
+              features: [
+                'Everything in Starter +',
+                '🎥 Auto album creation',
+                '🎨 Custom wall theme',
+                '📊 Simple analytics',
+                '📺 Slideshow TV Mode',
+                '❤️ Live reactions',
+                '3 Months Storage'
+              ],
+              tagline: 'Bring your event to life with interactive features.',
+              popular: true,
+              badge: '⭐ Most Popular',
+              featured: true
+            },
+            {
+              name: 'Premium',
+              price: Premium,
+              emoji: '🟣',
+              description: 'For weddings & luxury experiences',
+              stats: 'Unlimited guests',
+              features: [
+                'Everything in Standard +',
+                '🎶 Music slideshow',
+                '⏳ Expiring galleries',
+                '🛡️ Priority support',
+                '🔒 Advanced privacy options',
+                '☁️ Google Drive sync',
+                '6 Months Storage'
+              ],
+              tagline: 'A premium, fully featured photo experience.',
+              popular: false,
+              badge: '🔥 Best Value',
+              featured: false
+            },
+            {
+              name: 'White Label',
+              price: WhiteLabel,
+              emoji: '🟡',
+              description: 'For agencies & photographers',
+              stats: 'Multi-event dashboard',
+              features: [
+                'Everything in Premium +',
+                '🔥 Full branding removal',
+                '🌐 Custom domain (e.g. photos.you.com)',
+                '💰 Partner resell rights',
+                '📊 Client management',
+                '🚀 Training & Priority Setup'
+              ],
+              tagline: 'Launch your own branded platform.',
+              popular: false
+            }
+          ]}
+        />
+      </div>
+(239,68,68,0.3)',
                         color: '#dc2626'
                       }}>{(p as any).badge}</span>
                     )}

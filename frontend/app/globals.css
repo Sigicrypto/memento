@@ -78,11 +78,17 @@ body {
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
   line-height: 1.6;
-  font-size: 18px;
+  font-size: 16px; /* Reduced from 18px for better mobile readability */
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 18px;
+  }
 }
 
 /* ── GLOW EFFECTS ── */
@@ -585,7 +591,7 @@ textarea.input {
 
 /* ── CINEMATIC ANIMATIONS ── */
 .cinematic-reveal {
-  opacity: 0;
+  opacity: 1 !important; /* Ensure visibility even if animation lags/fails */
   transform: translateY(20px) scale(0.98);
   animation: cinematicReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
