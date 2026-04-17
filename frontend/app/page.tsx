@@ -399,17 +399,21 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
     if (viewMode === 'slideshow' && isPlaying && photos.length > 1 && isOpen) {
 
+      const current = photos[currentSlide];
+      // If current item is a video, let the video element's onEnded handle the transition
+      if (current?.type === 'video') return;
+
       const interval = setInterval(() => {
 
         setCurrentSlide((prev) => (prev + 1) % photos.length);
 
-      }, 4000);
+      }, 6000);
 
       return () => clearInterval(interval);
 
     }
 
-  }, [viewMode, isPlaying, photos.length, isOpen]);
+  }, [viewMode, isPlaying, photos, currentSlide, isOpen]);
 
 
 
@@ -847,7 +851,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
                          {photos[currentSlide]?.type === 'video' ? (
 
-                            <video key={photos[currentSlide]?.id || currentSlide} src={photos[currentSlide]?.url} className="demo-media-slide" autoPlay muted loop playsInline preload="metadata" />
+                            <video key={photos[currentSlide]?.id || currentSlide} src={photos[currentSlide]?.url} className="demo-media-slide" autoPlay muted onEnded={() => setCurrentSlide((prev) => (prev + 1) % photos.length)} playsInline preload="metadata" />
 
                           ) : (
 

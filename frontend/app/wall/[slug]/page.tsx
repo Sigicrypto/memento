@@ -374,10 +374,15 @@ export default function WallPage() {
 
   useEffect(() => {
     if (viewMode === 'slideshow' && photos.length > 0) {
-      const timer = setInterval(() => setSlideIndex(i => (i + 1) % photos.length), 5000);
+      const current = photos[slideIndex];
+      // If current is a video, don't set an auto-advance timer.
+      // The video's onEnded handler will advance to the next slide.
+      if (current?.media_type === 'video') return;
+
+      const timer = setInterval(() => setSlideIndex(i => (i + 1) % photos.length), 5500);
       return () => clearInterval(timer);
     }
-  }, [viewMode, photos.length]);
+  }, [viewMode, photos, slideIndex]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -547,7 +552,7 @@ export default function WallPage() {
                 <div className="pl-[420px] pr-20 flex items-center justify-center w-full h-full">
                   <div className="relative group">
                     {current.media_type === 'video' 
-                      ? <video src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" autoPlay loop muted />
+                      ? <video src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" autoPlay muted onEnded={() => setSlideIndex(prev => (prev + 1) % photos.length)} />
                       : <img src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" alt="" />
                     }
                     <Watermark />
