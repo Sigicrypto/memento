@@ -277,6 +277,11 @@ export default function WallPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [slideIndex, setSlideIndex] = useState(0);
 
+  const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/mobile/${slug}` : '';
+  const displayedPhotos = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
+  const themeP = brand.colors?.primary || theme.primary;
+  const themeS = brand.colors?.secondary || theme.secondary;
+
   // -- Callbacks --
 
   const getPublicUrl = useCallback((path: string) => {
