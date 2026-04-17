@@ -28,8 +28,9 @@ export async function extractFaceDescriptor(imageElement: HTMLImageElement | HTM
   await loadModels();
   
   // Detect a single face and get its markings/descriptor
+  // Lowered the scoreThreshold to make it more sensitive to webcam captures (prevents 'low light' errors)
   const detection = await faceapi
-    .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions())
+    .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.2 }))
     .withFaceLandmarks()
     .withFaceDescriptor();
     

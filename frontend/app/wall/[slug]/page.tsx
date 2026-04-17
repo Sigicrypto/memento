@@ -764,10 +764,10 @@ export default function WallPage() {
       {/* WhatsApp QR Message Me */}
       <div className="fixed bottom-8 right-32 z-[100] hidden lg:block">
         <div className="glass-card p-4 flex items-center gap-4 border-white/10 bg-black/40 backdrop-blur-2xl">
-          <div className="bg-white p-2 rounded-xl">
+          <div className="bg-white p-3 rounded-xl">
             <QRCodeSVG value="https://api.whatsapp.com/send?phone=96896095692&text=Hi%20Memento!%20I%27d%20like%20to%20know%20more." size={80} />
           </div>
-          <div className="pr-2">
+          <div className="pr-3">
             <p className="text-[10px] font-black text-cyan-500 uppercase tracking-widest mb-1">Message Me</p>
             <p className="text-xs font-bold text-white w-24 leading-tight">Scan to chat on WhatsApp</p>
           </div>

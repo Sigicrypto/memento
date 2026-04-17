@@ -239,8 +239,8 @@ export default function MobilePage() {
     <div className="lp mobile-page min-h-screen">
       <style>{`
         .mobile-page { padding-bottom: env(safe-area-inset-bottom, 32px); }
-        .upload-content { display: flex; flex-direction: column; align-items: center; padding: 7rem 1.25rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.25rem; }
-        .upload-drop-zone { width: 100%; padding: 3rem 1.5rem; border-radius: 24px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
+        .upload-content { display: flex; flex-direction: column; align-items: center; padding: 7rem 1.5rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.25rem; }
+        .upload-drop-zone { width: 100%; padding: 3rem 1.75rem; border-radius: 24px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
         .upload-drop-zone:active { transform: scale(0.98); background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.4); }
         .upload-input { width: 100%; padding: 18px 22px; border-radius: 20px; font-size: 1rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; }
         .upload-input:focus { border-color: rgba(6,182,212,0.4); background: rgba(255,255,255,0.08); }
