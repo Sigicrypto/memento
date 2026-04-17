@@ -186,6 +186,7 @@ export default function MobilePage() {
         // Face indexing
         if (isAcceptedVideo(file) === false && hasFeature(event.plan_type, 'SELFIE_MATCH')) {
            try {
+             setStatusText(`AI Scanning ${i + 1}/${files.length}...`);
              const img = await fileToImage(file);
              const descriptor = await extractFaceDescriptor(img);
              if (descriptor) {

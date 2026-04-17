@@ -1,7 +1,7 @@
 import * as faceapi from 'face-api.js';
 
-// We'll use high-quality models from a public CDN to avoid bloating the bundle
-const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+// We'll use local models to ensure reliability and speed
+const MODEL_URL = '/models';
 
 let modelsLoaded = false;
 
@@ -11,6 +11,8 @@ let modelsLoaded = false;
 export async function loadModels() {
   if (modelsLoaded) return;
   
+  console.log("AI Vision: Loading models from", MODEL_URL);
+  
   await Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
@@ -18,7 +20,7 @@ export async function loadModels() {
   ]);
   
   modelsLoaded = true;
-  console.log("AI Vision models loaded successfully.");
+  console.log("AI Vision: Models loaded successfully.");
 }
 
 /**
