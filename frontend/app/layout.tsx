@@ -1,14 +1,29 @@
 // Trigger fresh deployment
-import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Outfit, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
 import LayoutShell from "@/components/LayoutShell";
 
-const inter = Nunito({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-outfit",
 });
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#0A0A0B",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -64,8 +79,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className}`}>
-      <body className="min-h-screen w-full antialiased transition-colors duration-300" suppressHydrationWarning={true}>
+    <html lang="en" className={`${outfit.variable} ${cormorant.variable}`}>
+      <body className="min-h-screen w-full antialiased transition-colors duration-300 font-sans" suppressHydrationWarning={true}>
         <AppProviders>
           <LayoutShell>
             {children}

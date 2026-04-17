@@ -23,15 +23,15 @@ const Gallery: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { title: 'Sarah & John Wedding', src: 'https://picsum.photos/400/300?random=1', count: '156 photos' },
-            { title: 'Tech Conference 2024', src: 'https://picsum.photos/400/300?random=2', count: '289 photos' },
-            { title: 'Birthday Celebration', src: 'https://picsum.photos/400/300?random=3', count: '87 photos' },
-            { title: 'Corporate Gala', src: 'https://picsum.photos/400/300?random=4', count: '234 photos' },
-            { title: 'Graduation Party', src: 'https://picsum.photos/400/300?random=5', count: '145 photos' },
-            { title: 'Festival Weekend', src: 'https://picsum.photos/400/300?random=6', count: '512 photos' }
+            { title: 'Sarah & John Wedding', src: '/landing-hero/photo5.jpg', count: '156 photos' },
+            { title: 'Tech Conference 2024', src: '/landing-hero/photo2.jpg', count: '289 photos' },
+            { title: 'Birthday Celebration', src: '/landing-hero/photo7.jpg', count: '87 photos' },
+            { title: 'Corporate Gala', src: '/landing-hero/photo8.jpg', count: '234 photos' },
+            { title: 'Graduation Party', src: '/landing-hero/photo9.jpg', count: '145 photos' },
+            { title: 'Festival Weekend', src: '/landing-hero/photo10.jpg', count: '512 photos' }
           ].map((item, i) => (
-            <motion.div 
-              key={i} 
+            <motion.div
+              key={i}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}

@@ -203,7 +203,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
     // Primary: postgres_changes on demo_uploads (reliable cross-device)
 
-    console.log('[DEMO WALL] Setting up postgres_changes for demo_id:', demoId);
+
 
     const dbChannel = supabase
 
@@ -217,19 +217,17 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
         (payload) => {
 
-          console.log('[DEMO WALL] Received postgres_changes payload:', payload);
+
 
           const row = payload.new as { id: string; url: string; type: string; caption: string; uploader: string; created_at: string };
 
           if (!row.url || !row.type) {
 
-            console.log('[DEMO WALL] Invalid payload - missing url or type');
-
             return;
 
           }
 
-          console.log('[DEMO WALL] Adding photo to wall:', row);
+
 
           addPhoto({
 
@@ -253,7 +251,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
       .subscribe((status) => {
 
-        console.log('[DEMO WALL] postgres_changes subscription status:', status);
+
 
         setIsConnected(status === 'SUBSCRIBED');
 
@@ -313,11 +311,11 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
     if (!demoId || !isOpen) return;
 
-    console.log('[DEMO WALL] Starting polling for demo_id:', demoId);
+
 
     const poll = async () => {
 
-      console.log('[DEMO WALL] Polling demo_uploads for demo_id:', demoId);
+
 
       const { data, error } = await supabase
 
@@ -331,17 +329,15 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
         .limit(20);
 
-      console.log('[DEMO WALL] Poll result:', { data, error });
+
 
       if (!data?.length) {
-
-        console.log('[DEMO WALL] No data found in poll');
 
         return;
 
       }
 
-      console.log('[DEMO WALL] Found', data.length, 'rows in poll');
+
 
       setPhotos(prev => {
 
@@ -451,7 +447,7 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
       modalRef.current?.requestFullscreen().catch((err: Error) => {
 
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+
 
       });
 
@@ -1027,8 +1023,9 @@ export default function LandingPage() {
 
 
   return (
-
-    <div className="lp aurora-bg pt-[calc(140px+env(safe-area-ins      <div className="flex flex-col gap-16">
+    <>
+    <div className="lp aurora-bg">
+      <div className="flex flex-col gap-16">
         <Hero setIsDemoOpen={setIsDemoOpen} />
         <Stats />
         <WhyChoose />
@@ -1043,6 +1040,7 @@ export default function LandingPage() {
           setShowingOMR={setShowingOMR}
           currency={currency}
           Sym={Sym}
+          onGetStarted={openAuth}
           plans={[
             {
               name: 'Starter',
@@ -1120,83 +1118,6 @@ export default function LandingPage() {
           ]}
         />
       </div>
-(239,68,68,0.3)',
-                        color: '#dc2626'
-                      }}>{(p as any).badge}</span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-2">
-
-                    <span className="text-2xl">{p.emoji}</span>
-
-                    <p className="price-name">{p.name}</p>
-
-                  </div>
-
-                  <p className="text-slate-600 text-sm mb-3">{p.description}</p>
-
-                  <div className="price-amount">
-
-                    <span className="price-sym">{Sym}</span>
-
-                    <span className="price-val">{p.price}</span>
-
-                  </div>
-
-                  <span className="price-period text-sm">per event • one-time</span>
-
-                  <button onClick={() => openAuth(p.name === 'White Label' ? 'whitelabel' : p.name === 'Premium' ? 'premium' : p.name === 'Standard' ? 'standard' : 'starter')} className={`price-btn ${p.popular ? 'filled' : ''}`}>
-
-                    {p.name === 'White Label' ? 'Become a Partner' : p.name === 'Premium' ? 'Book Premium' : p.name === 'Standard' ? 'Get Started' : 'Start Now'}
-
-                  </button>
-
-                  <div className="price-divider" />
-
-                  <div className="mb-4">
-
-                    <span className="text-xs uppercase tracking-widest text-[#f59e0b] font-bold">{p.stats}</span>
-
-                  </div>
-
-                  <div className="space-y-2.5">
-
-                    {p.features.map((f, j) => {
-
-                      const isStorage = f.includes('Storage');
-
-                      return (
-
-                        <div key={j} className={`price-feat text-sm ${f.startsWith('Everything in') ? 'font-semibold text-amber-600 text-base' : ''}`}>
-
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5" /></svg>
-
-                          <span className={isStorage ? 'text-amber-600 font-semibold' : ''}>{f}</span>
-
-                        </div>
-
-                      );
-
-                    })}
-
-                  </div>
-
-                  <div className="mt-5 pt-4 border-t border-slate-200">
-
-                    <p className="text-sm text-slate-500 italic">💬 {p.tagline}</p>
-
-                  </div>
-
-                </div>
-
-              </motion.div>
-
-            ))}
-
-          </motion.div>
-
-        </section>
 
 
 
@@ -1284,7 +1205,7 @@ export default function LandingPage() {
 
           <div className="footer-bottom">
 
-            <p>© 2025 Memento. Made with ♥ for every celebration.</p>
+            <p>© 2026 Memento. Made with ♥ for every celebration.</p>
 
           </div>
 
@@ -1295,11 +1216,8 @@ export default function LandingPage() {
       
 
       {/* Demo Modal */}
-
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
 
-    </div>
-
+    </>
   );
-
 }

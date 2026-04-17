@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600;700;800&family=Dancing+Script:wght@600&display=swap');
+/* Google Fonts loaded via <link> in layout.tsx head for optimal performance.
+   Cormorant Garamond, Outfit, Dancing Script are available globally. */
 @import "tailwindcss";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
 
@@ -45,6 +46,21 @@
   --glass-border: 1px solid rgba(255, 255, 255, 0.1);
   --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+
+  /* ── Dynamic Typography Scale ── */
+  --fs-display: clamp(2.2rem, 5vw + 1rem, 4.5rem);
+  --fs-h1: clamp(2rem, 4vw + 0.8rem, 3.5rem);
+  --fs-h2: clamp(1.6rem, 3vw + 0.5rem, 2.8rem);
+  --fs-h3: clamp(1.25rem, 2vw + 0.4rem, 1.8rem);
+  --fs-h4: clamp(1.1rem, 1.5vw + 0.3rem, 1.4rem);
+  --fs-body: clamp(0.875rem, 0.6vw + 0.6rem, 1.125rem);
+  --fs-body-lg: clamp(0.95rem, 0.8vw + 0.6rem, 1.25rem);
+  --fs-small: clamp(0.75rem, 0.5vw + 0.45rem, 0.875rem);
+  --fs-xs: clamp(0.65rem, 0.4vw + 0.4rem, 0.78rem);
+
+  /* ── Spacing Scale ── */
+  --space-section: clamp(3rem, 6vw, 6rem);
+  --space-container: clamp(1rem, 3vw, 3rem);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -78,17 +94,13 @@ body {
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
   line-height: 1.6;
-  font-size: 16px; /* Reduced from 18px for better mobile readability */
+  font-size: var(--fs-body);
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-}
-
-@media (min-width: 768px) {
-  body {
-    font-size: 18px;
-  }
+  min-height: 100dvh;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* ── GLOW EFFECTS ── */
@@ -778,7 +790,7 @@ textarea.input {
 /* ── HERO TYPOGRAPHY ── */
 .hero-title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(3.8rem, 9.5vw, 7.5rem);
+  font-size: var(--fs-display);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -796,7 +808,7 @@ textarea.input {
 }
 
 .hero-desc {
-  font-size: 1.15rem;
+  font-size: var(--fs-body-lg);
   color: var(--color-text-secondary);
   line-height: 1.75;
   font-weight: 400;
@@ -809,9 +821,10 @@ textarea.input {
   justify-content: center;
   padding: 0.9rem 2.4rem;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
   letter-spacing: 0.01em;
   border-radius: 16px;
+  min-height: 44px;
   background: linear-gradient(135deg, #f59e0b 0%, #f472b6 100%);
   color: #0a0600;
   border: none;
@@ -1010,7 +1023,7 @@ textarea.input {
 
 .section-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  font-size: var(--fs-h1);
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.15;
@@ -1075,7 +1088,7 @@ textarea.input {
 
 .step-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem;
+  font-size: var(--fs-h3);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 0.6rem;
@@ -1083,7 +1096,7 @@ textarea.input {
 }
 
 .step-desc {
-  font-size: 0.9rem;
+  font-size: var(--fs-body);
   color: var(--color-text-secondary);
   line-height: 1.7;
 }
@@ -1169,7 +1182,7 @@ textarea.input {
 
 .feature-title-lg {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.9rem;
+  font-size: var(--fs-h2);
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 0.75rem;
@@ -1184,14 +1197,14 @@ textarea.input {
 }
 
 .feature-desc-lg {
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
   color: var(--color-text-secondary);
   line-height: 1.7;
   max-width: 30ch;
 }
 
 .feature-desc {
-  font-size: 0.85rem;
+  font-size: var(--fs-small);
   color: var(--color-text-secondary);
   line-height: 1.65;
 }
@@ -1306,7 +1319,7 @@ textarea.input {
 
 .cta-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.2rem, 5vw, 3.25rem);
+  font-size: var(--fs-h1);
   font-weight: 600;
   color: var(--color-text);
   line-height: 1.2;
@@ -1315,7 +1328,7 @@ textarea.input {
 
 .cta-desc {
   color: var(--color-text-secondary);
-  font-size: 1rem;
+  font-size: var(--fs-body);
   line-height: 1.7;
 }
 

@@ -31,14 +31,14 @@ const Testimonials: React.FC = () => {
             { quote: "Our clients loved seeing the live photo wall at their corporate event. It was magical.", author: "Fatima Al Balushi", role: "Event Coordinator", event: "Muscat Corporate Gala • 320 photos", rating: 5 },
             { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time.", author: "Sarah Jenkins", role: "Wedding Planner", event: "London Destination Wedding • 450 photos", rating: 5 }
           ].map((item, i) => (
-            <motion.div 
-              key={i} 
+            <motion.div
+              key={i}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
               whileHover={{ y: -5 }}
-              className="gcard p-8 rounded-3xl bg-surface/40 backdrop-blur-xl border border-white/10 flex flex-col h-full"
+              className="gcard p-6 md:p-8 rounded-3xl bg-surface/40 backdrop-blur-xl border border-white/10 flex flex-col h-full"
             >
               <div className="gcard-inner flex flex-col h-full">
                 <div className="flex gap-1 mb-4">
@@ -63,12 +63,12 @@ const Testimonials: React.FC = () => {
         </div>
 
         {/* Social Proof Bar */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 p-12 rounded-3xl bg-surface/20 border border-white/5 backdrop-blur-3xl text-center"
+          className="social-proof-bar mt-24 flex flex-wrap justify-between md:grid md:grid-cols-4 gap-8 p-6 md:p-12 rounded-3xl bg-surface/20 border border-white/5 backdrop-blur-3xl text-center"
         >
           {[
             { val: '10k+', label: 'Events Created' },

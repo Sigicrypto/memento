@@ -22,6 +22,7 @@ interface PricingSectionProps {
     badge?: string;
     featured?: boolean;
   }>;
+  onGetStarted: (plan: 'starter' | 'standard' | 'premium' | 'whitelabel') => void;
 }
 
 const PricingSection: React.FC<PricingSectionProps> = ({
@@ -31,7 +32,8 @@ const PricingSection: React.FC<PricingSectionProps> = ({
   setShowingOMR,
   currency,
   Sym,
-  plans
+  plans,
+  onGetStarted
 }) => {
   return (
     <section id="pricing" className="sec py-24">
@@ -130,7 +132,10 @@ const PricingSection: React.FC<PricingSectionProps> = ({
                   ))}
                 </ul>
 
-                <button className={`w-full py-4 rounded-xl font-bold transition-all ${p.popular ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1' : 'bg-white/10 text-white hover:bg-white/20'}`}>
+                <button 
+                  onClick={() => onGetStarted(p.name.toLowerCase().replace(' ', '') as any)}
+                  className={`w-full py-4 rounded-xl font-bold transition-all ${p.popular ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                >
                   Get Started
                 </button>
                 <p className="text-[10px] text-center text-slate-500 mt-4 font-medium uppercase tracking-widest italic">{p.tagline}</p>

@@ -18,7 +18,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           background: 'conic-gradient(from 0deg, rgba(6,182,212,0.4), rgba(236,72,153,0.4), rgba(99,102,241,0.4), rgba(6,182,212,0.4))'
         }}
       />
-      
+
       <div className="container mx-auto px-6 relative z-10 flex flex-col items-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -34,7 +34,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           </h1>
         </motion.div>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -44,24 +44,24 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle.
         </motion.p>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4, type: 'spring', stiffness: 100, damping: 15 }}
           className="hero-btns mt-10"
         >
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setIsDemoOpen(true)} 
+            onClick={() => setIsDemoOpen(true)}
             className="btn-hero-primary cinematic-glow"
           >
             <span>🎬 Watch Demo Wall</span>
           </motion.button>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -98,7 +98,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                     { src: '/landing-hero/photo4.jpg', alt: 'Guest photo 4' }
                   ].map((img, i) => (
                     <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(245,158,11,${0.15 + i * 0.05}), rgba(244,114,182,${0.1 + i * 0.05}))`, animationDelay: `${0.8 + i * 0.2}s` }}>
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                      <img src={img.src} alt={img.alt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
                     </div>
                   ))}
                 </div>
@@ -127,7 +127,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                     { src: '/landing-hero/photo10.jpg', alt: 'Wedding photo 6' }
                   ].map((img, i) => (
                     <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(${200 + i * 10},${100 + i * 15},${50 + i * 20},0.3), rgba(244,114,182,0.15))`, animationDelay: `${0.5 + i * 0.15}s` }}>
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                      <img src={img.src} alt={img.alt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
                     </div>
                   ))}
                 </div>
@@ -149,7 +149,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                     { src: '/landing-hero/photo12.jpg', alt: 'Guest photo 2' }
                   ].map((img, i) => (
                     <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(252,211,77,0.2), rgba(245,158,11,0.15))`, animationDelay: `${1.2 + i * 0.2}s` }}>
-                      <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                      <img src={img.src} alt={img.alt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
                     </div>
                   ))}
                 </div>
