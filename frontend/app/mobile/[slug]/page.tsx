@@ -186,18 +186,22 @@ export default function MobilePage() {
         // Face indexing (Forced indexing for all tiers to diagnose issues)
         if (isAcceptedVideo(file) === false) {
            try {
-             setStatusText(`AI Scanning ${i + 1}/${files.length}...`);
+             setStatusText(`AI: Initializing...`);
              const img = await fileToImage(file);
-             const descriptor = await extractFaceDescriptor(img);
+             setStatusText(`AI: Detecting Face ${i + 1}/${files.length}...`);
+             const descriptor = await extractFaceDescriptor(img, 'tiny');
              if (descriptor) {
+               setStatusText(`AI: Saving Face Data...`);
                const { error: idxErr } = await supabase.from('photo_faces').insert({ photo_id: inserted.id, event_id: event.id, descriptor: Array.from(descriptor) });
                if (idxErr) console.error("Index DB Error:", idxErr);
+               else console.log("AI: Face saved successfully.");
              } else {
-               console.warn("AI didn't see a face in this photo.");
+               console.warn("AI: No face found in this image.");
              }
            } catch (e: any) { 
              console.error("Face indexing crash", e);
-             alert("AI Scan Error: " + (e.message || "Unknown issue"));
+             setStatusText(`AI: Scan Failed (${e.message || 'Check connection'})`);
+             await new Promise(r => setTimeout(r, 2000));
            }
         }
         setUploadProgress(((i + 1) / files.length) * 100);
@@ -226,9 +230,10 @@ export default function MobilePage() {
     if (!screenshot) return;
     setIsSearching(true); setShowSelfieCam(false);
     try {
-      const img = new Image(); img.src = screenshot;
+      const img = new Image();
+      img.src = screenshot;
       await new Promise(r => img.onload = r);
-      const descriptor = await extractFaceDescriptor(img);
+      const descriptor = await extractFaceDescriptor(img, 'tiny');
       if (!descriptor) { alert("Couldn't see your face clearly. Try better light!"); return; }
       const { data, error } = await supabase.rpc('match_photo_faces', {
         query_embedding: Array.from(descriptor), match_threshold: 0.35, match_count: 50, target_event_id: event?.id

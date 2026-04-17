@@ -422,7 +422,7 @@ export default function WallPage() {
       img.src = screenshot;
       await new Promise(resolve => img.onload = resolve);
 
-      const descriptor = await extractFaceDescriptor(img);
+      const descriptor = await extractFaceDescriptor(img, 'ssd');
       if (!descriptor) {
         alert("We couldn't see your face clearly. Please try again with better lighting!");
         return;
