@@ -567,8 +567,9 @@ export default function WallPage() {
 
                 <div className="absolute left-20 top-1/2 -translate-y-1/2 flex flex-col gap-12 w-[340px]">
                   <div className="bg-white/10 backdrop-blur-3xl p-6 rounded-[32px] border border-white/10 shadow-2xl w-fit">
-                    <div className="bg-white p-3 rounded-2xl">
+                    <div className="bg-white p-4 rounded-2xl flex flex-col items-center gap-3">
                       <QRCodeSVG value={uploadUrl} size={150} />
+                      <p className="text-[10px] font-black text-black uppercase tracking-widest opacity-60">Scan to upload</p>
                     </div>
                   </div>
                   <div className="space-y-6">

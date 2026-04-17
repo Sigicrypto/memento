@@ -6,129 +6,25 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Webcam from 'react-webcam';
 import AnimatedLogo from '@/components/AnimatedLogo';
-import { hasFeature, getRequiredTier } from '@/lib/permissions';
+import { hasFeature } from '@/lib/permissions';
 import { extractFaceDescriptor, fileToImage } from '@/lib/faceEngine';
 
+const MAX_IMAGES = 10;
+const MAX_VIDEO_MB = 50;
+const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']);
 const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v']);
-const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4', 'mov', 'webm', 'm4v']);
 
 function getFileExtension(fileName: string) {
   return fileName.split('.').pop()?.toLowerCase() || '';
 }
 
 function isAcceptedVideo(file: File) {
-  return file.type.startsWith('video/') || ACCEPTED_VIDEO_TYPES.has(file.type) || ACCEPTED_VIDEO_EXTENSIONS.has(getFileExtension(file.name));
+  return file.type.startsWith('video/') || ACCEPTED_VIDEO_TYPES.has(file.type);
 }
 
-// ─── BACKGROUND DECORATION ───
-const BackgroundDecoration = () => (
-  <div style={{ position:'fixed', inset:0, zIndex:-1, overflow:'hidden', pointerEvents:'none' }}>
-    <div style={{ position:'absolute', inset:0, background:'var(--bg)', opacity:0.97 }} />
-    <div style={{ position:'absolute', inset:0, background:`url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3C%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`, opacity:0.02, mixBlendMode:'overlay' }} />
-    <div className="orb" style={{ top:'-10%', left:'-10%', width:'60vw', height:'60vw', background:'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }} />
-    <div className="orb" style={{ bottom:'-5%', right:'-5%', width:'70vw', height:'70vw', background:'radial-gradient(circle, rgba(244,114,182,0.08) 0%, transparent 70%)' }} />
-  </div>
-);
-
-const FontLoader = () => (
-  <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
-    
-    :root {
-      --bg: #faf9fd;
-      --text1: #1e293b;
-      --text2: #64748b;
-      --amber: #f59e0b;
-      --rose: #f472b6;
-      --border: rgba(226, 232, 240, 0.8);
-      --glass: rgba(255, 255, 255, 0.7);
-    }
-
-    .mobile-page {
-      font-family: 'Outfit', sans-serif;
-      min-height: 100vh;
-      color: var(--text1);
-      position: relative;
-    }
-
-    .glass-card {
-      background: var(--glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 8px 32px rgba(148, 163, 184, 0.1);
-      border-radius: 28px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-glow {
-      background: linear-gradient(135deg, var(--amber), var(--rose));
-      color: white;
-      border: none;
-      box-shadow: 0 10px 25px rgba(244, 114, 182, 0.3);
-      position: relative;
-      overflow: hidden;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    .btn-glow:active { transform: scale(0.96); opacity: 0.9; }
-
-    .btn-outline {
-      background: rgba(255,255,255,0.4);
-      border: 1px solid var(--border);
-      color: var(--text1);
-      backdrop-filter: blur(8px);
-      transition: 0.3s;
-    }
-    .btn-outline:active { background: rgba(255,255,255,0.6); }
-
-    .m-input {
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      font-size: 16px;
-      width: 100%;
-      outline: none;
-      transition: 0.3s;
-      font-family: 'Inter', sans-serif;
-    }
-    .m-input:focus {
-      border-color: var(--rose);
-      background: white;
-      box-shadow: 0 0 0 4px rgba(244, 114, 182, 0.1);
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      animation: drift 20s infinite alternate ease-in-out;
-    }
-    @keyframes drift {
-      from { transform: translate(0,0) scale(1); }
-      to { transform: translate(10%, 10%) scale(1.1); }
-    }
-
-    .status-badge {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-  `}</style>
-);
-
 // Local storage keys
-const GUEST_ID_KEY = 'memento_guest_id';
 const GUEST_NAME_KEY = 'memento_guest_name';
+const GUEST_ID_KEY = 'memento_guest_id';
 
 interface Photo {
   id: string;
@@ -137,7 +33,6 @@ interface Photo {
   created_at: string;
   caption?: string;
   event_id: string;
-  guest_id?: string;
   media_type?: 'image' | 'video';
 }
 
@@ -146,7 +41,6 @@ interface Event {
   name: string;
   plan_type?: string;
   enable_safety_filter?: boolean;
-  enable_smart_privacy?: boolean;
   expires_at?: string | null;
 }
 
@@ -155,35 +49,32 @@ export default function MobilePage() {
   const slug = params.slug as string;
   const router = useRouter();
 
-  // Event and user state
+  // State
   const [event, setEvent] = useState<Event | null>(null);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [uploaderName, setUploaderName] = useState('');
   const [sessionPhotoIds, setSessionPhotoIds] = useState<string[]>([]);
-
-  // Photo display state
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
 
-  // Upload state
+  // Upload State
   const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [processingFiles, setProcessingFiles] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [statusText, setStatusText] = useState('');
 
-  // Smart privacy state
-  const [selfieFile, setSelfieFile] = useState<File | null>(null);
-  const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
+  // Selfie/Face Match State
   const [isSearching, setIsSearching] = useState(false);
   const [matchedPhotoIds, setMatchedPhotoIds] = useState<string[] | null>(null);
   const [showSelfieCam, setShowSelfieCam] = useState(false);
   const webcamRef = useRef<Webcam>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Set or get guest ID and name on mount
+  // ── Init Guest ID & Name ──
   useEffect(() => {
     let id = localStorage.getItem(GUEST_ID_KEY);
     if (!id) {
@@ -196,498 +87,289 @@ export default function MobilePage() {
     if (name) setUploaderName(name);
   }, []);
 
-  // Cache guest name when it changes
+  // Cache name
   useEffect(() => {
-    if (uploaderName.trim()) {
-      localStorage.setItem(GUEST_NAME_KEY, uploaderName.trim());
-    }
+    if (uploaderName.trim()) localStorage.setItem(GUEST_NAME_KEY, uploaderName.trim());
   }, [uploaderName]);
 
-  // Fetch event info
+  // ── Fetch Event ──
   useEffect(() => {
     const fetchEvent = async () => {
-      console.log("[mobile] fetching event for slug:", slug);
-      const { data, error } = await supabase
-        .from('events')
-        .select('id, name, plan_type, enable_safety_filter, enable_smart_privacy, expires_at')
-        .eq('slug', slug)
-        .single();
-
-      if (error || !data) {
-        console.error("[mobile] event fetch error:", error);
-        router.push('/404');
-        return;
-      }
+      const { data, error } = await supabase.from('events').select('id, name, plan_type, enable_safety_filter, expires_at').eq('slug', slug).single();
+      if (error || !data) { router.push('/'); return; }
       setEvent(data as Event);
-      console.log("[mobile] event loaded:", data);
     };
     fetchEvent();
   }, [slug, router]);
 
-  // Fetch user's photos and listen for new ones
+  // ── Realtime & Feedback Photos ──
   useEffect(() => {
     if (!event?.id) return;
-
     const fetchPhotos = async () => {
-      // NOTE: We omit 'guest_id' filter because column may be missing
-      let query = supabase
-        .from('photos')
-        .select('*')
-        .eq('event_id', event.id)
-        .order('created_at', { ascending: false });
-
-      if (matchedPhotoIds) {
-        query = query.in('id', matchedPhotoIds);
-      } else {
-        // Fallback: If Column exists, filter. Otherwise skip.
-        // For now, to solve 404/Error, we skip DB filtering of guest_id
-        // query = query.eq('guest_id', guestId);
-      }
-      
-      const { data, error } = await query;
-      if (error) console.error('Error fetching photos:', error);
-      else if (data) {
-        // Filter locally if we want strictly 'Your Memories'
-        if (!matchedPhotoIds && sessionPhotoIds.length > 0) {
-           setPhotos(data.filter(p => sessionPhotoIds.includes(p.id)));
-        } else {
-           setPhotos(data);
-        }
-      }
+      let query = supabase.from('photos').select('*').eq('event_id', event.id).order('created_at', { ascending: false });
+      if (matchedPhotoIds) query = query.in('id', matchedPhotoIds);
+      const { data } = await query;
+      if (data) setPhotos(matchedPhotoIds ? data : data.filter(p => sessionPhotoIds.includes(p.id)));
     };
     fetchPhotos();
 
-    const channel = supabase
-      .channel(`event-photos-${event.id}`)
+    const channel = supabase.channel(`event-photos-${event.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${event.id}` }, (payload) => {
         const newPhoto = payload.new as Photo;
-        // We only add to UI if it's from this user's session
-        if (sessionPhotoIds.includes(newPhoto.id)) {
-           setPhotos((prev) => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
-        }
-      })
-      .subscribe((status) => setRealtimeStatus(status));
-
+        if (sessionPhotoIds.includes(newPhoto.id)) setPhotos(prev => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
+      }).subscribe((status) => setRealtimeStatus(status));
     return () => { supabase.removeChannel(channel); };
   }, [event, matchedPhotoIds, sessionPhotoIds]);
 
+  // ── File Handlers ──
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    if (selectedFiles.length === 0) return;
-
-    setError('');
-    setSuccessMessage('');
+    const selected = Array.from(e.target.files || []);
+    if (selected.length === 0) return;
     setProcessingFiles(true);
+    setError(null);
 
     const validFiles: File[] = [];
-
-    // Filter invalid types and convert HEIC
-    for (const f of selectedFiles) {
-      const ext = f.name.toLowerCase();
-      if (ext.endsWith('.heic') || ext.endsWith('.heif')) {
+    for (const f of selected) {
+      const isVideo = isAcceptedVideo(f);
+      if (isVideo && !hasFeature(event?.plan_type, 'VIDEO_UPLOAD')) {
+         setError('Video uploads are a Premium feature.');
+         setProcessingFiles(false); return;
+      }
+      if (isVideo && f.size > MAX_VIDEO_MB * 1024 * 1024) {
+         setError(`Video is too large (max ${MAX_VIDEO_MB}MB)`);
+         setProcessingFiles(false); return;
+      }
+      // HEIC handling
+      if (f.name.toLowerCase().endsWith('.heic') || f.name.toLowerCase().endsWith('.heif')) {
         try {
-          // Dynamically import heic2any to avoid SSR issues
-          const heic2anyFn = (await import('heic2any')).default;
-          // Use 'image/jpeg' or 'image/png' since browsers natively support them
-          const convertedBlob = await heic2anyFn({ blob: f, toType: 'image/jpeg', quality: 0.8 });
-          const blobArray = Array.isArray(convertedBlob) ? convertedBlob : [convertedBlob];
-          const newName = f.name.replace(/\.heic$|\.heif$/i, '.jpg');
-          const newFile = new File([blobArray[0]], newName, { type: 'image/jpeg' });
+          const heic2any = (await import('heic2any')).default;
+          const blob = await heic2any({ blob: f, toType: 'image/jpeg', quality: 0.8 });
+          const newFile = new File([Array.isArray(blob)?blob[0]:blob], f.name.replace(/\.heic$|\.heif$/i, '.jpg'), { type: 'image/jpeg' });
           validFiles.push(newFile);
-        } catch (err) {
-          console.error("HEIC conversion error:", err);
-          setError(`Failed to process ${f.name}. Please try a different photo.`);
-          setProcessingFiles(false);
-          return;
-        }
-      } else if (f.type.startsWith('image/') || isAcceptedVideo(f)) {
+        } catch { setError('Failed to process HEIC file.'); }
+      } else if (f.type.startsWith('image/') || isVideo) {
         validFiles.push(f);
-      } else {
-        setError('Only photos and videos (MP4, MOV, WEBM) are allowed.');
-        setProcessingFiles(false);
-        return;
       }
     }
-
-    // Checking MB constraints to protect storage buckets
-    const MAX_IMAGE_MB = 10;
-    const MAX_VIDEO_MB = 50;
-
-    for (const file of validFiles) {
-       const isVideo = isAcceptedVideo(file);
-       const fileSizeMB = file.size / (1024 * 1024);
-       if (isVideo && fileSizeMB > MAX_VIDEO_MB) {
-         setError(`Video ${file.name} is too large. Max size is ${MAX_VIDEO_MB}MB.`);
-         setProcessingFiles(false);
-         return;
-       }
-       if (!isVideo && fileSizeMB > MAX_IMAGE_MB) {
-         setError(`Photo ${file.name} is too large. Max size is ${MAX_IMAGE_MB}MB.`);
-         setProcessingFiles(false);
-         return;
-       }
-    }
-
-    const hasVideo = validFiles.some(f => isAcceptedVideo(f));
-    if (hasVideo && !hasFeature(event?.plan_type, 'VIDEO_UPLOAD')) {
-      setError('Video uploads are a Standard feature.');
-      setProcessingFiles(false);
-      return;
-    }
-
-    setFiles(validFiles);
-    setPreviews(validFiles.map(f => URL.createObjectURL(f)));
+    setFiles(prev => [...prev, ...validFiles].slice(0, MAX_IMAGES));
     setProcessingFiles(false);
   };
 
+  const removeFile = (index: number) => setFiles(prev => prev.filter((_, i) => i !== index));
+
   const handleUpload = async () => {
-    if (files.length === 0 || !event?.id || !guestId) {
-      console.error("[mobile] upload prerequisites missing", { 
-        filesCount: files.length, 
-        eventId: event?.id, 
-        guestId 
-      });
-      return;
-    }
-
-    console.log("[mobile] starting upload", {
-      event,
-      guestId,
-      files: files.map(f => ({
-        name: f.name,
-        type: f.type,
-        size: f.size
-      }))
-    });
-
+    if (!files.length || !event || !guestId) return;
     setUploading(true);
+    setError(null);
     setUploadProgress(0);
-    setError('');
+    
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const path = `${event.id}/${guestId}-${Date.now()}-${file.name}`;
+        setStatusText(`Uploading ${i + 1} of ${files.length}...`);
+        
+        const { error: uploadError } = await supabase.storage.from('photos').upload(path, file);
+        if (uploadError) throw uploadError;
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const filePath = `${event.id}/${guestId}-${Date.now()}-${file.name}`;
-      
-      console.log("[mobile] uploading file:", file.name);
-      console.log("[mobile] file path:", filePath);
-      
-      const { error: uploadError } = await supabase.storage.from('photos').upload(filePath, file);
+        const { data: inserted, error: dbError } = await supabase.from('photos').insert({
+          event_id: event.id, storage_path: path,
+          uploader_name: uploaderName.trim() || 'Anonymous Guest',
+          caption: caption.trim() || null,
+          media_type: isAcceptedVideo(file) ? 'video' : 'image',
+          approved: !event.enable_safety_filter,
+        }).select().single();
 
-      console.log("[mobile] storage upload error:", uploadError);
-      if (uploadError) {
-        setError(`Upload failed: ${uploadError.message}`);
-        setUploading(false);
-        return;
-      }
-
-      const mediaType = isAcceptedVideo(file) ? 'video' : 'image';
-      const photoData = {
-        event_id: event.id,
-        storage_path: filePath,
-        uploader_name: uploaderName || 'Anonymous',
-        caption: caption || null,
-        // guest_id: guestId, // Removed because column may be missing
-        media_type: mediaType,
-        approved: !event?.enable_safety_filter,
-      };
-
-      console.log("[mobile] inserting photo metadata:", photoData);
-      const { data: insertedData, error: dbError } = await supabase
-        .from('photos')
-        .insert(photoData)
-        .select();
-
-      console.log("[mobile] db insert error:", dbError);
-      if (dbError) {
-        setError(`Database error: ${dbError.message}`);
-        setUploading(false);
-        return;
-      }
-      
-      if (insertedData?.[0]?.id) {
-         setSessionPhotoIds(prev => [...prev, insertedData[0].id]);
-         
-         // Feature gate: Selfie Match (Selfie-Safe) is Standard+
-         if (mediaType === 'image' && hasFeature(event?.plan_type, 'SELFIE_MATCH')) {
+        if (dbError) throw dbError;
+        if (inserted) setSessionPhotoIds(prev => [...prev, inserted.id]);
+        
+        // Face indexing
+        if (isAcceptedVideo(file) === false && hasFeature(event.plan_type, 'SELFIE_MATCH')) {
            try {
              const img = await fileToImage(file);
              const descriptor = await extractFaceDescriptor(img);
              if (descriptor) {
-               await supabase.from('photo_faces').insert({
-                 photo_id: insertedData[0].id,
-                 event_id: event.id,
-                 descriptor: Array.from(descriptor)
-               });
-               console.log("Face indexed for photo:", file.name);
+               await supabase.from('photo_faces').insert({ photo_id: inserted.id, event_id: event.id, descriptor: Array.from(descriptor) });
              }
-           } catch (err) {
-             console.error("Face indexing failed:", err);
-           }
-         }
+           } catch (e) { console.warn("Face indexing failed", e); }
+        }
+        setUploadProgress(((i + 1) / files.length) * 100);
       }
-      
-      console.log("[mobile] upload success for:", file.name);
-      setUploadProgress(((i + 1) / files.length) * 100);
+      setSuccessMessage('Successfully shared to wall!');
+      setFiles([]); setCaption('');
+      setTimeout(() => setSuccessMessage(null), 4000);
+    } catch (err: any) {
+      setError(err.message || 'Upload failed. Please try again.');
+    } finally {
+      setUploading(false); setStatusText(''); setUploadProgress(0);
     }
-
-    setUploading(false);
-    setSuccessMessage('Upload complete!');
-    setFiles([]);
-    setPreviews([]);
-    setCaption('');
-    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
-  const handleFindMyPhotos = async () => {
-    if (!hasFeature(event?.plan_type, 'SELFIE_MATCH')) {
-       alert("✨ Face Match is a Standard feature! Upgrade your wall to unlock.");
-       return;
-    }
-    setShowSelfieCam(true);
-  };
-
+  // ── Face Match ──
   const captureSelfie = async () => {
     const screenshot = webcamRef.current?.getScreenshot();
     if (!screenshot) return;
-    
-    setIsSearching(true);
-    setShowSelfieCam(false);
-    
+    setIsSearching(true); setShowSelfieCam(false);
     try {
-      const img = new Image();
-      img.src = screenshot;
-      await new Promise(resolve => img.onload = resolve);
-      
+      const img = new Image(); img.src = screenshot;
+      await new Promise(r => img.onload = r);
       const descriptor = await extractFaceDescriptor(img);
-      if (!descriptor) {
-        alert("We couldn't see your face clearly. Please try again in better light!");
-        return;
-      }
-      
-      // Call the match_photo_faces RPC function I just created
+      if (!descriptor) { alert("Couldn't see your face clearly. Try better light!"); return; }
       const { data, error } = await supabase.rpc('match_photo_faces', {
-        query_embedding: Array.from(descriptor),
-        match_threshold: 0.5,
-        match_count: 50,
-        target_event_id: event?.id
+        query_embedding: Array.from(descriptor), match_threshold: 0.5, match_count: 50, target_event_id: event?.id
       });
-      
       if (error) throw error;
-      
-      const photoIds = data.map((d: any) => d.photo_id);
-      setMatchedPhotoIds(photoIds);
-      
-      if (photoIds.length === 0) {
-        alert("We couldn't find any professional shots of you yet—keep posing!");
-      }
-      
-    } catch (err: any) {
-      console.error("Match error:", err);
-      alert("Error searching for photos. Please try again.");
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleDownload = async (photo: Photo) => {
-    if (!hasFeature(event?.plan_type, 'GUEST_DOWNLOAD')) {
-      alert(`✨ High-Res Downloads are a ${getRequiredTier('GUEST_DOWNLOAD')} feature!`);
-      return;
-    }
-
-    try {
-      const response = await fetch(getPublicUrl(photo.storage_path));
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `memento_${slug}_${photo.id}.${photo.media_type === 'video' ? 'mp4' : 'jpg'}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Download failed:", err);
-      alert("Download failed. Please try again.");
-    }
+      const ids = data.map((d: any) => d.photo_id);
+      setMatchedPhotoIds(ids);
+      if (ids.length === 0) alert("No photos found yet—keep posing!");
+    } catch (err) { alert("Error searching for photos."); } finally { setIsSearching(false); }
   };
 
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
 
-  const isExpired = event?.expires_at && new Date(event.expires_at) < new Date();
-
-  if (isExpired) return (
-    <div className="mobile-page flex items-center justify-center p-6 text-center">
-      <FontLoader />
-      <BackgroundDecoration />
-      <div className="glass-card p-12 max-w-sm w-full">
-        <div style={{ fontSize: 64, marginBottom: 20 }}>📅</div>
-        <h1 style={{ fontSize: 24, fontWeight: 900, marginBottom: 16, color: 'var(--text1)' }}>Event Concluded</h1>
-        <p style={{ color: 'var(--text2)', marginBottom: 32, fontSize: 14 }}>
-          The active window for this wall has closed. You can no longer upload photos, but your shared memories are safe!
-        </p>
-        <Link href="/" className="btn-glow block py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">Return Home</Link>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="mobile-page pb-40" style={{ paddingTop:'20px' }}>
-      <FontLoader />
-      <BackgroundDecoration />
+    <div className="lp mobile-page min-h-screen">
+      <style>{`
+        .mobile-page { padding-bottom: env(safe-area-inset-bottom, 32px); }
+        .upload-content { display: flex; flex-direction: column; align-items: center; padding: 7rem 1.25rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.25rem; }
+        .upload-drop-zone { width: 100%; padding: 2.25rem 1rem; border-radius: 20px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+        .upload-drop-zone:active { transform: scale(0.98); background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.4); }
+        .upload-input { width: 100%; padding: 14px 18px; border-radius: 16px; font-size: 0.95rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; }
+        .upload-input:focus { border-color: rgba(6,182,212,0.4); background: rgba(255,255,255,0.08); }
+        .preview-thumb { width:100%; aspect-ratio:1; border-radius:12px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); }
+        .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid rgba(34,197,94,0.3); color: #4ade80; background: rgba(34,197,94,0.1); }
+      `}</style>
 
-      {/* ── HEADER ── */}
-      <header className="px-6 mb-8 flex items-center justify-between">
-        <Link href="/">
-          <AnimatedLogo width={120} height={40} />
-        </Link>
-        <div style={{ display:'flex', gap:8 }}>
-           <div className="status-badge" style={{ background: realtimeStatus === 'SUBSCRIBED' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: realtimeStatus === 'SUBSCRIBED' ? '#10b981' : '#f59e0b', fontSize:'9px', padding:'4px 10px' }}>
-            <div style={{ width:4, height:4, borderRadius:'50%', background:'currentColor' }} />
-            {realtimeStatus === 'SUBSCRIBED' ? 'LIVE' : 'SYNCING'}
-          </div>
+      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+      <div className="grain" />
+
+      {/* Nav */}
+      <nav className="lp-nav scrolled">
+        <Link href="/"><AnimatedLogo width={130} height={40} /></Link>
+        <div className="status-pill">
+          <div className="pulse-dot" style={{ background: realtimeStatus==='SUBSCRIBED'?'#4ade80':'#f59e0b' }} />
+          {realtimeStatus==='SUBSCRIBED'?'Live':'Syncing'}
         </div>
-      </header>
+      </nav>
 
-      <div className="px-6">
-        <div className="glass-card p-6 mb-6 text-center">
-          <h1 style={{ fontSize:28, fontWeight:900, letterSpacing:'-0.03em', color:'var(--text1)', marginBottom:0 }}>{event?.name || 'Loading...'}</h1>
+      <div className="upload-content">
+        {/* Header */}
+        <div className="text-center w-full mb-4">
+          <span className="kicker">{slug?.toUpperCase()}</span>
+          <h1 className="hero-h1" style={{ fontSize: '2.4rem', marginBottom: '0.5rem' }}>
+            Share the <span className="gradient-text">Moment</span>
+          </h1>
+          <p className="hero-sub">{event?.name || 'Loading Event...'}</p>
         </div>
 
-        {/* UPLOAD SECTION */}
-        <div className="glass-card p-6 mb-8">
-          <h2 style={{ fontSize:18, fontWeight:800, marginBottom:16 }}>Capture a Moment</h2>
-          
-          <input type="file" accept="image/*,video/*,.heic,.heif" multiple onChange={handleFileChange} className="hidden" id="photo-upload" disabled={processingFiles} />
-          <label htmlFor="photo-upload" className="btn-glow w-full py-5 rounded-2xl font-bold text-lg cursor-pointer mb-4" style={{ opacity: processingFiles ? 0.6 : 1, pointerEvents: processingFiles ? 'none' : 'auto' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            {processingFiles ? 'PROCESSING...' : 'CHOOSE PHOTOS'}
-          </label>
-          
-          {previews.length > 0 && (
-            <div className="mt-6 space-y-5">
-              <div className="grid grid-cols-3 gap-2">
-                {previews.map((src, i) => (
-                  <div key={i} style={{ aspectRatio:'1/1', position:'relative', borderRadius:12, overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.1)' }}>
-                    <img src={src} className="w-full h-full object-cover" />
+        {/* Feedback */}
+        {successMessage && <div className="gcard w-full p-4 text-center border-green-500/20 bg-green-500/10 text-green-400 font-bold text-sm">✓ {successMessage}</div>}
+        {error && <div className="gcard w-full p-4 text-center border-red-500/20 bg-red-500/10 text-red-400 text-sm">⚠️ {error}</div>}
+
+        {/* Upload Card */}
+        <div className="gcard w-full p-6">
+          <div className="gcard-border" />
+          <div style={{ position:'relative', zIndex:1, display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+            
+            <div className="flex flex-col gap-4">
+               <div>
+                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1">Your Name</label>
+                 <input type="text" className="upload-input" placeholder="Sarah..." value={uploaderName} onChange={e=>setUploaderName(e.target.value)} />
+               </div>
+               <div>
+                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1">Add a Caption</label>
+                 <textarea className="upload-input" placeholder="What a night!" rows={2} value={caption} onChange={e=>setCaption(e.target.value)} />
+               </div>
+            </div>
+
+            <div className="h-px bg-white/5" />
+
+            {/* Selection */}
+            <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.heic,.heif" className="hidden" onChange={handleFileChange} />
+            
+            {files.length > 0 && (
+              <div className="grid grid-cols-4 gap-2">
+                {files.map((f, i) => (
+                  <div key={i} className="relative aspect-square">
+                    <img src={URL.createObjectURL(f)} className="preview-thumb" alt="" />
+                    <button onClick={()=>removeFile(i)} className="absolute -top-1 -right-1 w-5 h-5 bg-black/80 rounded-full flex items-center justify-center text-[10px] border border-white/10">✕</button>
                   </div>
                 ))}
+                {files.length < MAX_IMAGES && (
+                  <button onClick={()=>fileInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-white/10 flex items-center justify-center text-xl opacity-40">+</button>
+                )}
               </div>
-              <input type="text" value={uploaderName} onChange={(e) => setUploaderName(e.target.value)} placeholder="Your Name (Optional)" className="m-input" />
-              <textarea value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Add a memory note..." className="m-input" rows={2} />
-              <button onClick={handleUpload} className="btn-glow w-full py-5 rounded-2xl font-black tracking-widest text-sm" disabled={uploading} style={{ background: uploading ? 'var(--text2)' : undefined }}>
-                {uploading ? `UPLOADING ${Math.round(uploadProgress)}%` : `POST TO WALL`}
-              </button>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* YOUR MOMENTS SECTION */}
-        <div className="mb-10">
-          <div className="flex justify-between items-center mb-6">
-            <h2 style={{ fontSize:20, fontWeight:900, paddingLeft:4 }}>
-              {matchedPhotoIds ? 'Found for You' : 'Your Moments'}
-            </h2>
+            {files.length === 0 && (
+              <div className="upload-drop-zone" onClick={()=>fileInputRef.current?.click()}>
+                 <span className="text-3xl">📸</span>
+                 <p className="font-bold text-sm">Choose Photos or Video</p>
+                 <p className="text-[10px] opacity-50 uppercase tracking-widest">Supports JPG, PNG, HEIC & Video</p>
+              </div>
+            )}
+
+            {/* Upload Button */}
             <button 
-              onClick={matchedPhotoIds ? () => setMatchedPhotoIds(null) : handleFindMyPhotos}
-              className={`text-[10px] font-black tracking-widest px-4 py-2 rounded-full border transition-all ${
-                matchedPhotoIds 
-                ? 'bg-slate-100 text-slate-500 border-slate-200' 
-                : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
-              }`}
+              onClick={handleUpload} 
+              disabled={uploading || files.length === 0 || processingFiles}
+              className="btn-hero-primary w-full py-4 font-black tracking-widest text-xs uppercase disabled:opacity-30"
             >
-              {isSearching ? 'SEARCHING…' : matchedPhotoIds ? '✕ CLEAR SEARCH' : '✨ SEARCH AGAIN'}
+              {uploading ? `${statusText} ${Math.round(uploadProgress)}%` : processingFiles ? 'Processing Files...' : `Share to Wall (${files.length}) ✦`}
             </button>
           </div>
-          {photos.length === 0 ? (
-            <div className="glass-card py-16 px-8 text-center" style={{ opacity:0.6 }}>
-              <div style={{ fontSize:40, marginBottom:12 }}>✨</div>
-              <p style={{ fontSize:14, fontWeight:600 }}>Your uploads will appear here</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {photos.map((photo) => (
-                <div key={photo.id} className="glass-card" style={{ borderRadius:20, overflow:'hidden', border:'none', position:'relative' }}>
-                  {photo.media_type === 'video' ? (
-                    <video src={getPublicUrl(photo.storage_path)} className="w-full h-48 object-cover" controls playsInline loop muted />
-                  ) : (
-                    <img src={getPublicUrl(photo.storage_path)} className="w-full h-48 object-cover" />
-                  )}
-                  
-                  {/* Download Action Overlay */}
-                  <button 
-                    onClick={() => handleDownload(photo)}
-                    style={{ 
-                      position:'absolute', top:12, right:12, 
-                      width:36, height:36, borderRadius:'50%', 
-                      background:'rgba(255,255,255,0.9)', 
-                      display:'flex', alignItems:'center', justifyContent:'center', 
-                      boxShadow:'0 4px 12px rgba(0,0,0,0.1)',
-                      color: hasFeature(event?.plan_type, 'GUEST_DOWNLOAD') ? 'var(--amber)' : '#94a3b8'
-                    }}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                  </button>
-
-                  {photo.caption && <div style={{ padding:10, fontSize:11, fontStyle:'italic', color:'var(--text2)' }}>"{photo.caption}"</div>}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
 
-      {/* Bottom Action: Find Me */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 z-20" style={{ background:'linear-gradient(to top, var(--bg) 60%, transparent)' }}>
-        <div className="max-w-4xl mx-auto">
-          <button 
-            onClick={handleFindMyPhotos}
-            className="btn-glow w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3"
-            style={{ borderRadius:24 }}
-          >
-            <span>✨</span> FIND ME ON WALL
-          </button>
+        {/* Action: Find Me */}
+        <div className="w-full flex flex-col gap-3">
+           <button 
+             onClick={handleFindMyPhotos}
+             className="w-full py-4 rounded-2xl border border-white/5 bg-white/5 font-black text-[10px] tracking-[0.2em] uppercase hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+           >
+             ✨ Find Me On Wall
+           </button>
+           {matchedPhotoIds && (
+             <button onClick={()=>setMatchedPhotoIds(null)} className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest text-center mt-1">✕ Clear Search & Show My Uploads</button>
+           )}
         </div>
-      </div>
 
-      {/* Selfie Camera Modal */}
-      {showSelfieCam && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 bg-slate-900/90 backdrop-blur-xl">
-          <div className="w-full max-w-sm glass-card overflow-hidden" style={{ background:'white' }}>
-            <div className="p-4 border-b flex justify-between items-center">
-              <span className="font-bold text-sm">Target Selfie</span>
-              <button onClick={() => setShowSelfieCam(false)} className="text-slate-400">✕</button>
-            </div>
-            <div className="aspect-square bg-black">
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                videoConstraints={{ facingMode: 'user' }}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <button onClick={captureSelfie} className="btn-glow w-full py-4 rounded-2xl font-bold uppercase tracking-wider text-sm">
-                Capture & Match
-              </button>
-              <p className="mt-4 text-[10px] text-center text-slate-400 uppercase font-black tracking-widest">
-                We'll only use this to find your photos
-              </p>
-            </div>
+        {/* Gallery Preview */}
+        {photos.length > 0 && (
+          <div className="w-full mt-8">
+             <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-4">
+               {matchedPhotoIds ? 'Found for You' : 'Your Shared Memories'}
+               <div className="h-px flex-1 bg-white/5" />
+             </h2>
+             <div className="grid grid-cols-2 gap-4">
+               {photos.map(p => (
+                 <div key={p.id} className="gcard p-0 aspect-[4/5] overflow-hidden group">
+                    <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                    {p.caption && (
+                      <div className="absolute inset-x-0 bottom-0 p-3 bg-black/60 backdrop-blur-md">
+                        <p className="text-[10px] italic text-white/80 line-clamp-2">"{p.caption}"</p>
+                      </div>
+                    )}
+                 </div>
+               ))}
+             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Status Messages */}
-      {error && (
-        <div className="fixed top-24 left-6 right-6 glass-card p-4 text-center text-sm font-bold text-red-500 z-50 border-red-100" style={{ background:'rgba(255,241,242,0.9)' }}>
-          {error}
-        </div>
-      )}
-      {successMessage && (
-        <div className="fixed top-24 left-6 right-6 glass-card p-4 text-center text-sm font-bold text-green-600 z-50 border-green-100" style={{ background:'rgba(240,253,244,0.9)' }}>
-          {successMessage}
+      {/* Selfie Modal */}
+      {showSelfieCam && (
+        <div className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-6">
+          <div className="gcard max-w-sm w-full p-8 text-center bg-black/40 border-white/10">
+             <h2 className="text-xl font-black mb-2">Find My Photos</h2>
+             <p className="text-slate-400 text-[10px] uppercase tracking-widest mb-8">Smile for the camera</p>
+             <div className="aspect-square w-full rounded-3xl overflow-hidden border-2 border-white/10 mb-8 items-center justify-center flex bg-slate-900">
+               <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: 'user' }} className="w-full h-full object-cover" />
+             </div>
+             <div className="flex gap-4">
+               <button onClick={()=>setShowSelfieCam(false)} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-white/5 rounded-2xl">Cancel</button>
+               <button onClick={captureSelfie} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-cyan-500 text-black rounded-2xl font-black">Scan ✦</button>
+             </div>
+          </div>
         </div>
       )}
     </div>

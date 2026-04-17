@@ -8,10 +8,10 @@ export default function WhatsAppFloat() {
   if (pathname?.startsWith('/admin') || 
       pathname?.startsWith('/system') || 
       pathname?.startsWith('/dashboard') ||
-      pathname?.startsWith('/create')
+      pathname?.startsWith('/create') ||
+      pathname?.startsWith('/wall/') ||
+      pathname?.startsWith('/mobile/')
   ) return null;
-
-  const isMini = pathname?.startsWith('/wall/') || pathname?.startsWith('/mobile/');
 
   return (
     <a

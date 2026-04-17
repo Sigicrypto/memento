@@ -492,7 +492,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-            <Link href={`/dashboard/events/${event.id}/edit`} style={{
+            <Link href={`/dashboard/edit/${event.id}`} style={{
               width: 34, height: 34, borderRadius: 10,
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -518,7 +518,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
           {[
             { href: `/wall/${event.slug}`, icon: <Layout size={13} />, label: 'Wall', color: '#06b6d4', bg: 'rgba(6,182,212,0.08)', border: 'rgba(6,182,212,0.18)' },
-            { href: `/upload/${event.slug}`, icon: <Camera size={13} />, label: 'Upload', color: '#ec4899', bg: 'rgba(236,72,153,0.08)', border: 'rgba(236,72,153,0.18)' },
+            { href: `/mobile/${event.slug}`, icon: <Camera size={13} />, label: 'Upload', color: '#ec4899', bg: 'rgba(236,72,153,0.08)', border: 'rgba(236,72,153,0.18)' },
             { href: `/moderate/${event.slug}`, icon: <Shield size={13} />, label: 'Mod', color: '#6366f1', bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.18)' },
           ].map(({ href, icon, label, color, bg, border }) => (
             <Link key={label} href={href} style={{
@@ -544,7 +544,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
           }}
         >
           <span style={{ fontSize: '0.72rem', color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, textAlign: 'left' }}>
-            {typeof window !== 'undefined' ? `${window.location.origin}/upload/${event.slug}` : `/upload/${event.slug}`}
+            {typeof window !== 'undefined' ? `${window.location.origin}/mobile/${event.slug}` : `/mobile/${event.slug}`}
           </span>
           <span style={{ flexShrink: 0, marginLeft: 8, fontSize: '0.72rem', fontWeight: 700, color: copied === event.slug ? '#22c55e' : '#475569' }}>
             {copied === event.slug ? '✓ Copied' : <Copy size={13} />}
