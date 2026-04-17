@@ -14,7 +14,8 @@ export default function Navbar() {
     pathname?.startsWith('/create') || 
     pathname?.startsWith('/dashboard');
 
-  if (isSpecialRoute || isExcludedRoute) return null;
+  if (isSpecialRoute) return null;
+  if (isExcludedRoute) return <ThemedNav mini={true} />;
 
   return <ThemedNav />;
 }
