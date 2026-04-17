@@ -566,15 +566,15 @@ export default function WallPage() {
                 </div>
 
                 <div className="absolute left-20 top-1/2 -translate-y-1/2 flex flex-col gap-12 w-[340px]">
-                  <div className="bg-white/5 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/20 shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col items-center gap-5 relative overflow-hidden group w-fit">
+                  <div className="bg-white/5 backdrop-blur-2xl p-10 mt-6 rounded-[3rem] border border-white/20 shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col items-center gap-6 relative overflow-hidden group w-fit">
                     <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-pink-500/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="bg-white p-5 rounded-2xl shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-105">
-                      <QRCodeSVG value={uploadUrl} size={160} />
+                    <div className="bg-white p-6 rounded-[24px] shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-105">
+                      <QRCodeSVG value={uploadUrl} size={170} />
                     </div>
-                    <div className="text-center relative z-10 w-full px-2">
-                       <p className="text-[11px] font-black text-white uppercase tracking-[0.2em] mb-1">Scan to Upload</p>
-                       <div className="h-px w-12 bg-cyan-500/50 mx-auto my-2" />
-                       <p className="text-[9px] text-slate-300 uppercase tracking-widest font-bold">Join the Live Wall ✦</p>
+                    <div className="text-center relative z-10 w-full px-4">
+                       <p className="text-xs font-black text-white uppercase tracking-[0.25em] mb-2">Scan to Upload</p>
+                       <div className="h-px w-16 bg-cyan-500/50 mx-auto my-3" />
+                       <p className="text-[10px] text-slate-300 uppercase tracking-widest font-bold">Join the Live Wall ✦</p>
                     </div>
                   </div>
                   <div className="space-y-6">

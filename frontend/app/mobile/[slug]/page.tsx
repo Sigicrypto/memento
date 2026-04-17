@@ -240,9 +240,9 @@ export default function MobilePage() {
       <style>{`
         .mobile-page { padding-bottom: env(safe-area-inset-bottom, 32px); }
         .upload-content { display: flex; flex-direction: column; align-items: center; padding: 7rem 1.25rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.25rem; }
-        .upload-drop-zone { width: 100%; padding: 2.25rem 1rem; border-radius: 20px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+        .upload-drop-zone { width: 100%; padding: 3rem 1.5rem; border-radius: 24px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
         .upload-drop-zone:active { transform: scale(0.98); background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.4); }
-        .upload-input { width: 100%; padding: 14px 18px; border-radius: 16px; font-size: 0.95rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; }
+        .upload-input { width: 100%; padding: 18px 22px; border-radius: 20px; font-size: 1rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; }
         .upload-input:focus { border-color: rgba(6,182,212,0.4); background: rgba(255,255,255,0.08); }
         .preview-thumb { width:100%; aspect-ratio:1; border-radius:12px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); }
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid rgba(34,197,94,0.3); color: #4ade80; background: rgba(34,197,94,0.1); }
@@ -275,9 +275,9 @@ export default function MobilePage() {
         {error && <div className="gcard w-full p-4 text-center border-red-500/20 bg-red-500/10 text-red-400 text-sm">⚠️ {error}</div>}
 
         {/* Upload Card */}
-        <div className="gcard w-full p-6">
+        <div className="gcard w-full p-8 rounded-[36px]">
           <div className="gcard-border" />
-          <div style={{ position:'relative', zIndex:1, display:'flex', flexDirection:'column', gap:'1.25rem' }}>
+          <div style={{ position:'relative', zIndex:1, display:'flex', flexDirection:'column', gap:'1.75rem' }}>
             
             <div className="flex flex-col gap-4">
                <div>
@@ -311,9 +311,9 @@ export default function MobilePage() {
 
             {files.length === 0 && (
               <div className="upload-drop-zone" onClick={()=>fileInputRef.current?.click()}>
-                 <span className="text-3xl">📸</span>
-                 <p className="font-bold text-sm">Choose Photos or Video</p>
-                 <p className="text-[10px] opacity-50 uppercase tracking-widest">Supports JPG, PNG, HEIC & Video</p>
+                 <span className="text-4xl">📸</span>
+                 <p className="font-bold text-[1.1rem]">Choose Photos or Video</p>
+                 <p className="text-[11px] opacity-60 uppercase tracking-widest mt-1">Supports JPG, PNG, HEIC & Video</p>
               </div>
             )}
 
@@ -321,7 +321,7 @@ export default function MobilePage() {
             <button 
               onClick={handleUpload} 
               disabled={uploading || files.length === 0 || processingFiles}
-              className="btn-hero-primary w-full py-4 font-black tracking-widest text-xs uppercase disabled:opacity-30"
+              className="btn-hero-primary w-full py-5 rounded-[20px] font-black tracking-widest text-[13px] uppercase disabled:opacity-30 mt-2"
             >
               {uploading ? `${statusText} ${Math.round(uploadProgress)}%` : processingFiles ? 'Processing Files...' : `Share to Wall (${files.length}) ✦`}
             </button>
@@ -329,10 +329,10 @@ export default function MobilePage() {
         </div>
 
         {/* Action: Find Me */}
-        <div className="w-full flex flex-col gap-3">
+        <div className="w-full flex flex-col gap-4 mt-2">
            <button 
              onClick={handleFindMyPhotos}
-             className="w-full py-4 rounded-2xl border border-white/5 bg-white/5 font-black text-[10px] tracking-[0.2em] uppercase hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+             className="w-full py-5 rounded-[24px] border border-white/5 bg-white/5 font-black text-xs tracking-[0.2em] uppercase hover:bg-white/10 transition-all flex items-center justify-center gap-3"
            >
              ✨ Find Me On Wall
            </button>
