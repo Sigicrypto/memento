@@ -11,9 +11,9 @@ import '@/app/landing.css';
 const MAX_IMAGES = 5;
 const MAX_VIDEOS = 1;
 const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']);
-const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4']);
+const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v']);
 const ACCEPTED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']);
-const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4']);
+const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4', 'mov', 'webm', 'm4v']);
 
 const getDemoChannelName = (demoId: string) => `demo-${demoId}`;
 
@@ -166,7 +166,7 @@ function DemoUploadContent() {
     const validVideos = files.filter(isAcceptedVideo);
     const invalidFiles = files.filter(f => !isAcceptedVideo(f));
     if (invalidFiles.length > 0) {
-      setError(`Invalid file type: only MP4 videos are accepted.`);
+      setError(`Invalid file type: only common video formats (MP4, MOV, WEBM) are accepted.`);
       setTimeout(() => setError(null), 5000);
       return;
     }
@@ -968,7 +968,7 @@ function DemoUploadContent() {
                 >
                   <div className="drop-zone-icon">🎬</div>
                   <p className="drop-zone-text">Choose or drop a video</p>
-                  <p className="drop-zone-hint">MP4 — 1 video maximum</p>
+                  <p className="drop-zone-hint">MP4, MOV, WEBM — 1 video maximum</p>
                 </div>
               )}
             </div>
