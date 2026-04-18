@@ -59,8 +59,13 @@
   --fs-xs: clamp(0.65rem, 0.4vw + 0.4rem, 0.78rem);
 
   /* ── Spacing Scale ── */
-  --space-section: clamp(3rem, 6vw, 6rem);
-  --space-container: clamp(1rem, 3vw, 3rem);
+  --space-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --space-sm: clamp(0.75rem, 1.5vw, 1rem);
+  --space-md: clamp(1rem, 2vw, 1.5rem);
+  --space-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --space-xl: clamp(2.5rem, 8vw, 4rem);
+  --space-section: clamp(3rem, 10vw, 8rem);
+  --space-container: clamp(1rem, 5vw, 3rem);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -304,15 +309,17 @@ body {
   justify-content: center;
   padding: 0.75rem 2rem;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   border-radius: 14px;
   background: linear-gradient(135deg, #f59e0b, #f472b6);
   color: #1e2235;
   border: none;
   cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  min-height: 48px;
+  min-width: 48px;
   box-shadow: 6px 6px 14px #14182a, -6px -6px 14px #252c46, 0 4px 20px rgba(245,158,11,0.28);
 }
 

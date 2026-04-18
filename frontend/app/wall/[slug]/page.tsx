@@ -278,7 +278,14 @@ export default function WallPage() {
   const [slideIndex, setSlideIndex] = useState(0);
 
   const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/mobile/${slug}` : '';
-  const displayedPhotos = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
+  const displayedPhotos = (() => {
+    let filtered = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
+    if (matchedPhotoIds !== null) {
+      filtered = filtered.filter(p => matchedPhotoIds.includes(p.id));
+    }
+    return filtered;
+  })();
+  
   const themeP = brand.colors?.primary || theme.primary;
   const themeS = brand.colors?.secondary || theme.secondary;
 
@@ -683,12 +690,34 @@ export default function WallPage() {
 
         <AnimatePresence mode="wait">
           {displayedPhotos.length === 0 ? (
-            <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="gcard cinematic-glow p-24 text-center border-white/5 bg-black/40">
-              <div className="text-8xl mb-8 opacity-40">✨</div>
-              <h2 className="text-3xl font-black mb-4">Your Wall Awaits</h2>
-              <p className="text-slate-400 max-w-lg mx-auto">Waiting for the first magical moment to be shared.</p>
+            <motion.div 
+              key="empty" 
+              initial={{ opacity: 0, scale: 0.95 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="glass-card cinematic-glow p-12 md:p-32 text-center border-white/5 bg-black/40 min-h-[500px] flex flex-col items-center justify-center relative overflow-visible"
+            >
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none" />
+              <div className="text-7xl md:text-9xl mb-10 opacity-30 drop-shadow-2xl">
+                {matchedPhotoIds !== null ? '👤' : '📸'}
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">
+                {matchedPhotoIds !== null ? 'No Match Found' : 'The Wall is Waiting'}
+              </h2>
+              <p className="text-slate-400 max-w-xl mx-auto text-base md:text-lg leading-relaxed">
+                {matchedPhotoIds !== null 
+                  ? "We couldn't identify your face with high confidence in the current gallery. Try another selfie with better lighting!" 
+                  : 'Be the first to share a magic moment on this wall. Scan the QR code to begin!'}
+              </p>
+              {matchedPhotoIds !== null && (
+                <button 
+                  onClick={() => setMatchedPhotoIds(null)}
+                  className="mt-12 btn-glow px-10 py-5 uppercase font-black tracking-[0.2em] text-xs"
+                >
+                  Return to Full Gallery
+                </button>
+              )}
             </motion.div>
-
           ) : viewMode === 'polaroid' ? (
             <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-12 justify-center">
               {displayedPhotos.map((p, i) => (

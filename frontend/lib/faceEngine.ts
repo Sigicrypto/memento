@@ -9,14 +9,15 @@ let ssdLoaded = false;
 // ── Match Threshold (Cosine Similarity) ──
 // The Supabase RPC uses cosine similarity (1 - cosine_distance).
 // Higher = stricter match. Lower = more permissive.
-//   0.75+ = very strict (nearly identical photo)
-//   0.60  = good balance for same person, different expressions/angles
-//   0.45  = too loose — matches different people (BAD)
-export const MATCH_THRESHOLD = 0.6;
+//   0.85+ = extremely strict (nearly identical photo)
+//   0.80  = very strict, minimal false positives (RECOMMENDED)
+//   0.60  = balanced (was previously used)
+//   0.45  = too loose (matches different people)
+export const MATCH_THRESHOLD = 0.80;
 
 // Minimum face box area as a fraction of image area.
 // Prevents false positives from tiny "ghost" detections.
-const MIN_FACE_AREA_RATIO = 0.01; // At least 1% of image area
+const MIN_FACE_AREA_RATIO = 0.015; // Raised slightly to 1.5%
 
 /**
  * Load models for the lightweight Tiny Face Detector (Best for mobile).
@@ -88,7 +89,7 @@ export async function extractFaceDescriptor(
   if (mode === 'tiny') {
     await loadTinyModels();
     const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.4 }))
+      .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }))
       .withFaceLandmarks()
       .withFaceDescriptor();
     if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
@@ -96,13 +97,14 @@ export async function extractFaceDescriptor(
   } else {
     await loadSSDModels();
     const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+      .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.6 }))
       .withFaceLandmarks()
       .withFaceDescriptor();
     if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
     return detection.descriptor;
   }
 }
+
 
 /**
  * Robust face descriptor extraction that tries SSD first, then Tiny as fallback.

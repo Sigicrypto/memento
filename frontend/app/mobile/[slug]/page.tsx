@@ -107,9 +107,26 @@ export default function MobilePage() {
     if (!event?.id) return;
     const fetchPhotos = async () => {
       let query = supabase.from('photos').select('*').eq('event_id', event.id).order('created_at', { ascending: false });
-      if (matchedPhotoIds) query = query.in('id', matchedPhotoIds);
+      
+      // If we have matches, fetch only those IDs.
+      if (matchedPhotoIds) {
+        if (matchedPhotoIds.length > 0) {
+          query = query.in('id', matchedPhotoIds);
+        } else {
+          setPhotos([]); // Empty immediately
+          return;
+        }
+      }
+
       const { data } = await query;
-      if (data) setPhotos(matchedPhotoIds ? data : data.filter(p => sessionPhotoIds.includes(p.id)));
+      if (data) {
+        // If no matches, we might still show session photos unless we just searched.
+        if (matchedPhotoIds) {
+          setPhotos(data);
+        } else {
+          setPhotos(data.filter(p => sessionPhotoIds.includes(p.id)));
+        }
+      }
     };
     fetchPhotos();
 
@@ -251,13 +268,13 @@ export default function MobilePage() {
     <div className="lp mobile-page min-h-screen">
       <style>{`
         .mobile-page { padding-bottom: env(safe-area-inset-bottom, 32px); }
-        .upload-content { display: flex; flex-direction: column; align-items: center; padding: 7rem 1.5rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.25rem; }
-        .upload-drop-zone { width: 100%; padding: 3rem 1.75rem; border-radius: 24px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
+        .upload-content { display: flex; flex-direction: column; align-items: center; padding: clamp(5rem, 15vw, 7rem) 1.5rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.5rem; }
+        .upload-drop-zone { width: 100%; padding: 3rem 1.75rem; border-radius: 24px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; min-height: 160px; }
         .upload-drop-zone:active { transform: scale(0.98); background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.4); }
-        .upload-input { width: 100%; padding: 18px 22px; border-radius: 20px; font-size: 1rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; }
+        .upload-input { width: 100%; padding: 18px 22px; border-radius: 20px; font-size: 1rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; min-height: 56px; }
         .upload-input:focus { border-color: rgba(6,182,212,0.4); background: rgba(255,255,255,0.08); }
         .preview-thumb { width:100%; aspect-ratio:1; border-radius:12px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); }
-        .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid rgba(34,197,94,0.3); color: #4ade80; background: rgba(34,197,94,0.1); }
+        .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid rgba(34,197,94,0.3); color: #4ade80; background: rgba(34,197,94,0.1); min-height: 32px; }
       `}</style>
 
       <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
@@ -354,10 +371,36 @@ export default function MobilePage() {
         </div>
 
         {/* Gallery Preview */}
-        {photos.length > 0 && (
+        {matchedPhotoIds !== null ? (
+          <div className="w-full mt-8">
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-4">
+              Found for You
+              <div className="h-px flex-1 bg-white/5" />
+            </h2>
+            {photos.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4">
+                {photos.map(p => (
+                  <div key={p.id} className="gcard p-0 aspect-[4/5] overflow-hidden group">
+                    <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                    {p.caption && (
+                      <div className="absolute inset-x-0 bottom-0 p-3 bg-black/60 backdrop-blur-md">
+                        <p className="text-[10px] italic text-white/80 line-clamp-2">"{p.caption}"</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="gcard p-12 text-center bg-white/[0.02]">
+                <p className="text-sm text-slate-400 font-bold mb-4">No photos of you found yet!</p>
+                <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500">Reset View</button>
+              </div>
+            )}
+          </div>
+        ) : photos.length > 0 && (
           <div className="w-full mt-8">
              <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-4">
-               {matchedPhotoIds ? 'Found for You' : 'Your Shared Memories'}
+               Your Shared Memories
                <div className="h-px flex-1 bg-white/5" />
              </h2>
              <div className="grid grid-cols-2 gap-4">

@@ -373,12 +373,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 3rem;
+  padding: 0.75rem clamp(1rem, 5vw, 3rem);
   background: transparent;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid transparent;
   transition: all 0.3s;
+  height: clamp(64px, 10vh, 80px);
 }
 
 .lp-nav.scrolled {
@@ -514,20 +515,22 @@
 .btn-glow {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 1rem 2.6rem;
+  padding: 0.75rem 2.5rem;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--amber), var(--rose));
   color: #ffffff;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   text-decoration: none;
   border: none;
   position: relative;
   overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s;
   box-shadow: 0 6px 24px rgba(244, 114, 182, 0.3);
-  min-height: 44px;
+  min-height: 48px;
+  min-width: 48px;
 }
 
 .btn-glow:hover {

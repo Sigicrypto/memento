@@ -137,49 +137,50 @@ export default function DashboardPage() {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 2.5rem', height: '64px',
+        padding: '0 var(--space-container)', height: 'clamp(64px, 10vh, 80px)',
         background: 'rgba(10,10,11,0.72)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
           <div style={{
-            width: 32, height: 32, borderRadius: 10,
+            width: 36, height: 36, borderRadius: 10,
             background: 'linear-gradient(135deg, #06b6d4, #ec4899)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '1rem', boxShadow: '0 0 16px rgba(6,182,212,0.4)',
           }}>📸</div>
-          <span style={{ fontWeight: 800, fontSize: '1rem', color: '#F8FAFC', letterSpacing: '-0.02em' }}>memento</span>
+          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#F8FAFC', letterSpacing: '-0.02em' }}>memento</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {profile?.role === 'admin' && (
             <Link href="/admin" style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '0.35rem 0.9rem', borderRadius: 100,
+              padding: '0.4rem 1rem', borderRadius: 100, minHeight: 40,
               background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)',
               color: '#f59e0b', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.12em', textDecoration: 'none',
             }}>
-              <Shield size={10} /> ADMIN
+              <Shield size={12} /> ADMIN
             </Link>
           )}
           <button
             onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
             style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '0.4rem 1rem', borderRadius: 100,
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '0.5rem 1.25rem', borderRadius: 100, minHeight: 40,
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              color: '#94A3B8', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer',
-              transition: 'all 0.2s',
+              color: '#94A3B8', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
+            className="hover:bg-white/10 hover:text-white"
           >
-            <LogOut size={13} /> Sign out
+            <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
           </button>
         </div>
       </nav>
 
       {/* ── MAIN ── */}
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '96px 24px 80px', position: 'relative', zIndex: 10 }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto', padding: 'clamp(5rem, 12vh, 8rem) var(--space-container) 80px', position: 'relative', zIndex: 10 }}>
 
         {/* ── HERO ROW ── */}
         <motion.div
@@ -430,21 +431,22 @@ function StatCard({ icon, value, label, color, delay }: { icon: React.ReactNode;
     <motion.div
       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
-      className="gcard"
-      style={{ padding: '1.5rem', position: 'relative' }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      className="gcard cinematic-glow"
+      style={{ padding: 'var(--space-md)', position: 'relative' }}
     >
       <div className="gcard-border" />
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
         <div style={{
-          width: 48, height: 48, borderRadius: 16,
+          width: 56, height: 56, borderRadius: 18,
           background: `rgba(${color === '#06b6d4' ? '6,182,212' : '236,72,153'},0.1)`,
           border: `1px solid ${color}25`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color, flexShrink: 0,
         }}>{icon}</div>
         <div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#F8FAFC', lineHeight: 1, letterSpacing: '-0.04em' }}>{value}</div>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+          <div style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 900, color: '#F8FAFC', lineHeight: 1, letterSpacing: '-0.04em' }}>{value}</div>
+          <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{label}</div>
         </div>
       </div>
     </motion.div>
@@ -466,90 +468,93 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.5, delay: index * 0.07 }}
-      whileHover={{ y: -6 }}
-      className="gcard"
-      style={{ padding: '1.5rem', position: 'relative', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+      whileHover={{ y: -8, scale: 1.01 }}
+      className="gcard cinematic-glow"
+      style={{ padding: 'var(--space-md)', position: 'relative', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', height: '100%' }}
     >
       <div className="gcard-border" />
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', height: '100%' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ flex: 1, minWidth: 0, paddingRight: '0.5rem' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#F8FAFC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#F8FAFC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.02em' }}>
               {event.name}
             </h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.68rem', color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{dateStr}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{dateStr}</span>
               <span style={{ color: '#1e293b', fontSize: '0.65rem' }}>•</span>
               <span style={{
-                fontSize: '0.68rem', fontWeight: 700, color: '#06b6d4',
-                background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.15)',
-                padding: '0.15rem 0.5rem', borderRadius: 100,
+                fontSize: '0.68rem', fontWeight: 800, color: '#06b6d4',
+                background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.2)',
+                padding: '0.2rem 0.6rem', borderRadius: 100,
               }}>
                 📸 {event.photo_count || 0} photos
               </span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
             <Link href={`/dashboard/edit/${event.id}`} style={{
-              width: 34, height: 34, borderRadius: 10,
+              width: 44, height: 44, borderRadius: 14,
               background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#64748b', transition: 'all 0.2s', cursor: 'pointer',
-            }}>
-              <Settings size={14} />
+              color: '#94a3b8', transition: 'all 0.2s', cursor: 'pointer',
+            }} className="hover:bg-white/10 hover:text-white">
+              <Settings size={18} />
             </Link>
-            <button
-              onClick={() => onDelete(event)}
-              style={{
-                width: 34, height: 34, borderRadius: 10,
-                background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.12)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#ef4444', cursor: 'pointer', transition: 'all 0.2s',
-              }}
-            >
-              <Trash2 size={14} />
-            </button>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
           {[
-            { href: `/wall/${event.slug}`, icon: <Layout size={13} />, label: 'Wall', color: '#06b6d4', bg: 'rgba(6,182,212,0.08)', border: 'rgba(6,182,212,0.18)' },
-            { href: `/mobile/${event.slug}`, icon: <Camera size={13} />, label: 'Upload', color: '#ec4899', bg: 'rgba(236,72,153,0.08)', border: 'rgba(236,72,153,0.18)' },
-            { href: `/moderate/${event.slug}`, icon: <Shield size={13} />, label: 'Mod', color: '#6366f1', bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.18)' },
+            { href: `/wall/${event.slug}`, icon: <Layout size={16} />, label: 'Wall', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)', border: 'rgba(6,182,212,0.2)' },
+            { href: `/mobile/${event.slug}`, icon: <Camera size={16} />, label: 'Scan', color: '#ec4899', bg: 'rgba(236,72,153,0.1)', border: 'rgba(236,72,153,0.2)' },
+            { href: `/moderate/${event.slug}`, icon: <Shield size={16} />, label: 'Mod', color: '#6366f1', bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.2)' },
           ].map(({ href, icon, label, color, bg, border }) => (
             <Link key={label} href={href} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-              padding: '0.55rem 0.25rem', borderRadius: 12,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
+              padding: '0.75rem 0.25rem', borderRadius: 16, minHeight: 64,
               background: bg, border: `1px solid ${border}`,
-              color, fontSize: '0.72rem', fontWeight: 700,
-              textDecoration: 'none', transition: 'all 0.2s',
-            }}>
-              {icon} {label}
+              color, fontSize: '0.72rem', fontWeight: 800,
+              textDecoration: 'none', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+            }} className="hover:scale-[1.03] active:scale-95">
+              {icon} <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
             </Link>
           ))}
         </div>
 
-        {/* Copy link */}
-        <button
-          onClick={() => onCopy(event.slug)}
-          style={{
-            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '0.6rem 0.85rem', borderRadius: 12,
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
-            cursor: 'pointer', transition: 'all 0.2s',
-          }}
-        >
-          <span style={{ fontSize: '0.72rem', color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, textAlign: 'left' }}>
-            {typeof window !== 'undefined' ? `${window.location.origin}/mobile/${event.slug}` : `/mobile/${event.slug}`}
-          </span>
-          <span style={{ flexShrink: 0, marginLeft: 8, fontSize: '0.72rem', fontWeight: 700, color: copied === event.slug ? '#22c55e' : '#475569' }}>
-            {copied === event.slug ? '✓ Copied' : <Copy size={13} />}
-          </span>
-        </button>
+        {/* Link & Delete UI */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+           <button
+             onClick={() => onCopy(event.slug)}
+             style={{
+               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+               padding: '0 1rem', borderRadius: 16, minHeight: 48,
+               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
+               cursor: 'pointer', transition: 'all 0.2s',
+             }}
+             className="hover:bg-white/5"
+           >
+             <span style={{ fontSize: '0.75rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '80%', textAlign: 'left', fontWeight: 600 }}>
+               {copied === event.slug ? '✓ Successfully Copied' : 'memento.live/' + event.slug}
+             </span>
+             <Copy size={copied === event.slug ? 0 : 14} color="#64748b" />
+           </button>
+           
+           <button
+             onClick={() => onDelete(event)}
+             style={{
+               width: 48, height: 48, borderRadius: 16,
+               background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)',
+               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               color: '#ef4444', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0
+             }}
+             className="hover:bg-red-500/10"
+           >
+             <Trash2 size={18} />
+           </button>
+        </div>
       </div>
     </motion.div>
   );
