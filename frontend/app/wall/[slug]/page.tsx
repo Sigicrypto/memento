@@ -485,9 +485,13 @@ export default function WallPage() {
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="wall-page fixed inset-0 z-[10000] overflow-hidden">
-        <FontLoader />
-        <DreamyBackground primary={themeP} secondary={themeS} />
+      <div className="lp wall-page fixed inset-0 z-[10000] overflow-hidden">
+        <div className="grain" />
+        <div className="orbs">
+          <div className="orb orb1" />
+          <div className="orb orb2" />
+          <div className="orb orb3" />
+        </div>
 
         {current && (
           <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getPublicUrl(current.storage_path)})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(100px) brightness(1.1) saturate(1.2)', opacity: 0.3, zIndex: 0 }} />
