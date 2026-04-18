@@ -41,7 +41,6 @@ import AnimatedLogo from '@/components/AnimatedLogo';
 
 import { useAuthModal } from '@/context/AuthModalContext';
 
-import './landing.css';
 import './auth-dialog.css';
 
 import Hero from '@/components/sections/Hero';

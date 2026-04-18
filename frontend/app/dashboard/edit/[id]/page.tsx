@@ -7,7 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Globe, Music, Palette, Lock, Link2, Star, Sparkles } from 'lucide-react';
-import '../../../landing.css';
 
 export default function EditEventPage() {
   const params = useParams();
