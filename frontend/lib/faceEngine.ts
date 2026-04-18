@@ -6,15 +6,17 @@ const MODEL_URL = '/models';
 let tinyLoaded = false;
 let ssdLoaded = false;
 
-// face-api.js Euclidean distance threshold for face matching:
-// < 0.4 = very strict (exact same photo)
-// < 0.6 = standard (recommended)
-// < 0.75 = loose (more variations, some false positives)
+// ── Match Threshold (Cosine Similarity) ──
 // The Supabase RPC uses cosine similarity (1 - cosine_distance).
-// Cosine similarity 0.4 ≈ Euclidean distance ~1.1 (very loose)
-// Cosine similarity 0.6 ≈ Euclidean distance ~0.9 (loose)
-// Cosine similarity 0.8 ≈ Euclidean distance ~0.63 (moderate)
-export const MATCH_THRESHOLD = 0.45; // Cosine similarity - good balance for face variations
+// Higher = stricter match. Lower = more permissive.
+//   0.75+ = very strict (nearly identical photo)
+//   0.60  = good balance for same person, different expressions/angles
+//   0.45  = too loose — matches different people (BAD)
+export const MATCH_THRESHOLD = 0.6;
+
+// Minimum face box area as a fraction of image area.
+// Prevents false positives from tiny "ghost" detections.
+const MIN_FACE_AREA_RATIO = 0.01; // At least 1% of image area
 
 /**
  * Load models for the lightweight Tiny Face Detector (Best for mobile).
@@ -47,7 +49,37 @@ export async function loadSSDModels() {
 }
 
 /**
+ * Validate that a detected face is large enough to be a real face.
+ * Rejects tiny ghost detections that produce garbage descriptors.
+ */
+function isValidFaceDetection(
+  detection: faceapi.WithFaceDescriptor<faceapi.WithFaceLandmarks<{ detection: faceapi.FaceDetection }>>,
+  imageElement: HTMLImageElement | HTMLVideoElement
+): boolean {
+  const box = detection.detection.box;
+  const faceArea = box.width * box.height;
+  const imgWidth = 'videoWidth' in imageElement ? imageElement.videoWidth : imageElement.naturalWidth;
+  const imgHeight = 'videoHeight' in imageElement ? imageElement.videoHeight : imageElement.naturalHeight;
+  const imageArea = (imgWidth || imageElement.width) * (imgHeight || imageElement.height);
+
+  if (imageArea === 0) return true; // Can't validate, allow it
+
+  const ratio = faceArea / imageArea;
+  const score = detection.detection.score;
+
+  console.log(`AI Vision: Face box ${Math.round(box.width)}x${Math.round(box.height)} (${(ratio * 100).toFixed(1)}% of image), confidence: ${score.toFixed(3)}`);
+
+  if (ratio < MIN_FACE_AREA_RATIO) {
+    console.warn(`AI Vision: Rejected — face too small (${(ratio * 100).toFixed(2)}% < ${MIN_FACE_AREA_RATIO * 100}%)`);
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Extract a 128-float face descriptor using the specified engine.
+ * Includes face-size validation to reject false detections.
  */
 export async function extractFaceDescriptor(
   imageElement: HTMLImageElement | HTMLVideoElement, 
@@ -56,24 +88,25 @@ export async function extractFaceDescriptor(
   if (mode === 'tiny') {
     await loadTinyModels();
     const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.15 }))
+      .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.4 }))
       .withFaceLandmarks()
       .withFaceDescriptor();
-    return detection?.descriptor || null;
+    if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
+    return detection.descriptor;
   } else {
     await loadSSDModels();
     const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.2 }))
+      .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
       .withFaceLandmarks()
       .withFaceDescriptor();
-    return detection?.descriptor || null;
+    if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
+    return detection.descriptor;
   }
 }
 
 /**
- * Robust face descriptor extraction that tries multiple strategies.
- * First tries with the preferred model, then falls back to the other.
- * This ensures maximum face detection rate across different photo conditions.
+ * Robust face descriptor extraction that tries SSD first, then Tiny as fallback.
+ * Both models use reasonable confidence thresholds to avoid false detections.
  */
 export async function extractFaceDescriptorRobust(
   imageElement: HTMLImageElement | HTMLVideoElement,
@@ -85,24 +118,9 @@ export async function extractFaceDescriptorRobust(
 
   // Fallback to the other model
   const fallback = preferredMode === 'ssd' ? 'tiny' : 'ssd';
-  console.log(`AI Vision: ${preferredMode} failed, trying ${fallback} fallback...`);
+  console.log(`AI Vision: ${preferredMode} didn't find a face, trying ${fallback}...`);
   descriptor = await extractFaceDescriptor(imageElement, fallback);
-  if (descriptor) return descriptor;
-
-  // Last resort: try SSD with even lower confidence
-  if (preferredMode !== 'ssd') {
-    await loadSSDModels();
-    const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.1 }))
-      .withFaceLandmarks()
-      .withFaceDescriptor();
-    if (detection?.descriptor) {
-      console.log('AI Vision: Got face with ultra-low confidence fallback');
-      return detection.descriptor;
-    }
-  }
-
-  return null;
+  return descriptor;
 }
 
 /**

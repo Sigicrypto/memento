@@ -338,7 +338,7 @@ export default function DashboardPage() {
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 28, padding: '2.25rem',
                 maxWidth: 440, width: '100%',
-                position: 'relative', overflow: 'hidden',
+                position: 'relative',
                 boxShadow: '0 40px 80px rgba(0,0,0,0.8)',
               }}
             >

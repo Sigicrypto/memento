@@ -297,7 +297,6 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);
-  overflow: hidden;
   --mx: 50%;
   --my: 50%;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s;
@@ -1093,7 +1092,6 @@
 .gallery-item {
   position: relative;
   border-radius: var(--radius);
-  overflow: hidden;
   background: var(--bg);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s;
   box-shadow: var(--nm-shadow);
