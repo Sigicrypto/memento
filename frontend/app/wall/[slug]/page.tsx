@@ -9,7 +9,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import Webcam from 'react-webcam';
-import { extractFaceDescriptor } from '@/lib/faceEngine';
+import { extractFaceDescriptorRobust, MATCH_THRESHOLD } from '@/lib/faceEngine';
 import { useAuth } from '@/hooks/useAuth';
 import { hasFeature } from '@/lib/permissions';
 
@@ -422,7 +422,7 @@ export default function WallPage() {
       img.src = screenshot;
       await new Promise(resolve => img.onload = resolve);
 
-      const descriptor = await extractFaceDescriptor(img, 'ssd');
+      const descriptor = await extractFaceDescriptorRobust(img, 'ssd');
       if (!descriptor) {
         alert("We couldn't see your face clearly. Please try again with better lighting!");
         return;
@@ -430,7 +430,7 @@ export default function WallPage() {
 
       const { data, error } = await supabase.rpc('match_photo_faces', {
         query_embedding: Array.from(descriptor),
-        match_threshold: 0.35,
+        match_threshold: MATCH_THRESHOLD,
         match_count: 50,
         target_event_id: eventId
       });

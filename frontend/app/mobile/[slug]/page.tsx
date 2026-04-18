@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Webcam from 'react-webcam';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import { hasFeature } from '@/lib/permissions';
-import { extractFaceDescriptor, fileToImage } from '@/lib/faceEngine';
+import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
 
 const MAX_IMAGES = 10;
 const MAX_VIDEO_MB = 50;
@@ -189,7 +189,7 @@ export default function MobilePage() {
              setStatusText(`AI: Initializing...`);
              const img = await fileToImage(file);
              setStatusText(`AI: Detecting Face ${i + 1}/${files.length}...`);
-             const descriptor = await extractFaceDescriptor(img, 'tiny');
+             const descriptor = await extractFaceDescriptorRobust(img, 'ssd');
              if (descriptor) {
                setStatusText(`AI: Saving Face Data...`);
                const { error: idxErr } = await supabase.from('photo_faces').insert({ photo_id: inserted.id, event_id: event.id, descriptor: Array.from(descriptor) });
@@ -233,10 +233,10 @@ export default function MobilePage() {
       const img = new Image();
       img.src = screenshot;
       await new Promise(r => img.onload = r);
-      const descriptor = await extractFaceDescriptor(img, 'tiny');
+      const descriptor = await extractFaceDescriptorRobust(img, 'ssd');
       if (!descriptor) { alert("Couldn't see your face clearly. Try better light!"); return; }
       const { data, error } = await supabase.rpc('match_photo_faces', {
-        query_embedding: Array.from(descriptor), match_threshold: 0.35, match_count: 50, target_event_id: event?.id
+        query_embedding: Array.from(descriptor), match_threshold: MATCH_THRESHOLD, match_count: 50, target_event_id: event?.id
       });
       if (error) throw error;
       const ids = data.map((d: any) => d.photo_id);
