@@ -443,14 +443,19 @@ export default function WallPage() {
       });
 
       if (error) throw error;
+      
+      // Deduplicate IDs (handles cases where multiple faces in one photo match)
+      const uniquePhotoIds = Array.from(new Set(data.map((d: any) => d.photo_id)));
+      
+      // Filter by photos actually loaded in current state to ensure honest count
+      const availableMatches = photos.filter(p => uniquePhotoIds.includes(p.id));
+      
+      setMatchedPhotoIds(uniquePhotoIds);
 
-      const photoIds = data.map((d: any) => d.photo_id);
-      setMatchedPhotoIds(photoIds);
-
-      if (photoIds.length === 0) {
+      if (availableMatches.length === 0) {
         alert("We couldn't find any photos of you yet—keep sharing!");
       } else {
-        alert(`Found ${photoIds.length} photos of you!`);
+        alert(`Found ${availableMatches.length} photos of you!`);
       }
 
     } catch (err: any) {

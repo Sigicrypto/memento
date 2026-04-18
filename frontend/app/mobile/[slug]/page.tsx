@@ -256,9 +256,15 @@ export default function MobilePage() {
         query_embedding: Array.from(descriptor), match_threshold: MATCH_THRESHOLD, match_count: 50, target_event_id: event?.id
       });
       if (error) throw error;
-      const ids = data.map((d: any) => d.photo_id);
+      const ids = Array.from(new Set(data.map((d: any) => d.photo_id)));
+      
       setMatchedPhotoIds(ids);
-      if (ids.length === 0) alert("No photos found yet—keep posing!");
+      
+      if (ids.length === 0) {
+        alert("No photos found yet—keep posing!");
+      } else {
+        alert(`Found ${ids.length} photos of you!`);
+      }
     } catch (err) { alert("Error searching for photos."); } finally { setIsSearching(false); }
   };
 
