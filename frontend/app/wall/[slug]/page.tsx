@@ -444,8 +444,13 @@ export default function WallPage() {
 
       if (error) throw error;
       
+      if (!data) {
+        setMatchedPhotoIds([]);
+        return;
+      }
+
       // Deduplicate IDs (handles cases where multiple faces in one photo match)
-      const uniquePhotoIds = Array.from(new Set(data.map((d: any) => d.photo_id)));
+      const uniquePhotoIds = Array.from(new Set(data.map((d: any) => d.photo_id))) as string[];
       
       // Filter by photos actually loaded in current state to ensure honest count
       const availableMatches = photos.filter(p => uniquePhotoIds.includes(p.id));

@@ -256,7 +256,11 @@ export default function MobilePage() {
         query_embedding: Array.from(descriptor), match_threshold: MATCH_THRESHOLD, match_count: 50, target_event_id: event?.id
       });
       if (error) throw error;
-      const ids = Array.from(new Set(data.map((d: any) => d.photo_id)));
+      if (!data) {
+        setMatchedPhotoIds([]);
+        return;
+      }
+      const ids = Array.from(new Set(data.map((d: any) => d.photo_id))) as string[];
       
       setMatchedPhotoIds(ids);
       
