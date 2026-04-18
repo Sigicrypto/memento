@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AnimatedLogo from "@/components/AnimatedLogo";
-import "../landing.css"; // Reuse the beautiful dreamy styles
 
 type ChecklistItem = {
   id: string;

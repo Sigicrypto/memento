@@ -279,10 +279,10 @@ export default function MobilePage() {
       <style>{`
         .mobile-page { padding-bottom: env(safe-area-inset-bottom, 32px); }
         .upload-content { display: flex; flex-direction: column; align-items: center; padding: clamp(5rem, 15vw, 7rem) 1.5rem 3rem; width: 100%; max-width: 520px; margin: 0 auto; gap: 1.5rem; }
-        .upload-drop-zone { width: 100%; padding: 3rem 1.75rem; border-radius: 24px; border: 2px dashed rgba(100,116,139,0.18); background: rgba(30,41,59,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; min-height: 160px; }
-        .upload-drop-zone:active { transform: scale(0.98); background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.4); }
+        .upload-drop-zone { width: 100%; padding: 3rem 1.75rem; border-radius: 24px; border: 2px dashed rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; cursor: pointer; transition: all 0.2s; min-height: 160px; }
+        .upload-drop-zone:active { transform: scale(0.98); background: rgba(6,182,212,0.05); border-color: var(--amber); }
         .upload-input { width: 100%; padding: 18px 22px; border-radius: 20px; font-size: 1rem; outline: none; transition: 0.2s; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08); color: #fff; min-height: 56px; }
-        .upload-input:focus { border-color: rgba(6,182,212,0.4); background: rgba(255,255,255,0.08); }
+        .upload-input:focus { border-color: var(--amber); background: rgba(255,255,255,0.08); }
         .preview-thumb { width:100%; aspect-ratio:1; border-radius:12px; object-fit:cover; border:1px solid rgba(255,255,255,0.1); }
         .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border: 1.5px solid rgba(34,197,94,0.3); color: #4ade80; background: rgba(34,197,94,0.1); min-height: 32px; }
       `}</style>

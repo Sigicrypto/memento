@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
-import '@/app/landing.css';
 
 const MAX_IMAGES = 5;
 const MAX_VIDEOS = 1;
@@ -298,9 +297,9 @@ function DemoUploadContent() {
           --upload-zone-border: rgba(100,116,139,0.18);
           --upload-zone-hover: rgba(245,158,11,0.08);
           --upload-zone-hover-border: rgba(245,158,11,0.45);
-          --input-bg: rgba(255,255,255,0.55);
-          --input-border: rgba(100,116,139,0.18);
-          --input-focus-border: rgba(245,158,11,0.55);
+          --input-bg: rgba(255,255,255,0.04);
+          --input-border: rgba(255,255,255,0.08);
+          --input-focus-border: var(--amber);
           --success-bg: linear-gradient(135deg,rgba(34,197,94,0.12),rgba(16,185,129,0.07));
           --success-border: rgba(34,197,94,0.28);
           --error-bg: rgba(239,68,68,0.08);

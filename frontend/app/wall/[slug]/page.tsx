@@ -15,73 +15,8 @@ import { hasFeature } from '@/lib/permissions';
 
 // ── Components ──────────────────────────────────────────────
 
-const FontLoader = () => (
-  <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
-    
-    :root {
-      --bg: #0A0A0B;
-      --surface: rgba(20, 20, 26, 0.45);
-      --border: rgba(255, 255, 255, 0.08);
-      --amber: #06b6d4;
-      --rose: #ec4899;
-      --gold: #6366f1;
-      --text1: #F8FAFC;
-      --text2: #94A3B8;
-      --radius: 24px;
-      --nm-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    }
+// No local FontLoader or DreamyBackground needed anymore as they are global
 
-    .wall-page {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text1);
-      font-family: 'Outfit', system-ui, sans-serif;
-      position: relative;
-      overflow-x: hidden;
-      z-index: 1;
-    }
-
-    /* ─── UI COMPONENTS ─── */
-    .glass-card {
-      background: var(--surface);
-      backdrop-filter: blur(24px) saturate(200%);
-      -webkit-backdrop-filter: blur(24px) saturate(200%);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--nm-shadow);
-    }
-
-    .wall-heading {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-weight: 900;
-      font-size: clamp(2.5rem, 6vw, 4.5rem);
-      letter-spacing: -0.04em;
-      line-height: 1.1;
-      color: #F8FAFC;
-      text-shadow: 0 0 40px rgba(6, 182, 212, 0.3);
-    }
-
-    /* ─── DREAMY BACKGROUND ─── */
-    .grain {
-      position: fixed; inset: 0; z-index: 1; opacity: 0.02;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      pointer-events: none;
-    }
-  `}</style>
-)
-
-const DreamyBackground = ({ primary, secondary }: { primary: string; secondary: string }) => (
-  <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-    <div className="aurora-bg absolute inset-0" />
-    <div className="grain fixed inset-0 opacity-[0.03]" />
-    <div className="orbs fixed inset-0">
-      <div className="orb orb1" />
-      <div className="orb orb2" />
-      <div className="orb orb3" />
-    </div>
-  </div>
-);
 
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
 
@@ -617,9 +552,25 @@ export default function WallPage() {
   }
 
   return (
-    <div className="wall-page">
-      <FontLoader />
-      <DreamyBackground primary={themeP} secondary={themeS} />
+    <div className="lp wall-page min-h-screen">
+      <style>{`
+        .wall-heading {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-weight: 900;
+          font-size: clamp(2.5rem, 6vw, 4.5rem);
+          letter-spacing: -0.04em;
+          line-height: 1.1;
+          color: #F8FAFC;
+          text-shadow: 0 0 40px rgba(6, 182, 212, 0.3);
+        }
+      `}</style>
+
+      <div className="grain" />
+      <div className="orbs">
+        <div className="orb orb1" />
+        <div className="orb orb2" />
+        <div className="orb orb3" />
+      </div>
 
       {musicTrack && isAudioPlaying && (
         <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />
