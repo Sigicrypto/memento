@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Play, ArrowRight } from 'lucide-react';
 
 interface HeroProps {
   setIsDemoOpen: (open: boolean) => void;
@@ -9,151 +10,111 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
   return (
-    <section className="hero pt-16 md:pt-20 py-16 overflow-hidden relative">
-      <motion.div
-        animate={{ rotate: 360, scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] md:w-[800px] md:h-[800px] rounded-full blur-[100px] pointer-events-none -z-10"
-        style={{
-          background: 'conic-gradient(from 0deg, rgba(6,182,212,0.4), rgba(236,72,153,0.4), rgba(99,102,241,0.4), rgba(6,182,212,0.4))'
-        }}
-      />
+    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+      {/* Ambient Orbs */}
+      <div className="orbs">
+        <div className="orb orb-primary" />
+        <div className="orb orb-secondary" />
+      </div>
 
       <div className="container mx-auto px-6 relative z-10 flex flex-col items-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          className="text-center"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center max-w-4xl"
         >
-          <h1 className="hero-h1 leading-tight md:leading-[1.1]">
+          <h1 className="display-text mb-6">
             Collect Every Moment.
             <br />
-            <span className="gradient-text-vibrant">Instantly. Effortlessly.</span>
+            <span className="text-secondary">Instantly. Effortlessly.</span>
           </h1>
+          <p className="text-xl text-text-secondary mb-10 max-w-2xl mx-auto leading-relaxed">
+            Leading QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle. Premium experience for your guests.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => setIsDemoOpen(true)}
+              className="btn-premium flex items-center gap-2 group"
+            >
+              <span>Watch Demo Wall</span>
+              <Play size={18} className="fill-current group-hover:translate-x-0.5 transition-transform" />
+            </button>
+            <button className="px-8 py-4 text-white font-semibold flex items-center gap-2 hover:text-primary transition-colors">
+              How it works <ArrowRight size={18} />
+            </button>
+          </div>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 100, damping: 15 }}
-          className="hero-p mt-6"
-        >
-          QR-based photo sharing for weddings, celebrations, and corporate events. One-time payment, zero hassle.
-        </motion.p>
-
+        {/* Hero Visuals */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4, type: 'spring', stiffness: 100, damping: 15 }}
-          className="hero-btns mt-10"
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-20 relative w-full"
         >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsDemoOpen(true)}
-            className="btn-hero-primary cinematic-glow"
-          >
-            <span>🎬 Watch Demo Wall</span>
-          </motion.button>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.6, type: 'spring', stiffness: 100, damping: 15 }}
-          className="hero-visual mt-16"
-        >
-          <div className="polaroid-float p-1" style={{ '--rot': '-8deg' } as React.CSSProperties}>
-            <img src="/landing-hero/photo2.jpg" alt="Memory" />
+          {/* Floating Polaroids */}
+          <div className="absolute hidden lg:block -left-10 top-20 rotate-[-12deg] z-20">
+            <div className="gcard p-2 bg-white pb-10 w-48 shadow-2xl">
+              <img src="/landing-hero/photo2.jpg" alt="Memory" className="w-full aspect-square object-cover rounded-sm mb-3" />
+              <div className="h-2 w-2/3 bg-zinc-100 rounded-full mx-auto" />
+            </div>
           </div>
-          <div className="polaroid-float p-2" style={{ '--rot': '12deg' } as React.CSSProperties}>
-            <img src="/landing-hero/photo6.jpg" alt="Memory" />
-          </div>
-          <div className="polaroid-float p-3" style={{ '--rot': '-5deg' } as React.CSSProperties}>
-            <img src="/landing-hero/photo12.jpg" alt="Memory" />
-          </div>
-          <div className="polaroid-float p-4" style={{ '--rot': '6deg' } as React.CSSProperties}>
-            <img src="/landing-hero/photo4.jpg" alt="Memory" />
+          <div className="absolute hidden lg:block -right-10 top-0 rotate-[8deg] z-20">
+            <div className="gcard p-2 bg-white pb-10 w-48 shadow-2xl">
+              <img src="/landing-hero/photo6.jpg" alt="Memory" className="w-full aspect-square object-cover rounded-sm mb-3" />
+              <div className="h-2 w-1/2 bg-zinc-100 rounded-full mx-auto" />
+            </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8 items-end justify-center">
-            {/* Left phone — Upload view */}
-            <div className="phone-mockup hidden sm:block">
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <div className="phone-header">
-                  <span className="phone-title">Upload</span>
-                  <span className="phone-live"><span className="pulse-dot" /> Live</span>
+          <div className="flex items-center justify-center gap-6 lg:gap-12 scale-[0.9] md:scale-100">
+            {/* Left Phone */}
+            <div className="hidden md:block w-[280px] h-[580px] rounded-[3rem] border-[8px] border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transform rotate-[-6deg] translate-y-12">
+              <div className="h-full flex flex-col p-4">
+                <div className="flex justify-between items-center mb-6 pt-4">
+                  <div className="h-6 w-20 bg-white/10 rounded-full" />
+                  <div className="h-6 w-6 bg-white/10 rounded-full" />
                 </div>
-                <div className="phone-grid">
-                  {[
-                    { src: '/landing-hero/photo1.jpg', alt: 'Guest photo 1' },
-                    { src: '/landing-hero/photo2.jpg', alt: 'Guest photo 2' },
-                    { src: '/landing-hero/photo3.jpg', alt: 'Guest photo 3' },
-                    { src: '/landing-hero/photo4.jpg', alt: 'Guest photo 4' }
-                  ].map((img, i) => (
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(245,158,11,${0.15 + i * 0.05}), rgba(244,114,182,${0.1 + i * 0.05}))`, animationDelay: `${0.8 + i * 0.2}s` }}>
-                      <img src={img.src} alt={img.alt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                    </div>
+                <div className="grid grid-cols-2 gap-2 flex-grow overflow-hidden">
+                  {[1,2,3,4,5,6].map(i => (
+                    <div key={i} className="aspect-square bg-white/5 rounded-xl border border-white/10 animate-pulse" />
                   ))}
                 </div>
-                <div className="phone-upload-bar">
-                  ⬆ Uploading...
-                  <div className="upload-progress"><div className="upload-progress-bar" /></div>
+                <div className="mt-4 h-12 w-full bg-primary/20 rounded-xl flex items-center justify-center text-primary text-xs font-bold tracking-widest border border-primary/20">
+                  UPLOADING...
                 </div>
               </div>
             </div>
 
-            {/* Center phone — Live Wall */}
-            <div className="phone-mockup phone-c">
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <div className="phone-header">
-                  <span className="phone-title">Sarah&apos;s Wedding</span>
-                  <span className="phone-live"><span className="pulse-dot" /> 24 Live</span>
-                </div>
-                <div className="phone-grid">
-                  {[
-                    { src: '/landing-hero/photo5.jpg', alt: 'Wedding photo 1' },
-                    { src: '/landing-hero/photo6.jpg', alt: 'Wedding photo 2' },
-                    { src: '/landing-hero/photo7.jpg', alt: 'Wedding photo 3' },
-                    { src: '/landing-hero/photo8.jpg', alt: 'Wedding photo 4' },
-                    { src: '/landing-hero/photo9.jpg', alt: 'Wedding photo 5' },
-                    { src: '/landing-hero/photo10.jpg', alt: 'Wedding photo 6' }
-                  ].map((img, i) => (
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(${200 + i * 10},${100 + i * 15},${50 + i * 20},0.3), rgba(244,114,182,0.15))`, animationDelay: `${0.5 + i * 0.15}s` }}>
-                      <img src={img.src} alt={img.alt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                    </div>
-                  ))}
-                </div>
+            {/* Main Phone (Wall View) */}
+            <div className="w-[300px] h-[620px] rounded-[3rem] border-[8px] border-zinc-800 bg-black overflow-hidden shadow-[0_0_100px_rgba(99,102,241,0.2)] z-10">
+              <div className="h-full flex flex-col">
+                 <div className="h-14 bg-zinc-900/50 backdrop-blur-md flex items-center justify-between px-6 border-b border-white/5">
+                   <div className="w-3 h-3 rounded-full bg-secondary" />
+                   <div className="h-4 w-24 bg-white/10 rounded-full" />
+                 </div>
+                 <div className="flex-grow p-4 grid grid-cols-2 gap-3 overflow-hidden">
+                    {[1,2,3,4,5,6,7,8].map(i => (
+                      <div key={i} className="aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                        <img src={`/landing-hero/photo${i+4}.jpg`} className="w-full h-full object-cover opacity-60" alt="" />
+                      </div>
+                    ))}
+                 </div>
               </div>
             </div>
 
-            {/* Right phone — QR Scan */}
-            <div className="phone-mockup phone-r hidden lg:block">
-              <div className="phone-notch" />
-              <div className="phone-screen">
-                <div className="phone-header">
-                  <span className="phone-title">Join Wall</span>
-                </div>
-                <div className="phone-qr">QR</div>
-                <p className="phone-scan-text">Scan to join the live wall</p>
-                <div className="phone-grid" style={{ marginTop: '0.75rem' }}>
-                  {[
-                    { src: '/landing-hero/photo11.jpg', alt: 'Guest photo 1' },
-                    { src: '/landing-hero/photo12.jpg', alt: 'Guest photo 2' }
-                  ].map((img, i) => (
-                    <div key={i} className="phone-photo" style={{ background: `linear-gradient(135deg, rgba(252,211,77,0.2), rgba(245,158,11,0.15))`, animationDelay: `${1.2 + i * 0.2}s` }}>
-                      <img src={img.src} alt={img.alt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+            {/* Right Phone */}
+            <div className="hidden lg:block w-[280px] h-[580px] rounded-[3rem] border-[8px] border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transform rotate-[6deg] translate-y-12">
+               <div className="h-full flex flex-col p-8 items-center justify-center">
+                  <div className="w-full aspect-square bg-white rounded-2xl p-4 mb-6 shadow-xl">
+                    <div className="w-full h-full bg-zinc-100 rounded-lg flex items-center justify-center">
+                      <div className="w-2/3 h-2/3 border-4 border-zinc-300 border-dashed rounded-xl" />
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                  <div className="h-4 w-2/3 bg-white/10 rounded-full mb-2" />
+                  <div className="h-3 w-1/2 bg-white/5 rounded-full" />
+               </div>
             </div>
           </div>
         </motion.div>

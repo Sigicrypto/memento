@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import Link from 'next/link';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Printer, CheckCircle, AlertTriangle } from 'lucide-react';
+ 
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     + '-' + Math.random().toString(36).substring(2, 7);
 }
-
+ 
 export default function CreateEventPage() {
   const { user, profile, isLoading, plan, isPaid, isApproved } = useAuth();
   const router = useRouter();
@@ -22,339 +24,274 @@ export default function CreateEventPage() {
   const [loading, setLoading] = useState(false);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
   const [error, setError] = useState('');
-
+ 
   useEffect(() => {
     if (isLoading) return;
     if (!user) { router.push('/'); return; }
     if (!isApproved) { router.push('/pending'); return; }
   }, [user, isLoading, isApproved, router]);
-
+ 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[create] user:", user?.id);
-    console.log("[create] name:", name);
-    console.log("[create] customSlug:", customSlug);
-    
-    if (!user) { console.log("[create] no user, redirecting to auth"); router.push('/auth'); return; }
+    if (!user) { router.push('/auth'); return; }
     if (!isApproved) { router.push('/pending'); return; }
     if (!isPaid) { router.push('/dashboard'); return; }
     setLoading(true);
     setError('');
-
+ 
     const slug = customSlug.trim() || generateSlug(name);
-    console.log("[create] final slug:", slug);
     
-    // If custom slug provided, check if it's already taken
     if (customSlug) {
-      console.log("[create] checking custom slug availability");
-      const { data: existing, error: checkError } = await supabase.from('events').select('id').eq('slug', slug).single();
-      console.log("[create] slug check result:", { existing, checkError });
+      const { data: existing } = await supabase.from('events').select('id').eq('slug', slug).single();
       if (existing) {
         setError('This custom link is already taken. Please try another.');
         setLoading(false);
         return;
       }
     }
-
-    console.log("[create] inserting event:", { name, slug, owner_id: user.id, owner_email: user.email });
+ 
     const { error: dbError } = await supabase.from('events').insert({
       name, slug, owner_id: user.id, owner_email: user.email, created_at: new Date().toISOString(),
       password: password || null,
       plan_type: (plan || 'STARTER').toUpperCase(),
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     });
-
-    console.log("[create] insert error:", dbError);
+ 
     if (dbError) { setError(dbError.message); setLoading(false); return; }
     
     setCreatedSlug(slug);
-    console.log("[create] created slug:", slug);
-    const uploadUrl = createdSlug
-      ? `${typeof window !== 'undefined' ? window.location.origin : ''}/mobile/${createdSlug}` : '';
-    console.log("[create] upload URL:", uploadUrl);
-    
     setLoading(false);
   };
-
+ 
   const uploadUrl = createdSlug
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/mobile/${createdSlug}` : '';
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
-
+ 
   if (isLoading) {
     return (
-      <div className="lp" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
-        <div className="grain" />
-        <div style={{ width: 40, height: 40, border: '3px solid rgba(245,158,11,0.2)', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className="lp flex items-center justify-center p-6">
+        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
       </div>
     );
   }
-
-  // ── Success: show QR ──
+ 
+  // ── Success View ──
   if (createdSlug) {
     return (
-    <div className="lp" style={{ minHeight: '100vh', paddingTop: '140px' }}>
-      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
-      <div className="grain" />
-      <div className="flex items-center justify-center px-4 py-12 pb-40">
-        <div className="w-full max-w-md">
-          <div className="nm-card p-8 text-center">
-            <div className="nm-badge mx-auto mb-4 text-[10px]">✨ Wall Created!</div>
-            <div className="text-3xl mb-3">🎉</div>
-            <h1 className="text-2xl font-bold mb-1" style={{color:'var(--text1)'}}>Wall Ready!</h1>
-            <p className="text-sm mb-6" style={{color:'var(--text2)'}}>Share this QR code with your guests</p>
-
-            <div className="nm-inset p-4 inline-block mx-auto mb-6 rounded-2xl">
-              <QRCodeSVG value={uploadUrl} size={160} bgColor="var(--surface)" fgColor="var(--text1)" />
+      <div className="lp flex items-center justify-center p-6">
+        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+        <div className="grain" />
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="glass-container w-full max-w-2xl p-8 md:p-12 text-center relative z-10"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-black uppercase tracking-widest mb-10 shadow-lg shadow-green-500/5">
+            <CheckCircle size={14} /> Wall Created Successfully
+          </div>
+          
+          <h1 className="display-text mb-4 text-gradient">Wall Ready!</h1>
+          <p className="text-text-secondary mb-12 max-w-md mx-auto text-lg">Your event space is now live. Capture every moment with your guests.</p>
+ 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
+            <div className="flex flex-col items-center">
+              <div className="p-6 bg-white rounded-[2.5rem] shadow-[0_0_60px_rgba(255,255,255,0.15)] group transition-transform hover:scale-105 duration-500">
+                <QRCodeSVG value={uploadUrl} size={200} bgColor="#ffffff" fgColor="#000000" />
+              </div>
+              <div style={{display:'none'}}>
+                <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
+              </div>
+              <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-text-muted">Scan to join wall</p>
             </div>
-            <div style={{display:'none'}}>
-              <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
-            </div>
-
-            <p className="text-[10px] mb-6 break-all font-mono" style={{color:'var(--text2)'}}>{uploadUrl}</p>
-
-
-            <div className="flex flex-col gap-3">
-              <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="nm-btn w-full py-3">
-                📋 Copy Link
-              </button>
-              <button onClick={() => {
-                const canvas = qrCanvasRef.current;
-                if (!canvas) return;
-                canvas.toBlob((blob) => {
-                  if (blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `memento-${createdSlug}-qr.png`; a.click(); URL.revokeObjectURL(url); }
-                });
-              }} className="nm-btn w-full py-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                🖼️ Save QR Image
-              </button>
-              <button 
-                onClick={async () => {
-                  const qrCanvas = qrCanvasRef.current;
-                  if (!qrCanvas) return;
-                  const qrDataUrl = qrCanvas.toDataURL('image/png');
-                  
-                  const container = document.createElement('div');
-                  container.style.width = '794px';
-                  container.style.height = '1123px';
-                  container.style.background = '#0a0a0c'; // Midnight theme
-                  container.style.color = '#fff';
-                  container.style.display = 'flex';
-                  container.style.flexDirection = 'column';
-                  container.style.alignItems = 'center';
-                  container.style.justifyContent = 'center';
-                  container.style.padding = '40px';
-                  container.style.fontFamily = 'system-ui, sans-serif';
-                  container.style.position = 'fixed';
-                  container.style.left = '-9999px';
-                  container.style.top = '0';
-                  
-                  container.innerHTML = `
-                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%; border: 2px solid rgba(255,255,255,0.1); border-radius: 40px; padding: 60px; box-sizing: border-box; background: linear-gradient(180deg, rgba(20,20,26,0.6) 0%, rgba(10,10,12,0.8) 100%);">
-                      <h1 style="font-size: 64px; font-weight: 900; background: linear-gradient(135deg, #06b6d4, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; text-align: center; line-height: 1.2;">
-                        ${name || 'Event Photo Wall'}
-                      </h1>
-                      <p style="font-size: 28px; color: #94a3b8; font-weight: 500; margin-bottom: 80px; text-align: center; max-width: 600px; line-height: 1.4;">
-                        Point your phone's camera at the code below to share your favorite moments with everyone!
-                      </p>
-                      
-                      <div style="background: white; padding: 48px; border-radius: 36px; margin-bottom: 80px; box-shadow: 0 40px 100px rgba(0,0,0,0.8);">
-                          <img src="${qrDataUrl}" style="width: 400px; height: 400px; display: block;" />
-                      </div>
-                      
-                      <h2 style="font-size: 42px; font-weight: 800; margin-bottom: 16px; color: #f8fafc;">Scan to Join</h2>
-                      <p style="font-size: 24px; color: #64748b; font-family: monospace; letter-spacing: 1px;">${uploadUrl}</p>
-                      
-                      <div style="margin-top: auto; padding-top: 40px;">
-                         <p style="font-size: 16px; color: #475569; font-weight: 600; text-transform: uppercase; letter-spacing: 3px;">Powered by Memento</p>
-                      </div>
-                    </div>
-                  `;
-                  
-                  document.body.appendChild(container);
-                  
-                  try {
-                    const html2canvas = (await import('html2canvas')).default;
-                    const canvas = await html2canvas(container, { scale: 2 });
-                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                    
-                    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-                    doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-                    doc.save(`Memento-Sign-${createdSlug}.pdf`);
-                  } catch (err) {
-                    console.error('PDF generation failed:', err);
-                    alert('Failed to generate PDF. Please use the Save QR Image button instead.');
-                  } finally {
-                    document.body.removeChild(container);
-                  }
-                }} 
-                className="nm-btn w-full py-3 border-amber-500/30 text-amber-500 font-bold hover:bg-amber-500/10 transition-colors"
-                title="Download an A4 poster for your event tables"
-              >
-                🖨️ Download Printable Sign (PDF)
-              </button>
-              <button onClick={() => router.push(`/wall/${createdSlug}`)} className="nm-btn nm-btn-accent w-full py-3 font-bold">
-                🖼️ Open Live Wall
-              </button>
+ 
+            <div className="text-left space-y-6">
+               <div className="space-y-2">
+                 <p className="text-[10px] font-black tracking-widest text-primary uppercase ml-1">Event URL</p>
+                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 group hover:border-white/20 transition-all shadow-inner">
+                    <span className="text-sm font-medium text-text-secondary truncate flex-grow italic">{uploadUrl}</span>
+                    <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="p-2.5 rounded-lg bg-white/5 text-text-muted hover:text-white hover:bg-white/10 transition-all">
+                      <Copy size={16} />
+                    </button>
+                 </div>
+               </div>
+               
+               <div className="grid grid-cols-2 gap-4">
+                 <button onClick={() => {
+                   const canvas = qrCanvasRef.current;
+                   if (!canvas) return;
+                   canvas.toBlob((blob) => {
+                     if (blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `memento-${createdSlug}-qr.png`; a.click(); URL.revokeObjectURL(url); }
+                   });
+                 }} className="btn-secondary py-4 !rounded-2xl flex items-center justify-center gap-2 group">
+                    <ImageIcon size={16} className="text-text-muted group-hover:text-primary transition-colors" />
+                    <span className="text-xs font-bold">PNG Image</span>
+                 </button>
+                 <button onClick={async () => {
+                   const qrCanvas = qrCanvasRef.current;
+                   if (!qrCanvas) return;
+                   const qrDataUrl = qrCanvas.toDataURL('image/png');
+                   const container = document.createElement('div');
+                   container.style.width = '794px'; container.style.height = '1123px';
+                   container.style.background = '#030303'; container.style.color = '#fff';
+                   container.style.display = 'flex'; container.style.flexDirection = 'column';
+                   container.style.alignItems = 'center'; container.style.justifyContent = 'center';
+                   container.style.padding = '40px'; container.style.fontFamily = 'Outfit, system-ui, sans-serif';
+                   container.style.position = 'fixed'; container.style.left = '-9999px'; container.style.top = '0';
+                   container.innerHTML = `
+                     <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width: 100%; border: 1px solid rgba(255,255,255,0.08); border-radius: 40px; padding: 60px; box-sizing: border-box; background: radial-gradient(circle at top right, rgba(99,102,241,0.05) 0%, transparent 70%);">
+                       <h1 style="font-size: 64px; font-weight: 800; color: #fff; margin-bottom: 24px; text-align: center; line-height: 1.1; letter-spacing: -0.04em;">${name || 'Event Photo Wall'}</h1>
+                       <p style="font-size: 26px; color: #94a3b8; font-weight: 400; margin-bottom: 80px; text-align: center; max-width: 550px; line-height: 1.5;">Scan to share your favorite memories instantly with everyone!</p>
+                       <div style="background: white; padding: 40px; border-radius: 40px; margin-bottom: 80px; box-shadow: 0 40px 100px rgba(0,0,0,0.6);"><img src="${qrDataUrl}" style="width: 380px; height: 380px; display: block;" /></div>
+                       <h2 style="font-size: 38px; font-weight: 700; margin-bottom: 16px; color: #f8fafc; letter-spacing: -0.02em;">Scan to Join</h2>
+                       <p style="font-size: 18px; color: #64748b; font-family: monospace; opacity: 0.8;">${uploadUrl}</p>
+                       <div style="margin-top: auto; padding-top: 40px;"><p style="font-size: 14px; color: #475569; font-weight: 900; text-transform: uppercase; letter-spacing: 5px;">MEMENTO PREMIUM</p></div>
+                     </div>
+                   `;
+                   document.body.appendChild(container);
+                   try {
+                     const html2canvas = (await import('html2canvas')).default;
+                     const canvas = await html2canvas(container, { scale: 2, backgroundColor: '#030303' });
+                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                     doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                     doc.save(`Memento-Sign-${createdSlug}.pdf`);
+                   } catch (err) { alert('Failed to generate PDF.'); } finally { document.body.removeChild(container); }
+                 }} className="btn-secondary py-4 !rounded-2xl flex items-center justify-center gap-2 group">
+                    <Printer size={16} className="text-text-muted group-hover:text-secondary transition-colors" />
+                    <span className="text-xs font-bold">PDF Poster</span>
+                 </button>
+               </div>
             </div>
           </div>
-        </div>
+ 
+          <div className="flex flex-col sm:flex-row gap-5">
+            <button onClick={() => router.push(`/wall/${createdSlug}`)} className="btn-premium flex-1 !py-5 flex items-center justify-center gap-3 text-lg">
+              <Layout size={20} /> Open Live Wall
+            </button>
+            <button onClick={() => router.push('/dashboard')} className="flex-1 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all text-lg">
+              Back to Dashboard
+            </button>
+          </div>
+        </motion.div>
       </div>
-    </div>
     );
   }
-
-  // ── Form ──
+ 
+  // ── Create Form ──
   return (
-    <div className="lp" style={{ minHeight: '100vh', paddingTop: '140px' }}>
-      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+    <div className="lp flex flex-col">
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       <div className="grain" />
-      <div className="flex items-center justify-center px-4 py-12 pb-40">
-      <div className="w-full max-w-md">
-        <div className="nm-card p-8">
-          <div className="flex justify-center mb-6">
-            <div className="nm-circle w-16 h-16 text-2xl">🎉</div>
+ 
+      {/* ── Standardized Nav ── */}
+      <nav className="glass-nav h-24 flex items-center justify-between px-8 md:px-16 relative z-[100]">
+        <Link href="/dashboard" className="flex items-center gap-3 text-text-muted hover:text-white transition-all font-bold text-xs uppercase tracking-widest group">
+           <ArrowRight size={16} className="rotate-180 group-hover:-translate-x-1 transition-transform" /> Dashboard
+        </Link>
+        <Link href="/" className="text-2xl font-bold tracking-tighter hover:opacity-80 transition-opacity">memento</Link>
+        <div className="w-24 hidden md:block" />
+      </nav>
+ 
+      <main className="flex-grow flex items-center justify-center p-6 relative z-10 pb-24">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          className="glass-container w-full max-w-xl p-10 md:p-14"
+        >
+          <div className="text-center mb-12">
+            <div className="w-20 h-20 rounded-[2rem] bg-primary/10 border border-primary/20 flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl shadow-primary/10">
+              ✨
+            </div>
+            <h1 className="h1-text mb-4 text-gradient">Create a Photo Wall</h1>
+            <p className="text-text-secondary text-lg">Set up your cinematic event space in seconds.</p>
           </div>
-          <div className="text-center mb-4">
-            <span className="nm-badge px-4 py-1 text-[10px]">Launch your event wall</span>
-          </div>
-          <h1 className="text-2xl font-bold text-center mb-2" style={{color:'var(--text1)'}}>Create a Photo Wall</h1>
-          <p className="text-sm text-center mb-6 leading-relaxed max-w-xs mx-auto" style={{color:'var(--text2)'}}>
-            Name your event and get a QR code guests can scan to share photos.
-          </p>
-
-          {/* Sample Photo Gallery */}
-          <div className="mb-8">
-            <p className="text-xs text-center mb-4" style={{color:'var(--text2)'}}>Sample Event Photos</p>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="nm-inset p-1 rounded-lg">
-                <img src="/sample-photos/birthday-party.jpg" alt="Birthday Party" className="w-full h-16 object-cover rounded" />
+ 
+          <form onSubmit={handleCreate} className="space-y-10">
+            <div className="space-y-8">
+              {/* Event Name */}
+              <div className="space-y-3 font-medium">
+                <label className="text-[10px] font-black tracking-[0.2em] uppercase text-text-muted ml-1">Event Identity</label>
+                <input 
+                  type="text" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  placeholder="The Midnight Gala…" 
+                  required 
+                  autoFocus 
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-xl placeholder:text-white/5 font-semibold"
+                />
               </div>
-              <div className="nm-inset p-1 rounded-lg">
-                <img src="/sample-photos/wedding-day.jpg" alt="Wedding" className="w-full h-16 object-cover rounded" />
-              </div>
-              <div className="nm-inset p-1 rounded-lg">
-                <img src="/sample-photos/corporate-event.jpg" alt="Corporate Event" className="w-full h-16 object-cover rounded" />
-              </div>
-              <div className="nm-inset p-1 rounded-lg">
-                <img src="/sample-photos/graduation-day.jpg" alt="Graduation" className="w-full h-16 object-cover rounded" />
-              </div>
-              <div className="nm-inset p-1 rounded-lg">
-                <img src="/sample-photos/family-reunion.jpg" alt="Family Reunion" className="w-full h-16 object-cover rounded" />
-              </div>
-              <div className="nm-inset p-1 rounded-lg">
-                <img src="/sample-photos/music-festival.jpg" alt="Music Festival" className="w-full h-16 object-cover rounded" />
-              </div>
-            </div>
-          </div>
-
-          {!user && (
-            <div className="nm-inset p-4 mb-8 flex items-center justify-center gap-3 text-sm" style={{color:'#f59e0b'}}>
-              <span className="text-lg">🔐</span> <a href="/auth" className="underline font-bold hover:text-amber-300 transition-colors">Sign in</a> to create a wall.
-            </div>
-          )}
-
-          <form onSubmit={handleCreate} className="space-y-6">
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold ml-1" style={{color:'var(--text1)'}}>Event Name</label>
-              <input type="text" className="nm-input py-3 text-sm" value={name} onChange={(e) => setName(e.target.value)} placeholder="My Awesome Party…" required autoFocus />
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between ml-1">
-                <label className="text-xs font-semibold" style={{color:'var(--text1)'}}>Custom Link (URL)</label>
-                {plan === 'starter' && (
-                  <Link href="/#pricing" className="text-xs font-bold px-3 py-1.5 rounded-full" style={{color:'#f59e0b',background:'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)'}}>✨ Upgrade to Standard</Link>
-                )}
-              </div>
-              <div className="relative">
-                <span className="absolute left-7 top-1/2 -translate-y-1/2 text-base pointer-events-none" style={{color:'var(--text2)'}}>/mobile/</span>
-                <input type="text" className={`nm-input py-3 text-sm !pl-20 ${plan === 'starter' ? 'opacity-50' : ''}`}
-                  value={customSlug} disabled={plan === 'starter'}
-                  onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  placeholder={plan === 'starter' ? 'Standard Plan required' : 'my-cool-party'} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold ml-1" style={{color:'var(--text1)'}}>Guest Password <span style={{color:'var(--text2)',fontWeight:'400'}}>(optional)</span></label>
-              <input type="password" className="nm-input py-3 text-sm" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank for open access…" />
-            </div>
-
-            {/* Premium Features Upsell */}
-            <div className="nm-inset p-6 rounded-3xl space-y-5 bg-white/5 border border-white/5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[10px] font-black uppercase tracking-widest" style={{color:'var(--text2)'}}>Premium Experience</h3>
-                {(plan === 'starter' || !plan) && (
-                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 border border-amber-500/20">LOCKED</span>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                {/* Feature: Slideshow Music */}
-                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${plan === 'starter' ? 'opacity-40 grayscale-[0.5] border-transparent' : 'border-white/5 bg-white/5'}`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">🎵</span>
-                    <div>
-                      <p className="text-xs font-bold" style={{color:'var(--text1)'}}>Cinematic Music</p>
-                      <p className="text-[10px]" style={{color:'var(--text2)'}}>Curated tracks for your wall</p>
-                    </div>
-                  </div>
-                  {plan === 'starter' && <span className="text-[9px] font-black text-amber-500/80">STANDARD+</span>}
+ 
+              {/* Custom Link */}
+              <div className="space-y-3 font-medium">
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-[10px] font-black tracking-[0.2em] uppercase text-text-muted">Personalized Link</label>
+                  {plan === 'starter' && (
+                    <Link href="/#pricing" className="text-[9px] font-black px-3 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20 uppercase tracking-widest hover:bg-secondary/20 transition-all">Upgrade for Custom</Link>
+                  )}
                 </div>
-
-                {/* Feature: Video Uploads */}
-                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${plan === 'starter' ? 'opacity-40 grayscale-[0.5] border-transparent' : 'border-white/5 bg-white/5'}`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">🎬</span>
-                    <div>
-                      <p className="text-xs font-bold" style={{color:'var(--text1)'}}>Video Support</p>
-                      <p className="text-[10px]" style={{color:'var(--text2)'}}>Capture motion & sound</p>
-                    </div>
-                  </div>
-                  {plan === 'starter' && <span className="text-[9px] font-black text-rose-500/80">PREMIUM+</span>}
-                </div>
-
-                {/* Feature: Watermark Removal */}
-                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${plan !== 'whitelabel' ? 'opacity-40 grayscale-[0.5] border-transparent' : 'border-white/5 bg-white/5'}`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">✨</span>
-                    <div>
-                      <p className="text-xs font-bold" style={{color:'var(--text1)'}}>White Label</p>
-                      <p className="text-[10px]" style={{color:'var(--text2)'}}>Remove all Memento branding</p>
-                    </div>
-                  </div>
-                  {plan !== 'whitelabel' && <span className="text-[9px] font-black text-indigo-500/80">PARTNER</span>}
+                <div className="relative group">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-sm text-white/20 font-bold pointer-events-none group-focus-within:text-primary/50 transition-colors uppercase tracking-tighter">memento.live/mobile/</span>
+                  <input 
+                    type="text" 
+                    value={customSlug} 
+                    disabled={plan === 'starter'}
+                    onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                    placeholder={plan === 'starter' ? 'Standard Plan' : 'my-event'} 
+                    className={`w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 !pl-[175px] text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-bold ${plan === 'starter' ? 'opacity-30 cursor-not-allowed' : 'group-hover:border-white/20'}`}
+                  />
                 </div>
               </div>
-
-              {(plan === 'starter' || !plan) && (
-                <Link href="/#pricing" className="block text-center p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] font-bold text-amber-500 hover:bg-amber-500/20 transition-all">
-                  ✨ SCALE TO UNLOCK PREMIUM FEATURES
-                </Link>
-              )}
+ 
+              {/* Password */}
+              <div className="space-y-3 font-medium">
+                <label className="text-[10px] font-black tracking-[0.2em] uppercase text-text-muted ml-1">Privacy Shield <span className="opacity-40 italic font-normal">(Optional)</span></label>
+                <div className="relative">
+                  <Shield size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    placeholder="Set a guest password…" 
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 !pl-[56px] text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base placeholder:text-white/5"
+                  />
+                </div>
+              </div>
             </div>
-
+ 
             {error && (
-              <div className="nm-inset p-4 flex items-center gap-3 text-sm" style={{color:'#f472b6'}}>
-                <span>⚠️</span>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-5 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center gap-4 text-pink-500 text-sm font-bold">
+                <AlertTriangle size={20} />
                 <span>{error}</span>
-              </div>
+              </motion.div>
             )}
-
-            <button type="submit" className="nm-btn nm-btn-accent w-full py-4 font-bold text-lg shadow-xl mt-4 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" disabled={loading || !user}>
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
-                  Creating Wall…
-                </span>
-              ) : '✨ Create Photo Wall'}
-            </button>
+ 
+            <div className="pt-4">
+              <button 
+                type="submit" 
+                disabled={loading || !user} 
+                className="btn-premium w-full flex items-center justify-center gap-3 !py-6 shadow-2xl shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all text-lg"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin" />
+                    <span>Creating your space...</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus size={24} />
+                    <span>Launch Photo Wall</span>
+                  </>
+                )}
+              </button>
+              <p className="text-center text-[10px] text-text-muted mt-6 font-medium uppercase tracking-[0.2em]">Instantly live across all devices</p>
+            </div>
           </form>
-        </div>
-      </div>
-      </div>
+        </motion.div>
+      </main>
     </div>
   );
 }
-

@@ -5,15 +5,9 @@ import { motion } from 'framer-motion';
 
 const Stats: React.FC = () => {
   return (
-    <section className="stats py-16">
+    <section className="py-24 relative">
       <div className="container mx-auto px-6">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="flex flex-wrap justify-center gap-8 md:gap-16"
-        >
+        <div className="premium-stats bg-white/5 backdrop-blur-sm border border-white/5 rounded-[2rem] p-8 md:p-12">
           {[
             { val: '∞', label: 'Photos per wall' },
             { val: '0s', label: 'App install time' },
@@ -22,17 +16,17 @@ const Stats: React.FC = () => {
           ].map((s, i) => (
             <motion.div 
               key={i} 
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1, ease: 'backOut' }}
-              className="stat group cursor-default"
+              transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="premium-stat"
             >
-              <span className="stat-val group-hover:scale-110 transition-transform duration-300 inline-block text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">{s.val}</span>
-              <span className="stat-lbl text-sm opacity-70 group-hover:opacity-100 transition-opacity block mt-2 text-slate-400">{s.label}</span>
+              <div className="stat-value">{s.val}</div>
+              <div className="stat-label">{s.label}</div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -5,31 +5,27 @@ import { motion } from 'framer-motion';
 
 const Steps: React.FC = () => {
   return (
-    <section id="how" className="sec py-24">
+    <section id="how" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-20"
         >
-          <span className="hero-badge mb-4">How it works</span>
-          <h2 className="sec-h2 text-4xl md:text-5xl font-bold mb-4">
-            Three steps. <span className="gradient-text-vibrant italic">That&apos;s it.</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+            Process
+          </div>
+          <h2 className="h1-text mb-6">
+            Three steps. <span className="text-secondary italic">That&apos;s it.</span>
           </h2>
-          <p className="sec-sub text-lg text-slate-400">No downloads. No accounts. No friction.</p>
+          <p className="text-lg text-text-secondary">No downloads. No accounts. No friction.</p>
         </motion.div>
-
+ 
         <div className="relative">
           {/* Connecting Line (Desktop) */}
-          <motion.div 
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
-            className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent hidden lg:block" 
-          />
+          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent hidden lg:block" />
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
             {[
@@ -39,21 +35,20 @@ const Steps: React.FC = () => {
             ].map((s, i) => (
               <motion.div 
                 key={i} 
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.2, ease: "easeOut" }}
-                whileHover={{ scale: 1.05 }}
-                className="gcard step-card p-8 rounded-3xl bg-surface/40 backdrop-blur-xl border border-white/10 relative overflow-hidden group"
+                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="gcard group"
               >
-                <div className="gcard-inner relative z-10">
-                  <span className="text-sm font-black text-primary/50 mb-4 block tracking-widest">{s.num}</span>
-                  <span className="text-5xl mb-6 block group-hover:scale-110 transition-transform duration-300">{s.icon}</span>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <span className="text-sm font-black text-primary tracking-tighter uppercase">{s.num}</span>
+                    <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{s.icon}</span>
+                  </div>
                   <h3 className="text-2xl font-bold text-white mb-4">{s.title}</h3>
-                  <p className="text-slate-400 leading-relaxed">{s.desc}</p>
+                  <p className="text-text-secondary leading-relaxed">{s.desc}</p>
                 </div>
-                {/* Decorative glow */}
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-[50px] rounded-full group-hover:bg-primary/20 transition-colors" />
               </motion.div>
             ))}
           </div>

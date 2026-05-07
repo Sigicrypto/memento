@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'next/navigation';
@@ -12,155 +12,10 @@ import Webcam from 'react-webcam';
 import { extractFaceDescriptorRobust, MATCH_THRESHOLD } from '@/lib/faceEngine';
 import { useAuth } from '@/hooks/useAuth';
 import { hasFeature } from '@/lib/permissions';
-
-// ── Components ──────────────────────────────────────────────
-
-// No local FontLoader or DreamyBackground needed anymore as they are global
-
-
+import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2 } from 'lucide-react';
+ 
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
-
-interface NewPhotoRevealProps {
-  photo: Photo | null;
-  uploadUrl: string;
-  getPublicUrl: (path: string) => string;
-  onDone: () => void;
-}
-
-const NewPhotoReveal = ({ photo, uploadUrl, getPublicUrl, onDone }: NewPhotoRevealProps) => {
-  const [exiting, setExiting] = useState(false);
-
-  useEffect(() => {
-    if (!photo) return;
-    const timer = setTimeout(() => {
-      setExiting(true);
-      setTimeout(onDone, 800);
-    }, 5500);
-    return () => clearTimeout(timer);
-  }, [photo, onDone]);
-
-  if (!photo) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 1.05 }}
-      animate={{ opacity: exiting ? 0 : 1, scale: exiting ? 1.05 : 1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="reveal-backdrop"
-      style={{
-        position: 'fixed', inset: 0, zIndex: 200,
-        background: 'linear-gradient(135deg, rgba(0,0,0,0.95) 0%, rgba(15,10,30,0.98) 100%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        padding: 32,
-      }}
-    >
-      {/* "NEW MEMORY" badge */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="reveal-badge"
-        style={{
-          marginBottom: 28,
-          background: 'linear-gradient(135deg, #06b6d4, #ec4899)',
-          borderRadius: 100,
-          padding: '8px 28px',
-          fontSize: 11,
-          fontWeight: 900,
-          color: '#fff',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          boxShadow: '0 4px 24px rgba(236,72,153,0.5)',
-        }}
-      >
-        ✦ New Memory Just Arrived ✦
-      </motion.div>
-
-      {/* Photo */}
-      <motion.div
-        initial={{ y: 40, opacity: 0, scale: 0.95 }}
-        animate={{ y: 0, opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="reveal-img"
-        style={{ position: 'relative', maxWidth: 540, width: '100%' }}
-      >
-        <div style={{
-          position: 'absolute', inset: -40,
-          background: 'radial-gradient(ellipse, rgba(6,182,212,0.25) 0%, transparent 70%)',
-          borderRadius: '50%', filter: 'blur(20px)',
-        }} />
-        {photo.media_type === 'video'
-          ? <video src={getPublicUrl(photo.storage_path)} style={{ width: '100%', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.8)', display: 'block', objectFit: 'contain', maxHeight: '55vh', position: 'relative', zIndex: 10 }} autoPlay loop muted />
-          : <img src={getPublicUrl(photo.storage_path)} style={{ width: '100%', borderRadius: 24, boxShadow: '0 40px 100px rgba(0,0,0,0.8)', display: 'block', objectFit: 'contain', maxHeight: '55vh', position: 'relative', zIndex: 10 }} alt="" />
-        }
-      </motion.div>
-
-      {/* Meta */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
-        className="reveal-meta"
-        style={{ marginTop: 32, textAlign: 'center' }}
-      >
-        <p style={{ fontSize: 11, fontWeight: 800, color: '#06b6d4', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6, opacity: 0.85 }}>Shared by</p>
-        <h2 style={{ fontSize: 36, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', fontFamily: "'Playfair Display', serif", marginBottom: photo.caption ? 10 : 0 }}>
-          {photo.uploader_name}
-        </h2>
-        {photo.caption && (
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.8)', fontStyle: 'italic', maxWidth: 420, lineHeight: 1.5 }}>
-            "{photo.caption}"
-          </p>
-        )}
-      </motion.div>
-
-      {/* Skip */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-        onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
-        style={{ position: 'absolute', top: 28, right: 28, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 18px', borderRadius: 12, fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: '0.06em' }}
-      >
-        SKIP ✕
-      </motion.button>
-    </motion.div>
-  );
-};
-
-const Confetti = ({ trigger }: { trigger: boolean }) => {
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; size: number }>>([]);
-  useEffect(() => {
-    if (!trigger) return;
-    const palette = ['#06b6d4', '#3b82f6', '#ec4899', '#8b5cf6', '#6366f1', '#34d399'];
-    setParticles(Array.from({ length: 50 }, (_, i) => ({
-      id: Date.now() + i,
-      x: Math.random() * 100,
-      color: palette[Math.floor(Math.random() * palette.length)],
-      size: Math.random() * 8 + 4,
-    })));
-    setTimeout(() => setParticles([]), 3000);
-  }, [trigger]);
-
-  if (!particles.length) return null;
-  return (
-    <div className="fixed inset-0 pointer-events-none z-50">
-      {particles.map((p, i) => (
-        <div key={p.id} style={{
-          position: 'absolute', left: `${p.x}%`, top: '-20px',
-          width: p.size, height: p.size,
-          background: p.color, borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-          animation: `fall ${2.5 + Math.random()}s ease-out ${i * 0.02}s forwards`,
-        }} />
-      ))}
-      <style>{`@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }`}</style>
-    </div>
-  );
-};
-
-
-// ── Types ──────────────────────────────────────────────────
-
+ 
 interface Photo {
   id: string;
   storage_path: string;
@@ -175,25 +30,136 @@ interface Photo {
   watermark_url?: string;
   face_descriptor?: number[];
 }
-
+ 
+interface NewPhotoRevealProps {
+  photo: Photo | null;
+  getPublicUrl: (path: string) => string;
+  onDone: () => void;
+}
+ 
+const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) => {
+  const [exiting, setExiting] = useState(false);
+ 
+  useEffect(() => {
+    if (!photo) return;
+    const timer = setTimeout(() => {
+      setExiting(true);
+      setTimeout(onDone, 800);
+    }, 5500);
+    return () => clearTimeout(timer);
+  }, [photo, onDone]);
+ 
+  if (!photo) return null;
+ 
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: exiting ? 0 : 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="fixed inset-0 z-[500] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center p-8"
+    >
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+ 
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-10 relative z-10"
+      >
+        <Sparkles size={12} /> New Memory Just Arrived
+      </motion.div>
+ 
+      <motion.div
+        initial={{ y: 40, opacity: 0, scale: 0.9 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="relative max-w-2xl w-full group overflow-hidden rounded-[2rem] border border-white/10"
+      >
+        <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
+        {photo.media_type === 'video'
+          ? <video src={getPublicUrl(photo.storage_path)} className="w-full relative z-10 block object-contain max-h-[60vh] mx-auto" autoPlay loop muted />
+          : <img src={getPublicUrl(photo.storage_path)} className="w-full relative z-10 block object-contain max-h-[60vh] mx-auto" alt="" />
+        }
+      </motion.div>
+ 
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.6 }}
+        className="mt-12 text-center relative z-10"
+      >
+        <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2">SHARED BY</p>
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+          {photo.uploader_name}
+        </h2>
+        {photo.caption && (
+          <p className="text-xl text-text-secondary italic max-w-lg mx-auto leading-relaxed">
+            &quot;{photo.caption}&quot;
+          </p>
+        )}
+      </motion.div>
+ 
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
+        className="absolute top-10 right-10 w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-text-muted hover:text-white transition-all hover:scale-110 active:scale-95"
+      >
+        <X size={20} />
+      </motion.button>
+    </motion.div>
+  );
+};
+ 
+const Confetti = ({ trigger }: { trigger: boolean }) => {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; size: number }>>([]);
+  useEffect(() => {
+    if (!trigger) return;
+    const palette = ['#6366f1', '#06b6d4', '#ec4899', '#f59e0b', '#10b981'];
+    setParticles(Array.from({ length: 50 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 100,
+      color: palette[Math.floor(Math.random() * palette.length)],
+      size: Math.random() * 8 + 4,
+    })));
+    setTimeout(() => setParticles([]), 3000);
+  }, [trigger]);
+ 
+  if (!particles.length) return null;
+  return (
+    <div className="fixed inset-0 pointer-events-none z-[600]">
+      {particles.map((p, i) => (
+        <div key={p.id} style={{
+          position: 'absolute', left: `${p.x}%`, top: '-20px',
+          width: p.size, height: p.size,
+          background: p.color, borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+          animation: `fall ${2.5 + Math.random()}s ease-out ${i * 0.02}s forwards`,
+        }} />
+      ))}
+      <style>{`@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }`}</style>
+    </div>
+  );
+};
+ 
 type ViewMode = 'grid' | 'polaroid' | 'slideshow' | 'album';
-
-// ── Main Component ─────────────────────────────────────────
-
+ 
 export default function WallPage() {
   const params = useParams();
   const slug = params.slug as string;
-
-  // -- State --
+  const { user } = useAuth();
+ 
   const [eventName, setEventName] = useState('');
-  const [theme, setTheme] = useState({ primary: '#f59e0b', secondary: '#f472b6' });
-  const [brand, setBrand] = useState<{ logoUrl: string | null; colors: { primary: string; secondary: string } | null }>({ logoUrl: null, colors: null });
-  const [eventExpired, setEventExpired] = useState(false);
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [planTier, setPlanTier] = useState<string>('STARTER');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [ownerId, setOwnerId] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [eventExpired, setEventExpired] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
   const [prevViewMode, setPrevViewMode] = useState<ViewMode>('polaroid');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
@@ -203,15 +169,12 @@ export default function WallPage() {
   const [matchedPhotoIds, setMatchedPhotoIds] = useState<string[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [showSelfieCam, setShowSelfieCam] = useState(false);
-  const webcamRef = useRef<Webcam>(null);
-  const { user } = useAuth();
-  const [ownerId, setOwnerId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [musicTrack, setMusicTrack] = useState<string | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [slideIndex, setSlideIndex] = useState(0);
-
+  const webcamRef = useRef<Webcam>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+ 
   const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/mobile/${slug}` : '';
   const displayedPhotos = (() => {
     let filtered = showBestShots ? photos.filter(p => p.is_best_shot) : photos;
@@ -220,17 +183,12 @@ export default function WallPage() {
     }
     return filtered;
   })();
-  
-  const themeP = brand.colors?.primary || theme.primary;
-  const themeS = brand.colors?.secondary || theme.secondary;
-
-  // -- Callbacks --
-
+ 
   const getPublicUrl = useCallback((path: string) => {
     const { data } = supabase.storage.from('photos').getPublicUrl(path);
     return data.publicUrl;
   }, []);
-
+ 
   const startPolling = useCallback(() => {
     setRealtimeStatus('polling');
     const interval = setInterval(async () => {
@@ -240,42 +198,24 @@ export default function WallPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, [eventId]);
-
-  // -- Effects --
-
+ 
   useEffect(() => {
     const fetchEvent = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('events')
-        .select('id, name, theme_primary_color, theme_secondary_color, expires_at, enable_safety_filter, owner_id, plan_type, music_track')
-        .eq('slug', slug)
-        .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') setNotFound(true);
-        setLoading(false); return;
-      }
-      if (!data) { setNotFound(true); setLoading(false); return; }
-
+      const { data, error } = await supabase.from('events').select('*').eq('slug', slug).single();
+      if (error || !data) { setNotFound(true); setLoading(false); return; }
       setEventName(data.name);
       setEventId(data.id);
-      const isOwner = user && user.id === data.owner_id;
       setOwnerId(data.owner_id);
-      setIsAdmin(!!isOwner);
+      setIsAdmin(user?.id === data.owner_id);
       setPlanTier((data.plan_type || 'STARTER').toUpperCase());
-
-      if (data.theme_primary_color && data.theme_secondary_color)
-        setTheme({ primary: data.theme_primary_color, secondary: data.theme_secondary_color });
-
       if (data.expires_at && new Date(data.expires_at) < new Date()) setEventExpired(true);
       if (data.music_track && data.music_track !== 'none') setMusicTrack(data.music_track);
-
       setLoading(false);
     };
     fetchEvent();
   }, [slug, user]);
-
+ 
   useEffect(() => {
     if (!eventId) return;
     const fetchPhotos = async () => {
@@ -283,269 +223,165 @@ export default function WallPage() {
       if (data) setPhotos(data);
     };
     fetchPhotos();
-
+ 
     const channel = supabase.channel(`wall-${eventId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` },
-        (payload) => {
-          const newPhoto = payload.new as Photo;
-          const oldPhoto = payload.old as Photo;
-
-          if (payload.eventType === 'INSERT') {
-            if (newPhoto.approved) {
-              setPhotos(prev => [newPhoto, ...prev]);
-              setConfettiTrigger(true);
-              setRevealPhoto(newPhoto);
-              setTimeout(() => setConfettiTrigger(false), 3000);
-            }
-          } else if (payload.eventType === 'UPDATE') {
-            if (!oldPhoto?.approved && newPhoto.approved) {
-              setPhotos(prev => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
-              setConfettiTrigger(true);
-              setRevealPhoto(newPhoto);
-              setTimeout(() => setConfettiTrigger(false), 3000);
-            } else if (oldPhoto?.approved && !newPhoto.approved) {
-              setPhotos(prev => prev.filter(p => p.id !== newPhoto.id));
-            }
-          } else if (payload.eventType === 'DELETE') {
-            setPhotos(prev => prev.filter(p => p.id !== oldPhoto.id));
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'photos', filter: `event_id=eq.${eventId}` }, (payload) => {
+        const newPhoto = payload.new as Photo;
+        const oldPhoto = payload.old as Photo;
+        if (payload.eventType === 'INSERT' && newPhoto.approved) {
+          setPhotos(p => [newPhoto, ...p]);
+          setConfettiTrigger(true); setRevealPhoto(newPhoto);
+          setTimeout(() => setConfettiTrigger(false), 3000);
+        } else if (payload.eventType === 'UPDATE') {
+          if (!oldPhoto?.approved && newPhoto.approved) {
+            setPhotos(p => [newPhoto, ...p.filter(x => x.id !== newPhoto.id)]);
+            setConfettiTrigger(true); setRevealPhoto(newPhoto);
+            setTimeout(() => setConfettiTrigger(false), 3000);
+          } else if (oldPhoto?.approved && !newPhoto.approved) {
+            setPhotos(p => p.filter(x => x.id !== newPhoto.id));
           }
+        } else if (payload.eventType === 'DELETE') {
+          setPhotos(p => p.filter(x => x.id !== oldPhoto.id));
         }
-      )
+      })
       .subscribe((status) => {
         setRealtimeStatus(status);
         if (status !== 'SUBSCRIBED') startPolling();
       });
-
     return () => { supabase.removeChannel(channel); };
   }, [eventId, startPolling]);
-
+ 
   useEffect(() => {
     if (viewMode === 'slideshow' && displayedPhotos.length > 0) {
-      const current = displayedPhotos[slideIndex];
-      
-      // If current is a video, don't set an auto-advance timer.
-      // The video's onEnded handler will advance to the next slide.
-      if (current?.media_type === 'video') return;
-
-      const timer = setTimeout(() => {
-        setSlideIndex(prev => (prev + 1) % displayedPhotos.length);
-      }, 6000);
-      
+      if (displayedPhotos[slideIndex]?.media_type === 'video') return;
+      const timer = setTimeout(() => setSlideIndex(prev => (prev + 1) % displayedPhotos.length), 6000);
       return () => clearTimeout(timer);
     }
   }, [viewMode, slideIndex, displayedPhotos.length]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && viewMode === 'slideshow') {
-        setViewMode(prevViewMode);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [viewMode, prevViewMode]);
-
-  // -- Actions --
-
-  const handleSelfieSearch = async () => {
-    setShowSelfieCam(true);
-  };
-
+ 
   const captureSelfieAndSearch = async () => {
     if (!webcamRef.current) return;
     const screenshot = webcamRef.current.getScreenshot();
     if (!screenshot) return;
-
     setIsSearching(true);
-    setShowSelfieCam(false);
-
     try {
-      const img = new Image();
-      img.src = screenshot;
-      await new Promise(resolve => img.onload = resolve);
-
+      const img = new Image(); img.src = screenshot;
+      await new Promise(r => img.onload = r);
       const descriptor = await extractFaceDescriptorRobust(img, 'ssd');
-      if (!descriptor) {
-        alert("We couldn't see your face clearly. Please try again with better lighting!");
-        return;
-      }
-
+      if (!descriptor) { alert("Couldn't see your face clearly. Please try again!"); return; }
       const { data, error } = await supabase.rpc('match_photo_faces', {
-        query_embedding: Array.from(descriptor),
-        match_threshold: MATCH_THRESHOLD,
-        match_count: 50,
-        target_event_id: eventId
+        query_embedding: Array.from(descriptor), match_threshold: MATCH_THRESHOLD, match_count: 50, target_event_id: eventId
       });
-
       if (error) throw error;
-      
-      if (!data) {
-        setMatchedPhotoIds([]);
-        return;
-      }
-
-      // Deduplicate IDs (handles cases where multiple faces in one photo match)
-      const uniquePhotoIds = Array.from(new Set(data.map((d: any) => d.photo_id))) as string[];
-      
-      // Filter by photos actually loaded in current state to ensure honest count
-      const availableMatches = photos.filter(p => uniquePhotoIds.includes(p.id));
-      
-      setMatchedPhotoIds(uniquePhotoIds);
-
-      if (availableMatches.length === 0) {
-        alert("We couldn't find any photos of you yet—keep sharing!");
-      } else {
-        alert(`Found ${availableMatches.length} photos of you!`);
-      }
-
-    } catch (err: any) {
-      console.error("Match error:", err);
-      alert("Error searching for photos. Please try again.");
-    } finally {
-      setIsSearching(false);
-    }
+      const ids = Array.from(new Set((data || []).map((d: any) => d.photo_id))) as string[];
+      setMatchedPhotoIds(ids);
+      setShowSelfieCam(false);
+      if (ids.length === 0) alert("No matches found yet.");
+    } catch (err) { alert("Search failed."); } finally { setIsSearching(false); }
   };
-
+ 
   const handleDownloadZip = async () => {
-    const isOwner = user && user.id === ownerId;
-    const photosToDownload = isOwner
-      ? displayedPhotos
-      : displayedPhotos.filter(p => matchedPhotoIds?.includes(p.id));
-
-    if (photosToDownload.length === 0) {
-      if (isOwner) alert("No photos to download yet!");
-      else alert("✨ Please use the 'Find My Photos' button to match your photos before downloading your collection.");
-      return;
-    }
-
-    if (!isOwner) {
-      const confirmDownload = confirm(`Ready to download your ${photosToDownload.length} matched photos?`);
-      if (!confirmDownload) return;
-    }
-
-    alert(`Preparing ${isOwner ? 'Full Event' : 'your personal'} ZIP archive...`);
-    const zip = new JSZip();
-    const folder = zip.folder(`${slug}-memento`);
-
+    const photosToDownload = isAdmin ? displayedPhotos : displayedPhotos.filter(p => matchedPhotoIds?.includes(p.id));
+    if (photosToDownload.length === 0) { alert("No photos to download."); return; }
+    const zip = new JSZip(); const folder = zip.folder(`${slug}-memento`);
     for (const p of photosToDownload) {
-      try {
-        const blob = await (await fetch(getPublicUrl(p.storage_path))).blob();
-        folder?.file(`${p.uploader_name}-${p.id.slice(0, 4)}.jpg`, blob);
-      } catch (e) {
-        console.error("Download failed for photo:", p.id, e);
-      }
+      try { const blob = await (await fetch(getPublicUrl(p.storage_path))).blob(); folder?.file(`${p.uploader_name}-${p.id.slice(0, 4)}.jpg`, blob); }
+      catch (e) { console.error(e); }
     }
-
     const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, `${slug}-${isOwner ? 'master' : 'personal'}-memento.zip`);
+    saveAs(content, `${slug}-memento.zip`);
   };
-
-
-
-  const StatusBadge = () => {
-    const isLive = realtimeStatus === 'SUBSCRIBED';
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, background: 'var(--surface)', padding: '6px 14px', borderRadius: 100, border: '1px solid var(--border)', fontWeight: 600 }}>
-        <div className="status-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#4ade80' : '#06b6d4' }} />
-        <span style={{ color: isLive ? '#4ade80' : '#06b6d4' }}>{isLive ? 'LIVE' : 'POLLING'}</span>
-      </div>
-    );
-  };
-
-  const Watermark = () => {
-    if (hasFeature(planTier, 'BRANDING_REMOVAL')) return null;
-    return (
-      <div style={{ position: 'absolute', bottom: 12, right: 12, display: 'flex', alignItems: 'center', filter: 'drop-shadow(0 0 10px rgba(0,0,0,0.5))', opacity: 0.8, pointerEvents: 'none' }}>
-        <img src="/CC logo.png" alt="Memento" style={{ height: 16, width: 'auto' }} />
-      </div>
-    );
-  };
-
+ 
   if (loading) return (
-    <div className="wall-page flex items-center justify-center">
-      <div className="text-center">
-        <div style={{ width: 48, height: 48, border: '4px solid var(--surface)', borderTopColor: '#06b6d4', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
-        <p style={{ color: 'var(--text2)' }}>Entering the Wall…</p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
+    <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+      <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
     </div>
   );
-
+ 
   if (notFound || eventExpired) return (
-    <div className="wall-page flex items-center justify-center p-6 text-center">
-      <div className="glass-card p-12 max-w-md relative z-10 border-white/10 bg-black/40 backdrop-blur-xl">
-        <div style={{ fontSize: 64, marginBottom: 20 }}>{notFound ? '✨' : '📅'}</div>
-        <h1 className="text-3xl font-black mb-4">{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
-        <p className="text-slate-400 mb-8">{notFound ? "This memory lane hasn't been created yet." : "The photo wall for this event has reached its destination."}</p>
-        <Link href="/" className="btn-glow inline-block px-10 py-4 rounded-2xl font-bold uppercase">Go Home</Link>
+    <div className="min-h-screen bg-black flex items-center justify-center p-6 text-center text-white relative overflow-hidden">
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+      <div className="glass-panel p-12 max-w-md relative z-10">
+        <div className="text-6xl mb-6">{notFound ? '✨' : '📅'}</div>
+        <h1 className="text-3xl font-bold mb-4">{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
+        <p className="text-text-secondary mb-8">{notFound ? "This memory lane hasn't been created yet." : "This photo wall has reached its destination."}</p>
+        <Link href="/" className="btn-premium px-10 py-4 inline-block">Go Home</Link>
       </div>
     </div>
   );
-
+ 
   if (viewMode === 'slideshow') {
     const current = displayedPhotos[slideIndex];
     return (
-      <div className="lp wall-page fixed inset-0 z-[10000] overflow-hidden">
+      <div className="fixed inset-0 z-[1000] bg-black text-white overflow-hidden flex flex-col">
         <div className="grain" />
-        <div className="orbs">
-          <div className="orb orb1" />
-          <div className="orb orb2" />
-          <div className="orb orb3" />
-        </div>
-
-        {current && (
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${getPublicUrl(current.storage_path)})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(100px) brightness(1.1) saturate(1.2)', opacity: 0.3, zIndex: 0 }} />
-        )}
-
-        <div className="absolute top-0 left-0 right-0 z-50 p-10 flex justify-between items-center bg-gradient-to-b from-black/40 to-transparent">
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-500">Live Experience</span>
-            <h1 className="text-2xl font-black font-serif text-white">{eventName}</h1>
+        <div className="orbs"><div className="orb orb-primary opacity-20" /><div className="orb orb-secondary opacity-20" /></div>
+        
+        {/* Slideshow Header */}
+        <div className="absolute top-0 left-0 right-0 p-10 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent">
+          <div className="flex items-center gap-4">
+             <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <Layout size={24} />
+             </div>
+             <div>
+                <p className="text-[10px] font-black uppercase tracking-[.3em] text-primary">LIVE EXPERIENCE</p>
+                <h1 className="text-2xl font-bold">{eventName}</h1>
+             </div>
           </div>
-          {isAdmin && (
-            <button onClick={() => setViewMode(prevViewMode)} className="btn-outline text-[10px] px-8 py-3 bg-white/5">✕ EXIT SLIDESHOW</button>
-          )}
+          <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold text-xs">
+            EXIT SLIDESHOW
+          </button>
         </div>
-
-        <div className="absolute inset-0 z-10 flex items-center justify-center px-20">
+ 
+        <div className="flex-grow relative flex items-center justify-center p-20">
           <AnimatePresence mode="wait">
             {current && (
-              <motion.div key={current.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.1 }} transition={{ duration: 1 }} className="flex items-center justify-center w-full h-full relative">
-                <div className="pl-[420px] pr-20 flex items-center justify-center w-full h-full">
-                  <div className="relative group">
-                    {current.media_type === 'video' 
-                      ? <video src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" autoPlay muted onEnded={() => setSlideIndex(prev => (prev + 1) % displayedPhotos.length)} />
-                      : <img src={getPublicUrl(current.storage_path)} className="max-h-[85vh] rounded-3xl shadow-2xl relative z-10" alt="" />
-                    }
-                    <Watermark />
-                  </div>
-                </div>
-
-                <div className="absolute left-20 top-1/2 -translate-y-1/2 flex flex-col gap-12 w-[340px]">
-                  <div className="bg-white/5 backdrop-blur-2xl p-10 mt-6 rounded-[3rem] border border-white/20 shadow-[0_0_50px_rgba(6,182,212,0.15)] flex flex-col items-center gap-6 relative overflow-hidden group w-fit">
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-pink-500/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
-                    <div className="bg-white p-6 rounded-[24px] shadow-2xl relative z-10 transition-transform duration-500 group-hover:scale-105">
-                      <QRCodeSVG value={uploadUrl} size={170} />
-                    </div>
-                    <div className="text-center relative z-10 w-full px-4">
-                       <p className="text-xs font-black text-white uppercase tracking-[0.25em] mb-2">Scan to Upload</p>
-                       <div className="h-px w-16 bg-cyan-500/50 mx-auto my-3" />
-                       <p className="text-[10px] text-slate-300 uppercase tracking-widest font-bold">Join the Live Wall ✦</p>
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    <div>
-                      <span className="text-[10px] font-black text-cyan-500 uppercase tracking-widest">Shared By</span>
-                      <h2 className="text-5xl font-black font-serif text-white mt-2">{current.uploader_name}</h2>
-                    </div>
-                    {current.caption && (
-                      <p className="text-2xl italic text-slate-300 font-serif leading-relaxed">&quot;{current.caption}&quot;</p>
-                    )}
-                    <div className="flex gap-4">
-                      <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 font-black text-xs">{current.reaction_count || 0} ❤️</div>
-                      <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 font-black text-xs uppercase">{new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                    </div>
-                  </div>
+              <motion.div key={current.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 1 }} className="relative z-10 w-full h-full flex items-center justify-center">
+                <div className="absolute inset-0 bg-primary/10 blur-[150px] rounded-full opacity-30" />
+                
+                <div className="flex flex-col lg:flex-row gap-16 items-center w-full max-w-7xl">
+                   {/* QR Section */}
+                   <div className="hidden lg:flex flex-col items-center gap-6 glass-panel p-8 bg-black/40 border-white/5 order-2 lg:order-1">
+                      <div className="p-4 bg-white rounded-2xl shadow-2xl">
+                         <QRCodeSVG value={uploadUrl} size={160} />
+                      </div>
+                      <div className="text-center">
+                         <p className="text-[10px] font-black uppercase tracking-[.2em] mb-1">SCAN TO UPLOAD</p>
+                         <p className="text-xs text-text-secondary italic">Join the Memory Wall</p>
+                      </div>
+                   </div>
+ 
+                   {/* Media Content */}
+                   <div className="flex-grow relative order-1 lg:order-2">
+                     <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10">
+                        {current.media_type === 'video'
+                          ? <video src={getPublicUrl(current.storage_path)} className="max-h-[70vh] w-full block object-contain" autoPlay muted onEnded={() => setSlideIndex(p => (p + 1) % displayedPhotos.length)} />
+                          : <img src={getPublicUrl(current.storage_path)} className="max-h-[70vh] w-full block object-contain" alt="" />
+                        }
+                     </div>
+ 
+                     {/* Info Overlay */}
+                     <div className="mt-8 lg:mt-12 space-y-4">
+                        <div className="flex items-center justify-between">
+                           <div>
+                              <p className="text-[10px] font-black uppercase tracking-[.2em] text-primary mb-1">MEMORABLE MOMENT BY</p>
+                              <h2 className="text-5xl font-bold tracking-tight">{current.uploader_name}</h2>
+                           </div>
+                           <div className="flex gap-4">
+                              <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2 text-sm font-bold">
+                                 <Heart size={16} className="text-pink-500 fill-pink-500" /> {current.reaction_count || 0}
+                              </div>
+                              <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2 text-sm font-bold">
+                                 <Clock size={16} className="text-text-muted" /> {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </div>
+                           </div>
+                        </div>
+                        {current.caption && (
+                          <p className="text-2xl text-text-secondary italic leading-relaxed">&quot;{current.caption}&quot;</p>
+                        )}
+                     </div>
+                   </div>
                 </div>
               </motion.div>
             )}
@@ -554,242 +390,196 @@ export default function WallPage() {
       </div>
     );
   }
-
+ 
   return (
-    <div className="lp wall-page min-h-screen">
-      <style>{`
-        .wall-heading {
-          font-family: 'Playfair Display', Georgia, serif;
-          font-weight: 900;
-          font-size: clamp(2.5rem, 6vw, 4.5rem);
-          letter-spacing: -0.04em;
-          line-height: 1.1;
-          color: #F8FAFC;
-          text-shadow: 0 0 40px rgba(6, 182, 212, 0.3);
-        }
-      `}</style>
-
+    <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
       <div className="grain" />
-      <div className="orbs">
-        <div className="orb orb1" />
-        <div className="orb orb2" />
-        <div className="orb orb3" />
-      </div>
-
-      {musicTrack && isAudioPlaying && (
-        <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />
-      )}
-
-      {revealPhoto && (
-        <NewPhotoReveal photo={revealPhoto} uploadUrl={uploadUrl} getPublicUrl={getPublicUrl} onDone={() => setRevealPhoto(null)} />
-      )}
-
-      <header className="fixed top-0 left-0 right-0 z-[100] px-6 py-4 md:px-12 md:py-6 flex items-center justify-between border-b border-white/[0.03] bg-black/40 backdrop-blur-xl">
-        <Link href="/" className="flex items-center gap-3">
-          <img src="/CC logo.png" alt="Memento" className="h-8 md:h-10 w-auto" />
-        </Link>
-        <div className="flex items-center gap-4">
-          <StatusBadge />
-          {isAdmin && (
-            <Link href="/admin" className="btn-outline hidden md:flex text-[10px] py-2">Dashboard</Link>
-          )}
-        </div>
-      </header>
-
-      <main className="relative z-10 pt-32 pb-40 px-6 md:px-12 max-w-[1700px] mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-20">
-          <div className="flex-1">
-            <h1 className="wall-heading mb-6">{eventName}</h1>
-            <div className="flex flex-wrap items-center gap-4">
-              <Link href={uploadUrl} target="_blank" className="btn-glow text-sm px-8 py-4">Join Memory Wall ✦</Link>
-              <button onClick={handleSelfieSearch} className="btn-outline text-sm px-8 py-4 bg-white/5 uppercase font-black tracking-widest">Find My Photos 👤</button>
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+ 
+      {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
+ 
+      {revealPhoto && <NewPhotoReveal photo={revealPhoto} getPublicUrl={getPublicUrl} onDone={() => setRevealPhoto(null)} />}
+ 
+      {/* Header */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-24 border-b border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+         <div className="flex items-center gap-6">
+            <Link href="/" className="text-2xl font-bold tracking-tighter">memento</Link>
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary">
+               <div className={`w-1.5 h-1.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-500' : 'bg-primary'} animate-pulse`} />
+               {realtimeStatus === 'SUBSCRIBED' ? 'Live Stream Active' : 'Polling Updates'}
             </div>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-3 md:justify-end">
-            <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-2xl">
-              {(['grid', 'polaroid', 'album'] as ViewMode[]).map(m => (
-                <button
-                  key={m}
-                  onClick={() => setViewMode(m)}
-                  className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === m ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-                >
-                  {m}
-                </button>
-              ))}
+         </div>
+ 
+         <div className="flex items-center gap-4">
+            {isAdmin ? (
+               <Link href="/dashboard" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">
+                  <Settings size={14} /> Dashboard
+               </Link>
+            ) : (
+               <button onClick={() => setViewMode('slideshow')} className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-bold text-primary hover:bg-primary/20 transition-all">
+                  <Play size={14} /> Play Experience
+               </button>
+            )}
+            <Link href={uploadUrl} className="btn-premium px-6 py-2.5 text-xs">Join Wall</Link>
+         </div>
+      </nav>
+ 
+      <main className="relative z-10 pt-40 px-8 pb-32 max-w-[1600px] mx-auto w-full flex-grow">
+         {/* Wall Hero */}
+         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
+            <div className="max-w-3xl">
+               <p className="text-primary text-[10px] font-black uppercase tracking-[.4em] mb-4">THE OFFICIAL COLLECTION</p>
+               <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">{eventName}</h1>
+               <div className="flex flex-wrap items-center gap-4">
+                  <button onClick={() => setShowSelfieCam(true)} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all hover:scale-105 active:scale-95 group">
+                     <Search size={18} className="text-primary group-hover:rotate-12 transition-transform" /> Find My Photos
+                  </button>
+                  <button onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-sm font-bold text-secondary hover:bg-secondary/20 transition-all hover:scale-105 active:scale-95 group">
+                     <Maximize2 size={18} className="group-hover:scale-110 transition-transform" /> Slideshow Mode
+                  </button>
+               </div>
             </div>
-            
-            <button
-              onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }}
-              className="bg-white/5 border border-white/10 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-all flex items-center gap-2"
-            >
-              📽️ Slideshow
+ 
+            <div className="flex flex-col items-end gap-6">
+               <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
+                  {(['grid', 'polaroid', 'album'] as ViewMode[]).map(m => (
+                    <button key={m} onClick={() => setViewMode(m)} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === m ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-white/5'}`}>
+                       {m}
+                    </button>
+                  ))}
+               </div>
+               
+               {isAdmin && (
+                  <div className="flex gap-3">
+                     <Link href={`/moderate/${slug}`} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black uppercase tracking-widest text-red-500 hover:bg-red-500/20 transition-all">
+                        <Shield size={14} /> Moderate Content
+                     </Link>
+                     <button onClick={handleDownloadZip} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500/10 border border-green-500/20 text-[10px] font-black uppercase tracking-widest text-green-500 hover:bg-green-500/20 transition-all">
+                        <Download size={14} /> Download ZIP
+                     </button>
+                  </div>
+               )}
+            </div>
+         </div>
+ 
+         {/* Filters */}
+         <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8">
+            <button onClick={() => setShowBestShots(!showBestShots)} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all font-bold text-xs ${showBestShots ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 border-white/10 text-text-muted hover:border-white/20'}`}>
+               <Sparkles size={16} /> {showBestShots ? 'Curated Selection Active' : 'Show Only Best Shots'}
             </button>
-            
-            {isAdmin && (
-              <Link href={`/moderate/${slug}`} className="bg-cyan-500/10 border border-cyan-500/20 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-cyan-500 flex items-center gap-2">
-                🛡️ Moderate
-              </Link>
+ 
+            <AnimatePresence>
+               {matchedPhotoIds && (
+                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex items-center gap-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary">Matched {matchedPhotoIds.length} Photos</span>
+                    <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black text-text-muted hover:text-white uppercase transition-colors">Clear Filter ×</button>
+                 </motion.div>
+               )}
+            </AnimatePresence>
+         </div>
+ 
+         {/* Main Grid */}
+         <AnimatePresence mode="wait">
+            {displayedPhotos.length === 0 ? (
+               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-40 text-center glass-panel">
+                  <div className="text-6xl mb-6 opacity-20">📸</div>
+                  <h2 className="text-3xl font-bold mb-3">No Memories shared yet</h2>
+                  <p className="text-text-secondary mb-10 max-w-md mx-auto">Be the first to share a moment. Join the wall and upload your favorite shots!</p>
+                  <Link href={uploadUrl} className="btn-premium px-10 py-4">Share First Memory</Link>
+               </motion.div>
+            ) : viewMode === 'grid' ? (
+               <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {displayedPhotos.map((p, i) => (
+                    <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/5 bg-white/5">
+                       <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" loading="lazy" />
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
+                          <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
+                          {p.caption && <p className="text-sm text-white italic line-clamp-2">&quot;{p.caption}&quot;</p>}
+                       </div>
+                    </motion.div>
+                  ))}
+               </motion.div>
+            ) : viewMode === 'polaroid' ? (
+               <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-12 justify-center py-10">
+                  {displayedPhotos.map((p, i) => (
+                    <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }} transition={{ duration: 0.6 }} className="bg-white p-3 pb-16 shadow-2xl relative rounded-sm group">
+                       <div className="w-[280px] h-[300px] overflow-hidden bg-slate-100">
+                          {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" alt="" loading="lazy" />}
+                       </div>
+                       <div className="absolute inset-x-0 bottom-0 p-4 text-center">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">MEMENTO BY <span className="text-primary">{p.uploader_name}</span></p>
+                          {p.caption && <p className="text-[11px] text-slate-900 font-medium italic truncate px-4">&quot;{p.caption}&quot;</p>}
+                       </div>
+                    </motion.div>
+                  ))}
+               </motion.div>
+            ) : (
+               <motion.div key="album" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-24">
+                  {(() => {
+                    const groups: Record<string, Photo[]> = {};
+                    displayedPhotos.forEach(p => { const k = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); groups[k] = groups[k] || []; groups[k].push(p); });
+                    return Object.entries(groups).map(([label, gPhotos]) => (
+                      <div key={label}>
+                        <div className="flex items-center gap-6 mb-10">
+                           <h3 className="text-xs font-black text-text-muted tracking-[.3em] uppercase whitespace-nowrap">{label}</h3>
+                           <div className="h-px w-full bg-white/5" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                           {gPhotos.map((p, i) => (
+                             <motion.div key={p.id} className="relative aspect-square rounded-3xl overflow-hidden border border-white/5 bg-white/5 group">
+                                <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-105 transition-all" alt="" />
+                                <div className="absolute bottom-4 left-4 right-4 p-3 bg-black/60 backdrop-blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-all">
+                                   <p className="text-[9px] font-black text-primary tracking-widest uppercase">BY {p.uploader_name}</p>
+                                </div>
+                             </motion.div>
+                           ))}
+                        </div>
+                      </div>
+                    ));
+                  })()}
+               </motion.div>
             )}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
-          <button
-            onClick={() => setShowBestShots(!showBestShots)}
-            className={`px-6 py-2.5 rounded-2xl text-xs font-bold border transition-all ${showBestShots ? 'bg-cyan-500 text-black border-cyan-600' : 'bg-white/5 border-white/10 text-slate-400'}`}
-          >
-            {showBestShots ? '🌟 Best Shots Filter Active' : '🏆 Filter Best Shots'}
-          </button>
-          
-          <AnimatePresence>
-            {matchedPhotoIds && (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex items-center gap-4">
-                <span className="text-xs font-bold text-cyan-500 uppercase tracking-widest px-5 py-2.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 backdrop-blur-md">✨ Found {matchedPhotoIds.length} Photos for You</span>
-                <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black uppercase text-slate-500 hover:text-white">Show All ×</button>
-                <button onClick={handleDownloadZip} className="btn-glow text-[10px] px-6 py-2.5">Download Collection 📥</button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <AnimatePresence mode="wait">
-          {displayedPhotos.length === 0 ? (
-            <motion.div 
-              key="empty" 
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="glass-card cinematic-glow p-12 md:p-32 text-center border-white/5 bg-black/40 min-h-[500px] flex flex-col items-center justify-center relative overflow-visible"
-            >
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none" />
-              <div className="text-7xl md:text-9xl mb-10 opacity-30 drop-shadow-2xl">
-                {matchedPhotoIds !== null ? '👤' : '📸'}
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">
-                {matchedPhotoIds !== null ? 'No Match Found' : 'The Wall is Waiting'}
-              </h2>
-              <p className="text-slate-400 max-w-xl mx-auto text-base md:text-lg leading-relaxed">
-                {matchedPhotoIds !== null 
-                  ? "We couldn't identify your face with high confidence in the current gallery. Try another selfie with better lighting!" 
-                  : 'Be the first to share a magic moment on this wall. Scan the QR code to begin!'}
-              </p>
-              {matchedPhotoIds !== null && (
-                <button 
-                  onClick={() => setMatchedPhotoIds(null)}
-                  className="mt-12 btn-glow px-10 py-5 uppercase font-black tracking-[0.2em] text-xs"
-                >
-                  Return to Full Gallery
-                </button>
-              )}
-            </motion.div>
-          ) : viewMode === 'polaroid' ? (
-            <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-12 justify-center">
-              {displayedPhotos.map((p, i) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 3 }} animate={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 1 }} whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }} transition={{ duration: 0.6, delay: (i % 20) * 0.05 }} className="bg-white p-3 pb-16 shadow-2xl relative cursor-pointer rounded-sm">
-                  <div className="w-[280px] h-[280px] overflow-hidden bg-slate-900">
-                    {p.media_type === 'video'
-                      ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
-                      : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" alt="" loading="lazy" />
-                    }
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 p-4 text-center">
-                    {p.caption && <p className="text-black text-sm font-medium italic truncate mb-1 px-4">&quot;{p.caption}&quot;</p>}
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-cyan-500">{p.uploader_name}</span></p>
-                  </div>
-                  <Watermark />
-                </motion.div>
-              ))}
-            </motion.div>
-
-          ) : viewMode === 'album' ? (
-            <motion.div key="album" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-24">
-              {(() => {
-                const groups: Record<string, Photo[]> = {};
-                displayedPhotos.forEach(p => {
-                  const label = new Date(p.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                  groups[label] = groups[label] || [];
-                  groups[label].push(p);
-                });
-                return Object.entries(groups).map(([label, gPhotos]) => (
-                  <div key={label}>
-                    <div className="flex items-center gap-6 mb-10">
-                      <h3 className="text-lg font-black text-slate-500 tracking-[0.2em] uppercase whitespace-nowrap">{label}</h3>
-                      <div className="h-px w-full bg-white/10" />
-                    </div>
-                    <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-8">
-                      {gPhotos.map((p, i) => (
-                        <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 10) * 0.1 }} className="gcard p-0 break-inside-avoid mb-8 overflow-hidden group border-none bg-transparent">
-                          <div className="relative z-10">
-                            <img src={getPublicUrl(p.storage_path)} className="w-full h-auto block group-hover:scale-105 transition-transform duration-700" alt="" />
-                            <div className="absolute inset-x-0 bottom-0 p-4 bg-black/60 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all">
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shared by <span className="text-cyan-500">{p.uploader_name}</span></p>
-                            </div>
-                          </div>
-                          <Watermark />
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                ));
-              })()}
-            </motion.div>
-
-          ) : (
-            <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8">
-              {displayedPhotos.map((p, i) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (i % 20) * 0.05 }} className="gcard p-0 break-inside-avoid mb-8 overflow-hidden group border-none bg-transparent">
-                  <div className="relative z-10">
-                    <img src={getPublicUrl(p.storage_path)} className="w-full h-auto block group-hover:scale-110 transition-transform duration-700" alt="" loading="lazy" />
-                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-all">
-                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Shared by <span className="text-cyan-500">{p.uploader_name}</span></p>
-                    </div>
-                  </div>
-                  <Watermark />
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+         </AnimatePresence>
       </main>
-
-      <Confetti trigger={confettiTrigger} />
-      
-      {/* WhatsApp QR Message Me */}
-      <div className="fixed bottom-8 right-32 z-[100] hidden lg:block">
-        <div className="glass-card p-4 flex items-center gap-4 border-white/10 bg-black/40 backdrop-blur-2xl">
-          <div className="bg-white p-3 rounded-xl">
-            <QRCodeSVG value="https://api.whatsapp.com/send?phone=96896095692&text=Hi%20Memento!%20I%27d%20like%20to%20know%20more." size={80} />
-          </div>
-          <div className="pr-3">
-            <p className="text-[10px] font-black text-cyan-500 uppercase tracking-widest mb-1">Message Me</p>
-            <p className="text-xs font-bold text-white w-24 leading-tight">Scan to chat on WhatsApp</p>
-          </div>
-        </div>
-      </div>
-      
+ 
+      {/* Selfie Modal */}
       <AnimatePresence>
-        {showSelfieCam && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-6">
-            <div className="gcard cinematic-glow max-w-xl w-full p-8 text-center border-white/10 bg-black/40">
-              <h2 className="text-2xl font-black mb-2">Find My Photos</h2>
-              <p className="text-slate-400 text-sm mb-8">Smile! Our AI will find every photo you're in.</p>
-              
-              <div className="aspect-square w-full max-w-[340px] mx-auto overflow-hidden rounded-full border-4 border-cyan-500/30 mb-8 relative">
-                 <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full h-full object-cover" />
-                 <div className="absolute inset-0 border-8 border-transparent border-t-cyan-500/50 animate-spin" style={{ animationDuration: '3s' }} />
+         {showSelfieCam && (
+           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-6">
+              <div className="glass-panel max-w-xl w-full p-10 text-center relative">
+                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-white transition-colors"><X size={24} /></button>
+                 <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto mb-6"><User size={32} /></div>
+                 <h2 className="text-3xl font-bold mb-3">Find My Photos</h2>
+                 <p className="text-text-secondary mb-10">Our AI will scan the entire wall and find every moment you&apos;re in. Private and instant.</p>
+                 
+                 <div className="aspect-square w-full max-w-[320px] mx-auto overflow-hidden rounded-full border-4 border-primary/20 mb-10 relative">
+                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full h-full object-cover" mirrored />
+                    <div className="absolute inset-0 border-8 border-transparent border-t-primary animate-spin" style={{ animationDuration: '3s' }} />
+                 </div>
+                 
+                 <button onClick={captureSelfieAndSearch} disabled={isSearching} className="btn-premium w-full py-5 flex items-center justify-center gap-3">
+                    {isSearching ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Camera size={20} />}
+                    {isSearching ? 'Scanning Memories...' : 'Start Facial Match'}
+                 </button>
               </div>
-              
-              <div className="flex gap-4">
-                <button onClick={() => setShowSelfieCam(false)} className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-slate-500 bg-white/5 rounded-2xl">Cancel</button>
-                <button onClick={captureSelfieAndSearch} disabled={isSearching} className="flex-1 py-4 text-xs font-black uppercase tracking-widest bg-cyan-500 text-black rounded-2xl hover:scale-105 transition-all disabled:opacity-50">
-                  {isSearching ? 'Searching...' : 'Scan My Face ✦'}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
+           </motion.div>
+         )}
       </AnimatePresence>
+ 
+      <Confetti trigger={confettiTrigger} />
+ 
+      {/* WhatsApp Message Me */}
+      <div className="fixed bottom-8 right-8 z-[100] hidden lg:block">
+         <Link href="https://wa.me/96896095692" target="_blank" className="p-4 glass-panel border-white/10 hover:border-primary/50 transition-all flex items-center gap-4 group">
+            <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+               <ExternalLink size={20} />
+            </div>
+            <div className="pr-4">
+               <p className="text-[9px] font-black text-primary uppercase tracking-[.2em] mb-0.5">NEED HELP?</p>
+               <p className="text-xs font-bold text-white">Chat on WhatsApp</p>
+            </div>
+         </Link>
+      </div>
     </div>
   );
 }

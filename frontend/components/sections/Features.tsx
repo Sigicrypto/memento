@@ -5,26 +5,28 @@ import { motion } from 'framer-motion';
 
 const Features: React.FC = () => {
   return (
-    <section id="features" className="sec py-16">
+    <section id="features" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, type: 'spring', stiffness: 100, damping: 15 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-20"
         >
-          <span className="hero-badge mb-4">Core Features</span>
-          <h2 className="sec-h2 text-4xl md:text-5xl font-bold mb-4">
-            The Best Experience. <span className="gradient-text-vibrant italic">Built in.</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+            Everything you need
+          </div>
+          <h2 className="h1-text mb-6">
+            The Best Experience. <span className="text-secondary italic">Built in.</span>
           </h2>
         </motion.div>
-
+ 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           variants={{
             hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+            visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
           }}
           initial="hidden"
           whileInView="visible"
@@ -40,18 +42,17 @@ const Features: React.FC = () => {
           ].map((f, i) => (
             <motion.div 
               key={i} 
-              className={`gcard feat-card flex flex-col p-8 rounded-3xl bg-surface/40 backdrop-blur-xl border border-white/10 ${f.big ? 'lg:col-span-2' : ''}`}
+              className={`gcard flex flex-col items-start ${f.big ? 'lg:col-span-2' : ''}`}
               variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
               }}
-              whileHover={{ scale: 1.03, y: -5 }}
             >
-              <div className="gcard-inner flex flex-col h-full">
-                <span className="text-4xl mb-6">{f.icon}</span>
-                <h3 className="text-2xl font-bold text-white mb-4">{f.title}</h3>
-                <p className="text-slate-400 text-lg leading-relaxed">{f.desc}</p>
+              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">
+                {f.icon}
               </div>
+              <h3 className="text-2xl font-bold text-white mb-4">{f.title}</h3>
+              <p className="text-text-secondary text-lg leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>

@@ -1,135 +1,112 @@
 "use client";
-
+ 
 import Link from 'next/link';
-
+import { motion } from 'framer-motion';
+import { ArrowLeft, Shield, Eye, Lock, RefreshCcw, UserPlus, Database, Mail } from 'lucide-react';
+ 
 export default function PrivacyPage() {
   return (
-    <main className="lp min-h-screen relative overflow-hidden flex flex-col pt-32 pb-24">
-      <div className="aurora-bg fixed inset-0 z-0" />
-      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
-      
-      <div className="relative z-10 px-6">
-        <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-10">
-              <Link href="/" className="inline-flex items-center gap-2 text-sm mb-6 text-slate-400 hover:text-white transition-colors">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                Back to Home
-              </Link>
-              <h1 className="text-4xl font-bold mb-2 text-white tracking-tight">Privacy Policy</h1>
-              <p className="text-slate-400">Last updated: {new Date().toLocaleDateString()}</p>
-            </div>
-
-            <div className="gcard cinematic-glow">
-              <div className="gcard-border" />
-              <div className="gcard-inner p-8 md:p-12 space-y-10">
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">1. Information We Collect</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>We collect minimal information to provide our service:</p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li><strong>Email address</strong> - For account creation and authentication</li>
-                      <li><strong>Event details</strong> - Event name, custom slug, password protection</li>
-                      <li><strong>Photos, videos and captions</strong> - Uploaded by guests to event walls (User-Generated Content)</li>
-                      <li><strong>Guest names</strong> - Optional names provided by uploaders</li>
-                      <li><strong>Facial Verification Data</strong> - Only collected temporarily if you use the "Find My Photos" selfie feature, deleted immediately after matching.</li>
-                      <li><strong>Usage data</strong> - Basic analytics to improve our service</li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">2. How We Use Your Information</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>To create and manage your event walls</li>
-                      <li>To authenticate users and prevent unauthorized access</li>
-                      <li>To display photos in real-time galleries</li>
-                      <li>To send important service notifications</li>
-                      <li>To improve and maintain our service</li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">3. Data Storage and Security</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>We take data security seriously:</p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>All data is encrypted in transit (HTTPS)</li>
-                      <li>Photos are stored securely in cloud storage</li>
-                      <li>Access to event walls requires correct password or authentication</li>
-                      <li>We implement industry-standard security measures</li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">4. Data Retention</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>Photos and event data are retained based on your subscription plan:</p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li><strong>Free / Starter Plans</strong>: Photos retained for 1 month (30 days)</li>
-                      <li><strong>Standard Plan</strong>: Photos retained for 3 months (90 days)</li>
-                      <li><strong>Premium / White Label Plans</strong>: Photos retained for 6 months (180 days)</li>
-                    </ul>
-                    <p>You can delete your event and all associated photos at any time. Memento claims no ownership over your User-Generated Content.</p>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">5. Third-Party Services</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>We use the following third-party services:</p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li><strong>Supabase</strong> - Database and authentication</li>
-                      <li><strong>Cloud Storage</strong> - Photo and video storage</li>
-                      <li><strong>Payment processors</strong> - For subscription payments</li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">6. Your Rights</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>You have the right to:</p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>Access your personal data</li>
-                      <li>Correct inaccurate data</li>
-                      <li>Delete your account and associated data</li>
-                      <li>Export your data</li>
-                      <li>Opt out of marketing communications</li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">7. Children&apos;s Privacy</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13.</p>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">8. Changes to This Policy</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>We may update this privacy policy from time to time. We will notify users of significant changes via email or by posting a notice on our website.</p>
-                  </div>
-                </section>
-
-                <section>
-                  <h2 className="text-2xl font-semibold mb-4 text-white">9. Contact Us</h2>
-                  <div className="space-y-4 text-slate-300">
-                    <p>If you have questions about this privacy policy, please contact us:</p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>Email: privacy@memento.app</li>
-                      <li>WhatsApp: +968 96095692</li>
-                    </ul>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </div>
-      </div>
-    </main>
+    <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+ 
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+         <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-white transition-all font-bold text-sm">
+               <ArrowLeft size={16} /> Back to Home
+            </Link>
+            <div className="h-6 w-px bg-white/10 hidden md:block" />
+            <span className="text-xl font-bold tracking-tighter">memento</span>
+         </div>
+      </nav>
+ 
+      <main className="relative z-10 pt-32 px-8 pb-32 max-w-4xl mx-auto w-full">
+         <div className="text-center mb-16">
+            <p className="text-secondary text-[10px] font-black uppercase tracking-[.3em] mb-4">PRIVACY COMMITMENT</p>
+            <h1 className="text-5xl font-bold tracking-tight mb-4">Privacy Policy</h1>
+            <p className="text-text-secondary">Last updated: {new Date().toLocaleDateString()}</p>
+         </div>
+ 
+         <div className="glass-panel p-8 md:p-12 space-y-12">
+            <section className="space-y-4">
+               <div className="flex items-center gap-3 text-secondary mb-6">
+                  <Eye size={24} />
+                  <h2 className="text-2xl font-bold">1. Information We Collect</h2>
+               </div>
+               <p className="text-text-secondary leading-relaxed">We collect minimal information to provide our premium service:</p>
+               <div className="grid md:grid-cols-2 gap-4 mt-6">
+                  <PrivacyItem label="Email for Account Identity" />
+                  <PrivacyItem label="Event Metadata (Slugs & Tags)" />
+                  <PrivacyItem label="Uploaded Media (Photos/Videos)" />
+                  <PrivacyItem label="Optional Guest Identifiers" />
+                  <PrivacyItem label="Temporary Face Descriptors" />
+                  <PrivacyItem label="Basic Usage Telemetry" />
+               </div>
+            </section>
+ 
+            <section className="space-y-4">
+               <div className="flex items-center gap-3 text-primary mb-6">
+                  <Database size={24} />
+                  <h2 className="text-2xl font-bold">2. Data Usage</h2>
+               </div>
+               <p className="text-text-secondary leading-relaxed">Your data is used exclusively to facilitate your events. We never sell your personal information or shared media with third parties. Data is processed to create galleries, manage moderation, and improve platform performance.</p>
+            </section>
+ 
+            <section className="space-y-4">
+               <div className="flex items-center gap-3 text-emerald-400 mb-6">
+                  <Lock size={24} />
+                  <h2 className="text-2xl font-bold">3. Security Infrastructure</h2>
+               </div>
+               <p className="text-text-secondary leading-relaxed">Memento is built on a high-security framework. All media is encrypted at rest and in transit via HTTPS. We implement rigorous access controls to ensure your private event remains private.</p>
+            </section>
+ 
+            <section className="space-y-6">
+               <div className="flex items-center gap-3 text-amber-400 mb-6">
+                  <RefreshCcw size={24} />
+                  <h2 className="text-2xl font-bold">4. Retention Policy</h2>
+               </div>
+               <div className="grid sm:grid-cols-3 gap-4">
+                  <RetentionCard label="Starter" duration="30 Days" />
+                  <RetentionCard label="Standard" duration="90 Days" />
+                  <RetentionCard label="Premium+" duration="180 Days" />
+               </div>
+               <p className="text-text-muted text-xs italic mt-4">Note: You can permanently delete your event and all associated media at any time via the dashboard.</p>
+            </section>
+ 
+            <section className="space-y-4">
+               <div className="flex items-center gap-3 text-indigo-400 mb-6">
+                  <Mail size={24} />
+                  <h2 className="text-2xl font-bold">9. Contact Us</h2>
+               </div>
+               <p className="text-text-secondary leading-relaxed">For privacy-related inquiries or data requests, please contact our Data Officer:</p>
+               <div className="flex flex-wrap gap-4 mt-4">
+                  <div className="px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-xs font-bold">privacy@memento.app</div>
+                  <div className="px-5 py-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold">+968 96095692 (WhatsApp)</div>
+               </div>
+            </section>
+         </div>
+      </main>
+    </div>
+  );
+}
+ 
+function PrivacyItem({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 text-sm text-text-secondary">
+       <div className="w-5 h-5 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
+          <Shield size={10} />
+       </div>
+       {label}
+    </div>
+  );
+}
+ 
+function RetentionCard({ label, duration }: { label: string, duration: string }) {
+  return (
+    <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+       <p className="text-[9px] font-black uppercase tracking-widest text-text-muted mb-1">{label}</p>
+       <p className="text-lg font-bold text-white">{duration}</p>
+    </div>
   );
 }

@@ -48,65 +48,68 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
       <motion.nav 
         initial={{ y: -100, opacity: 0 }}
         animate={{ 
-          y: 0, 
+          y: scrolled ? 16 : 0, 
           opacity: 1,
-          backgroundColor: scrolled || isMobileMenuOpen ? 'rgba(10, 10, 11, 0.95)' : 'transparent',
-          backdropFilter: scrolled || isMobileMenuOpen ? 'blur(20px) saturate(180%)' : 'blur(0px)',
-          boxShadow: scrolled ? '0 10px 40px rgba(0, 0, 0, 0.3)' : 'none',
-          borderBottom: scrolled || isMobileMenuOpen ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid transparent'
+          width: scrolled ? '90%' : '100%',
+          maxWidth: scrolled ? '1200px' : '100%',
+          backgroundColor: scrolled ? 'rgba(9, 9, 11, 0.7)' : (isMobileMenuOpen ? 'rgba(3, 3, 4, 0.95)' : 'transparent'),
+          backdropFilter: scrolled || isMobileMenuOpen ? 'blur(16px)' : 'blur(0px)',
+          borderRadius: scrolled ? '24px' : '0px',
+          border: scrolled ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
+          boxShadow: scrolled ? '0 20px 40px rgba(0,0,0,0.4)' : 'none'
         }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="lp-nav !px-0"
+        className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] h-20 flex items-center transition-all duration-300"
       >
-        <div className="w-full flex items-center justify-between px-6 md:px-16 lg:px-24">
+        <div className="w-full flex items-center justify-between px-6 md:px-12">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="relative z-[101]"
             >
-              <AnimatedLogo width={isMobileMenuOpen ? 180 : 220} height={60} />
+              <AnimatedLogo width={scrolled ? 180 : 200} height={50} />
             </motion.div>
           </Link>
 
           {/* Desktop Menu */}
           {!mini && (
-            <div className="hidden md:flex nav-mid" style={{ display: 'flex', gap: '2rem' }}>
+            <div className="hidden md:flex items-center gap-10">
               {navLinks.map((item) => (
-                <motion.div key={item} whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400 }}>
-                  <Link href={`/#${item.toLowerCase().replace(/ /g, '')}`} className="relative group overflow-hidden block pb-1">
-                    <span className="relative z-10 transition-colors duration-300 group-hover:text-primary">{item}</span>
-                    <motion.div 
-                      className="absolute bottom-0 left-0 w-full h-[2px]"
-                      style={{ background: 'linear-gradient(90deg, #f59e0b, #ec4899)' }}
-                      initial={{ x: '-101%' }}
-                      whileHover={{ x: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                    />
-                  </Link>
-                </motion.div>
+                <Link 
+                  key={item} 
+                  href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
+                  className="text-sm font-medium text-text-secondary hover:text-white transition-colors relative group"
+                >
+                  {item}
+                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
+                </Link>
               ))}
             </div>
           )}
 
           {/* Right Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {!mini && showAuthButtons && (
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-4">
                 {user ? (
                   <>
-                    <Link href="/dashboard" className="nav-btn">
+                    <Link href="/dashboard" className="btn-secondary px-5 py-2 text-sm font-semibold rounded-xl transition-all">
                       Dashboard
                     </Link>
-                    <button onClick={handleSignOut} className="glass-pill px-4 py-2 text-sm font-bold text-slate-400 border border-white/10 hover:bg-white/5 transition-all">
-                      <LogOut size={14} className="inline mr-2" /> Sign Out
+                    <button onClick={handleSignOut} className="text-text-secondary hover:text-white transition-colors p-2">
+                      <LogOut size={18} />
                     </button>
                   </>
                 ) : (
-                  <button onClick={() => openAuth('signup')} className="nav-btn">
-                    Get Started
-                  </button>
+                  <>
+                    <button onClick={() => openAuth('login')} className="text-sm font-medium text-text-secondary hover:text-white transition-colors">
+                      Log in
+                    </button>
+                    <button onClick={() => openAuth('signup')} className="btn-primary px-6 py-2.5 text-sm font-bold rounded-xl shadow-lg shadow-primary/20">
+                      Get Started
+                    </button>
+                  </>
                 )}
               </div>
             )}
@@ -117,7 +120,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 className="md:hidden relative z-[101] p-2 text-white hover:bg-white/5 rounded-xl transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             )}
           </div>
@@ -128,56 +131,65 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed inset-0 z-[100] bg-bg/95 backdrop-blur-2xl md:hidden flex flex-col pt-32 px-8 pb-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-bg/98 backdrop-blur-2xl md:hidden overflow-hidden"
           >
-            <div className="flex flex-col gap-8 mb-12">
-              {navLinks.map((item, i) => (
-                <motion.div
-                  key={item}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <Link 
-                    href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                    className="text-4xl font-black text-white hover:text-primary transition-colors inline-block"
-                    onClick={() => setIsMobileMenuOpen(false)}
+            <div className="flex flex-col h-full pt-32 px-10 pb-12">
+              <div className="flex flex-col gap-10">
+                {navLinks.map((item, i) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.1 }}
                   >
-                    {item}
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+                    <Link 
+                      href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
+                      className="text-4xl font-bold text-white hover:text-primary transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
 
-            <div className="mt-auto space-y-4">
-              {user ? (
-                <>
-                  <Link 
-                    href="/dashboard" 
-                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white flex items-center justify-center font-bold text-lg"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <button 
-                    onClick={handleSignOut}
-                    className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 font-bold text-lg"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <button 
-                  onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-bold text-lg shadow-lg shadow-primary/20"
-                >
-                  Get Started
-                </button>
-              )}
+              <div className="mt-auto space-y-6">
+                {user ? (
+                  <>
+                    <Link 
+                      href="/dashboard" 
+                      className="w-full h-14 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-lg"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Go to Dashboard
+                    </Link>
+                    <button 
+                      onClick={handleSignOut}
+                      className="w-full h-14 rounded-2xl border border-white/10 text-text-secondary font-bold text-lg"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    <button 
+                      onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
+                      className="w-full h-14 rounded-2xl bg-primary text-white font-bold text-lg shadow-xl shadow-primary/20"
+                    >
+                      Get Started
+                    </button>
+                    <button 
+                      onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
+                      className="w-full h-14 rounded-2xl border border-white/10 text-white font-bold text-lg"
+                    >
+                      Log In
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

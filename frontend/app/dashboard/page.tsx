@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings } from 'lucide-react';
+import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -127,297 +127,227 @@ export default function DashboardPage() {
   const initial = (profile?.full_name || 'U').charAt(0).toUpperCase();
 
   return (
-    <div className="lp min-h-screen relative overflow-hidden">
-      {/* Background layers */}
-      <div className="orbs"><div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" /></div>
+    <div className="min-h-screen relative overflow-hidden bg-black text-white">
+      {/* Background foundation */}
+      <div className="orbs">
+        <div className="orb orb-primary" />
+        <div className="orb orb-secondary" />
+      </div>
       <div className="grain" />
 
       {/* ── NAV ── */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 var(--space-container)', height: 'clamp(64px, 10vh, 80px)',
-        background: 'rgba(10,10,11,0.72)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 10,
-            background: 'linear-gradient(135deg, #06b6d4, #ec4899)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1rem', boxShadow: '0 0 16px rgba(6,182,212,0.4)',
-          }}>📸</div>
-          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#F8FAFC', letterSpacing: '-0.02em' }}>memento</span>
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 bg-black/50 backdrop-blur-xl flex items-center justify-between px-6 md:px-12">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_var(--primary)] group-hover:scale-110 transition-transform">
+             <span className="text-xl">📸</span>
+          </div>
+          <span className="text-xl font-bold tracking-tighter">memento</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="flex items-center gap-4">
           {profile?.role === 'admin' && (
-            <Link href="/admin" style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '0.4rem 1rem', borderRadius: 100, minHeight: 40,
-              background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)',
-              color: '#f59e0b', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.12em', textDecoration: 'none',
-            }}>
-              <Shield size={12} /> ADMIN
+            <Link href="/admin" className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-[10px] font-black tracking-widest uppercase hover:bg-secondary/20 transition-all">
+              <Shield size={14} /> Admin
             </Link>
           )}
           <button
             onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '0.5rem 1.25rem', borderRadius: 100, minHeight: 40,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              color: '#94A3B8', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer',
-              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-            className="hover:bg-white/10 hover:text-white"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-text-muted hover:text-white hover:bg-white/10 transition-all text-sm font-bold"
           >
-            <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
+            <LogOut size={16} /> <span className="hidden sm:inline">Sign out</span>
           </button>
         </div>
       </nav>
 
       {/* ── MAIN ── */}
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: 'clamp(5rem, 12vh, 8rem) var(--space-container) 80px', position: 'relative', zIndex: 10 }}>
-
-        {/* ── HERO ROW ── */}
+      <main className="relative z-10 pt-32 pb-20 px-6 container mx-auto max-w-7xl">
+        
+        {/* Profile Header */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          style={{ marginBottom: '2.5rem' }}
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+           className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-16"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-            <div style={{
-              width: 52, height: 52, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #06b6d4, #ec4899)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.4rem', fontWeight: 800, color: '#fff',
-              boxShadow: '0 0 24px rgba(6,182,212,0.3)',
-              flexShrink: 0,
-            }}>{initial}</div>
-            <div>
-              <h1 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
-                Welcome back, <span className="gradient-text">{firstName}</span>
-              </h1>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: 4 }}>{profile?.email || user?.email}</p>
-            </div>
-          </div>
+           <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-4xl font-black shadow-2xl">
+             {initial}
+           </div>
+           <div className="text-center md:text-left pt-2">
+             <h1 className="display-text !text-4xl md:!text-5xl mb-2">
+               Welcome back, <span className="text-secondary">{firstName}</span>
+             </h1>
+             <p className="text-text-secondary font-medium">{profile?.email || user?.email}</p>
+           </div>
         </motion.div>
 
-        {/* ── STAT + PLAN GRID ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', marginBottom: '2.5rem' }}>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <div className="gcard flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+              <BarChart2 size={24} />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-white leading-none mb-2">{events.length}</div>
+              <div className="text-xs font-bold text-text-muted uppercase tracking-widest">Active Events</div>
+            </div>
+          </div>
 
-          {/* Stat: Events */}
-          <StatCard icon={<BarChart2 size={18} />} value={events.length} label="Total Events" color="#06b6d4" delay={0} />
-
-          {/* Stat: Photos */}
-          <StatCard icon={<ImageIcon size={18} />} value={totalPhotos} label="Photos Collected" color="#ec4899" delay={0.08} />
+          <div className="gcard flex items-center gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary">
+              <ImageIcon size={24} />
+            </div>
+            <div>
+              <div className="text-3xl font-bold text-white leading-none mb-2">{totalPhotos}</div>
+              <div className="text-xs font-bold text-text-muted uppercase tracking-widest">Photos Collected</div>
+            </div>
+          </div>
 
           {/* Plan Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.16 }}
-            className="gcard" style={{ padding: '1.5rem', position: 'relative' }}
-          >
-            <div className="gcard-border" />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
-                <div>
-                  <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.14em', color: '#64748b', textTransform: 'uppercase' }}>Current Plan</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                    <span style={{ fontSize: '1.3rem' }}>{planInfo.icon}</span>
-                    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: planInfo.color }}>{planInfo.name}</span>
-                  </div>
+          <div className="gcard relative overflow-hidden group">
+             {/* Plan background glow */}
+             <div className="absolute -top-10 -right-10 w-32 h-32 blur-[60px] opacity-20 transition-colors duration-500" style={{ backgroundColor: planInfo.color }} />
+             
+             <div className="flex flex-col h-full relative z-10">
+                <div className="flex justify-between items-start mb-6">
+                   <div className="flex items-center gap-3">
+                      <span className="text-2xl">{planInfo.icon}</span>
+                      <span className="text-lg font-bold text-white">{planInfo.name}</span>
+                   </div>
+                   <span className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">Active</span>
                 </div>
-                <span style={{
-                  padding: '0.3rem 0.85rem', borderRadius: 100, fontSize: '0.6rem', fontWeight: 800,
-                  letterSpacing: '0.12em', textTransform: 'uppercase',
-                  background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)',
-                }}>Active</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: '1rem' }}>
-                {planInfo.features.slice(0, 3).map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8rem', color: '#94A3B8' }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={planInfo.color} strokeWidth="3"><path d="M20 6L9 17l-5-5" /></svg>
-                    {f}
-                  </div>
-                ))}
-              </div>
-              {currentPlan !== 'whitelabel' && (
-                <Link href="/#pricing" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '0.45rem 1rem', borderRadius: 100,
-                  background: planInfo.glow, color: planInfo.color,
-                  border: `1px solid ${planInfo.color}30`,
-                  fontSize: '0.72rem', fontWeight: 700, textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}>
-                  Upgrade Plan <Sparkles size={11} />
-                </Link>
-              )}
-            </div>
-          </motion.div>
+                
+                <div className="flex-grow flex flex-col gap-2 mb-6">
+                  {planInfo.features.slice(0, 2).map((f, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs text-text-secondary">
+                      <div className="w-1 h-1 rounded-full" style={{ backgroundColor: planInfo.color }} />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+
+                {currentPlan !== 'whitelabel' && (
+                  <Link href="/#pricing" className="text-[10px] font-black tracking-widest uppercase text-white hover:text-primary transition-colors flex items-center gap-2 group/link">
+                    Upgrade Plan <ArrowRight size={10} className="group-hover/link:translate-x-1 transition-transform" />
+                  </Link>
+                )}
+             </div>
+          </div>
         </div>
 
-        {/* ── EVENTS HEADER ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.28 }}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}
-        >
-          <div>
-            <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#F8FAFC', letterSpacing: '-0.03em' }}>Your Events</h2>
-            <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 4 }}>Manage your photo walls and galleries.</p>
-          </div>
-          <Link href="/create" className="btn-hero-primary" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0.7rem 1.5rem', fontSize: '0.85rem' }}>
-            <Plus size={16} /> Create Event
-          </Link>
-        </motion.div>
-
-        {/* ── EVENTS GRID ── */}
-        {events.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.35 }}
-            className="gcard"
-            style={{ padding: '5rem 2rem', textAlign: 'center' }}
-          >
-            <div className="gcard-border" />
-            <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ fontSize: '3.5rem', marginBottom: '1.25rem' }}>🎈</div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#F8FAFC', marginBottom: '0.75rem' }}>No Events Yet</h3>
-              <p style={{ color: '#64748b', fontSize: '0.9rem', maxWidth: 380, margin: '0 auto 2rem' }}>
-                Create your first photo wall and start collecting memories in cinematic quality!
-              </p>
-              <Link href="/create" className="btn-hero-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <Plus size={18} /> Create Your First Wall
-              </Link>
+        {/* Events Section */}
+        <section>
+          <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-10">
+            <div>
+              <h2 className="text-3xl font-bold text-white tracking-tight mb-2">Your Events</h2>
+              <p className="text-text-secondary">Capture and moderate shared memories from your walls.</p>
             </div>
-          </motion.div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
-            <AnimatePresence mode="popLayout">
-              {events.map((event, i) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  index={i}
-                  copied={copied}
-                  onCopy={copyUrl}
-                  onDelete={confirmDelete}
-                />
-              ))}
-            </AnimatePresence>
+            <Link href="/create" className="btn-premium flex items-center gap-2 !py-3 !px-6 text-sm">
+               <Plus size={18} /> Create New Wall
+            </Link>
           </div>
-        )}
-      </div>
+
+          {events.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="glass-panel p-20 text-center flex flex-col items-center"
+            >
+               <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-3xl mb-8">
+                 🎈
+               </div>
+               <h3 className="text-2xl font-bold text-white mb-3">No active events yet</h3>
+               <p className="text-text-secondary max-w-sm mb-10">Create your first photo wall and start collecting cinematic memories instantly.</p>
+               <Link href="/create" className="btn-premium flex items-center gap-2">
+                 <Plus size={20} /> Launch your first wall
+               </Link>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <AnimatePresence mode="popLayout">
+                {events.map((event, i) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    index={i}
+                    copied={copied}
+                    onCopy={copyUrl}
+                    onDelete={confirmDelete}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </section>
+      </main>
 
       {/* ── DELETE MODAL ── */}
       <AnimatePresence>
         {deleteEvent && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed', inset: 0, zIndex: 9999,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              padding: '1rem',
-              background: 'rgba(0,0,0,0.7)',
-              backdropFilter: 'blur(16px)',
-            }}
-            onClick={(e) => e.target === e.currentTarget && setDeleteEvent(null)}
-          >
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6">
             <motion.div
-              initial={{ opacity: 0, scale: 0.93, y: 20 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              onClick={() => setDeleteEvent(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.93, y: 20 }}
-              transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-              style={{
-                background: 'rgba(12,12,16,0.95)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 28, padding: '2.25rem',
-                maxWidth: 440, width: '100%',
-                position: 'relative',
-                boxShadow: '0 40px 80px rgba(0,0,0,0.8)',
-              }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="glass-panel w-full max-w-md p-8 relative z-10 overflow-hidden"
             >
-              {/* top accent bar */}
-              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #ef4444, #f97316)' }} />
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div style={{
-                  width: 48, height: 48, borderRadius: '50%',
-                  background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}>
-                  <Trash2 size={20} color="#ef4444" />
+              {/* Danger accent */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-red-500" />
+              
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+                  <Trash2 size={24} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#F8FAFC' }}>Delete Event</h3>
-                  <p style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: 600 }}>This action cannot be undone.</p>
+                  <h3 className="text-xl font-bold text-white">Delete Event</h3>
+                  <p className="text-red-500 text-xs font-bold uppercase tracking-widest">Permanent Action</p>
                 </div>
               </div>
 
-              <div style={{
-                background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 16, padding: '1rem 1.25rem', marginBottom: '1.5rem',
-              }}>
-                <p style={{ fontSize: '0.78rem', color: '#64748b', marginBottom: 6 }}>You are about to permanently delete:</p>
-                <p style={{ fontWeight: 800, color: '#F8FAFC', fontSize: '0.95rem' }}>{deleteEvent.name}</p>
-                <p style={{ fontSize: '0.72rem', color: '#475569', marginTop: 4 }}>{deleteEvent.photo_count || 0} photos will be erased</p>
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-8">
+                <p className="text-text-muted text-xs mb-1">Confirm deletion of:</p>
+                <p className="text-white font-bold">{deleteEvent.name}</p>
+                <p className="text-text-muted text-[10px] mt-2 italic">{deleteEvent.photo_count || 0} photos will be permanently erased.</p>
               </div>
 
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: '#475569', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Type <span style={{ color: '#F8FAFC', fontWeight: 900 }}>{deleteEvent.name}</span> to confirm
-                </label>
-                <input
-                  type="text"
-                  value={deleteText}
-                  onChange={(e) => setDeleteText(e.target.value)}
-                  placeholder="Event name…"
-                  style={{
-                    width: '100%', padding: '0.75rem 1rem',
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 14, color: '#F8FAFC', fontSize: '0.875rem',
-                    outline: 'none', transition: 'border-color 0.2s',
-                    fontFamily: 'inherit',
-                  }}
-                  onFocus={e => (e.target.style.borderColor = 'rgba(239,68,68,0.5)')}
-                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
-                />
-              </div>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest uppercase text-text-muted mb-3">
+                    Type <span className="text-white">{deleteEvent.name}</span> to confirm
+                  </label>
+                  <input
+                    type="text"
+                    value={deleteText}
+                    onChange={(e) => setDeleteText(e.target.value)}
+                    placeholder="Enter event name..."
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                  />
+                </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button
-                  onClick={() => setDeleteEvent(null)}
-                  style={{
-                    flex: 1, padding: '0.75rem', borderRadius: 14, fontWeight: 700,
-                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#94A3B8', cursor: 'pointer', fontSize: '0.875rem', transition: 'all 0.2s',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={executeDelete}
-                  disabled={deleteText !== deleteEvent.name || isDeleting}
-                  style={{
-                    flex: 1, padding: '0.75rem', borderRadius: 14, fontWeight: 800,
-                    background: deleteText === deleteEvent.name ? '#ef4444' : 'rgba(239,68,68,0.15)',
-                    border: '1px solid rgba(239,68,68,0.3)',
-                    color: deleteText === deleteEvent.name ? '#fff' : '#ef4444',
-                    cursor: deleteText === deleteEvent.name ? 'pointer' : 'not-allowed',
-                    fontSize: '0.875rem', transition: 'all 0.2s',
-                    opacity: isDeleting ? 0.7 : 1,
-                  }}
-                >
-                  {isDeleting ? 'Deleting…' : 'Delete Forever'}
-                </button>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setDeleteEvent(null)}
+                    className="flex-1 py-3 rounded-xl bg-white/5 text-text-muted font-bold hover:bg-white/10 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={executeDelete}
+                    disabled={deleteText !== deleteEvent.name || isDeleting}
+                    className={`flex-1 py-3 rounded-xl font-bold transition-all ${deleteText === deleteEvent.name ? 'bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'bg-red-500/20 text-red-500/50 cursor-not-allowed'}`}
+                  >
+                    {isDeleting ? 'Deleting...' : 'Delete Wall'}
+                  </button>
+                </div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
@@ -428,25 +358,17 @@ export default function DashboardPage() {
 function StatCard({ icon, value, label, color, delay }: { icon: React.ReactNode; value: number; label: string; color: string; delay: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="gcard cinematic-glow"
-      style={{ padding: 'var(--space-md)', position: 'relative' }}
+      className="gcard flex items-center gap-6"
     >
-      <div className="gcard-border" />
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: 18,
-          background: `rgba(${color === '#06b6d4' ? '6,182,212' : '236,72,153'},0.1)`,
-          border: `1px solid ${color}25`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color, flexShrink: 0,
-        }}>{icon}</div>
-        <div>
-          <div style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 900, color: '#F8FAFC', lineHeight: 1, letterSpacing: '-0.04em' }}>{value}</div>
-          <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{label}</div>
-        </div>
+      <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center" style={{ color }}>
+        {icon}
+      </div>
+      <div>
+        <div className="text-3xl font-bold text-white leading-none mb-2">{value}</div>
+        <div className="text-xs font-bold text-text-muted uppercase tracking-widest">{label}</div>
       </div>
     </motion.div>
   );
@@ -463,97 +385,52 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 24, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, delay: index * 0.07 }}
-      whileHover={{ y: -8, scale: 1.01 }}
-      className="gcard cinematic-glow"
-      style={{ padding: 'var(--space-md)', position: 'relative', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', height: '100%' }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="gcard flex flex-col gap-8 group"
     >
-      <div className="gcard-border" />
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', height: '100%' }}>
-
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div style={{ flex: 1, minWidth: 0, paddingRight: '0.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#F8FAFC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.02em' }}>
-              {event.name}
-            </h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{dateStr}</span>
-              <span style={{ color: '#1e293b', fontSize: '0.65rem' }}>•</span>
-              <span style={{
-                fontSize: '0.68rem', fontWeight: 800, color: '#06b6d4',
-                background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.2)',
-                padding: '0.2rem 0.6rem', borderRadius: 100,
-              }}>
-                📸 {event.photo_count || 0} photos
-              </span>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
-            <Link href={`/dashboard/edit/${event.id}`} style={{
-              width: 44, height: 44, borderRadius: 14,
-              background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#94a3b8', transition: 'all 0.2s', cursor: 'pointer',
-            }} className="hover:bg-white/10 hover:text-white">
-              <Settings size={18} />
-            </Link>
+      <div className="flex justify-between items-start">
+        <div className="min-w-0">
+          <h3 className="text-xl font-bold text-white tracking-tight truncate mb-2">{event.name}</h3>
+          <div className="flex items-center gap-2">
+             <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{dateStr}</span>
+             <span className="w-1 h-1 rounded-full bg-white/10" />
+             <span className="text-primary text-[10px] font-bold uppercase tracking-widest">{event.photo_count || 0} Photos</span>
           </div>
         </div>
+        <Link href={`/dashboard/edit/${event.id}`} className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-text-muted hover:text-white transition-colors">
+          <Settings size={18} />
+        </Link>
+      </div>
 
-        {/* Action buttons */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-          {[
-            { href: `/wall/${event.slug}`, icon: <Layout size={16} />, label: 'Wall', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)', border: 'rgba(6,182,212,0.2)' },
-            { href: `/mobile/${event.slug}`, icon: <Camera size={16} />, label: 'Scan', color: '#ec4899', bg: 'rgba(236,72,153,0.1)', border: 'rgba(236,72,153,0.2)' },
-            { href: `/moderate/${event.slug}`, icon: <Shield size={16} />, label: 'Mod', color: '#6366f1', bg: 'rgba(99,102,241,0.1)', border: 'rgba(99,102,241,0.2)' },
-          ].map(({ href, icon, label, color, bg, border }) => (
-            <Link key={label} href={href} style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
-              padding: '0.75rem 0.25rem', borderRadius: 16, minHeight: 64,
-              background: bg, border: `1px solid ${border}`,
-              color, fontSize: '0.72rem', fontWeight: 800,
-              textDecoration: 'none', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-            }} className="hover:scale-[1.03] active:scale-95">
-              {icon} <span style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-            </Link>
-          ))}
-        </div>
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { href: `/wall/${event.slug}`, icon: <Layout size={18} />, label: 'Wall', color: 'primary' },
+          { href: `/mobile/${event.slug}`, icon: <Camera size={18} />, label: 'Scan', color: 'secondary' },
+          { href: `/moderate/${event.slug}`, icon: <Shield size={18} />, label: 'Mod', color: 'text-white' },
+        ].map((btn) => (
+          <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group/btn">
+            <div className={`text-${btn.color} group-hover/btn:scale-110 transition-transform`}>{btn.icon}</div>
+            <span className="text-[9px] font-black tracking-widest uppercase text-text-muted">{btn.label}</span>
+          </Link>
+        ))}
+      </div>
 
-        {/* Link & Delete UI */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
-           <button
-             onClick={() => onCopy(event.slug)}
-             style={{
-               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-               padding: '0 1rem', borderRadius: 16, minHeight: 48,
-               background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)',
-               cursor: 'pointer', transition: 'all 0.2s',
-             }}
-             className="hover:bg-white/5"
-           >
-             <span style={{ fontSize: '0.75rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', width: '80%', textAlign: 'left', fontWeight: 600 }}>
-               {copied === event.slug ? '✓ Successfully Copied' : 'memento.live/' + event.slug}
-             </span>
-             <Copy size={copied === event.slug ? 0 : 14} color="#64748b" />
-           </button>
-           
-           <button
-             onClick={() => onDelete(event)}
-             style={{
-               width: 48, height: 48, borderRadius: 16,
-               background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.15)',
-               display: 'flex', alignItems: 'center', justifyContent: 'center',
-               color: '#ef4444', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0
-             }}
-             className="hover:bg-red-500/10"
-           >
-             <Trash2 size={18} />
-           </button>
-        </div>
+      <div className="flex gap-3 pt-6 border-t border-white/5">
+        <button
+          onClick={() => onCopy(event.slug)}
+          className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-medium text-text-secondary truncate"
+        >
+          <span className="truncate">{copied === event.slug ? 'Copied' : `memento.live/${event.slug}`}</span>
+          <Copy size={copied === event.slug ? 0 : 14} className="flex-shrink-0 ml-2" />
+        </button>
+        <button
+          onClick={() => onDelete(event)}
+          className="w-12 h-12 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-all"
+        >
+          <Trash2 size={18} />
+        </button>
       </div>
     </motion.div>
   );

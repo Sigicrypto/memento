@@ -231,37 +231,41 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
       className="auth-dialog-overlay"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
-      <div className="auth-dialog glass-card" style={{ padding: 40, border: 'none', boxShadow: '0 20px 80px rgba(30,10,60,0.15)' }}>
+      <div className="auth-dialog glass-panel" style={{ padding: '2.5rem', border: 'none', boxShadow: '0 40px 80px rgba(0,0,0,0.6)' }}>
         {/* Close button */}
-        <button className="auth-close-btn" onClick={onClose}>
+        <button className="auth-close-btn text-text-secondary hover:text-white transition-colors" onClick={onClose}>
           <X size={20} />
         </button>
 
         {/* Plan badge */}
         {planInfo && (
-          <div className="auth-plan-badge" style={{ borderColor: `${planInfo.color}30`, background: `${planInfo.color}08` }}>
-            <span>{planInfo.emoji}</span>
-            <span style={{ color: planInfo.color, fontWeight: 600 }}>{planInfo.name} Plan</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 mb-6" style={{ borderColor: `${planInfo.color}30` }}>
+            <span className="text-sm">{planInfo.emoji}</span>
+            <span className="text-xs font-bold tracking-wider uppercase" style={{ color: planInfo.color }}>{planInfo.name} Plan</span>
           </div>
         )}
 
         {step === 'auth' && (
-          <>
+          <div className="w-full">
             {/* Header */}
-            <div className="auth-header">
-              <h2 className="auth-title">
-                {tab === 'login' ? 'Welcome back' : 'Create your account'}
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-white mb-2">
+                {tab === 'login' ? 'Welcome back' : 'Create account'}
               </h2>
-              <p className="auth-subtitle">
+              <p className="text-text-secondary">
                 {tab === 'login'
-                  ? 'Sign in to access your photo walls'
-                  : 'Start collecting moments from your events'}
+                  ? 'Access your event walls'
+                  : 'Start collecting moments instantly'}
               </p>
             </div>
 
             {/* OAuth buttons */}
-            <div className="auth-oauth-row">
-              <button className="auth-oauth-btn" onClick={() => handleOAuth('google')} disabled={loading} style={{ width: '100%' }}>
+            <div className="mb-6">
+              <button 
+                className="btn-secondary w-full h-12 flex items-center justify-center gap-3 rounded-xl hover:bg-white/10 transition-all font-medium" 
+                onClick={() => handleOAuth('google')} 
+                disabled={loading}
+              >
                 <svg width="18" height="18" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -273,75 +277,61 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
             </div>
 
             {/* Divider */}
-            <div className="auth-divider">
-              <span>or continue with email</span>
-            </div>
-
-            {/* Tabs */}
-            <div className="auth-tabs">
-              <button
-                className={`auth-tab ${tab === 'signup' ? 'active' : ''}`}
-                onClick={() => { setTab('signup'); setError(''); setMessage(''); }}
-              >
-                Sign Up
-              </button>
-              <button
-                className={`auth-tab ${tab === 'login' ? 'active' : ''}`}
-                onClick={() => { setTab('login'); setError(''); setMessage(''); }}
-              >
-                Login
-              </button>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="h-px flex-1 bg-white/10"></div>
+              <span className="text-xs text-text-muted uppercase tracking-widest font-bold">OR</span>
+              <div className="h-px flex-1 bg-white/10"></div>
             </div>
 
             {/* Form */}
-            <form onSubmit={tab === 'signup' ? handleSignUp : handleSignIn} className="auth-form">
+            <form onSubmit={tab === 'signup' ? handleSignUp : handleSignIn} className="space-y-4">
               {tab === 'signup' && (
-                <div className="auth-field">
-                  <label className="auth-label">Full Name</label>
-                  <div className="auth-input-wrap">
-                    <User size={16} className="auth-input-icon" />
+                <div className="input-group">
+                  <label className="label">Full Name</label>
+                  <div className="relative">
+                    <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                     <input
                       type="text"
                       placeholder="John Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="auth-input"
+                      className="input pl-10 h-11"
                       autoComplete="name"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="auth-field">
-                <label className="auth-label">Email</label>
-                <div className="auth-input-wrap">
-                  <Mail size={16} className="auth-input-icon" />
+              <div className="input-group">
+                <label className="label">Email</label>
+                <div className="relative">
+                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                   <input
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="you@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="auth-input"
+                    className="input pl-10 h-11"
                     autoComplete="email"
                   />
                 </div>
               </div>
 
-              <div className="auth-field">
-                <label className="auth-label">Password</label>
-                <div className="auth-input-wrap">
-                  <Lock size={16} className="auth-input-icon" />
+              <div className="input-group">
+                <label className="label">Password</label>
+                <div className="relative">
+                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Min 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="auth-input"
+                    className="input pl-10 h-11"
                     autoComplete={tab === 'signup' ? 'new-password' : 'current-password'}
                   />
                   <button
                     type="button"
-                    className="auth-eye-btn"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -350,16 +340,16 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
               </div>
 
               {tab === 'signup' && (
-                <div className="auth-field">
-                  <label className="auth-label">Confirm Password</label>
-                  <div className="auth-input-wrap">
-                    <Lock size={16} className="auth-input-icon" />
+                <div className="input-group">
+                  <label className="label">Confirm Password</label>
+                  <div className="relative">
+                    <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Re-enter password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="auth-input"
+                      className="input pl-10 h-11"
                       autoComplete="new-password"
                     />
                   </div>
@@ -367,50 +357,62 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
               )}
 
               {tab === 'login' && (
-                <button type="button" className="auth-forgot-btn" onClick={handleForgotPassword}>
-                  Forgot password?
-                </button>
+                <div className="flex justify-end">
+                  <button type="button" className="text-xs text-text-muted hover:text-primary transition-colors font-medium" onClick={handleForgotPassword}>
+                    Forgot password?
+                  </button>
+                </div>
               )}
 
-              {error && <div className="auth-error">{error}</div>}
-              {message && <div className="auth-message">{message}</div>}
+              {error && (
+                <div className="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+                  {error}
+                </div>
+              )}
+              {message && (
+                <div className="px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-sm">
+                  {message}
+                </div>
+              )}
 
-              <button type="submit" className="auth-submit-btn btn-glow" disabled={loading} style={{ height: 54, borderRadius: 16 }}>
+              <button type="submit" className="btn-primary w-full h-12 rounded-xl text-base font-bold flex items-center justify-center gap-2" disabled={loading}>
                 {loading ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2 size={20} className="animate-spin" />
                 ) : (
                   <>
                     <span>{tab === 'signup' ? 'Create Account' : 'Sign In'}</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={18} />
                   </>
                 )}
               </button>
             </form>
 
-            <p className="auth-footer-text">
-              {tab === 'signup' ? 'Already have an account?' : "Don't have an account?"}
-              <button
-                className="auth-switch-btn"
-                onClick={() => { setTab(tab === 'signup' ? 'login' : 'signup'); setError(''); setMessage(''); }}
-              >
-                {tab === 'signup' ? 'Sign In' : 'Sign Up'}
-              </button>
-            </p>
-          </>
+            <div className="mt-8 pt-6 border-t border-white/5 text-center">
+              <p className="text-sm text-text-secondary">
+                {tab === 'signup' ? 'Already have an account?' : "Don't have an account?"}
+                <button
+                  className="ml-2 font-bold text-white hover:text-primary transition-colors"
+                  onClick={() => { setTab(tab === 'signup' ? 'login' : 'signup'); setError(''); setMessage(''); }}
+                >
+                  {tab === 'signup' ? 'Sign In' : 'Sign Up'}
+                </button>
+              </p>
+            </div>
+          </div>
         )}
 
         {step === 'success' && (
-          <div className="auth-success">
-            <div className="auth-success-icon">
-              <Check size={32} />
+          <div className="text-center py-8">
+            <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Check size={32} className="text-primary" />
             </div>
-            <h2 className="auth-title">You&apos;re all set!</h2>
-            <p className="auth-subtitle">
-              {message || 'Your account has been created. Redirecting to your dashboard...'}
+            <h2 className="text-3xl font-bold text-white mb-4">You&apos;re all set!</h2>
+            <p className="text-text-secondary mb-8">
+              {message || 'Your account has been created successfully. One last step to your dashboard.'}
             </p>
-            <button className="auth-submit-btn" onClick={onClose}>
-              <span>Go to Dashboard</span>
-              <ArrowRight size={16} />
+            <button className="btn-primary w-full h-12 rounded-xl font-bold" onClick={onClose}>
+              <span>Enter Dashboard</span>
+              <ArrowRight size={18} className="ml-2 inline" />
             </button>
           </div>
         )}

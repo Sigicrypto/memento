@@ -12,8 +12,8 @@ import { useAuth } from '@/hooks/useAuth';
 
 import { QRCodeSVG } from 'qrcode.react';
 
+import { X, Maximize2, Minimize2, Image as ImageIcon, Grid, Play, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Maximize2, Minimize2, Image as ImageIcon, Grid, Play } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
 
@@ -567,323 +567,179 @@ function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
 
 
   return (
-
-    <div className="demo-modal-overlay">
-
-      <div className={`demo-modal-container ${isFullscreen ? 'fullscreen' : ''}`} ref={modalRef}>
-
-        {/* ── Fullscreen custom cursor (only active in fullscreen; position:fixed is relative to the FS viewport) ── */}
-
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      
+      <div className={`glass-panel w-full max-w-7xl h-full max-h-[900px] flex flex-col relative ${isFullscreen ? 'fixed inset-0 max-w-none max-h-none rounded-none' : ''}`} ref={modalRef}>
+        {/* Fullscreen custom cursor */}
         {isFullscreen && (
-
           <>
-
-            <div ref={fsOuterRef} style={{
-
-              position: 'fixed', pointerEvents: 'none', zIndex: 99999,
-
-              width: 40, height: 40, opacity: 0,
-
-              transform: 'translate(-50%,-50%)',
-
-              transition: 'opacity 0.3s',
-
-              borderRadius: '50%',
-
-              border: '2px solid rgba(245,158,11,0.55)',
-
-              background: 'radial-gradient(circle,rgba(245,158,11,0.1),transparent 70%)',
-
-              animation: 'cursor-ring-pulse 2s ease-in-out infinite',
-
-            }} />
-
-            <div ref={fsDotRef} style={{
-
-              position: 'fixed', pointerEvents: 'none', zIndex: 100000,
-
-              width: 10, height: 10, opacity: 0,
-
-              transform: 'translate(-50%,-50%)',
-
-              transition: 'opacity 0.3s',
-
-              borderRadius: '50%',
-
-              background: 'linear-gradient(135deg,#f59e0b,#f472b6,#fcd34d)',
-
-              boxShadow: '0 0 20px rgba(245,158,11,0.8),0 0 40px rgba(244,114,182,0.6)',
-
-              animation: 'cursor-pulse 2s ease-in-out infinite',
-
-            }} />
-
+            <div ref={fsOuterRef} className="fixed pointer-events-none z-[99999] w-10 h-10 -translate-x-1/2 -translate-y-1/2 border-2 border-primary/30 rounded-full transition-opacity duration-300" />
+            <div ref={fsDotRef} className="fixed pointer-events-none z-[100000] w-2 h-2 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full shadow-[0_0_15px_var(--primary)] transition-opacity duration-300" />
           </>
-
         )}
-
         
-
         {/* Header */}
-
-        <div className="demo-modal-header">
-
+        <div className="h-20 flex items-center justify-between px-6 border-b border-white/5 bg-white/5">
+           <div className="flex items-center gap-6">
+              <AnimatedLogo width={140} height={40} />
+              <div className="hidden sm:flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                    <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-secondary' : 'bg-red-500'} ${isConnected ? 'animate-pulse' : ''}`} />
+                    <span className="text-[10px] font-bold tracking-widest text-text-secondary">{isConnected ? 'LIVE CONNECTION' : 'RECONNECTING...'}</span>
+                  </div>
+                  <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                    <span className="text-[10px] font-bold tracking-widest text-text-secondary">{minutes}:{seconds < 10 ? `0${seconds}` : seconds} LEFT</span>
+                  </div>
+              </div>
+           </div>
+           
            <div className="flex items-center gap-4">
-
-              <AnimatedLogo width={120} height={40} />
-
-              <div className="demo-status-badges hidden sm:flex">
-
-                  <span className="modal-badge live-badge">
-
-                    <span className={`pulse-dot ${isConnected ? 'active' : ''}`} />
-
-                    {isConnected ? 'LIVE' : 'CONNECTING...'}
-
-                  </span>
-
-                  <span className="modal-badge time-badge">
-
-                    {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-
-                  </span>
-
+              <div className="flex bg-white/5 p-1 rounded-xl">
+                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-white'}`}>
+                  <Grid size={18} />
+                </button>
+                <button onClick={() => setViewMode('polaroid')} className={`p-2 rounded-lg transition-all ${viewMode === 'polaroid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-white'}`}>
+                  <ImageIcon size={18} />
+                </button>
+                <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`p-2 rounded-lg transition-all ${viewMode === 'slideshow' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-white'}`}>
+                  <Play size={18} />
+                </button>
               </div>
 
+              <div className="w-px h-6 bg-white/10" />
+
+              <button onClick={toggleFullscreen} className="p-2 text-text-muted hover:text-white transition-all">
+                {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+              </button>
+              <button onClick={onClose} className="p-2 text-text-muted hover:text-red-500 transition-all">
+                <X size={24} />
+              </button>
            </div>
-
-           
-
-           <div className="flex items-center gap-2">
-
-              <button onClick={() => setViewMode('grid')} className={`modal-icon-btn ${viewMode === 'grid' ? 'active' : ''}`} title="Grid View">
-
-                <Grid size={18} />
-
-              </button>
-
-              <button onClick={() => setViewMode('polaroid')} className={`modal-icon-btn ${viewMode === 'polaroid' ? 'active' : ''}`} title="Polaroid View">
-
-                <ImageIcon size={18} />
-
-              </button>
-
-              <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`modal-icon-btn ${viewMode === 'slideshow' ? 'active' : ''}`} title="Slideshow View">
-
-                <Play size={18} />
-
-              </button>
-
-              <div className="w-px h-6 bg-white/20 mx-1 hidden sm:block"></div>
-
-              <button onClick={toggleFullscreen} className="modal-icon-btn hidden sm:flex" title="Toggle Fullscreen">
-
-                {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
-
-              </button>
-
-              <button onClick={onClose} className="modal-icon-btn close-btn" title="Close Demo">
-
-                <X size={20} />
-
-              </button>
-
-           </div>
-
         </div>
 
-
-
         {/* Content Body */}
-
-        <div className="demo-modal-body">
-
-            
-
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             {/* Sidebar / QR */}
-
-            <div className="demo-modal-sidebar">
-
-               <div className="qr-container-glass">
-
-                  <h3 className="text-lg font-black text-white mb-1">Scan to Upload</h3>
-                  <p className="text-xs text-slate-400 mb-4">Point your camera to join the wall</p>
-
-                  <div className="qr-box">
-
-                    {uploadUrl ? <QRCodeSVG value={uploadUrl} size={140} level="M" /> : <div style={{width: 140, height: 140}}/>}
-
-                  </div>
-
-                  <div className="mt-4 text-center sm:hidden">
-
-                    <div className="demo-status-badges flex-col items-center gap-2">
-
-                        <span className="modal-badge live-badge text-xs">
-
-                          <span className={`pulse-dot ${isConnected ? 'active' : ''}`} />
-
-                          {isConnected ? 'LIVE' : 'CONNECTING...'}
-
-                        </span>
-
-                        <span className="modal-badge time-badge text-xs">
-
-                          Resets in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-
-                        </span>
-
-                    </div>
-
-                  </div>
-
+            <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-white/5 p-8 flex flex-col items-center bg-white/20">
+               <div className="text-center mb-8">
+                  <h3 className="text-xl font-bold text-white mb-2">Join the Wall</h3>
+                  <p className="text-sm text-text-secondary">Scan to upload photos and see them live</p>
                </div>
 
+               <div className="p-4 bg-white rounded-2xl shadow-2xl">
+                 {uploadUrl ? <QRCodeSVG value={uploadUrl} size={160} level="H" /> : <div className="w-40 h-40 bg-zinc-100 animate-pulse rounded-lg" />}
+               </div>
+
+               <div className="mt-auto hidden md:block pt-8">
+                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+                   <p className="text-xs text-text-secondary leading-relaxed">
+                     This is a demo wall. Photos uploaded here will be automatically cleared after the timer expires.
+                   </p>
+                 </div>
+               </div>
             </div>
-
-
 
             {/* Main Visual Area */}
-
-            <div className="demo-modal-main relative">
-
-               
-
+            <div className="flex-1 overflow-y-auto bg-black/20 p-6 md:p-10 custom-scrollbar">
                {photos.length === 0 ? (
-
-                  <div className="demo-empty-state">
-
-                     <span className="text-5xl mb-4 block">📷</span>
-
-                     <h2 className="text-2xl font-black text-white mb-2">The wall is empty!</h2>
-                     <p className="text-slate-400">Scan the QR code to upload the first photo.</p>
-
+                  <div className="h-full flex flex-col items-center justify-center text-center">
+                     <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                       <ImageIcon size={32} className="text-text-muted" />
+                     </div>
+                     <h2 className="text-2xl font-bold text-white mb-2">Waiting for first photo...</h2>
+                     <p className="text-text-secondary max-w-sm">Use the QR code to upload something beautiful and watch it appear here instantly.</p>
                   </div>
-
                ) : (
-
                   <>
-
                     {/* GRID VIEW */}
-
                     {viewMode === 'grid' && (
-
-                      <div className="demo-grid-view">
-
+                      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                          {photos.map((photo, i) => (
-
-                           <div key={photo.id} className="demo-grid-item" style={{animationDelay: `${i * 0.05}s`}}>
-
+                           <motion.div 
+                             key={photo.id} 
+                             initial={{ opacity: 0, y: 20 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             transition={{ delay: i * 0.05 }}
+                             className="group relative aspect-square rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all"
+                           >
                               {photo.type === 'video' ? (
-
-                                <video src={photo.url} className="demo-media" autoPlay muted loop playsInline preload="metadata" />
-
+                                <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
                               ) : (
-
-                                <img src={photo.url} className="demo-media" alt="Upload" loading="lazy" />
-
+                                <img src={photo.url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Upload" loading="lazy" />
                               )}
-
-                              <div className="demo-item-overlay">
-
-                                 <p className="caption font-medium">{photo.caption}</p>
-
-                                 <p className="uploader">by {photo.uploader}</p>
-
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+                                 <p className="text-white text-sm font-medium line-clamp-1">{photo.caption}</p>
+                                 <p className="text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
                               </div>
-
-                           </div>
-
+                           </motion.div>
                          ))}
-
                       </div>
-
                     )}
-
-
 
                     {/* POLAROID VIEW */}
-
                     {viewMode === 'polaroid' && (
-
-                      <div className="demo-polaroid-view" style={{ overflow: 'hidden', padding: '2rem' }}>
-
-                         <div className="flex flex-wrap justify-center gap-8">
-
-                             {photos.map((photo, i) => (
-
-                               <div key={photo.id} className="polaroid-float-demo" style={{animationDelay: `${i * 0.5}s`, '--rot': `${(i % 5) * 4 - 8}deg`} as React.CSSProperties}>
-
-                                  <div className="polaroid-img-wrapper">
-
-                                    {photo.type === 'video' ? (
-
-                                      <video src={photo.url} className="demo-media" autoPlay muted loop playsInline preload="metadata" />
-
-                                    ) : (
-
-                                      <img src={photo.url} className="demo-media" alt="Upload" loading="lazy" />
-
-                                    )}
-
-                                  </div>
-
-                                  <p className="polaroid-caption">{photo.caption}</p>
-
-                               </div>
-
-                             ))}
-
-                         </div>
-
+                      <div className="flex flex-wrap justify-center gap-10 py-10">
+                         {photos.map((photo, i) => (
+                           <motion.div 
+                             key={photo.id} 
+                             initial={{ opacity: 0, scale: 0.8 }}
+                             animate={{ opacity: 1, scale: 1, rotate: (i % 5) * 4 - 8 }}
+                             transition={{ delay: i * 0.1, type: 'spring' }}
+                             className="bg-white p-4 pb-12 shadow-2xl w-64 flex-shrink-0"
+                           >
+                              <div className="aspect-square overflow-hidden bg-zinc-100 mb-4">
+                                {photo.type === 'video' ? (
+                                  <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
+                                ) : (
+                                  <img src={photo.url} className="w-full h-full object-cover" alt="Upload" loading="lazy" />
+                                )}
+                              </div>
+                              <p className="text-zinc-800 font-medium text-sm text-center font-handwriting line-clamp-2">{photo.caption}</p>
+                           </motion.div>
+                         ))}
                       </div>
-
                     )}
-
-
 
                     {/* SLIDESHOW VIEW */}
-
                     {viewMode === 'slideshow' && (
-
-                      <div className="demo-slideshow-view">
-
-                         {photos[currentSlide]?.type === 'video' ? (
-
-                            <video key={photos[currentSlide]?.id || currentSlide} src={photos[currentSlide]?.url} className="demo-media-slide" autoPlay muted onEnded={() => setCurrentSlide((prev) => (prev + 1) % photos.length)} playsInline preload="metadata" />
-
-                          ) : (
-
-                            <img key={photos[currentSlide]?.id || currentSlide} src={photos[currentSlide]?.url} className="demo-media-slide" alt="Upload" />
-
-                          )}
-
-                          <div className="slide-overlay">
-
-                             <h3 className="slide-caption">{photos[currentSlide]?.caption}</h3>
-
-                             <p className="slide-uploader">by {photos[currentSlide]?.uploader}</p>
-
-                          </div>
-
+                      <div className="h-full flex items-center justify-center">
+                         <AnimatePresence mode="wait">
+                           <motion.div 
+                             key={photos[currentSlide]?.id}
+                             initial={{ opacity: 0, scale: 1.1 }}
+                             animate={{ opacity: 1, scale: 1 }}
+                             exit={{ opacity: 0, scale: 0.95 }}
+                             transition={{ duration: 0.8 }}
+                             className="relative w-full h-full max-h-[600px] flex items-center justify-center rounded-3xl overflow-hidden shadow-2xl"
+                           >
+                              {photos[currentSlide]?.type === 'video' ? (
+                                 <video src={photos[currentSlide]?.url} className="w-full h-full object-contain" autoPlay muted onEnded={() => setCurrentSlide((prev) => (prev + 1) % photos.length)} playsInline preload="metadata" />
+                              ) : (
+                                 <img src={photos[currentSlide]?.url} className="w-full h-full object-contain" alt="Upload" />
+                              )}
+                              <div className="absolute bottom-10 left-10 p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 max-w-md">
+                                 <h3 className="text-2xl font-bold text-white mb-2">{photos[currentSlide]?.caption}</h3>
+                                 <p className="text-primary font-bold tracking-widest text-xs uppercase">by {photos[currentSlide]?.uploader}</p>
+                              </div>
+                           </motion.div>
+                         </AnimatePresence>
                       </div>
-
                     )}
-
                   </>
-
                )}
-
-
-
-            </div>
-
         </div>
 
       </div>
 
+      </div>
     </div>
-
   );
 
 }
@@ -1125,102 +981,87 @@ export default function LandingPage() {
 
 
         {/* CTA */}
-        <section className="py-24 px-6">
+        <section className="py-24 px-6 relative overflow-hidden">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, type: 'spring', stiffness: 100, damping: 15 }}
-            className="cta-sec cinematic-glow py-20 px-8 rounded-3xl overflow-hidden relative max-w-5xl mx-auto text-center"
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="glass-panel py-20 px-8 max-w-5xl mx-auto text-center relative overflow-hidden group"
           >
-            <div className="cta-glow" />
-            <h2 className="cta-h2 relative z-10">Ready to collect every moment<br /><span className="gradient-text-vibrant">instantly?</span></h2>
-            <p className="cta-p relative z-10 mt-6 text-xl">Start with just {Sym}{Starter}. One-time payment. Zero hassle.</p>
-            <motion.button 
-              whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(245, 158, 11, 0.3)' }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => openAuth('starter')} 
-              className="btn-hero-primary mt-10 relative z-10"
-            >
-              <span>Get Started Now — {Sym}{Starter}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </motion.button>
+            {/* Ambient Background for CTA */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+            
+            <div className="relative z-10">
+              <h2 className="h1-text mb-6">
+                Ready to collect every moment <span className="text-secondary italic">instantly?</span>
+              </h2>
+              <p className="text-xl text-text-secondary mb-10 max-w-xl mx-auto">
+                Start with just {Sym}{Starter}. One-time payment. Zero hassle. Your memories deserve the best.
+              </p>
+              <button 
+                onClick={() => openAuth('starter')} 
+                className="btn-premium flex items-center gap-2 mx-auto"
+              >
+                <span>Get Started Now — {Sym}{Starter}</span>
+                <ArrowRight size={20} />
+              </button>
+            </div>
           </motion.div>
         </section>
-
-
-
+ 
         {/* FOOTER */}
-
-        <footer className="lp-footer py-8">
-
-          <div className="footer-top">
-
-            <div className="footer-brand">
-
-              <Link href="/">
-                <div className="mb-4">
-                  <AnimatedLogo width={320} height={106} />
+        <footer className="pt-24 pb-12 border-t border-white/5 bg-black/50 backdrop-blur-md">
+          <div className="container mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+              <div className="md:col-span-2">
+                <Link href="/" className="inline-block mb-6">
+                  <AnimatedLogo width={160} height={50} />
+                </Link>
+                <p className="text-text-secondary max-w-xs leading-relaxed">
+                  Leading QR-based photo sharing platform for weddings and celebrations worldwide. Collect every moment instantly.
+                </p>
+              </div>
+ 
+              <div>
+                <h4 className="text-white font-bold mb-6 tracking-tight">Product</h4>
+                <div className="flex flex-col gap-4 text-sm">
+                  <Link href="#features" className="text-text-muted hover:text-primary transition-colors">Features</Link>
+                  <Link href="#pricing" className="text-text-muted hover:text-primary transition-colors">Pricing</Link>
+                  <Link href="#how" className="text-text-muted hover:text-primary transition-colors">How it works</Link>
                 </div>
-              </Link>
-
+              </div>
+ 
+              <div>
+                <h4 className="text-white font-bold mb-6 tracking-tight">Legal</h4>
+                <div className="flex flex-col gap-4 text-sm">
+                  <Link href="/privacy" className="text-text-muted hover:text-primary transition-colors">Privacy Policy</Link>
+                  <Link href="/terms" className="text-text-muted hover:text-primary transition-colors">Terms of Service</Link>
+                  <Link href="#" className="text-text-muted hover:text-primary transition-colors">Contact Support</Link>
+                </div>
+              </div>
             </div>
-
-            <div className="footer-cols">
-
-              <div className="footer-col">
-
-                <h4>Product</h4>
-
-                <Link href="#features">Features</Link>
-
-                <Link href="#pricing">Pricing</Link>
-
-                <Link href="#how">How it works</Link>
-
+ 
+            <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+              <p className="text-text-muted text-xs font-medium uppercase tracking-widest">© 2026 Memento. Made with ♥ for every celebration.</p>
+              <div className="flex gap-8">
+                 <a href="#" className="text-text-muted hover:text-white transition-colors">
+                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.979C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                   </svg>
+                 </a>
+                 <a href="#" className="text-text-muted hover:text-white transition-colors">
+                   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                     <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                   </svg>
+                 </a>
               </div>
-
-              <div className="footer-col">
-
-                <h4>Company</h4>
-
-                <Link href="#">About</Link>
-
-                <Link href="#">Blog</Link>
-
-                <Link href="#">Contact</Link>
-
-              </div>
-
-              <div className="footer-col">
-
-                <h4>Legal</h4>
-
-                <Link href="/privacy">Privacy</Link>
-
-                <Link href="/terms">Terms</Link>
-
-              </div>
-
             </div>
-
           </div>
-
-          <div className="footer-bottom">
-
-            <p>© 2026 Memento. Made with ♥ for every celebration.</p>
-
-          </div>
-
         </footer>
-
       </div>
-
-      
-
-      {/* Demo Modal */}
+ 
       <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
-
     </>
   );
 }

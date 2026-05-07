@@ -1,10 +1,13 @@
 "use client";
-
+ 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
-
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Shield, CheckCircle, XCircle, ArrowLeft, Clock, Trash2, Check, Layout, AlertTriangle } from 'lucide-react';
+ 
 interface Photo {
   id: string;
   storage_path: string;
@@ -14,173 +17,160 @@ interface Photo {
   approved: boolean;
   media_type?: string;
 }
-
+ 
 export default function ModeratePage() {
   const params = useParams();
   const slug = params.slug as string;
   const router = useRouter();
   const { user, isLoading } = useAuth();
-
+ 
   const [eventName, setEventName] = useState('');
   const [eventId, setEventId] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('pending');
   const [loading, setLoading] = useState(true);
-
+ 
   useEffect(() => {
     if (isLoading) return;
     const fetchEvent = async () => {
-      const { data, error } = await supabase.from('events')
-        .select('id, name, owner_id').eq('slug', slug).single();
-
+      const { data, error } = await supabase.from('events').select('id, name, owner_id').eq('slug', slug).single();
       if (error || !data) { router.push('/dashboard'); return; }
+      if (user?.id !== data.owner_id) { router.push('/dashboard'); return; }
+      
       setEventName(data.name);
       setEventId(data.id);
-
-      if (user?.id !== data.owner_id) { router.push('/dashboard'); return; }
-
-      const { data: photoData } = await supabase.from('photos')
-        .select('*').eq('event_id', data.id).order('created_at', { ascending: false });
+ 
+      const { data: photoData } = await supabase.from('photos').select('*').eq('event_id', data.id).order('created_at', { ascending: false });
       if (photoData) setPhotos(photoData);
       setLoading(false);
     };
     fetchEvent();
   }, [slug, user, isLoading, router]);
-
-  const getPublicUrl = (path: string) => {
-    const { data } = supabase.storage.from('photos').getPublicUrl(path);
-    return data.publicUrl;
-  };
-
+ 
+  const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
+ 
   const approvePhoto = async (photoId: string) => {
     await supabase.from('photos').update({ approved: true }).eq('id', photoId);
     setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, approved: true } : p));
   };
-
+ 
   const rejectPhoto = async (photo: Photo) => {
     if (!confirm('Reject and delete this photo permanently?')) return;
     await supabase.storage.from('photos').remove([photo.storage_path]);
     await supabase.from('photos').delete().eq('id', photo.id);
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
   };
-
+ 
   if (isLoading || loading) {
     return (
-      <div className="lp min-h-screen relative overflow-hidden flex items-center justify-center">
-        <div className="aurora-bg fixed inset-0 z-0" />
-        <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
-        <div className="relative z-10 w-14 h-14 border-4 rounded-full border-white/10 border-t-amber-500 animate-spin" />
+      <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
       </div>
     );
   }
-
+ 
   const filteredPhotos = photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved);
-
+ 
   return (
-    <main className="lp min-h-screen relative overflow-hidden px-4 py-12 pb-40">
-      <div className="aurora-bg fixed inset-0 z-0" />
-      <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
-      <div className="orbs fixed inset-0 z-0 pointer-events-none">
-        <div className="orb orb1" />
-        <div className="orb orb2" />
-        <div className="orb orb3" />
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto">
-        <header className="flex items-center justify-between mb-12">
-           <button onClick={() => router.push(`/wall/${slug}`)} className="btn-outline flex items-center gap-2 group px-6">
-            <svg className="group-hover:-translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to Wall
-          </button>
-          <img src="/CC logo.png" alt="Memento" className="h-8 md:h-10 w-auto" />
-        </header>
-
-        <div className="gcard cinematic-glow mb-8 p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 overflow-hidden">
-          <div className="gcard-border" />
-          <div className="relative z-10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xl">🛡️</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Moderation Portal</span>
-              </div>
-              <h1 className="text-3xl font-black text-white tracking-tight">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">{eventName}</span>
-              </h1>
-              <p className="text-sm mt-3 text-slate-400 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full animate-pulse bg-amber-500" />
-                {photos.filter(p => !p.approved).length} pending photos awaiting approval
-              </p>
-            </div>
-
-            <div className="flex flex-col items-end gap-4">
-              <div className="flex gap-1 bg-white/5 p-1.5 rounded-2xl border border-white/10 backdrop-blur-2xl">
-                <button onClick={() => setFilter('pending')} className={`text-[10px] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${filter === 'pending' ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>Pending</button>
-                <button onClick={() => setFilter('approved')} className={`text-[10px] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${filter === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>Approved</button>
-                <button onClick={() => setFilter('all')} className={`text-[10px] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest transition-all ${filter === 'all' ? 'bg-white/10 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]' : 'text-slate-400 hover:text-white'}`}>All</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {filteredPhotos.length === 0 ? (
-          <div className="gcard cinematic-glow p-20 text-center">
-            <div className="gcard-border" />
-            <div className="relative z-10">
-              <div className="text-6xl mb-6">✨</div>
-              <h3 className="text-2xl font-bold text-white mb-2">All Caught Up!</h3>
-              <p className="text-slate-400">No {filter !== 'all' ? filter : ''} photos to moderate right now.</p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {filteredPhotos.map((photo) => (
-              <div key={photo.id} className={`gcard p-0 cinematic-glow overflow-hidden group ${!photo.approved ? 'ring-2 ring-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.15)]' : ''}`}>
-                <div className="gcard-border" />
-                <div className="relative z-10 h-full w-full">
-                  <div className="overflow-hidden bg-[#0a0a1a]">
-                    {photo.media_type === 'video' ? (
-                       <video src={getPublicUrl(photo.storage_path)} className="w-full h-56 object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" controls={false} autoPlay loop muted playsInline />
-                    ) : (
-                       <img src={getPublicUrl(photo.storage_path)} alt="" className="w-full h-56 object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" loading="lazy" />
-                    )}
+    <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+ 
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+         <div className="flex items-center gap-6">
+            <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-text-muted hover:text-white transition-all font-bold text-sm">
+               <ArrowLeft size={16} /> Back to Wall
+            </Link>
+            <div className="h-6 w-px bg-white/10 hidden md:block" />
+            <span className="text-xl font-bold tracking-tighter hidden md:block">memento</span>
+         </div>
+         <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black uppercase tracking-widest text-primary">
+            <Shield size={12} /> Moderation Portal
+         </div>
+      </nav>
+ 
+      <main className="relative z-10 pt-32 px-8 pb-32 max-w-[1400px] mx-auto w-full">
+         {/* Header Card */}
+         <div className="glass-panel p-8 md:p-12 mb-12 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-center md:text-left">
+               <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                     <Shield size={24} />
                   </div>
-                  
-                  {/* Persistent overlay for pending, hover for approved */}
-                  <div className={`absolute inset-0 bg-gradient-to-t from-[#050510] via-transparent to-transparent flex flex-col justify-between p-4 transition-opacity duration-300 ${!photo.approved ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 bg-[#050510]/60'}`}>
-                    
-                    {/* Status badge */}
-                    <div className="flex justify-end">
-                      {photo.approved ? (
-                        <span className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20 backdrop-blur-md">Approved</span>
-                      ) : (
-                        <span className="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-[10px] font-black uppercase tracking-widest border border-amber-500/20 backdrop-blur-md animate-pulse">Pending Review</span>
-                      )}
-                    </div>
-                    
-                    <div className="mt-auto">
-                      <div className="mb-3 drop-shadow-md">
-                        <p className="font-bold text-white text-sm">{photo.uploader_name}</p>
-                        {photo.caption && <p className="italic mt-1 text-xs text-slate-300 line-clamp-2">{photo.caption}</p>}
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        {!photo.approved && (
-                          <button onClick={() => approvePhoto(photo.id)} className="flex-1 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold hover:bg-emerald-500/30 transition-colors backdrop-blur-md">
-                            Approve
-                          </button>
-                        )}
-                        <button onClick={() => rejectPhoto(photo)} className="flex-1 py-2 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold hover:bg-rose-500/30 transition-colors backdrop-blur-md">
-                          Reject
-                        </button>
-                      </div>
-                    </div>
+                  <div>
+                     <p className="text-[10px] font-black uppercase tracking-[.3em] text-primary">EVENT CONTROL</p>
+                     <h1 className="text-3xl font-bold tracking-tight">{eventName}</h1>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
+               </div>
+               <p className="text-sm text-text-secondary flex items-center justify-center md:justify-start gap-2">
+                  <Clock size={16} /> {photos.filter(p => !p.approved).length} photos awaiting your approval
+               </p>
+            </div>
+ 
+            <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
+               {(['pending', 'approved', 'all'] as const).map(f => (
+                 <button key={f} onClick={() => setFilter(f)} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-white/5'}`}>
+                    {f}
+                 </button>
+               ))}
+            </div>
+         </div>
+ 
+         {/* Grid */}
+         <AnimatePresence mode="wait">
+            {filteredPhotos.length === 0 ? (
+               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-32 text-center glass-panel">
+                  <div className="text-6xl mb-6 opacity-20">✨</div>
+                  <h2 className="text-2xl font-bold mb-2">All Caught Up!</h2>
+                  <p className="text-text-secondary">No {filter !== 'all' ? filter : ''} photos to moderate right now.</p>
+               </motion.div>
+            ) : (
+               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredPhotos.map((photo, i) => (
+                    <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} className={`relative group aspect-[3/4] rounded-3xl overflow-hidden border ${!photo.approved ? 'border-primary/50 shadow-[0_0_30px_rgba(99,102,241,0.2)]' : 'border-white/5'} bg-white/5`}>
+                       {photo.media_type === 'video' ? (
+                          <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
+                       ) : (
+                          <img src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                       )}
+                       
+                       <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end">
+                          <div className="flex items-center justify-between mb-3">
+                             <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-0.5">{photo.uploader_name}</p>
+                                <p className="text-[10px] text-text-muted">{new Date(photo.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                             </div>
+                             {photo.approved && <div className="px-2 py-1 rounded bg-green-500/20 text-green-500 text-[8px] font-black uppercase tracking-widest border border-green-500/20">Approved</div>}
+                          </div>
+                          
+                          {photo.caption && <p className="text-xs text-white italic mb-4 line-clamp-2">&quot;{photo.caption}&quot;</p>}
+                          
+                          <div className="flex gap-2">
+                             {!photo.approved && (
+                               <button onClick={() => approvePhoto(photo.id)} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                                  <Check size={14} /> Approve
+                               </button>
+                             )}
+                             <button onClick={() => rejectPhoto(photo)} className="flex-1 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2">
+                                <Trash2 size={14} /> Reject
+                             </button>
+                          </div>
+                       </div>
+                    </motion.div>
+                  ))}
+               </motion.div>
+            )}
+         </AnimatePresence>
+      </main>
+ 
+      {/* Footer Nav */}
+      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
+         <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-text-muted hover:text-primary transition-all">
+            <Layout size={18} /> Direct to Wall View
+         </Link>
+      </footer>
+    </div>
   );
 }
