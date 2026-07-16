@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 
-export function validateCSRF(): boolean {
-  const headersList = headers();
+export async function validateCSRF(): Promise<boolean> {
+  const headersList = await headers();
   const origin = headersList.get('origin');
   const referer = headersList.get('referer');
   const host = headersList.get('host');

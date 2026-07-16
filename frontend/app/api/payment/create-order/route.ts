@@ -13,7 +13,7 @@ const PLAN_NAMES: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  if (!validateCSRF()) {
+  if (!await validateCSRF()) {
     return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
   }
 

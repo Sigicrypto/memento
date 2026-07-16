@@ -7,7 +7,7 @@ import { EmailTemplates } from '@/lib/emailTemplates';
 const resend = new Resend(process.env.RESEND_API_KEY || 're_mock_key');
 
 export async function POST(request: Request) {
-  if (!validateCSRF()) {
+  if (!await validateCSRF()) {
     return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
   }
 
