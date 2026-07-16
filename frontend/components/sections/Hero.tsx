@@ -10,7 +10,7 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+    <section className="relative pt-44 pb-20 md:pt-64 md:pb-32 overflow-hidden">
       {/* Ambient Orbs */}
       <div className="orbs">
         <div className="orb orb-primary" />

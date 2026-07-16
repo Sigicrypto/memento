@@ -38,11 +38,25 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/admin')) {
     // Get Supabase session from cookies
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     
-    // Extract access token from cookies
-    const accessToken = request.cookies.get('sb-access-token')?.value ||
-                       request.cookies.get('sb-' + supabaseUrl.split('//')[1].split('.')[0] + '-auth-token')?.value;
+    const projectId = supabaseUrl.split('//')[1].split('.')[0];
+    const cookieName = `sb-${projectId}-auth-token`;
+    let tokenStr = request.cookies.get('sb-access-token')?.value || request.cookies.get(cookieName)?.value;
+    
+    if (!tokenStr) {
+      const chunk0 = request.cookies.get(`${cookieName}.0`)?.value;
+      const chunk1 = request.cookies.get(`${cookieName}.1`)?.value;
+      if (chunk0) tokenStr = chunk0 + (chunk1 || '');
+    }
+
+    let accessToken = tokenStr;
+    if (tokenStr && tokenStr.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(tokenStr);
+        accessToken = parsed[0];
+      } catch (e) {}
+    }
     
     if (!accessToken) {
       // No session, redirect to system login

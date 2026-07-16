@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight } from 'lucide-react';
+import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Search } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -68,6 +68,7 @@ export default function DashboardPage() {
   const [deleteEvent, setDeleteEvent] = useState<Event | null>(null);
   const [deleteText, setDeleteText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (isLoading) return;
@@ -125,6 +126,8 @@ export default function DashboardPage() {
   const totalPhotos = events.reduce((sum, e) => sum + (e.photo_count || 0), 0);
   const firstName = (profile?.full_name || 'there').split(' ')[0];
   const initial = (profile?.full_name || 'U').charAt(0).toUpperCase();
+
+  const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-black text-white">
@@ -241,9 +244,22 @@ export default function DashboardPage() {
               <h2 className="text-3xl font-bold text-white tracking-tight mb-2">Your Events</h2>
               <p className="text-text-secondary">Capture and moderate shared memories from your walls.</p>
             </div>
-            <Link href="/create" className="btn-premium flex items-center gap-2 !py-3 !px-6 text-sm">
-               <Plus size={18} /> Create New Wall
-            </Link>
+            
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="relative flex-grow sm:flex-grow-0">
+                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search events..." 
+                  className="w-full sm:w-64 bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <Link href="/create" className="btn-premium flex items-center gap-2 !py-3 !px-6 text-sm flex-shrink-0">
+                 <Plus size={18} /> <span className="hidden sm:inline">Create New Wall</span>
+              </Link>
+            </div>
           </div>
 
           {events.length === 0 ? (
@@ -261,10 +277,12 @@ export default function DashboardPage() {
                  <Plus size={20} /> Launch your first wall
                </Link>
             </motion.div>
+          ) : filteredEvents.length === 0 ? (
+             <div className="glass-panel p-16 text-center text-text-muted">No events found matching "{searchQuery}"</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
-                {events.map((event, i) => (
+                {filteredEvents.map((event, i) => (
                   <EventCard
                     key={event.id}
                     event={event}
@@ -409,6 +427,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
           { href: `/wall/${event.slug}`, icon: <Layout size={18} />, label: 'Wall', color: 'primary' },
           { href: `/mobile/${event.slug}`, icon: <Camera size={18} />, label: 'Scan', color: 'secondary' },
           { href: `/moderate/${event.slug}`, icon: <Shield size={18} />, label: 'Mod', color: 'text-white' },
+          { href: `/dashboard/${event.id}/analytics`, icon: <BarChart2 size={18} />, label: 'Stats', color: 'text-white' },
         ].map((btn) => (
           <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group/btn">
             <div className={`text-${btn.color} group-hover/btn:scale-110 transition-transform`}>{btn.icon}</div>

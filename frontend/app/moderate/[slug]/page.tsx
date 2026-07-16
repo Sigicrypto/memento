@@ -29,6 +29,13 @@ export default function ModeratePage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('pending');
   const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
  
   useEffect(() => {
     if (isLoading) return;
@@ -59,6 +66,37 @@ export default function ModeratePage() {
     await supabase.storage.from('photos').remove([photo.storage_path]);
     await supabase.from('photos').delete().eq('id', photo.id);
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
+    showToast('Photo rejected and deleted');
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    await supabase.from('photos').update({ approved: true }).in('id', ids);
+    setPhotos(prev => prev.map(p => ids.includes(p.id) ? { ...p, approved: true } : p));
+    setSelectedIds(new Set());
+    showToast(`Approved ${ids.length} photos`);
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Reject and delete ${selectedIds.size} photos permanently?`)) return;
+    const ids = Array.from(selectedIds);
+    const photosToDelete = photos.filter(p => ids.includes(p.id));
+    await supabase.storage.from('photos').remove(photosToDelete.map(p => p.storage_path));
+    await supabase.from('photos').delete().in('id', ids);
+    setPhotos((prev) => prev.filter((p) => !ids.includes(p.id)));
+    setSelectedIds(new Set());
+    showToast(`Rejected and deleted ${ids.length} photos`);
+  };
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
  
   if (isLoading || loading) {
@@ -76,7 +114,16 @@ export default function ModeratePage() {
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
- 
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div initial={{ opacity: 0, y: -20, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: -20, x: '-50%' }} className={`fixed top-24 left-1/2 z-[200] px-6 py-3 rounded-full flex items-center gap-2 font-bold text-sm shadow-2xl backdrop-blur-xl border ${toast.type === 'success' ? 'bg-green-500/20 text-green-500 border-green-500/30' : 'bg-red-500/20 text-red-500 border-red-500/30'}`}>
+            {toast.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
@@ -109,12 +156,21 @@ export default function ModeratePage() {
                </p>
             </div>
  
-            <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
-               {(['pending', 'approved', 'all'] as const).map(f => (
-                 <button key={f} onClick={() => setFilter(f)} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-white/5'}`}>
-                    {f}
-                 </button>
-               ))}
+            <div className="flex flex-col gap-4 items-end">
+               <div className="bg-white/5 border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
+                  {(['pending', 'approved', 'all'] as const).map(f => (
+                    <button key={f} onClick={() => { setFilter(f); setSelectedIds(new Set()); }} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-white/5'}`}>
+                       {f}
+                    </button>
+                  ))}
+               </div>
+               {selectedIds.size > 0 && (
+                 <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold mr-2 text-text-muted">{selectedIds.size} selected</span>
+                    <button onClick={handleBulkApprove} className="px-4 py-2 bg-primary text-white rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"><Check size={14} className="inline mr-1" /> Approve</button>
+                    <button onClick={handleBulkReject} className="px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-colors"><Trash2 size={14} className="inline mr-1" /> Reject</button>
+                 </div>
+               )}
             </div>
          </div>
  
@@ -128,13 +184,21 @@ export default function ModeratePage() {
                </motion.div>
             ) : (
                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredPhotos.map((photo, i) => (
-                    <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} className={`relative group aspect-[3/4] rounded-3xl overflow-hidden border ${!photo.approved ? 'border-primary/50 shadow-[0_0_30px_rgba(99,102,241,0.2)]' : 'border-white/5'} bg-white/5`}>
-                       {photo.media_type === 'video' ? (
-                          <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
-                       ) : (
-                          <img src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
-                       )}
+                   {filteredPhotos.map((photo, i) => (
+                     <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} onClick={() => toggleSelection(photo.id)} className={`relative group aspect-[3/4] rounded-3xl overflow-hidden border cursor-pointer ${selectedIds.has(photo.id) ? 'border-primary shadow-[0_0_20px_rgba(99,102,241,0.5)]' : !photo.approved ? 'border-primary/50' : 'border-white/5'} bg-white/5`}>
+                        {selectedIds.has(photo.id) && (
+                          <div className="absolute inset-0 bg-primary/20 z-10 pointer-events-none" />
+                        )}
+                        <div className="absolute top-4 left-4 z-20">
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${selectedIds.has(photo.id) ? 'bg-primary border-primary' : 'border-white/50 bg-black/50'}`}>
+                             {selectedIds.has(photo.id) && <Check size={14} className="text-white" />}
+                          </div>
+                        </div>
+                        {photo.media_type === 'video' ? (
+                           <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
+                        ) : (
+                           <img src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                        )}
                        
                        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end">
                           <div className="flex items-center justify-between mb-3">
@@ -146,17 +210,16 @@ export default function ModeratePage() {
                           </div>
                           
                           {photo.caption && <p className="text-xs text-white italic mb-4 line-clamp-2">&quot;{photo.caption}&quot;</p>}
-                          
-                          <div className="flex gap-2">
-                             {!photo.approved && (
-                               <button onClick={() => approvePhoto(photo.id)} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
-                                  <Check size={14} /> Approve
-                               </button>
-                             )}
-                             <button onClick={() => rejectPhoto(photo)} className="flex-1 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2">
-                                <Trash2 size={14} /> Reject
-                             </button>
-                          </div>
+                                                    <div className="flex gap-2 relative z-20">
+                              {!photo.approved && (
+                                <button onClick={(e) => { e.stopPropagation(); approvePhoto(photo.id); showToast('Photo approved'); }} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-[10px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                                   <Check size={14} /> Approve
+                                </button>
+                              )}
+                              <button onClick={(e) => { e.stopPropagation(); rejectPhoto(photo); }} className="flex-1 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2">
+                                 <Trash2 size={14} /> Reject
+                              </button>
+                           </div>
                        </div>
                     </motion.div>
                   ))}

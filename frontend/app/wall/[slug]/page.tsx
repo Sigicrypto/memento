@@ -12,7 +12,7 @@ import Webcam from 'react-webcam';
 import { extractFaceDescriptorRobust, MATCH_THRESHOLD } from '@/lib/faceEngine';
 import { useAuth } from '@/hooks/useAuth';
 import { hasFeature } from '@/lib/permissions';
-import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2 } from 'lucide-react';
+import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music } from 'lucide-react';
  
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
  
@@ -291,7 +291,21 @@ export default function WallPage() {
     const content = await zip.generateAsync({ type: 'blob' });
     saveAs(content, `${slug}-memento.zip`);
   };
- 
+
+  const handleReaction = async (photoId: string) => {
+    // Optimistic update
+    setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p));
+    
+    // Insert into DB
+    const guestId = localStorage.getItem('memento_guest_id') || Math.random().toString(36).substring(2);
+    localStorage.setItem('memento_guest_id', guestId);
+    
+    await supabase.from('reactions').insert({
+      photo_id: photoId,
+      guest_id: guestId
+    });
+  };
+
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
@@ -493,7 +507,12 @@ export default function WallPage() {
                     <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/5 bg-white/5">
                        <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" loading="lazy" />
                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
-                          <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
+                          <div className="flex justify-between items-start">
+                             <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
+                             <button onClick={() => handleReaction(p.id)} className="text-white/60 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 bg-black/40 px-2 py-1 rounded-full text-xs font-bold">
+                                <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
+                             </button>
+                          </div>
                           {p.caption && <p className="text-sm text-white italic line-clamp-2">&quot;{p.caption}&quot;</p>}
                        </div>
                     </motion.div>
@@ -507,7 +526,11 @@ export default function WallPage() {
                           {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" alt="" loading="lazy" />}
                        </div>
                        <div className="absolute inset-x-0 bottom-0 p-4 text-center">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">MEMENTO BY <span className="text-primary">{p.uploader_name}</span></p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">MEMENTO BY <span className="text-primary">{p.uploader_name}</span>
+                             <button onClick={() => handleReaction(p.id)} className="text-slate-400 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-1">
+                                <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
+                             </button>
+                          </p>
                           {p.caption && <p className="text-[11px] text-slate-900 font-medium italic truncate px-4">&quot;{p.caption}&quot;</p>}
                        </div>
                     </motion.div>
@@ -567,6 +590,32 @@ export default function WallPage() {
       </AnimatePresence>
  
       <Confetti trigger={confettiTrigger} />
+
+      {/* Music Control */}
+      {musicTrack && hasFeature(planTier, 'SLIDESHOW_MUSIC') && (
+        <div className="fixed bottom-8 left-8 z-[100]">
+          <div className="p-4 glass-panel border-white/10 flex items-center gap-4">
+            <button 
+              onClick={() => {
+                 setIsAudioPlaying(!isAudioPlaying);
+                 if (audioRef.current) {
+                    if (isAudioPlaying) audioRef.current.pause();
+                    else audioRef.current.play();
+                 }
+              }}
+              className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+            >
+              {isAudioPlaying ? <Pause size={20} /> : <Play size={20} className="ml-1" />}
+            </button>
+            <div>
+               <p className="text-[9px] font-black text-primary uppercase tracking-[.2em] mb-0.5 flex items-center gap-1">
+                  <Music size={10} /> {isAudioPlaying ? 'NOW PLAYING' : 'PAUSED'}
+               </p>
+               <p className="text-xs font-bold text-white capitalize">{musicTrack.replace('-', ' ')}</p>
+            </div>
+          </div>
+        </div>
+      )}
  
       {/* WhatsApp Message Me */}
       <div className="fixed bottom-8 right-8 z-[100] hidden lg:block">

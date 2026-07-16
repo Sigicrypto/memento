@@ -4,6 +4,7 @@ import { Outfit, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
 import LayoutShell from "@/components/LayoutShell";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -82,9 +83,11 @@ export default function RootLayout({
     <html lang="en" className={`${outfit.variable} ${cormorant.variable}`}>
       <body className="min-h-screen w-full antialiased transition-colors duration-300 font-sans" suppressHydrationWarning={true}>
         <AppProviders>
-          <LayoutShell>
-            {children}
-          </LayoutShell>
+          <ErrorBoundary>
+            <LayoutShell>
+              {children}
+            </LayoutShell>
+          </ErrorBoundary>
         </AppProviders>
       </body>
     </html>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateCSRF } from '@/lib/csrf';
 
 const PRICES_INR: Record<string, number> = {
   STARTER: 2500, STANDARD: 5000, PREMIUM: 7500, WHITE_LABEL: 10000,
@@ -12,6 +13,10 @@ const PLAN_NAMES: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
+  if (!validateCSRF()) {
+    return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+  }
+
   const { plan, region, userId, userEmail, eventId } = await req.json();
   const planKey = (plan || 'STANDARD').toUpperCase().replace(' ', '_');
 

@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download } from 'lucide-react';
 import { hasFeature } from '@/lib/permissions';
 import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
  
@@ -30,6 +30,7 @@ interface Photo {
   caption?: string;
   event_id: string;
   media_type?: 'image' | 'video';
+  reaction_count?: number;
 }
  
 interface Event {
@@ -201,7 +202,31 @@ export default function MobilePage() {
   };
  
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
- 
+
+  const handleReaction = async (photoId: string) => {
+    setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p));
+    const gId = guestId || localStorage.getItem('memento_guest_id') || Math.random().toString(36).substring(2);
+    localStorage.setItem('memento_guest_id', gId);
+    await supabase.from('reactions').insert({ photo_id: photoId, guest_id: gId });
+  };
+
+  const handleDownload = async (p: Photo) => {
+    try {
+      const response = await fetch(getPublicUrl(p.storage_path));
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `memento_${p.uploader_name}_${p.id.substring(0, 4)}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (e) {
+      console.error('Download failed', e);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
       <div className="grain" />
@@ -319,6 +344,14 @@ export default function MobilePage() {
                   {photos.map(p => (
                     <div key={p.id} className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/5 bg-white/5 group">
                        <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                       <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                         <button onClick={() => handleReaction(p.id)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-pink-500 hover:scale-110 transition-all border border-white/10">
+                           <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} />
+                         </button>
+                         <button onClick={() => handleDownload(p)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-primary hover:scale-110 transition-all border border-white/10">
+                           <Download size={14} />
+                         </button>
+                       </div>
                        {p.caption && (
                          <div className="absolute inset-x-0 bottom-0 p-3 bg-black/60 backdrop-blur-md">
                             <p className="text-[10px] italic text-white/80 line-clamp-2">"{p.caption}"</p>

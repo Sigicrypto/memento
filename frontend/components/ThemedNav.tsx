@@ -48,18 +48,18 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
       <motion.nav 
         initial={{ y: -100, opacity: 0 }}
         animate={{ 
-          y: scrolled ? 16 : 0, 
+          y: scrolled ? 12 : 0, 
           opacity: 1,
-          width: scrolled ? '90%' : '100%',
-          maxWidth: scrolled ? '1200px' : '100%',
-          backgroundColor: scrolled ? 'rgba(9, 9, 11, 0.7)' : (isMobileMenuOpen ? 'rgba(3, 3, 4, 0.95)' : 'transparent'),
-          backdropFilter: scrolled || isMobileMenuOpen ? 'blur(16px)' : 'blur(0px)',
+          width: scrolled ? '92%' : '100%',
+          maxWidth: scrolled ? '1400px' : '100%',
+          backgroundColor: scrolled ? 'rgba(3, 3, 4, 0.85)' : (isMobileMenuOpen ? 'rgba(3, 3, 4, 0.98)' : 'transparent'),
+          backdropFilter: scrolled || isMobileMenuOpen ? 'blur(20px)' : 'blur(0px)',
           borderRadius: scrolled ? '24px' : '0px',
-          border: scrolled ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
-          boxShadow: scrolled ? '0 20px 40px rgba(0,0,0,0.4)' : 'none'
+          border: scrolled ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid transparent',
+          boxShadow: scrolled ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : 'none'
         }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] h-20 flex items-center transition-all duration-300"
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-0 left-1/2 -translate-x-1/2 z-[1000] h-20 flex items-center"
       >
         <div className="w-full flex items-center justify-between px-6 md:px-12">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>

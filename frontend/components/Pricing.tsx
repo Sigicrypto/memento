@@ -1,96 +1,13 @@
 "use client";
  
-import Link from 'next/navigation';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, X, Sparkles, Zap, Star, Shield, Layout, ArrowRight, Heart, Music, BarChart3, Globe, ArrowLeft } from 'lucide-react';
  
+import { PLANS } from '@/lib/plans';
 type Region = 'IN' | 'GLOBAL';
  
-type Plan = {
-  name: string;
-  priceIN: string;
-  priceGlobal: string;
-  highlight?: boolean;
-  stats: string;
-  description: string;
-  icon: any;
-  iconColor: string;
-  features: { label: string; included: boolean }[];
-};
- 
-const PLANS: Plan[] = [
-  {
-    name: 'Starter',
-    priceIN: '₹2,500',
-    priceGlobal: '$30',
-    icon: Zap,
-    iconColor: 'text-green-400',
-    description: 'Perfect for small, intimate gatherings',
-    stats: 'Up to 150 guests',
-    features: [
-      { label: 'Collect guest photos instantly', included: true },
-      { label: 'Live photo wall experience', included: true },
-      { label: 'Unlimited photo uploads', included: true },
-      { label: 'Download all photos as ZIP', included: true },
-      { label: '1 Month Secure Storage', included: true }
-    ],
-  },
-  {
-    name: 'Standard',
-    priceIN: '₹5,000',
-    priceGlobal: '$60',
-    highlight: true,
-    icon: Star,
-    iconColor: 'text-primary',
-    description: 'The sweet spot for lively celebrations',
-    stats: 'Up to 300 guests',
-    features: [
-      { label: 'Everything in Starter +', included: true },
-      { label: '🎥 Auto AI Album Creation', included: true },
-      { label: '🎨 Custom wall branding', included: true },
-      { label: '📊 Engagement Analytics', included: true },
-      { label: '📺 4K Slideshow TV Mode', included: true },
-      { label: '❤️ Real-time Reactions', included: true },
-      { label: '3 Months Secure Storage', included: true }
-    ],
-  },
-  {
-    name: 'Premium',
-    priceIN: '₹7,500',
-    priceGlobal: '$90',
-    icon: Heart,
-    iconColor: 'text-secondary',
-    description: 'For luxury weddings & VIP events',
-    stats: 'Unlimited guests',
-    features: [
-      { label: 'Everything in Standard +', included: true },
-      { label: '🎶 Cinematic Soundtrack', included: true },
-      { label: '⏳ Auto-expiring galleries', included: true },
-      { label: '🛡️ Priority 24/7 Support', included: true },
-      { label: '🔒 Advanced Privacy Vault', included: true },
-      { label: '☁️ Immediate Cloud Sync', included: true },
-      { label: '6 Months Secure Storage', included: true }
-    ],
-  },
-  {
-    name: 'White Label',
-    priceIN: '₹10,000',
-    priceGlobal: '$120',
-    icon: Shield,
-    iconColor: 'text-indigo-400',
-    description: 'For agencies & photographers',
-    stats: 'Multi-event dashboard',
-    features: [
-      { label: 'Everything in Premium +', included: true },
-      { label: '🔥 Full branding removal', included: true },
-      { label: '🌐 Custom domain connection', included: true },
-      { label: '💰 Partner resell rights', included: true },
-      { label: '📊 Unified Client Portal', included: true },
-      { label: '🚀 Concierge Setup Service', included: true },
-    ],
-  },
-];
  
 export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: boolean, eventId?: string }) {
   const [region, setRegion] = useState<Region>('GLOBAL');
@@ -123,7 +40,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
           {PLANS.map((plan, idx) => {
             const price = region === 'IN' ? plan.priceIN : plan.priceGlobal;
-            const Icon = plan.icon;
+            const Icon = plan.id === 'starter' ? Zap : plan.id === 'standard' ? Star : plan.id === 'premium' ? Heart : Shield;
             
             return (
               <motion.div 
@@ -132,10 +49,10 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`flex flex-col glass-panel p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 scale-[1.02] bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+                className={`flex flex-col h-full glass-panel p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 scale-[1.02] bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
               >
                 {plan.highlight && (
-                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg shadow-primary/20 whitespace-nowrap">
+                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
                       ✨ Highly Recommended
                    </div>
                 )}

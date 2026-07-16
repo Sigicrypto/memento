@@ -42,7 +42,7 @@ const Features: React.FC = () => {
           ].map((f, i) => (
             <motion.div 
               key={i} 
-              className={`gcard flex flex-col items-start ${f.big ? 'lg:col-span-2' : ''}`}
+              className={`gcard h-full flex flex-col items-start ${f.big ? 'lg:col-span-2' : ''}`}
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
