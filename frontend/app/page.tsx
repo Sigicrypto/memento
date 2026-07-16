@@ -216,7 +216,7 @@ export default function LandingPage() {
         />
       </div>
     </div>
-    {isDemoOpen && <DemoModal onClose={() => setIsDemoOpen(false)} />}
+    {isDemoOpen && <DemoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />}
     </>
   );
 }
