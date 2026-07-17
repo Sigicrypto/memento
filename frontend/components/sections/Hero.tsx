@@ -52,25 +52,25 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-20 relative w-full max-w-5xl mx-auto"
+          className="mt-20 relative w-full max-w-5xl mx-auto flex justify-center"
         >
           {/* Floating Polaroids */}
-          <div className="absolute hidden lg:block left-0 top-20 rotate-[-12deg] z-20 -translate-x-1/2">
-            <div className="gcard p-2 bg-white pb-10 w-48 shadow-2xl">
+          <div className="absolute hidden lg:block left-[2%] top-20 rotate-[-12deg] z-20">
+            <div className="gcard p-2 bg-white pb-10 w-44 shadow-2xl">
               <img src="/landing-hero/photo2.jpg" alt="Memory" className="w-full aspect-square object-cover rounded-sm mb-3" />
               <div className="h-2 w-2/3 bg-zinc-100 rounded-full mx-auto" />
             </div>
           </div>
-          <div className="absolute hidden lg:block right-0 top-0 rotate-[8deg] z-20 translate-x-1/2">
-            <div className="gcard p-2 bg-white pb-10 w-48 shadow-2xl">
+          <div className="absolute hidden lg:block right-[2%] top-8 rotate-[8deg] z-20">
+            <div className="gcard p-2 bg-white pb-10 w-44 shadow-2xl">
               <img src="/landing-hero/photo6.jpg" alt="Memory" className="w-full aspect-square object-cover rounded-sm mb-3" />
               <div className="h-2 w-1/2 bg-zinc-100 rounded-full mx-auto" />
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-6 lg:gap-12 scale-[0.9] md:scale-100">
+          <div className="flex items-end justify-center gap-6 lg:gap-10 scale-[0.9] md:scale-100">
             {/* Left Phone */}
-            <div className="hidden md:block w-[280px] flex-shrink-0 h-[580px] rounded-[3rem] border-[8px] border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transform rotate-[-6deg] translate-y-12">
+            <div className="hidden md:block w-[260px] flex-shrink-0 h-[540px] rounded-[3rem] border-[8px] border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transform rotate-[-6deg] mb-8">
               <div className="h-full flex flex-col p-4">
                 <div className="flex justify-between items-center mb-6 pt-4">
                   <div className="h-6 w-20 bg-white/10 rounded-full" />
@@ -88,7 +88,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
             </div>
 
             {/* Main Phone (Wall View) */}
-            <div className="w-[300px] flex-shrink-0 h-[620px] rounded-[3rem] border-[8px] border-zinc-800 bg-black overflow-hidden shadow-[0_0_100px_rgba(99,102,241,0.2)] z-10">
+            <div className="w-[280px] flex-shrink-0 h-[600px] rounded-[3rem] border-[8px] border-zinc-800 bg-black overflow-hidden shadow-[0_0_100px_rgba(99,102,241,0.2)] z-10">
               <div className="h-full flex flex-col">
                  <div className="h-14 bg-zinc-900/50 backdrop-blur-md flex items-center justify-between px-6 border-b border-white/5">
                    <div className="w-3 h-3 rounded-full bg-secondary" />
@@ -105,7 +105,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
             </div>
 
             {/* Right Phone */}
-            <div className="hidden lg:block w-[280px] flex-shrink-0 h-[580px] rounded-[3rem] border-[8px] border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transform rotate-[6deg] translate-y-12">
+            <div className="hidden lg:block w-[260px] flex-shrink-0 h-[540px] rounded-[3rem] border-[8px] border-zinc-800 bg-zinc-900 overflow-hidden shadow-2xl transform rotate-[6deg] mb-8">
                <div className="h-full flex flex-col p-8 items-center justify-center">
                   <div className="w-full aspect-square bg-white rounded-2xl p-4 mb-6 shadow-xl">
                     <div className="w-full h-full bg-zinc-100 rounded-lg flex items-center justify-center">
