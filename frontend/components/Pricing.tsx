@@ -49,7 +49,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`flex flex-col h-full glass-panel p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 scale-[1.02] bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+                className={`flex flex-col glass-panel p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 scale-[1.02] bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
               >
                 {plan.highlight && (
                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
@@ -72,13 +72,6 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                    <p className="text-text-secondary text-xs mt-2 italic">“{plan.description}”</p>
                 </div>
  
-                <a 
-                   href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mb-10 flex items-center justify-center gap-2 group ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
-                >
-                   {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
-                </a>
- 
                 <div className="space-y-4 flex-grow">
                    <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">{plan.stats}</p>
                    {plan.features.map((f, i) => (
@@ -88,6 +81,13 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                       </div>
                    ))}
                 </div>
+
+                <a 
+                   href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
+                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-10 flex items-center justify-center gap-2 group ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
+                >
+                   {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
+                </a>
               </motion.div>
             );
           })}
@@ -97,14 +97,14 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
            <h3 className="text-3xl font-bold text-center">Feature Breakdown</h3>
            <div className="glass-panel p-0 overflow-hidden border-white/10">
               <div className="overflow-x-auto">
-                 <table className="w-full text-sm text-left">
+                 <table className="w-full text-sm text-left table-fixed">
                     <thead className="bg-white/5 border-b border-white/10">
                        <tr>
-                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-muted">Capability</th>
-                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-green-400 text-center">Starter</th>
-                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-primary text-center">Standard</th>
-                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-secondary text-center">Premium</th>
-                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center">White Label</th>
+                          <th className="w-[28%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-muted">Capability</th>
+                          <th className="w-[18%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-green-400 text-center">Starter</th>
+                          <th className="w-[18%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-primary text-center">Standard</th>
+                          <th className="w-[18%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-secondary text-center">Premium</th>
+                          <th className="w-[18%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center">White Label</th>
                        </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -146,9 +146,9 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 function ComparisonRow({ label, values }: { label: string, values: any[] }) {
   return (
     <tr className="hover:bg-white/5 transition-colors">
-       <td className="px-8 py-5 font-bold text-white/80">{label}</td>
+       <td className="px-8 py-4 font-bold text-white/80 text-sm">{label}</td>
        {values.map((v, i) => (
-          <td key={i} className="px-8 py-5 text-center">
+          <td key={i} className="px-4 py-4 text-center">
              {typeof v === 'boolean' ? (
                 v ? <Check size={18} className="text-primary mx-auto" /> : <X size={18} className="text-text-muted opacity-20 mx-auto" />
              ) : (
