@@ -55,14 +55,14 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           className="mt-20 relative w-full max-w-5xl mx-auto flex justify-center"
         >
           {/* Floating Polaroids */}
-          <div className="absolute hidden lg:block left-[2%] top-20 rotate-[-12deg] z-20">
-            <div className="gcard p-2 bg-white pb-10 w-44 shadow-2xl">
+          <div className="absolute hidden lg:block left-0 top-20 rotate-[-12deg] z-20 -translate-x-1/2">
+            <div className="gcard p-2 bg-white pb-10 w-48 shadow-2xl">
               <img src="/landing-hero/photo2.jpg" alt="Memory" className="w-full aspect-square object-cover rounded-sm mb-3" />
               <div className="h-2 w-2/3 bg-zinc-100 rounded-full mx-auto" />
             </div>
           </div>
-          <div className="absolute hidden lg:block right-[2%] top-8 rotate-[8deg] z-20">
-            <div className="gcard p-2 bg-white pb-10 w-44 shadow-2xl">
+          <div className="absolute hidden lg:block right-0 top-0 rotate-[8deg] z-20 translate-x-1/2">
+            <div className="gcard p-2 bg-white pb-10 w-48 shadow-2xl">
               <img src="/landing-hero/photo6.jpg" alt="Memory" className="w-full aspect-square object-cover rounded-sm mb-3" />
               <div className="h-2 w-1/2 bg-zinc-100 rounded-full mx-auto" />
             </div>

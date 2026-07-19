@@ -86,6 +86,7 @@ export const PLANS: Plan[] = [
       { label: '6 Months Secure Storage', included: true },
       { label: 'Branding Removal', included: false },
       { label: 'Custom Domain', included: false },
+      { label: 'Partner Resell', included: false },
     ],
   },
   {
@@ -106,6 +107,7 @@ export const PLANS: Plan[] = [
       { label: '🚀 Concierge Setup Service', included: true },
       { label: '6 Months Secure Storage', included: true },
       { label: 'Custom Domain', included: true },
+      { label: 'Partner Resell', included: true },
     ],
   },
 ];
