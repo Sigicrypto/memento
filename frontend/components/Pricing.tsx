@@ -37,7 +37,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">One-time payment. No hidden subscriptions. Just lifetime access to your memories.</p>
         </div>
  
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32 items-stretch">
           {PLANS.map((plan, idx) => {
             const price = region === 'IN' ? plan.priceIN : plan.priceGlobal;
             const Icon = plan.id === 'starter' ? Zap : plan.id === 'standard' ? Star : plan.id === 'premium' ? Heart : Shield;
@@ -49,7 +49,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`flex flex-col glass-panel p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 scale-[1.02] bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+                className={`flex flex-col h-full glass-panel !overflow-visible p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
               >
                 {plan.highlight && (
                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
@@ -72,7 +72,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                    <p className="text-text-secondary text-xs mt-2 italic">“{plan.description}”</p>
                 </div>
  
-                <div className="space-y-4 flex-grow">
+                <div className="space-y-4 flex-grow mb-8">
                    <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">{plan.stats}</p>
                    {plan.features.map((f, i) => (
                       <div key={i} className={`flex items-start gap-3 text-xs ${f.included ? 'text-text-secondary' : 'text-text-muted opacity-40'}`}>
@@ -84,7 +84,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 
                 <a 
                    href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto pt-8 flex items-center justify-center gap-2 group ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
+                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 group ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
                 >
                    {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
                 </a>
@@ -97,7 +97,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
            <h3 className="text-3xl font-bold text-center">Feature Breakdown</h3>
            <div className="glass-panel p-0 overflow-hidden border-white/10">
               <div className="overflow-x-auto">
-                 <table className="w-full text-sm text-left table-fixed">
+                 <table className="w-full min-w-[900px] text-sm text-left table-fixed">
                     <thead className="bg-white/5 border-b border-white/10">
                        <tr>
                           <th className="w-[28%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-muted">Capability</th>

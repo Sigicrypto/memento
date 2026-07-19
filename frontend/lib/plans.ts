@@ -63,6 +63,7 @@ export const PLANS: Plan[] = [
       { label: '3 Months Secure Storage', included: true },
       { label: 'Cinematic Soundtrack', included: false },
       { label: 'Branding Removal', included: false },
+      { label: 'Custom Domain', included: false },
     ],
   },
   {
@@ -84,6 +85,7 @@ export const PLANS: Plan[] = [
       { label: '☁️ Immediate Cloud Sync', included: true },
       { label: '6 Months Secure Storage', included: true },
       { label: 'Branding Removal', included: false },
+      { label: 'Custom Domain', included: false },
     ],
   },
   {
@@ -103,6 +105,7 @@ export const PLANS: Plan[] = [
       { label: '📊 Unified Client Portal', included: true },
       { label: '🚀 Concierge Setup Service', included: true },
       { label: '6 Months Secure Storage', included: true },
+      { label: 'Custom Domain', included: true },
     ],
   },
 ];
