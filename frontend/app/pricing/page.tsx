@@ -14,7 +14,7 @@ export default function PricingPage({
   const eventId = searchParams?.eventId;
 
   return (
-    <main className="lp min-h-screen relative overflow-hidden flex flex-col">
+    <main className="lp min-h-screen relative overflow-hidden flex flex-col w-full items-center">
       <div className="aurora-bg fixed inset-0 z-0" />
       <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
 

@@ -52,7 +52,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           opacity: 1,
           width: scrolled ? '92%' : '100%',
           maxWidth: scrolled ? '1400px' : '100%',
-          backgroundColor: scrolled ? 'rgba(3, 3, 4, 0.85)' : (isMobileMenuOpen ? 'rgba(3, 3, 4, 0.98)' : 'transparent'),
+          backgroundColor: scrolled ? 'rgba(3, 3, 4, 0.98)' : (isMobileMenuOpen ? 'rgba(3, 3, 4, 0.98)' : 'transparent'),
           backdropFilter: scrolled || isMobileMenuOpen ? 'blur(20px)' : 'blur(0px)',
           borderRadius: scrolled ? '24px' : '0px',
           border: scrolled ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid transparent',

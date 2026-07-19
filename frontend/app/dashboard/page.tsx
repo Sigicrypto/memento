@@ -422,7 +422,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {[
           { href: `/wall/${event.slug}`, icon: <Layout size={18} />, label: 'Wall', color: 'primary' },
           { href: `/mobile/${event.slug}`, icon: <Camera size={18} />, label: 'Scan', color: 'secondary' },

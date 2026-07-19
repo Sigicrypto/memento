@@ -1,0 +1,589 @@
+
+<style>
+  :root {
+    --color-border-secondary: #E2E8F0;
+    --color-border-primary: #3B82F6;
+    --color-border-tertiary: #F1F5F9;
+    --color-background-secondary: #F8FAFC;
+    --color-text-primary: #1E293B;
+    --color-text-secondary: #64748B;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .tab{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--color-border-secondary);color:var(--color-text-secondary);background:transparent;transition:all .15s}
+  .tab.active{background:var(--color-background-secondary);border-color:var(--color-border-primary);color:var(--color-text-primary)}
+  .panel{display:none}.panel.active{display:block}
+  text{font-family:var(--font-sans)}
+
+  /* SVG Node styling to fix black box issue */
+  .node rect {
+    fill: #FFFFFF; /* Default fill */
+    stroke: #E2E8F0;
+  }
+
+  /* Color Themes for Nodes */
+  .c-purple rect { fill: #EEEDFE; stroke: #534AB7; }
+  .c-purple text.th { fill: #3C3489; font-weight: 600; }
+  .c-purple text.ts { fill: #534AB7; }
+
+  .c-teal rect { fill: #E1F5EE; stroke: #0F6E56; }
+  .c-teal text.th { fill: #085041; font-weight: 600; }
+  .c-teal text.ts { fill: #0F6E56; }
+
+  .c-gray rect { fill: #F1F5F9; stroke: #475569; }
+  .c-gray text.th { fill: #1E293B; font-weight: 600; }
+  .c-gray text.ts { fill: #475569; }
+
+  .c-coral rect { fill: #FEE2E2; stroke: #B91C1C; }
+  .c-coral text.th { fill: #991B1B; font-weight: 600; }
+  .c-coral text.ts { fill: #B91C1C; }
+
+  .c-amber rect { fill: #FEF3C7; stroke: #92400E; }
+  .c-amber text.th { fill: #78350F; font-weight: 600; }
+  .c-amber text.ts { fill: #92400E; }
+
+  .c-green rect { fill: #D1FAE5; stroke: #065F46; }
+  .c-green text.th { fill: #064E3B; font-weight: 600; }
+  .c-green text.ts { fill: #065F46; }
+
+  /* SVG Text defaults */
+  text.th { font-size: 14px; font-weight: 600; fill: #1E293B; }
+  text.ts { font-size: 12px; fill: #64748B; }
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('overview')">Market overview</button>
+  <button class="tab" onclick="show('india')">India strategy</button>
+  <button class="tab" onclick="show('oman')">Oman strategy</button>
+  <button class="tab" onclick="show('gtm')">Launch plan</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="panel active">
+<svg width="100%" viewBox="0 0 680 700">
+<defs>
+<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text class="th" x="340" y="28" text-anchor="middle" font-size="15">India + Oman — why these two markets are perfect</text>
+
+<!-- India block -->
+<rect x="20" y="44" width="305" height="22" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="ts" x="34" y="59" fill="#3C3489" font-weight="500">INDIA</text>
+
+<g class="node c-purple">
+  <rect x="20" y="76" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="90" y="100" text-anchor="middle" dominant-baseline="central">10M+</text>
+  <text class="ts" x="90" y="122" text-anchor="middle" dominant-baseline="central">weddings/year</text>
+  <text class="ts" x="90" y="138" text-anchor="middle" dominant-baseline="central">world's largest</text>
+</g>
+<g class="node c-purple">
+  <rect x="175" y="76" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="245" y="100" text-anchor="middle" dominant-baseline="central">$50B+</text>
+  <text class="ts" x="245" y="122" text-anchor="middle" dominant-baseline="central">wedding industry</text>
+  <text class="ts" x="245" y="138" text-anchor="middle" dominant-baseline="central">size annually</text>
+</g>
+
+<g class="node c-purple">
+  <rect x="20" y="166" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="90" y="190" text-anchor="middle" dominant-baseline="central">750M+</text>
+  <text class="ts" x="90" y="212" text-anchor="middle" dominant-baseline="central">smartphone users</text>
+  <text class="ts" x="90" y="228" text-anchor="middle" dominant-baseline="central">QR-native</text>
+</g>
+<g class="node c-purple">
+  <rect x="175" y="166" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="245" y="190" text-anchor="middle" dominant-baseline="central">300–2000</text>
+  <text class="ts" x="245" y="212" text-anchor="middle" dominant-baseline="central">guests per wedding</text>
+  <text class="ts" x="245" y="228" text-anchor="middle" dominant-baseline="central">massive photo need</text>
+</g>
+
+<!-- Key events India -->
+<g class="node c-gray">
+  <rect x="20" y="256" width="295" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="167" y="274" text-anchor="middle" dominant-baseline="central">Event types</text>
+  <text class="ts" x="167" y="290" text-anchor="middle" dominant-baseline="central">Weddings, mehendi, sangeet, corporate, college fests, IPL events</text>
+</g>
+
+<!-- Pricing India -->
+<g class="node c-teal">
+  <rect x="20" y="322" width="295" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="167" y="340" text-anchor="middle" dominant-baseline="central">India pricing sweet spot</text>
+  <text class="ts" x="167" y="356" text-anchor="middle" dominant-baseline="central">₹500–₹3,500 / event (~$6–$42) — INR pricing key</text>
+</g>
+
+<!-- Divider line -->
+<line x1="340" y1="44" x2="340" y2="390" stroke="var(--color-border-tertiary)" stroke-width="1" stroke-dasharray="4 4"/>
+
+<!-- Oman block -->
+<rect x="355" y="44" width="305" height="22" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="ts" x="369" y="59" fill="#085041" font-weight="500">OMAN / GCC</text>
+
+<g class="node c-teal">
+  <rect x="355" y="76" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="425" y="100" text-anchor="middle" dominant-baseline="central">500–3000</text>
+  <text class="ts" x="425" y="122" text-anchor="middle" dominant-baseline="central">guests per Omani</text>
+  <text class="ts" x="425" y="138" text-anchor="middle" dominant-baseline="central">wedding</text>
+</g>
+<g class="node c-teal">
+  <rect x="510" y="76" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="580" y="100" text-anchor="middle" dominant-baseline="central">High income</text>
+  <text class="ts" x="580" y="122" text-anchor="middle" dominant-baseline="central">Premium pricing</text>
+  <text class="ts" x="580" y="138" text-anchor="middle" dominant-baseline="central">$50–$200/event</text>
+</g>
+
+<g class="node c-teal">
+  <rect x="355" y="166" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="425" y="190" text-anchor="middle" dominant-baseline="central">Expat market</text>
+  <text class="ts" x="425" y="212" text-anchor="middle" dominant-baseline="central">Indian expats in</text>
+  <text class="ts" x="425" y="228" text-anchor="middle" dominant-baseline="central">Oman: 700K+</text>
+</g>
+<g class="node c-teal">
+  <rect x="510" y="166" width="140" height="76" rx="10" stroke-width="0.5"/>
+  <text class="th" x="580" y="190" text-anchor="middle" dominant-baseline="central">Arabic UI edge</text>
+  <text class="ts" x="580" y="212" text-anchor="middle" dominant-baseline="central">No competitor</text>
+  <text class="ts" x="580" y="228" text-anchor="middle" dominant-baseline="central">offers Arabic</text>
+</g>
+
+<g class="node c-gray">
+  <rect x="355" y="256" width="295" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="502" y="274" text-anchor="middle" dominant-baseline="central">Event types</text>
+  <text class="ts" x="502" y="290" text-anchor="middle" dominant-baseline="central">Farahs, corporate galas, Eid events, govt ceremonies, sports</text>
+</g>
+
+<g class="node c-coral">
+  <rect x="355" y="322" width="295" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="502" y="340" text-anchor="middle" dominant-baseline="central">Oman pricing sweet spot</text>
+  <text class="ts" x="502" y="356" text-anchor="middle" dominant-baseline="central">OMR 5–25 / event (~$13–$65) — Arabic support key</text>
+</g>
+
+<!-- Synergy section -->
+<rect x="20" y="394" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="409" fill="var(--color-text-secondary)">WHY THESE TWO TOGETHER = POWERFUL COMBO</text>
+
+<g class="node c-amber">
+  <rect x="20" y="426" width="192" height="64" rx="8" stroke-width="0.5"/>
+  <text class="th" x="116" y="446" text-anchor="middle" dominant-baseline="central">Shared diaspora</text>
+  <text class="ts" x="116" y="462" text-anchor="middle" dominant-baseline="central">Indian expats in Oman</text>
+  <text class="ts" x="116" y="478" text-anchor="middle" dominant-baseline="central">use same product</text>
+</g>
+<g class="node c-amber">
+  <rect x="228" y="426" width="192" height="64" rx="8" stroke-width="0.5"/>
+  <text class="th" x="324" y="446" text-anchor="middle" dominant-baseline="central">Volume + margin</text>
+  <text class="ts" x="324" y="462" text-anchor="middle" dominant-baseline="central">India = high volume</text>
+  <text class="ts" x="324" y="478" text-anchor="middle" dominant-baseline="central">Oman = high margin</text>
+</g>
+<g class="node c-amber">
+  <rect x="436" y="426" width="224" height="64" rx="8" stroke-width="0.5"/>
+  <text class="th" x="548" y="446" text-anchor="middle" dominant-baseline="central">Language moat</text>
+  <text class="ts" x="548" y="462" text-anchor="middle" dominant-baseline="central">Hindi + Arabic UI</text>
+  <text class="ts" x="548" y="478" text-anchor="middle" dominant-baseline="central">blocks global rivals</text>
+</g>
+
+<!-- Competition gap -->
+<rect x="20" y="506" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="521" fill="var(--color-text-secondary)">COMPETITION LANDSCAPE IN THESE MARKETS</text>
+
+<g class="node c-green">
+  <rect x="20" y="538" width="295" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="167" y="558" text-anchor="middle" dominant-baseline="central">India — gap is wide open</text>
+  <text class="ts" x="167" y="574" text-anchor="middle" dominant-baseline="central">LiveWall, GuestPix etc. have zero Hindi support</text>
+  <text class="ts" x="167" y="590" text-anchor="middle" dominant-baseline="central">No local INR-priced competitor exists</text>
+</g>
+<g class="node c-green">
+  <rect x="355" y="538" width="295" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="502" y="558" text-anchor="middle" dominant-baseline="central">Oman — virtually zero competition</text>
+  <text class="ts" x="502" y="574" text-anchor="middle" dominant-baseline="central">No Arabic QR photo wall product exists</text>
+  <text class="ts" x="502" y="590" text-anchor="middle" dominant-baseline="central">You're the local founder — trust advantage</text>
+</g>
+
+<text class="ts" x="340" y="640" text-anchor="middle" fill="var(--color-text-secondary)">Your brand name idea: something bilingual works — e.g. "SnapWall", "WallLamha" (لحظة = moment in Arabic)</text>
+<text class="ts" x="340" y="660" text-anchor="middle" fill="var(--color-text-secondary)">One product, two languages, two pricing tiers, one codebase.</text>
+</svg>
+</div>
+
+<!-- INDIA STRATEGY -->
+<div id="india" class="panel">
+<svg width="100%" viewBox="0 0 680 730">
+<defs>
+<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text class="th" x="340" y="28" text-anchor="middle" font-size="15">India go-to-market strategy</text>
+
+<!-- Target segments -->
+<rect x="20" y="44" width="640" height="22" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="ts" x="34" y="59" fill="#3C3489" font-weight="500">TARGET SEGMENTS — PRIORITY ORDER</text>
+
+<g class="node c-purple">
+  <rect x="20" y="76" width="186" height="64" rx="10" stroke-width="0.5"/>
+  <text class="th" x="113" y="96" text-anchor="middle" dominant-baseline="central">1. Weddings</text>
+  <text class="ts" x="113" y="112" text-anchor="middle" dominant-baseline="central">Sangeet, mehendi, reception</text>
+  <text class="ts" x="113" y="128" text-anchor="middle" dominant-baseline="central">300–2000 guests</text>
+</g>
+<g class="node c-purple">
+  <rect x="220" y="76" width="186" height="64" rx="10" stroke-width="0.5"/>
+  <text class="th" x="313" y="96" text-anchor="middle" dominant-baseline="central">2. College events</text>
+  <text class="ts" x="313" y="112" text-anchor="middle" dominant-baseline="central">Fests, farewells, reunions</text>
+  <text class="ts" x="313" y="128" text-anchor="middle" dominant-baseline="central">Tech-savvy users</text>
+</g>
+<g class="node c-purple">
+  <rect x="420" y="76" width="240" height="64" rx="10" stroke-width="0.5"/>
+  <text class="th" x="540" y="96" text-anchor="middle" dominant-baseline="central">3. Corporate events</text>
+  <text class="ts" x="540" y="112" text-anchor="middle" dominant-baseline="central">Team outings, product launches</text>
+  <text class="ts" x="540" y="128" text-anchor="middle" dominant-baseline="central">Repeat B2B revenue</text>
+</g>
+
+<!-- Channels -->
+<rect x="20" y="158" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="173" fill="var(--color-text-secondary)">ACQUISITION CHANNELS</text>
+
+<g class="node c-teal">
+  <rect x="20" y="190" width="192" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="116" y="210" text-anchor="middle" dominant-baseline="central">Instagram + Reels</text>
+  <text class="ts" x="116" y="226" text-anchor="middle" dominant-baseline="central">Wedding content creators</text>
+  <text class="ts" x="116" y="242" text-anchor="middle" dominant-baseline="central">Show the "wow" moment</text>
+  <text class="ts" x="116" y="258" text-anchor="middle" dominant-baseline="central">of photos appearing live</text>
+</g>
+<g class="node c-teal">
+  <rect x="228" y="190" width="192" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="324" y="210" text-anchor="middle" dominant-baseline="central">WhatsApp groups</text>
+  <text class="ts" x="324" y="226" text-anchor="middle" dominant-baseline="central">Wedding planners groups</text>
+  <text class="ts" x="324" y="242" text-anchor="middle" dominant-baseline="central">Event vendor groups</text>
+  <text class="ts" x="324" y="258" text-anchor="middle" dominant-baseline="central">Referral spreads fast</text>
+</g>
+<g class="node c-teal">
+  <rect x="436" y="190" width="224" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="548" y="210" text-anchor="middle" dominant-baseline="central">Wedding portals</text>
+  <text class="ts" x="548" y="226" text-anchor="middle" dominant-baseline="central">WedMeGood, ShaadiSaga</text>
+  <text class="ts" x="548" y="242" text-anchor="middle" dominant-baseline="central">JustDial listings</text>
+  <text class="ts" x="548" y="258" text-anchor="middle" dominant-baseline="central">WeddingWire India</text>
+</g>
+
+<!-- Affiliate India -->
+<rect x="20" y="278" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="293" fill="var(--color-text-secondary)">AFFILIATE PARTNERS — INDIA SPECIFIC</text>
+
+<g class="node c-amber">
+  <rect x="20" y="310" width="144" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="92" y="332" text-anchor="middle" dominant-baseline="central">Photographers</text>
+  <text class="ts" x="92" y="348" text-anchor="middle" dominant-baseline="central">Wedding / event</text>
+  <text class="ts" x="92" y="364" text-anchor="middle" dominant-baseline="central">25% per sale</text>
+</g>
+<g class="node c-amber">
+  <rect x="178" y="310" width="144" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="250" y="332" text-anchor="middle" dominant-baseline="central">Wedding planners</text>
+  <text class="ts" x="250" y="348" text-anchor="middle" dominant-baseline="central">Bundle with packages</text>
+  <text class="ts" x="250" y="364" text-anchor="middle" dominant-baseline="central">20% per sale</text>
+</g>
+<g class="node c-amber">
+  <rect x="336" y="310" width="144" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="408" y="332" text-anchor="middle" dominant-baseline="central">DJs / decorators</text>
+  <text class="ts" x="408" y="348" text-anchor="middle" dominant-baseline="central">Add-on to their service</text>
+  <text class="ts" x="408" y="364" text-anchor="middle" dominant-baseline="central">20% per sale</text>
+</g>
+<g class="node c-amber">
+  <rect x="494" y="310" width="166" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="577" y="332" text-anchor="middle" dominant-baseline="central">Influencers</text>
+  <text class="ts" x="577" y="348" text-anchor="middle" dominant-baseline="central">Wedding / lifestyle</text>
+  <text class="ts" x="577" y="364" text-anchor="middle" dominant-baseline="central">Instagram / YouTube</text>
+</g>
+
+<!-- Pricing -->
+<rect x="20" y="386" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="401" fill="var(--color-text-secondary)">INDIA PRICING TIERS (INR)</text>
+
+<g class="node c-gray">
+  <rect x="20" y="418" width="190" height="80" rx="10" stroke-width="0.5"/>
+  <text class="th" x="115" y="440" text-anchor="middle" dominant-baseline="central">Basic — ₹799</text>
+  <text class="ts" x="115" y="456" text-anchor="middle" dominant-baseline="central">Unlimited photos</text>
+  <text class="ts" x="115" y="472" text-anchor="middle" dominant-baseline="central">1 year storage</text>
+  <text class="ts" x="115" y="488" text-anchor="middle" dominant-baseline="central">Download ZIP</text>
+</g>
+<g class="node c-gray">
+  <rect x="225" y="418" width="215" height="80" rx="10" stroke-width="0.5"/>
+  <text class="th" x="332" y="440" text-anchor="middle" dominant-baseline="central">Premium — ₹1,799</text>
+  <text class="ts" x="332" y="456" text-anchor="middle" dominant-baseline="central">Videos + Google Drive</text>
+  <text class="ts" x="332" y="472" text-anchor="middle" dominant-baseline="central">Safety filter + photo book</text>
+  <text class="ts" x="332" y="488" text-anchor="middle" dominant-baseline="central">Most popular</text>
+</g>
+<g class="node c-gray">
+  <rect x="455" y="418" width="205" height="80" rx="10" stroke-width="0.5"/>
+  <text class="th" x="557" y="440" text-anchor="middle" dominant-baseline="central">Pro — ₹3,499</text>
+  <text class="ts" x="557" y="456" text-anchor="middle" dominant-baseline="central">Unlimited walls</text>
+  <text class="ts" x="557" y="472" text-anchor="middle" dominant-baseline="central">White label + embed</text>
+  <text class="ts" x="557" y="488" text-anchor="middle" dominant-baseline="central">For planners / agencies</text>
+</g>
+
+<!-- Localisation -->
+<rect x="20" y="514" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="529" fill="var(--color-text-secondary)">INDIA-SPECIFIC LOCALISATION</text>
+
+<g class="node c-coral">
+  <rect x="20" y="546" width="192" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="116" y="566" text-anchor="middle" dominant-baseline="central">Hindi UI + text</text>
+  <text class="ts" x="116" y="582" text-anchor="middle" dominant-baseline="central">Hindi, Tamil, Telugu</text>
+  <text class="ts" x="116" y="598" text-anchor="middle" dominant-baseline="central">Multilingual QR cards</text>
+</g>
+<g class="node c-coral">
+  <rect x="228" y="546" width="192" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="324" y="566" text-anchor="middle" dominant-baseline="central">INR payment</text>
+  <text class="ts" x="324" y="582" text-anchor="middle" dominant-baseline="central">Razorpay / UPI / Paytm</text>
+  <text class="ts" x="324" y="598" text-anchor="middle" dominant-baseline="central">No credit card needed</text>
+</g>
+<g class="node c-coral">
+  <rect x="436" y="546" width="224" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="548" y="566" text-anchor="middle" dominant-baseline="central">Indian design themes</text>
+  <text class="ts" x="548" y="582" text-anchor="middle" dominant-baseline="central">Mandala, floral, mehndi</text>
+  <text class="ts" x="548" y="598" text-anchor="middle" dominant-baseline="central">QR card templates</text>
+</g>
+
+<!-- Revenue potential -->
+<g class="node c-green">
+  <rect x="20" y="626" width="640" height="60" rx="10" stroke-width="0.5"/>
+  <text class="th" x="340" y="648" text-anchor="middle" dominant-baseline="central">India revenue potential</text>
+  <text class="ts" x="340" y="664" text-anchor="middle" dominant-baseline="central">Just 0.1% of India's 10M weddings = 10,000 events × avg ₹1,500 = ₹1.5 Cr (~$180,000) / year</text>
+  <text class="ts" x="340" y="680" text-anchor="middle" dominant-baseline="central">Even 500 events/month at ₹1,000 avg = ₹5L/month (~$6,000/mo) — achievable in year 1</text>
+</g>
+</svg>
+</div>
+
+<!-- OMAN STRATEGY -->
+<div id="oman" class="panel">
+<svg width="100%" viewBox="0 0 680 720">
+<defs>
+<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text class="th" x="340" y="28" text-anchor="middle" font-size="15">Oman / GCC go-to-market strategy</text>
+
+<!-- Target segments -->
+<rect x="20" y="44" width="640" height="22" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="ts" x="34" y="59" fill="#085041" font-weight="500">TARGET SEGMENTS — PRIORITY ORDER</text>
+
+<g class="node c-teal">
+  <rect x="20" y="76" width="186" height="72" rx="10" stroke-width="0.5"/>
+  <text class="th" x="113" y="96" text-anchor="middle" dominant-baseline="central">1. Omani Farahs</text>
+  <text class="ts" x="113" y="112" text-anchor="middle" dominant-baseline="central">Traditional weddings</text>
+  <text class="ts" x="113" y="128" text-anchor="middle" dominant-baseline="central">500–3000 guests</text>
+  <text class="ts" x="113" y="144" text-anchor="middle" dominant-baseline="central">High willingness to pay</text>
+</g>
+<g class="node c-teal">
+  <rect x="220" y="76" width="186" height="72" rx="10" stroke-width="0.5"/>
+  <text class="th" x="313" y="96" text-anchor="middle" dominant-baseline="central">2. Indian expat events</text>
+  <text class="ts" x="313" y="112" text-anchor="middle" dominant-baseline="central">700K Indians in Oman</text>
+  <text class="ts" x="313" y="128" text-anchor="middle" dominant-baseline="central">Indian weddings in Muscat</text>
+  <text class="ts" x="313" y="144" text-anchor="middle" dominant-baseline="central">Cross-market overlap</text>
+</g>
+<g class="node c-teal">
+  <rect x="420" y="76" width="240" height="72" rx="10" stroke-width="0.5"/>
+  <text class="th" x="540" y="96" text-anchor="middle" dominant-baseline="central">3. Corporate / govt</text>
+  <text class="ts" x="540" y="112" text-anchor="middle" dominant-baseline="central">PDO, OIA, ministries</text>
+  <text class="ts" x="540" y="128" text-anchor="middle" dominant-baseline="central">National Day events</text>
+  <text class="ts" x="540" y="144" text-anchor="middle" dominant-baseline="central">Biggest budgets</text>
+</g>
+
+<!-- Channels Oman -->
+<rect x="20" y="164" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="179" fill="var(--color-text-secondary)">ACQUISITION CHANNELS — OMAN</text>
+
+<g class="node c-amber">
+  <rect x="20" y="196" width="192" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="116" y="216" text-anchor="middle" dominant-baseline="central">Instagram (Arabic)</text>
+  <text class="ts" x="116" y="232" text-anchor="middle" dominant-baseline="central">Omani wedding content</text>
+  <text class="ts" x="116" y="248" text-anchor="middle" dominant-baseline="central">Arabic captions + reels</text>
+  <text class="ts" x="116" y="264" text-anchor="middle" dominant-baseline="central">Highest reach in GCC</text>
+</g>
+<g class="node c-amber">
+  <rect x="228" y="196" width="192" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="324" y="216" text-anchor="middle" dominant-baseline="central">WhatsApp + Telegram</text>
+  <text class="ts" x="324" y="232" text-anchor="middle" dominant-baseline="central">Event planner groups</text>
+  <text class="ts" x="324" y="248" text-anchor="middle" dominant-baseline="central">Muscat business circles</text>
+  <text class="ts" x="324" y="264" text-anchor="middle" dominant-baseline="central">Direct B2B outreach</text>
+</g>
+<g class="node c-amber">
+  <rect x="436" y="196" width="224" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="548" y="216" text-anchor="middle" dominant-baseline="central">Local event companies</text>
+  <text class="ts" x="548" y="232" text-anchor="middle" dominant-baseline="central">Al Farha, event mgmt cos</text>
+  <text class="ts" x="548" y="248" text-anchor="middle" dominant-baseline="central">Venue partnerships</text>
+  <text class="ts" x="548" y="264" text-anchor="middle" dominant-baseline="central">Royal Oman venue deals</text>
+</g>
+
+<!-- Affiliate Oman -->
+<rect x="20" y="284" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="299" fill="var(--color-text-secondary)">AFFILIATE PARTNERS — OMAN SPECIFIC</text>
+
+<g class="node c-coral">
+  <rect x="20" y="316" width="144" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="92" y="336" text-anchor="middle" dominant-baseline="central">Photographers</text>
+  <text class="ts" x="92" y="352" text-anchor="middle" dominant-baseline="central">Omani / expat</text>
+  <text class="ts" x="92" y="368" text-anchor="middle" dominant-baseline="central">25% per sale</text>
+</g>
+<g class="node c-coral">
+  <rect x="178" y="316" width="144" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="250" y="336" text-anchor="middle" dominant-baseline="central">Videographers</text>
+  <text class="ts" x="250" y="352" text-anchor="middle" dominant-baseline="central">Wedding film teams</text>
+  <text class="ts" x="250" y="368" text-anchor="middle" dominant-baseline="central">25% per sale</text>
+</g>
+<g class="node c-coral">
+  <rect x="336" y="316" width="144" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="408" y="336" text-anchor="middle" dominant-baseline="central">Event designers</text>
+  <text class="ts" x="408" y="352" text-anchor="middle" dominant-baseline="central">Decor / styling cos</text>
+  <text class="ts" x="408" y="368" text-anchor="middle" dominant-baseline="central">White label option</text>
+</g>
+<g class="node c-coral">
+  <rect x="494" y="316" width="166" height="60" rx="8" stroke-width="0.5"/>
+  <text class="th" x="577" y="336" text-anchor="middle" dominant-baseline="central">Hotels / venues</text>
+  <text class="ts" x="577" y="352" text-anchor="middle" dominant-baseline="central">Crowne, Muscat Hills</text>
+  <text class="ts" x="577" y="368" text-anchor="middle" dominant-baseline="central">Bundle in bookings</text>
+</g>
+
+<!-- Pricing Oman -->
+<rect x="20" y="392" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="407" fill="var(--color-text-secondary)">OMAN PRICING TIERS (OMR)</text>
+
+<g class="node c-gray">
+  <rect x="20" y="424" width="190" height="80" rx="10" stroke-width="0.5"/>
+  <text class="th" x="115" y="446" text-anchor="middle" dominant-baseline="central">Basic — OMR 8</text>
+  <text class="ts" x="115" y="462" text-anchor="middle" dominant-baseline="central">Unlimited photos</text>
+  <text class="ts" x="115" y="478" text-anchor="middle" dominant-baseline="central">1 year, ZIP download</text>
+  <text class="ts" x="115" y="494" text-anchor="middle" dominant-baseline="central">Arabic + English</text>
+</g>
+<g class="node c-gray">
+  <rect x="225" y="424" width="215" height="80" rx="10" stroke-width="0.5"/>
+  <text class="th" x="332" y="446" text-anchor="middle" dominant-baseline="central">Premium — OMR 18</text>
+  <text class="ts" x="332" y="462" text-anchor="middle" dominant-baseline="central">Videos + Drive sync</text>
+  <text class="ts" x="332" y="478" text-anchor="middle" dominant-baseline="central">Safety AI + photo book</text>
+  <text class="ts" x="332" y="494" text-anchor="middle" dominant-baseline="central">Most popular for Farahs</text>
+</g>
+<g class="node c-gray">
+  <rect x="455" y="424" width="205" height="80" rx="10" stroke-width="0.5"/>
+  <text class="th" x="557" y="446" text-anchor="middle" dominant-baseline="central">Corporate — OMR 45</text>
+  <text class="ts" x="557" y="462" text-anchor="middle" dominant-baseline="central">Unlimited walls + embed</text>
+  <text class="ts" x="557" y="478" text-anchor="middle" dominant-baseline="central">Custom branding</text>
+  <text class="ts" x="557" y="494" text-anchor="middle" dominant-baseline="central">For companies + venues</text>
+</g>
+
+<!-- Arabic UI note -->
+<rect x="20" y="520" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="535" fill="var(--color-text-secondary)">ARABIC-FIRST PRODUCT FEATURES</text>
+
+<g class="node c-purple">
+  <rect x="20" y="552" width="192" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="116" y="572" text-anchor="middle" dominant-baseline="central">RTL (right-to-left) UI</text>
+  <text class="ts" x="116" y="588" text-anchor="middle" dominant-baseline="central">Full Arabic interface</text>
+</g>
+<g class="node c-purple">
+  <rect x="228" y="552" width="192" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="324" y="572" text-anchor="middle" dominant-baseline="central">Arabic QR cards</text>
+  <text class="ts" x="324" y="588" text-anchor="middle" dominant-baseline="central">Islamic design motifs</text>
+</g>
+<g class="node c-purple">
+  <rect x="436" y="552" width="224" height="52" rx="8" stroke-width="0.5"/>
+  <text class="th" x="548" y="572" text-anchor="middle" dominant-baseline="central">OMR / AED payments</text>
+  <text class="ts" x="548" y="588" text-anchor="middle" dominant-baseline="central">Local bank + card support</text>
+</g>
+
+<!-- Revenue potential Oman -->
+<g class="node c-green">
+  <rect x="20" y="622" width="640" height="60" rx="10" stroke-width="0.5"/>
+  <text class="th" x="340" y="644" text-anchor="middle" dominant-baseline="central">Oman revenue potential</text>
+  <text class="ts" x="340" y="660" text-anchor="middle" dominant-baseline="central">50 events/month × OMR 18 avg = OMR 900/mo (~$2,300) — just Muscat alone</text>
+  <text class="ts" x="340" y="676" text-anchor="middle" dominant-baseline="central">Scale to GCC (UAE, Qatar, Saudi) = 10x with same Arabic product, zero extra dev cost</text>
+</g>
+</svg>
+</div>
+
+<!-- LAUNCH PLAN -->
+<div id="gtm" class="panel">
+<svg width="100%" viewBox="0 0 680 720">
+<defs>
+<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+
+<text class="th" x="340" y="28" text-anchor="middle" font-size="15">India + Oman combined launch plan</text>
+
+<!-- Timeline -->
+<rect x="20" y="44" width="640" height="22" rx="6" fill="var(--color-background-secondary)" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+<text class="ts" x="34" y="59" fill="var(--color-text-secondary)">12-WEEK LAUNCH TIMELINE</text>
+
+<!-- Week 1-2 -->
+<g class="node c-gray">
+  <rect x="20" y="76" width="56" height="230" rx="8" stroke-width="0.5"/>
+  <text class="th" x="48" y="186" text-anchor="middle" dominant-baseline="central" transform="rotate(-90,48,186)">Wk 1–2</text>
+</g>
+<g class="node c-purple">
+  <rect x="88" y="76" width="572" height="100" rx="8" stroke-width="0.5"/>
+  <text class="th" x="374" y="100" text-anchor="middle" dominant-baseline="central">Foundation</text>
+  <text class="ts" x="374" y="118" text-anchor="middle" dominant-baseline="central">Register company in Oman (LLC). Buy domain — bilingual brand name.</text>
+  <text class="ts" x="374" y="134" text-anchor="middle" dominant-baseline="central">Set up GitHub repo, Vercel, Railway, Cloudflare R2, Stripe + Razorpay accounts.</text>
+  <text class="ts" x="374" y="150" text-anchor="middle" dominant-baseline="central">Define MVP features list. Wireframe 5 key screens in Figma.</text>
+</g>
+
+<!-- Week 3-6 -->
+<g class="node c-gray">
+  <rect x="20" y="318" width="56" height="170" rx="8" stroke-width="0.5"/>
+  <text class="th" x="48" y="398" text-anchor="middle" dominant-baseline="central" transform="rotate(-90,48,398)">Wk 3–6</text>
+</g>
+<g class="node c-teal">
+  <rect x="88" y="318" width="572" height="80" rx="8" stroke-width="0.5"/>
+  <text class="th" x="374" y="340" text-anchor="middle" dominant-baseline="central">Build MVP</text>
+  <text class="ts" x="374" y="358" text-anchor="middle" dominant-baseline="central">Wall create → QR generate → browser camera → upload → live feed → slideshow → admin.</text>
+  <text class="ts" x="374" y="374" text-anchor="middle" dominant-baseline="central">English + Arabic + Hindi UI. Stripe + Razorpay integration. Free / paid tier logic.</text>
+</g>
+<g class="node c-teal">
+  <rect x="88" y="408" width="572" height="72" rx="8" stroke-width="0.5"/>
+  <text class="th" x="374" y="428" text-anchor="middle" dominant-baseline="central">Soft test with friends</text>
+  <text class="ts" x="374" y="446" text-anchor="middle" dominant-baseline="central">Run your own event on it. Film the "live wall" moment. Record a demo Reel for Instagram.</text>
+  <text class="ts" x="374" y="462" text-anchor="middle" dominant-baseline="central">Fix bugs. Get 3–5 real testimonials.</text>
+</g>
+
+<!-- Week 7-9 -->
+<g class="node c-gray">
+  <rect x="20" y="500" width="56" height="100" rx="8" stroke-width="0.5"/>
+  <text class="th" x="48" y="550" text-anchor="middle" dominant-baseline="central" transform="rotate(-90,48,550)">Wk 7–9</text>
+</g>
+<g class="node c-amber">
+  <rect x="88" y="500" width="572" height="88" rx="8" stroke-width="0.5"/>
+  <text class="th" x="374" y="520" text-anchor="middle" dominant-baseline="central">Targeted outreach — both markets simultaneously</text>
+  <text class="ts" x="374" y="538" text-anchor="middle" dominant-baseline="central">INDIA: DM 50 wedding photographers on Instagram. Offer free Premium wall. Ask for a review post.</text>
+  <text class="ts" x="374" y="554" text-anchor="middle" dominant-baseline="central">OMAN: Contact 20 Muscat event planners/photographers directly. Arabic pitch deck. Free trial.</text>
+  <text class="ts" x="374" y="570" text-anchor="middle" dominant-baseline="central">List on WedMeGood India + local Oman wedding directories.</text>
+</g>
+
+<!-- Week 10-12 -->
+<g class="node c-gray">
+  <rect x="20" y="600" width="56" height="96" rx="8" stroke-width="0.5"/>
+  <text class="th" x="48" y="648" text-anchor="middle" dominant-baseline="central" transform="rotate(-90,48,648)">Wk 10–12</text>
+</g>
+<g class="node c-coral">
+  <rect x="88" y="600" width="572" height="88" rx="8" stroke-width="0.5"/>
+  <text class="th" x="374" y="620" text-anchor="middle" dominant-baseline="central">Public launch + affiliate program open</text>
+  <text class="ts" x="374" y="638" text-anchor="middle" dominant-baseline="central">Launch on ProductHunt. Post in r/weddingplanning + Indian wedding Facebook groups.</text>
+  <text class="ts" x="374" y="654" text-anchor="middle" dominant-baseline="central">Open affiliate signup — auto-approve photographers, planners, DJs.</text>
+  <text class="ts" x="374" y="670" text-anchor="middle" dominant-baseline="central">Start weekly SEO blog: "Best wedding photo apps India 2025", "مشاركة صور الأفراح" (Arabic SEO).</text>
+</g>
+
+<!-- Arrow -->
+<line x1="48" y1="306" x2="48" y2="316" class="arr" marker-end="url(#arr)" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+<line x1="48" y1="490" x2="48" y2="500" class="arr" marker-end="url(#arr)" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+<line x1="48" y1="590" x2="48" y2="600" class="arr" marker-end="url(#arr)" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+</svg>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

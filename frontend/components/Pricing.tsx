@@ -19,7 +19,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
   }, []);
  
   return (
-    <section id="pricing" className={`${isEmbedded ? 'py-20' : 'pt-40 pb-32'} px-6 relative z-10`}>
+    <section id="pricing" className={`${isEmbedded ? 'py-20' : 'pt-40 pb-32'} px-6 relative z-10 scroll-mt-32 w-full`}>
       <div className="max-w-7xl mx-auto">
         {!isEmbedded && (
           <div className="mb-12">
