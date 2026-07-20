@@ -59,7 +59,8 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           boxShadow: scrolled ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : 'none'
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-1/2 -translate-x-1/2 z-[1000] h-20 flex items-center"
+        style={{ zIndex: 9999 }}
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-20 flex items-center"
       >
         <div className="w-full flex items-center justify-between px-6 md:px-12">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
