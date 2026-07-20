@@ -49,7 +49,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`flex flex-col h-full glass-panel !overflow-visible p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+                className={`flex flex-col h-full glass-panel !overflow-visible p-10 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
               >
                 {plan.highlight && (
                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
@@ -100,11 +100,11 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                  <table className="w-full min-w-[900px] text-sm text-left table-fixed">
                     <thead className="bg-white/5 border-b border-white/10">
                        <tr>
-                          <th className="w-[20%] px-8 py-5 text-[10px] font-black uppercase tracking-widest text-text-muted">Capability</th>
-                          <th className="w-[20%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-green-400 text-center">Starter</th>
-                          <th className="w-[20%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-primary text-center">Standard</th>
-                          <th className="w-[20%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-secondary text-center">Premium</th>
-                          <th className="w-[20%] px-4 py-5 text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center">White Label</th>
+                          <th className="w-[20%] px-10 py-6 text-[10px] font-black uppercase tracking-widest text-text-muted">Capability</th>
+                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-green-400 text-center">Starter</th>
+                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-primary text-center">Standard</th>
+                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-secondary text-center">Premium</th>
+                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center">White Label</th>
                        </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
@@ -146,9 +146,9 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 function ComparisonRow({ label, values }: { label: string, values: any[] }) {
   return (
     <tr className="hover:bg-white/5 transition-colors">
-       <td className="px-8 py-4 font-bold text-white/80 text-sm">{label}</td>
+       <td className="px-10 py-5 font-bold text-white/80 text-sm">{label}</td>
        {values.map((v, i) => (
-          <td key={i} className="px-4 py-4 text-center">
+          <td key={i} className="px-6 py-5 text-center">
              {typeof v === 'boolean' ? (
                 v ? <Check size={18} className="text-primary mx-auto" /> : <X size={18} className="text-text-muted opacity-20 mx-auto" />
              ) : (
