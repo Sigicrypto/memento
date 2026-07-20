@@ -49,7 +49,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`flex flex-col glass-panel !overflow-visible relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+                className={`h-full flex flex-col glass-panel !overflow-visible relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
                 style={{ padding: '32px' }}
               >
                 {/* Recommended badge — absolutely positioned, doesn't affect flow */}
