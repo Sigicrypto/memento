@@ -37,62 +37,58 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">One-time payment. No hidden subscriptions. Just lifetime access to your memories.</p>
         </div>
  
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-0 mb-32 items-stretch w-full">
-          {/* Empty column to perfectly align with the Capability column in the table */}
-          <div className="hidden lg:block w-full" />
-          
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-32 items-stretch max-w-6xl mx-auto">
           {PLANS.map((plan, idx) => {
             const price = region === 'IN' ? plan.priceIN : plan.priceGlobal;
             const Icon = plan.id === 'starter' ? Zap : plan.id === 'standard' ? Star : plan.id === 'premium' ? Heart : Shield;
             
             return (
-              <div key={idx} className="w-full h-full lg:px-3 flex">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className={`flex flex-col w-full h-full glass-panel !overflow-visible p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+              <motion.div 
+                key={idx} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className={`flex flex-col h-full glass-panel !overflow-visible p-8 relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
+              >
+                {plan.highlight && (
+                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
+                      ✨ Recommended
+                   </div>
+                )}
+ 
+                <div className="flex items-center gap-3 mb-6">
+                   <div className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center ${plan.iconColor}`}>
+                      <Icon size={20} />
+                   </div>
+                   <h3 className="text-xl font-bold">{plan.name}</h3>
+                </div>
+ 
+                <div className="mb-6">
+                   <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold tracking-tighter">{price}</span>
+                      <span className="text-text-muted text-xs font-medium">/event</span>
+                   </div>
+                   <p className="text-text-secondary text-xs mt-2 italic">"{plan.description}"</p>
+                </div>
+ 
+                <div className="space-y-4 flex-grow mb-8">
+                   <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-4">{plan.stats}</p>
+                   {plan.features.map((f, i) => (
+                      <div key={i} className={`flex items-start gap-3 text-xs ${f.included ? 'text-text-secondary' : 'text-text-muted opacity-40'}`}>
+                         {f.included ? <Check size={14} className="text-primary mt-0.5 flex-shrink-0" /> : <X size={14} className="mt-0.5 flex-shrink-0" />}
+                         <span className={f.included ? 'text-white/80' : ''}>{f.label}</span>
+                      </div>
+                   ))}
+                </div>
+
+                <a 
+                   href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
+                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 group ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
                 >
-                  {plan.highlight && (
-                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
-                        ✨ Recommended
-                     </div>
-                  )}
-   
-                  <div className="flex items-center gap-3 mb-6">
-                     <div className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center ${plan.iconColor}`}>
-                        <Icon size={20} />
-                     </div>
-                     <h3 className="text-xl font-bold">{plan.name}</h3>
-                  </div>
-   
-                  <div className="mb-6">
-                     <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-bold tracking-tighter">{price}</span>
-                        <span className="text-text-muted text-xs font-medium">/event</span>
-                     </div>
-                     <p className="text-text-secondary text-[11px] mt-2 italic leading-snug">“{plan.description}”</p>
-                  </div>
-   
-                  <div className="space-y-3 flex-grow mb-8">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">{plan.stats}</p>
-                     {plan.features.map((f, i) => (
-                        <div key={i} className={`flex items-start gap-2 text-xs ${f.included ? 'text-text-secondary' : 'text-text-muted opacity-40'}`}>
-                           {f.included ? <Check size={14} className="text-primary mt-0.5 flex-shrink-0" /> : <X size={14} className="mt-0.5 flex-shrink-0" />}
-                           <span className={f.included ? 'text-white/80' : ''}>{f.label}</span>
-                        </div>
-                     ))}
-                  </div>
-  
-                  <a 
-                     href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                     className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 group ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
-                  >
-                     {plan.name === 'White Label' ? 'Get Started ✦' : 'Select ✦'}
-                  </a>
-                </motion.div>
-              </div>
+                   {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
+                </a>
+              </motion.div>
             );
           })}
         </div>
