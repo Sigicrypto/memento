@@ -39,6 +39,7 @@ interface Event {
   plan_type?: string;
   enable_safety_filter?: boolean;
   expires_at?: string | null;
+  brand_logo_url?: string | null;
 }
  
 export default function MobilePage() {
@@ -53,6 +54,7 @@ export default function MobilePage() {
   const [sessionPhotoIds, setSessionPhotoIds] = useState<string[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
+  const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(null);
  
   // Upload State
   const [files, setFiles] = useState<File[]>([]);
@@ -88,9 +90,10 @@ export default function MobilePage() {
  
   useEffect(() => {
     const fetchEvent = async () => {
-      const { data, error } = await supabase.from('events').select('id, name, plan_type, enable_safety_filter, expires_at').eq('slug', slug).single();
+      const { data, error } = await supabase.from('events').select('id, name, plan_type, enable_safety_filter, expires_at, brand_logo_url').eq('slug', slug).single();
       if (error || !data) { router.push('/'); return; }
       setEvent(data as Event);
+      setBrandLogoUrl(data.brand_logo_url || null);
     };
     fetchEvent();
   }, [slug, router]);
@@ -204,6 +207,7 @@ export default function MobilePage() {
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
 
   const handleReaction = async (photoId: string) => {
+    if (!hasFeature(event?.plan_type, 'LIVE_REACTIONS')) return;
     setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p));
     const gId = guestId || localStorage.getItem('memento_guest_id') || Math.random().toString(36).substring(2);
     localStorage.setItem('memento_guest_id', gId);
@@ -234,7 +238,11 @@ export default function MobilePage() {
  
       {/* ── Modern Header ── */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 backdrop-blur-xl px-6 flex items-center justify-between">
-         <Link href="/" className="text-xl font-bold tracking-tighter">memento</Link>
+         {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
+            <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" />
+         ) : (
+            <Link href="/" className="text-xl font-bold tracking-tighter">memento</Link>
+         )}
          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black uppercase tracking-widest text-primary">
             <div className={`w-1.5 h-1.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-500' : 'bg-primary'} animate-pulse`} />
             {realtimeStatus === 'SUBSCRIBED' ? 'Connected' : 'Syncing'}
@@ -321,14 +329,16 @@ export default function MobilePage() {
          </div>
  
          {/* ── Actions ── */}
-         <div className="flex flex-col gap-4">
-            <button onClick={() => setShowSelfieCam(true)} className="w-full py-5 rounded-2xl border border-white/5 bg-white/5 font-bold text-xs uppercase tracking-[.2em] flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
-               <User size={18} className="text-primary" /> Find Me on Wall
-            </button>
-            {matchedPhotoIds && (
-               <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black uppercase tracking-widest text-primary text-center">✕ Clear Filter & Show My Uploads</button>
-            )}
-         </div>
+         {hasFeature(event?.plan_type, 'SELFIE_MATCH') && (
+           <div className="flex flex-col gap-4">
+              <button onClick={() => setShowSelfieCam(true)} className="w-full py-5 rounded-2xl border border-white/5 bg-white/5 font-bold text-xs uppercase tracking-[.2em] flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
+                 <User size={18} className="text-primary" /> Find Me on Wall
+              </button>
+              {matchedPhotoIds && (
+                 <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black uppercase tracking-widest text-primary text-center">✕ Clear Filter & Show My Uploads</button>
+              )}
+           </div>
+         )}
  
          {/* ── Gallery ── */}
          {(matchedPhotoIds || photos.length > 0) && (
@@ -345,9 +355,11 @@ export default function MobilePage() {
                     <div key={p.id} className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/5 bg-white/5 group">
                        <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                         <button onClick={() => handleReaction(p.id)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-pink-500 hover:scale-110 transition-all border border-white/10">
-                           <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} />
-                         </button>
+                         {hasFeature(event?.plan_type, 'LIVE_REACTIONS') && (
+                           <button onClick={() => handleReaction(p.id)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-pink-500 hover:scale-110 transition-all border border-white/10">
+                             <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} />
+                           </button>
+                         )}
                          <button onClick={() => handleDownload(p)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-primary hover:scale-110 transition-all border border-white/10">
                            <Download size={14} />
                          </button>

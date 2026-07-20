@@ -160,6 +160,7 @@ export default function WallPage() {
   const [notFound, setNotFound] = useState(false);
   const [eventExpired, setEventExpired] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
   const [prevViewMode, setPrevViewMode] = useState<ViewMode>('polaroid');
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
@@ -209,6 +210,7 @@ export default function WallPage() {
       setOwnerId(data.owner_id);
       setIsAdmin(user?.id === data.owner_id);
       setPlanTier((data.plan_type || 'STARTER').toUpperCase());
+      setBrandLogoUrl(data.brand_logo_url || null);
       if (data.expires_at && new Date(data.expires_at) < new Date()) setEventExpired(true);
       if (data.music_track && data.music_track !== 'none') setMusicTrack(data.music_track);
       setLoading(false);
@@ -293,6 +295,8 @@ export default function WallPage() {
   };
 
   const handleReaction = async (photoId: string) => {
+    if (!hasFeature(planTier, 'LIVE_REACTIONS')) return;
+    
     // Optimistic update
     setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p));
     
@@ -343,9 +347,11 @@ export default function WallPage() {
                 <h1 className="text-2xl font-bold">{eventName}</h1>
              </div>
           </div>
-          <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold text-xs">
-            EXIT SLIDESHOW
-          </button>
+          {hasFeature(planTier, 'SLIDESHOW_MODE') && (
+             <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold text-xs">
+               EXIT SLIDESHOW
+             </button>
+          )}
         </div>
  
         <div className="flex-grow relative flex items-center justify-center p-20">
@@ -383,9 +389,11 @@ export default function WallPage() {
                               <h2 className="text-5xl font-bold tracking-tight">{current.uploader_name}</h2>
                            </div>
                            <div className="flex gap-4">
-                              <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2 text-sm font-bold">
-                                 <Heart size={16} className="text-pink-500 fill-pink-500" /> {current.reaction_count || 0}
-                              </div>
+                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
+                                 <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2 text-sm font-bold">
+                                    <Heart size={16} className="text-pink-500 fill-pink-500" /> {current.reaction_count || 0}
+                                 </div>
+                              )}
                               <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2 text-sm font-bold">
                                  <Clock size={16} className="text-text-muted" /> {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </div>
@@ -417,7 +425,11 @@ export default function WallPage() {
       {/* Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-24 border-b border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href="/" className="text-2xl font-bold tracking-tighter">memento</Link>
+            {(hasFeature(planTier, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
+               <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" />
+            ) : (
+               <Link href="/" className="text-2xl font-bold tracking-tighter">memento</Link>
+            )}
             <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary">
                <div className={`w-1.5 h-1.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-500' : 'bg-primary'} animate-pulse`} />
                {realtimeStatus === 'SUBSCRIBED' ? 'Live Stream Active' : 'Polling Updates'}
@@ -429,11 +441,11 @@ export default function WallPage() {
                <Link href="/dashboard" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">
                   <Settings size={14} /> Dashboard
                </Link>
-            ) : (
+            ) : hasFeature(planTier, 'SLIDESHOW_MODE') ? (
                <button onClick={() => setViewMode('slideshow')} className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-bold text-primary hover:bg-primary/20 transition-all">
                   <Play size={14} /> Play Experience
                </button>
-            )}
+            ) : null}
             <Link href={uploadUrl} className="btn-premium px-6 py-2.5 text-xs">Join Wall</Link>
          </div>
       </nav>
@@ -445,12 +457,16 @@ export default function WallPage() {
                <p className="text-primary text-[10px] font-black uppercase tracking-[.4em] mb-4">THE OFFICIAL COLLECTION</p>
                <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">{eventName}</h1>
                <div className="flex flex-wrap items-center gap-4">
-                  <button onClick={() => setShowSelfieCam(true)} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all hover:scale-105 active:scale-95 group">
-                     <Search size={18} className="text-primary group-hover:rotate-12 transition-transform" /> Find My Photos
-                  </button>
-                  <button onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-sm font-bold text-secondary hover:bg-secondary/20 transition-all hover:scale-105 active:scale-95 group">
-                     <Maximize2 size={18} className="group-hover:scale-110 transition-transform" /> Slideshow Mode
-                  </button>
+                  {hasFeature(planTier, 'SELFIE_MATCH') && (
+                     <button onClick={() => setShowSelfieCam(true)} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all hover:scale-105 active:scale-95 group">
+                        <Search size={18} className="text-primary group-hover:rotate-12 transition-transform" /> Find My Photos
+                     </button>
+                  )}
+                  {hasFeature(planTier, 'SLIDESHOW_MODE') && (
+                     <button onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-sm font-bold text-secondary hover:bg-secondary/20 transition-all hover:scale-105 active:scale-95 group">
+                        <Maximize2 size={18} className="group-hover:scale-110 transition-transform" /> Slideshow Mode
+                     </button>
+                  )}
                </div>
             </div>
  
@@ -509,9 +525,11 @@ export default function WallPage() {
                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
                           <div className="flex justify-between items-start">
                              <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
-                             <button onClick={() => handleReaction(p.id)} className="text-white/60 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 bg-black/40 px-2 py-1 rounded-full text-xs font-bold">
-                                <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
-                             </button>
+                             {hasFeature(planTier, 'LIVE_REACTIONS') && (
+                                <button onClick={() => handleReaction(p.id)} className="text-white/60 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 bg-black/40 px-2 py-1 rounded-full text-xs font-bold">
+                                   <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
+                                </button>
+                             )}
                           </div>
                           {p.caption && <p className="text-sm text-white italic line-clamp-2">&quot;{p.caption}&quot;</p>}
                        </div>
@@ -527,9 +545,11 @@ export default function WallPage() {
                        </div>
                        <div className="absolute inset-x-0 bottom-0 p-4 text-center">
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">MEMENTO BY <span className="text-primary">{p.uploader_name}</span>
-                             <button onClick={() => handleReaction(p.id)} className="text-slate-400 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-1">
-                                <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
-                             </button>
+                             {hasFeature(planTier, 'LIVE_REACTIONS') && (
+                                <button onClick={() => handleReaction(p.id)} className="text-slate-400 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-1">
+                                   <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
+                                </button>
+                             )}
                           </p>
                           {p.caption && <p className="text-[11px] text-slate-900 font-medium italic truncate px-4">&quot;{p.caption}&quot;</p>}
                        </div>
