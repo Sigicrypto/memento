@@ -133,20 +133,102 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
            </div>
         </div>
  
-        <div className="mt-40">
-           <div className="glass-panel p-12 md:p-20 text-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-primary/5 -z-10 group-hover:bg-primary/10 transition-all" />
-              <div className="relative z-10 max-w-2xl mx-auto">
-                 <h3 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">Ready to preserve every heartbeat?</h3>
-                 <p className="text-text-secondary text-lg mb-12">Trusted by 2,000+ planners worldwide. No contracts, no subscriptions. Just magic.</p>
+        {/* CTA Section — 64px spacing from Feature Breakdown */}
+        <div style={{ marginTop: '64px' }}>
+           <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="relative overflow-hidden"
+              style={{
+                borderRadius: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'rgba(15, 15, 18, 0.7)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                boxShadow: '0 32px 64px -16px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)',
+              }}
+           >
+              {/* Ambient glow effects */}
+              <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-primary/10 rounded-full blur-[100px]" />
+                 <div className="absolute bottom-0 right-0 w-[200px] h-[200px] bg-secondary/5 rounded-full blur-[80px]" />
+              </div>
+              {/* Subtle top gradient line */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+
+              {/* Content container with responsive padding */}
+              <div
+                className="relative flex flex-col items-center justify-center text-center"
+                style={{
+                  padding: 'clamp(40px, 6vw, 80px) clamp(24px, 5vw, 64px)',
+                  zIndex: 1,
+                }}
+              >
+                 {/* Headline — 56-64px on desktop, responsive */}
+                 <h3
+                    className="font-bold tracking-tight text-white"
+                    style={{
+                      fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+                      lineHeight: 1.15,
+                      maxWidth: '640px',
+                      marginBottom: '24px',
+                    }}
+                 >
+                    Ready to preserve every heartbeat?
+                 </h3>
+
+                 {/* Subtitle */}
+                 <p
+                    className="text-text-secondary"
+                    style={{
+                      fontSize: 'clamp(0.95rem, 1.5vw, 1.125rem)',
+                      lineHeight: 1.7,
+                      maxWidth: '520px',
+                      marginBottom: '40px',
+                    }}
+                 >
+                    Trusted by 2,000+ planners worldwide. No contracts, no subscriptions. Just magic.
+                 </p>
+
+                 {/* Button group — inline on desktop, stacked on mobile */}
                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <a href="/create" className="btn-premium !px-12 !py-5 shadow-2xl shadow-primary/20">Create My Wall ✦</a>
-                    <a href="https://wa.me/96896095692" target="_blank" className="text-xs font-black uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
+                    {/* Primary CTA */}
+                    <a
+                       href="/create"
+                       className="inline-flex items-center justify-center font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+                       style={{
+                         height: '56px',
+                         padding: '0 40px',
+                         borderRadius: '16px',
+                         background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+                         boxShadow: '0 8px 24px -4px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.06) inset',
+                         fontSize: '0.95rem',
+                         letterSpacing: '0.01em',
+                       }}
+                    >
+                       Create My Wall ✦
+                    </a>
+
+                    {/* Secondary CTA */}
+                    <a
+                       href="https://wa.me/96896095692"
+                       target="_blank"
+                       className="inline-flex items-center justify-center gap-2 text-text-muted hover:text-primary transition-colors duration-300"
+                       style={{
+                         height: '56px',
+                         fontSize: '0.7rem',
+                         fontWeight: 900,
+                         textTransform: 'uppercase' as const,
+                         letterSpacing: '0.1em',
+                       }}
+                    >
                        Questions? Chat with us <ArrowRight size={14} />
                     </a>
                  </div>
               </div>
-           </div>
+           </motion.div>
         </div>
       </div>
     </section>
