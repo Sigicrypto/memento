@@ -103,21 +103,53 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           })}
         </div>
  
-        <div className="space-y-12">
+        {/* Feature Breakdown Section */}
+        <div className="flex flex-col" style={{ gap: '40px' }}>
            <h3 className="text-3xl font-bold text-center">Feature Breakdown</h3>
-           <div className="glass-panel p-0 overflow-hidden border-white/10">
-              <div className="overflow-x-auto">
-                 <table className="w-full min-w-[900px] text-sm text-left table-fixed">
-                    <thead className="bg-white/5 border-b border-white/10">
-                       <tr>
-                          <th className="w-[20%] px-10 py-6 text-[10px] font-black uppercase tracking-widest text-text-muted">Capability</th>
-                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-green-400 text-center">Starter</th>
-                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-primary text-center">Standard</th>
-                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-secondary text-center">Premium</th>
-                          <th className="w-[20%] px-6 py-6 text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center">White Label</th>
+           <div
+              className="glass-panel overflow-hidden border-white/10"
+              style={{ padding: '0' }}
+           >
+              <div className="overflow-x-auto" style={{ padding: '24px 24px 32px' }}>
+                 <table
+                    className="w-full text-sm text-left"
+                    style={{ tableLayout: 'fixed', minWidth: '720px', borderCollapse: 'collapse' }}
+                 >
+                    <thead>
+                       <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                          <th
+                             className="text-[10px] font-black uppercase tracking-widest text-text-muted text-left"
+                             style={{ width: '30%', padding: '16px 24px 16px 32px' }}
+                          >
+                             Capability
+                          </th>
+                          <th
+                             className="text-[10px] font-black uppercase tracking-widest text-green-400 text-center"
+                             style={{ width: '17.5%', padding: '16px 24px' }}
+                          >
+                             Starter
+                          </th>
+                          <th
+                             className="text-[10px] font-black uppercase tracking-widest text-primary text-center"
+                             style={{ width: '17.5%', padding: '16px 24px' }}
+                          >
+                             Standard
+                          </th>
+                          <th
+                             className="text-[10px] font-black uppercase tracking-widest text-secondary text-center"
+                             style={{ width: '17.5%', padding: '16px 24px' }}
+                          >
+                             Premium
+                          </th>
+                          <th
+                             className="text-[10px] font-black uppercase tracking-widest text-indigo-400 text-center"
+                             style={{ width: '17.5%', padding: '16px 24px' }}
+                          >
+                             White Label
+                          </th>
                        </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody>
                        <ComparisonRow label="Unlimited Photos" values={[true, true, true, true]} />
                        <ComparisonRow label="Live Wall Access" values={[true, true, true, true]} />
                        <ComparisonRow label="Zip Download" values={[true, true, true, true]} />
@@ -237,12 +269,28 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
  
 function ComparisonRow({ label, values }: { label: string, values: any[] }) {
   return (
-    <tr className="hover:bg-white/5 transition-colors">
-       <td className="px-10 py-5 font-bold text-white/80 text-sm">{label}</td>
+    <tr
+       className="hover:bg-white/5 transition-colors"
+       style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
+    >
+       <td
+          className="font-semibold text-white/80 text-sm"
+          style={{ padding: '18px 24px 18px 32px' }}
+       >
+          {label}
+       </td>
        {values.map((v, i) => (
-          <td key={i} className="px-6 py-5 text-center">
+          <td
+             key={i}
+             className="text-center"
+             style={{ padding: '18px 24px', verticalAlign: 'middle' }}
+          >
              {typeof v === 'boolean' ? (
-                v ? <Check size={18} className="text-primary mx-auto" /> : <X size={18} className="text-text-muted opacity-20 mx-auto" />
+                v ? (
+                   <Check size={18} className="text-primary mx-auto" style={{ display: 'block' }} />
+                ) : (
+                   <X size={18} className="text-text-muted opacity-20 mx-auto" style={{ display: 'block' }} />
+                )
              ) : (
                 <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">{v}</span>
              )}
