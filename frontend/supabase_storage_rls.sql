@@ -18,7 +18,7 @@ CREATE POLICY "Users can upload photos" ON storage.objects
       (storage.foldername(name))[1] = 'demo' OR
       -- Existing check for event folders
       (storage.foldername(name))[1] IN (
-        SELECT id FROM events WHERE 1 = 1
+        SELECT id::text FROM events
       )
     )
   );
@@ -30,11 +30,9 @@ CREATE POLICY "Users can view photos" ON storage.objects
     (
       -- Allow viewing demo photos
       (storage.foldername(name))[1] = 'demo' OR
-      -- Allow viewing photos from public events
+      -- Allow viewing photos from existing events
       (storage.foldername(name))[1] IN (
-        SELECT id FROM events WHERE 
-          password IS NULL OR
-          1 = 1
+        SELECT id::text FROM events
       )
     )
   );

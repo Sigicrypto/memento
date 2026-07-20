@@ -60,6 +60,10 @@ export async function POST(req: NextRequest) {
 
   // If mock mode is explicitly requested or keys are missing, we skip signature verification
   if (mock) {
+    if (process.env.NODE_ENV !== 'development') {
+      console.warn('[verify] Blocked mock payment attempt in production for user:', userId);
+      return NextResponse.json({ error: 'Mock payments disabled in production' }, { status: 403 });
+    }
     console.log('[verify] Mock payment successful for user:', userId, 'event:', eventId, 'plan:', plan);
     if (userId) await upgradeProfile(userId, plan);
     if (eventId) await upgradeEvent(eventId, plan);

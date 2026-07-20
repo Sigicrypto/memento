@@ -185,7 +185,7 @@ export default function DashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <div className="gcard flex items-center gap-6">
+          <div className="gcard flex items-center gap-6 h-full">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
               <BarChart2 size={24} />
             </div>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="gcard flex items-center gap-6">
+          <div className="gcard flex items-center gap-6 h-full">
             <div className="w-16 h-16 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary">
               <ImageIcon size={24} />
             </div>
@@ -206,7 +206,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Plan Card */}
-          <div className="gcard relative overflow-hidden group">
+          <div className="gcard relative overflow-hidden group flex flex-col h-full">
              {/* Plan background glow */}
              <div className="absolute -top-10 -right-10 w-32 h-32 blur-[60px] opacity-20 transition-colors duration-500" style={{ backgroundColor: planInfo.color }} />
              
@@ -406,9 +406,10 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="gcard flex flex-col gap-8 group"
+      className="gcard flex flex-col justify-between h-full group"
     >
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col gap-8">
+        <div className="flex justify-between items-start">
         <div className="min-w-0">
           <h3 className="text-xl font-bold text-white tracking-tight truncate mb-2">{event.name}</h3>
           <div className="flex items-center gap-2">
@@ -435,8 +436,9 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
           </Link>
         ))}
       </div>
+      </div>
 
-      <div className="flex gap-3 pt-6 border-t border-white/5">
+      <div className="flex gap-3 pt-6 border-t border-white/5 mt-auto">
         <button
           onClick={() => onCopy(event.slug)}
           className="flex-1 flex items-center justify-between px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-medium text-text-secondary truncate"

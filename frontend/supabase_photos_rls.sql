@@ -14,23 +14,18 @@ ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
 -- 1. Users can view photos from events they have access to
 CREATE POLICY "Users can view photos from public events" ON photos
   FOR SELECT USING (
-    -- Allow viewing photos from public events
+    -- Allow viewing photos from any existing event
     event_id IN (
-      SELECT id FROM events WHERE 
-        password IS NULL OR
-        -- For password-protected events, access is handled at app level
-        -- Users who can access the event page can see the photos
-        1 = 1
+      SELECT id FROM events
     )
   );
 
 -- 2. Users can insert photos to events
 CREATE POLICY "Users can insert photos to events" ON photos
   FOR INSERT WITH CHECK (
-    -- Allow inserting photos to any event
-    -- Event access validation is handled at the app level (password protection)
+    -- Allow inserting photos to any existing event
     event_id IN (
-      SELECT id FROM events WHERE 1 = 1
+      SELECT id FROM events
     )
   );
 
