@@ -5,16 +5,14 @@ import ThemedNav from './ThemedNav';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const isSpecialRoute = 
+  const isExcludedRoute = 
     pathname?.startsWith('/wall/') || 
     pathname?.startsWith('/mobile/') || 
-    pathname?.startsWith('/demo/');
-  const isExcludedRoute = 
+    pathname?.startsWith('/demo/') ||
     pathname?.startsWith('/create') || 
     pathname?.startsWith('/dashboard');
 
-  if (isSpecialRoute) return null;
-  if (isExcludedRoute) return <ThemedNav mini={true} />;
+  if (isExcludedRoute) return null;
 
   return <ThemedNav />;
 }
