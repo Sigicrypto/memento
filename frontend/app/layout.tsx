@@ -5,6 +5,7 @@ import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
 import LayoutShell from "@/components/LayoutShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Analytics } from "@vercel/analytics/next";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -99,6 +100,7 @@ export default function RootLayout({
             </LayoutShell>
           </ErrorBoundary>
         </AppProviders>
+        <Analytics />
       </body>
     </html>
   );
