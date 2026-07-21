@@ -253,7 +253,7 @@ export default function MobilePage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* ── Dynamic Island Header ── */}
-      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/60 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] shadow-primary/5">
+      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-white/10 bg-zinc-900/95 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
          {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
             <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
          ) : (
@@ -268,7 +268,7 @@ export default function MobilePage() {
          </div>
       </nav>
  
-      <main className="relative z-10 pt-32 px-6 pb-20 max-w-lg mx-auto w-full">
+      <main className="relative z-10 pt-32 px-6 pb-32 max-w-lg mx-auto w-full">
          <div className="text-center mb-10">
             <p className="text-primary text-[10px] font-black uppercase tracking-[.3em] mb-2">{slug.toUpperCase()}</p>
             <h1 className="text-4xl font-bold tracking-tight mb-3">Share the Moment</h1>
@@ -454,8 +454,8 @@ export default function MobilePage() {
       </AnimatePresence>
  
       {/* Footer Nav */}
-      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
-         <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-text-muted hover:text-primary transition-all">
+      <footer className="fixed bottom-0 left-0 right-0 h-24 border-t border-white/10 bg-zinc-900/95 backdrop-blur-xl z-[100] px-10 flex items-center justify-center pb-4">
+         <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-white/80 hover:text-primary transition-all">
             <Layout size={18} /> View Wall Experience
          </Link>
       </footer>

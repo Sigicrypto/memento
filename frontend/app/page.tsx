@@ -98,6 +98,10 @@ export default function LandingPage() {
 
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('demo') === 'true') {
+       setIsDemoOpen(true);
+    }
 
     const onScroll = () => setScrolled(window.scrollY > 60);
 

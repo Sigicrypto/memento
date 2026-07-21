@@ -319,7 +319,7 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 7rem 1rem 3rem;
+          padding: 7rem 1rem 7rem;
           width: 100%;
           max-width: 520px;
           margin: 0 auto;
@@ -735,7 +735,7 @@ function DemoUploadContent() {
         <div className="grain" />
 
         {/* ── NAV ── */}
-        <nav className="lp-nav scrolled">
+        <nav className="lp-nav scrolled" style={{ background: 'rgba(24, 24, 27, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <Link href="/">
             <AnimatedLogo width={150} height={50} />
           </Link>
@@ -1084,6 +1084,23 @@ function DemoUploadContent() {
           </button>
 
         </div>
+
+        {/* ── Footer Nav for Live Demo Wall ── */}
+        <footer style={{
+           position: 'fixed', bottom: 0, left: 0, right: 0, height: '6rem',
+           borderTop: '1px solid rgba(255, 255, 255, 0.1)', background: 'rgba(24, 24, 27, 0.95)',
+           backdropFilter: 'blur(12px)', zIndex: 100, display: 'flex', alignItems: 'center',
+           justifyContent: 'center', paddingBottom: '1rem'
+        }}>
+           <Link href={`/?id=${demoId}&demo=true`} style={{
+              display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem',
+              fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none'
+           }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              View Wall Experience
+           </Link>
+        </footer>
+
       </div>
     </>
   );
