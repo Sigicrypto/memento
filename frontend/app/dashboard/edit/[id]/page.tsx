@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Globe, Music, Palette, Lock, Link2, Star, Sparkles, Settings, Save, ExternalLink, Image as ImageIcon, Check, AlertTriangle } from 'lucide-react';
+import AnimatedLogo from '@/components/AnimatedLogo';
  
 export default function EditEventPage() {
   const params = useParams();
@@ -86,13 +87,15 @@ export default function EditEventPage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 bg-black/70 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-white transition-all font-bold text-sm">
-               <ArrowLeft size={16} /> Back to Dashboard
+            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-white transition-all font-bold text-xs uppercase tracking-widest group">
+               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Dashboard
             </Link>
             <div className="h-6 w-px bg-white/10 hidden md:block" />
-            <span className="text-xl font-bold tracking-tighter hidden md:block">memento</span>
+            <Link href="/" className="hidden md:block">
+              <AnimatedLogo width={140} height={40} />
+            </Link>
          </div>
          <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black uppercase tracking-widest text-primary">
             <Settings size={12} /> Event Settings

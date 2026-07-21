@@ -9,6 +9,7 @@ import jsPDF from 'jspdf';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Printer, CheckCircle, AlertTriangle } from 'lucide-react';
+import AnimatedLogo from '@/components/AnimatedLogo';
  
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -187,15 +188,17 @@ export default function CreateEventPage() {
       <div className="grain" />
  
       {/* ── Standardized Nav ── */}
-      <nav className="glass-nav h-24 flex items-center justify-between px-8 md:px-16 relative z-[100]">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 bg-black/70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
         <Link href="/dashboard" className="flex items-center gap-3 text-text-muted hover:text-white transition-all font-bold text-xs uppercase tracking-widest group">
            <ArrowRight size={16} className="rotate-180 group-hover:-translate-x-1 transition-transform" /> Dashboard
         </Link>
-        <Link href="/" className="text-2xl font-bold tracking-tighter hover:opacity-80 transition-opacity">memento</Link>
+        <Link href="/">
+          <AnimatedLogo width={160} height={44} />
+        </Link>
         <div className="w-24 hidden md:block" />
       </nav>
- 
-      <main className="flex-grow flex items-center justify-center p-6 relative z-10 pb-24">
+
+      <main className="flex-grow flex items-center justify-center p-6 relative z-10 pt-28 pb-24">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
