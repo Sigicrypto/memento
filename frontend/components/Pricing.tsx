@@ -172,14 +172,11 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative overflow-hidden"
+              className="relative overflow-hidden bg-black/5 dark:bg-[#0f0f12]/70 border border-black/10 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-none"
               style={{
                 borderRadius: '24px',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                background: 'rgba(15, 15, 18, 0.7)',
                 backdropFilter: 'blur(24px)',
                 WebkitBackdropFilter: 'blur(24px)',
-                boxShadow: '0 32px 64px -16px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04)',
               }}
            >
               {/* Ambient glow effects */}
@@ -213,7 +210,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 
                  {/* Subtitle */}
                  <p
-                    className="text-text-secondary"
+                    className="text-black dark:text-white/80"
                     style={{
                       fontSize: 'clamp(0.95rem, 1.5vw, 1.125rem)',
                       lineHeight: 1.7,
