@@ -150,7 +150,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                        </tr>
                     </thead>
                     <tbody>
-                       <ComparisonRow label="Photo Uploads" values={['5/guest', '15/guest', 'Unlimited', 'Unlimited']} />
+                       <ComparisonRow label="Photo Uploads" values={['25/guest', '50/guest', 'Unlimited', 'Unlimited']} />
                        <ComparisonRow label="Live Wall Access" values={[true, true, true, true]} />
                        <ComparisonRow label="Zip Download" values={[true, true, true, true]} />
                        <ComparisonRow label="AI Face Discovery" values={[false, true, true, true]} />

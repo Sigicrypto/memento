@@ -20,8 +20,8 @@ const TIER_RANK: Record<PlanTier, number> = {
 };
 
 export const GUEST_UPLOAD_LIMITS: Record<PlanTier, number> = {
-  STARTER: 5,
-  STANDARD: 15,
+  STARTER: 25,
+  STANDARD: 50,
   PREMIUM: Infinity,
   WHITELABEL: Infinity,
 };
