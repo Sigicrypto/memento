@@ -61,7 +61,7 @@ const PLAN_INFO: Record<string, { name: string; icon: string; color: string; glo
 };
 
 export default function DashboardPage() {
-  const { user, profile, isApproved, isLoading } = useAuth();
+  const { user, profile, isApproved, isLoading, isSuperAdmin } = useAuth();
   const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,7 +146,7 @@ export default function DashboardPage() {
         </Link>
 
         <div className="flex items-center gap-4">
-          {profile?.role === 'admin' && (
+          {isSuperAdmin && (
             <Link href="/admin" className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-[10px] font-black tracking-widest uppercase hover:bg-secondary/20 transition-all">
               <Shield size={14} /> Admin
             </Link>
