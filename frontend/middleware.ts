@@ -65,7 +65,13 @@ export async function middleware(request: NextRequest) {
 
     // Verify session and check admin role
     try {
-      const supabase = createClient(supabaseUrl, supabaseKey);
+      const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      });
       const { data: { user }, error } = await supabase.auth.getUser(accessToken);
       
       if (error || !user) {
