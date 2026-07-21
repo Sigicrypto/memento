@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import ThemeToggle from '@/components/ThemeToggle';
 
 // ── Types ─────────────────────────────────────────────────────
 interface UserRow {
@@ -321,10 +322,11 @@ export default function AdminPage() {
         {/* ── Sidebar ── */}
         <aside className="w-64 border-r border-white/[0.08] bg-[#0d1117]/40 backdrop-blur-2xl flex flex-col shrink-0 sticky top-0 h-screen">
           {/* Brand */}
-          <div className="p-6 border-b border-white/[0.08]">
+          <div className="p-6 border-b border-white/[0.08] flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all">
-              <AnimatedLogo width={160} height={50} />
+              <AnimatedLogo width={140} height={40} />
             </Link>
+            <ThemeToggle />
           </div>
 
           {/* Nav */}

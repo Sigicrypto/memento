@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download } from 'lucide-react';
 import { hasFeature, getGuestPhotoLimit } from '@/lib/permissions';
 import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
@@ -252,15 +253,18 @@ export default function MobilePage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* ── Dynamic Island Header ── */}
-      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-black/10 dark:border-white/10 /60 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] shadow-primary/5">
+      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/60 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] shadow-primary/5">
          {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
             <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
          ) : (
             <Link href="/" className="text-lg font-bold tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">memento</Link>
          )}
-         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[9px] font-black uppercase tracking-widest shadow-inner">
-            <div className={`live-pulse ${realtimeStatus === 'SUBSCRIBED' ? '!bg-green-500' : ''}`} style={{ width: 6, height: 6 }} />
-            <span className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-400' : 'text-primary'}>{realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Sync'}</span>
+         <div className="flex items-center gap-3">
+           <ThemeToggle />
+           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[9px] font-black uppercase tracking-widest shadow-inner">
+              <div className={`live-pulse ${realtimeStatus === 'SUBSCRIBED' ? '!bg-green-500' : ''}`} style={{ width: 6, height: 6 }} />
+              <span className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-400' : 'text-primary'}>{realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Sync'}</span>
+           </div>
          </div>
       </nav>
  
