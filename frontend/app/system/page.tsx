@@ -106,7 +106,7 @@ export default function SystemAdminPage() {
           <h1 className="text-3xl font-bold mb-2 tracking-tight">
             {user ? 'Elevate Account' : 'System Access'}
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 px-4">
+          <p className="text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400 px-4">
             {user ? `Grant admin access to ${user.email}` : 'Administrator authentication required'}
           </p>
         </div>
@@ -129,7 +129,7 @@ export default function SystemAdminPage() {
                 
                 <div>
                   <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-slate-500">Authenticated As</label>
-                  <div className="px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-300 font-medium">
+                  <div className="px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-700 dark:text-slate-300 font-medium">
                     {user.email}
                   </div>
                 </div>
@@ -137,19 +137,19 @@ export default function SystemAdminPage() {
                 <div>
                   <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-amber-500/80">Access Code</label>
                   <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
+                    className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
                     placeholder="Enter system access code" required />
                 </div>
 
                 <button type="submit" disabled={loading} className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
                   {loading
-                    ? <div className="w-5 h-5 border-2 rounded-full animate-spin border-black/20 dark:border-white/20 border-t-white" />
+                    ? <div className="w-5 h-5 border-2 rounded-full animate-spin border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white" />
                     : <>🔐 Elevate to Admin</>}
                 </button>
               </form>
             ) : (
               <div className="space-y-6 text-center">
-                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400 leading-relaxed">
                   You must be <span className="font-bold">logged in to your main account</span> before you can elevate to Administrator status using the system code.
                 </div>
                 
@@ -161,12 +161,12 @@ export default function SystemAdminPage() {
                   <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 mb-4">Or use emergency fallback</p>
                   <form onSubmit={handleLogin} className="space-y-6 text-left">
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none text-sm" 
+                      className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none text-sm" 
                       placeholder="Admin Email" required />
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none text-sm" 
+                      className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none text-sm" 
                       placeholder="Access Code" required />
-                    <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 font-bold hover:bg-black/10 dark:bg-white/10 transition-all text-sm">
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 font-bold hover:bg-black/10 dark:bg-white/10 transition-all text-sm">
                       Access System
                     </button>
                     {error && <p className="text-[10px] text-rose-400 text-center">{error}</p>}
@@ -178,7 +178,7 @@ export default function SystemAdminPage() {
             <div className="mt-8 pt-6 text-center">
               <div className="w-full h-px bg-black/10 dark:bg-white/10 mb-6" />
               <p className="text-xs mb-4 text-slate-500 font-medium uppercase tracking-widest">Return to main site?</p>
-              <Link href="/" className="px-6 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-black/10 dark:bg-white/10 transition-all inline-block font-semibold shadow-sm">🏠 Back Home</Link>
+              <Link href="/" className="px-6 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-black dark:text-white hover:bg-black/10 dark:bg-white/10 transition-all inline-block font-semibold shadow-sm">🏠 Back Home</Link>
             </div>
           </div>
         </div>

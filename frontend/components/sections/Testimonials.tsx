@@ -40,14 +40,14 @@ const Testimonials: React.FC = () => {
               <div className="flex gap-1 mb-6">
                 {[...Array(item.rating)].map((_, j) => <span key={j} className="text-secondary text-sm">★</span>)}
               </div>
-              <p className="text-white text-lg leading-relaxed mb-10 flex-grow italic">&quot;{item.quote}&quot;</p>
+              <p className="text-black dark:text-white text-lg leading-relaxed mb-10 flex-grow italic">&quot;{item.quote}&quot;</p>
               
-              <div className="flex items-center gap-4 border-t border-white/5 pt-6">
+              <div className="flex items-center gap-4 border-t border-black/20 dark:border-black/10 dark:border-white/5 pt-6">
                 <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold">
                   {item.author.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <p className="text-white font-bold leading-none mb-1">{item.author}</p>
+                  <p className="text-black dark:text-white font-bold leading-none mb-1">{item.author}</p>
                   <p className="text-text-muted text-xs uppercase tracking-wider font-bold">{item.role}</p>
                 </div>
               </div>
@@ -61,7 +61,7 @@ const Testimonials: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 p-12 rounded-[2.5rem] bg-white/5 border border-white/5 backdrop-blur-3xl text-center"
+          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 p-12 rounded-[2.5rem] bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-3xl text-center"
         >
           {[
             { val: '10k+', label: 'Events' },
@@ -70,7 +70,7 @@ const Testimonials: React.FC = () => {
             { val: '4.9★', label: 'Rating' },
           ].map((item, i) => (
             <div key={i} className="flex flex-col items-center">
-              <span className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tighter">{item.val}</span>
+              <span className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-2 tracking-tighter">{item.val}</span>
               <span className="text-text-muted text-xs font-bold tracking-widest uppercase">{item.label}</span>
             </div>
           ))}

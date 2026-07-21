@@ -74,7 +74,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen p-8">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-white mb-8 transition-colors">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-black dark:text-white mb-8 transition-colors">
         <ArrowLeft size={16} /> Back to Dashboard
       </button>
 
@@ -83,7 +83,7 @@ export default function AnalyticsPage() {
           <h1 className="text-4xl font-bold mb-2">Engagement Analytics</h1>
           <p className="text-text-secondary">Track how guests are interacting with your wall.</p>
         </div>
-        <button className="flex items-center gap-2 px-6 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl hover:bg-black/10 dark:bg-white/10 transition-colors text-sm font-bold">
+        <button className="flex items-center gap-2 px-6 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl hover:bg-black/10 dark:bg-white/10 transition-colors text-sm font-bold">
            <Download size={16} /> Export CSV
         </button>
       </div>
@@ -107,7 +107,7 @@ export default function AnalyticsPage() {
 
       <div className="glass-panel p-8">
         <h3 className="text-xl font-bold mb-8 flex items-center gap-3"><BarChart3 size={20} className="text-primary" /> Upload Timeline</h3>
-        <div className="h-64 flex items-end gap-2 sm:gap-4 border-b border-black/10 dark:border-white/10 pb-4">
+        <div className="h-64 flex items-end gap-2 sm:gap-4 border-b border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 pb-4">
           {hourlyData.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center text-text-muted">No data available yet</div>
           ) : (

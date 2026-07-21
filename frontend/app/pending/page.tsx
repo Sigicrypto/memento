@@ -57,7 +57,7 @@ export default function PendingApproval() {
               </p>
  
               <div className="space-y-4">
-                 <div className="flex items-center gap-4 justify-center p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-medium text-text-muted">
+                 <div className="flex items-center gap-4 justify-center p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-sm font-medium text-text-muted">
                     <Mail size={18} className="text-primary" />
                     We'll email you at <span className="">{user?.email}</span>
                  </div>

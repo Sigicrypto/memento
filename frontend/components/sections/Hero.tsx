@@ -41,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
               <span>Watch Demo Wall</span>
               <Play size={18} className="fill-current group-hover:translate-x-0.5 transition-transform" />
             </button>
-            <button className="px-8 py-4 text-white font-semibold flex items-center gap-2 hover:text-primary transition-colors">
+            <button className="px-8 py-4 text-black dark:text-white font-semibold flex items-center gap-2 hover:text-primary transition-colors">
               How it works <ArrowRight size={18} />
             </button>
           </div>
@@ -78,7 +78,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                 </div>
                 <div className="grid grid-cols-2 gap-2 flex-grow overflow-hidden">
                   {[1,2,3,4,5,6].map(i => (
-                    <div key={i} className="aspect-square bg-white/5 rounded-xl border border-white/10 animate-pulse" />
+                    <div key={i} className="aspect-square bg-white/5 rounded-xl border border-black/20 dark:border-black/10 dark:border-white/10 animate-pulse" />
                   ))}
                 </div>
                 <div className="mt-4 h-12 w-full bg-primary/20 rounded-xl flex items-center justify-center text-primary text-xs font-bold tracking-widest border border-primary/20">
@@ -90,13 +90,13 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
             {/* Main Phone (Wall View) */}
             <div className="w-[280px] flex-shrink-0 h-[600px] rounded-[3rem] border-[8px] border-zinc-800 bg-black overflow-hidden shadow-[0_0_100px_rgba(99,102,241,0.2)] z-10">
               <div className="h-full flex flex-col">
-                 <div className="h-14 bg-zinc-900/50 backdrop-blur-md flex items-center justify-between px-6 border-b border-white/5">
+                 <div className="h-14 bg-zinc-900/50 backdrop-blur-md flex items-center justify-between px-6 border-b border-black/20 dark:border-black/10 dark:border-white/5">
                    <div className="w-3 h-3 rounded-full bg-secondary" />
                    <div className="h-4 w-24 bg-white/10 rounded-full" />
                  </div>
                  <div className="flex-grow p-4 grid grid-cols-2 gap-3 overflow-hidden">
                     {[1,2,3,4,5,6,7,8].map(i => (
-                      <div key={i} className="aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                      <div key={i} className="aspect-square bg-white/5 rounded-xl border border-black/20 dark:border-black/10 dark:border-white/10 overflow-hidden">
                         <img src={`/landing-hero/photo${i+4}.jpg`} className="w-full h-full object-cover opacity-60" alt="" />
                       </div>
                     ))}

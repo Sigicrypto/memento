@@ -34,7 +34,7 @@ export default function NotFound() {
            <Link href="/" className="btn-premium !px-10 !py-4 flex items-center gap-3">
               <Home size={18} /> Back to Homepage
            </Link>
-           <button onClick={() => window.history.back()} className="px-8 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+           <button onClick={() => window.history.back()} className="px-8 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-xs uppercase tracking-widest flex items-center gap-2">
               <ArrowLeft size={16} /> Previous View
            </button>
         </div>

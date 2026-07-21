@@ -20,7 +20,7 @@ export default function PricingPage({
 
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center relative z-10">
-          <div className="w-14 h-14 border-4 rounded-full animate-spin border-black/10 dark:border-white/10 border-t-amber-500" />
+          <div className="w-14 h-14 border-4 rounded-full animate-spin border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 border-t-amber-500" />
         </div>
       }>
         <Pricing isEmbedded={false} eventId={eventId} />

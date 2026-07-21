@@ -46,7 +46,7 @@ const Steps: React.FC = () => {
                     <span className="text-sm font-black text-primary tracking-tighter uppercase">{s.num}</span>
                     <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{s.icon}</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">{s.title}</h3>
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">{s.title}</h3>
                   <p className="text-text-secondary leading-relaxed">{s.desc}</p>
                 </div>
               </motion.div>

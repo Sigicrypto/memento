@@ -166,10 +166,10 @@ export default function EditEventPage() {
               <div>
                 <label className="block text-xs font-bold mb-3 uppercase tracking-widest text-slate-500">Event Name</label>
                 <input type="text" value={name} onChange={e => setName(e.target.value)} 
-                  className="w-full px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none focus:border-amber-500/40 transition-all" />
+                  className="w-full px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none focus:border-amber-500/40 transition-all" />
               </div>
               {/* Branding - White Label Only */}
-              <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10' : 'bg-white/[0.02] border border-dashed border-black/5 dark:border-white/5 opacity-40 grayscale pointer-events-none'}`}>
+              <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10' : 'bg-white/[0.02] border border-dashed border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 opacity-40 grayscale pointer-events-none'}`}>
                 <div className="flex items-center justify-between mb-6">
                   <label className="text-xs font-black uppercase tracking-[0.2em] text-amber-500">🎨 Custom Branding</label>
                   {event?.plan_type !== 'WHITE_LABEL' && <span className="text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full border border-amber-500/20">Upgrade Required</span>}
@@ -177,14 +177,14 @@ export default function EditEventPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Primary Color</label>
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                       <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" disabled={event?.plan_type !== 'WHITE_LABEL'} />
                       <span className="text-xs font-mono font-bold tracking-widest">{primaryColor.toUpperCase()}</span>
                     </div>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Secondary Color</label>
-                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                       <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" disabled={event?.plan_type !== 'WHITE_LABEL'} />
                       <span className="text-xs font-mono font-bold tracking-widest">{secondaryColor.toUpperCase()}</span>
                     </div>
@@ -193,25 +193,25 @@ export default function EditEventPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
                   <div>
                     <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Custom Domain</label>
-                    <input type="text" value={customDomain} disabled={event?.plan_type !== 'WHITE_LABEL'} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.client.com" className="w-full px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none transition-all text-sm" />
+                    <input type="text" value={customDomain} disabled={event?.plan_type !== 'WHITE_LABEL'} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.client.com" className="w-full px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 focus:outline-none transition-all text-sm" />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Brand Logo URL</label>
-                    <input type="text" value={logoUrl} disabled={event?.plan_type !== 'WHITE_LABEL'} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className="w-full px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none transition-all text-sm" />
+                    <input type="text" value={logoUrl} disabled={event?.plan_type !== 'WHITE_LABEL'} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className="w-full px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 focus:outline-none transition-all text-sm" />
                   </div>
                 </div>
               </div>
 
-              <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10' : 'bg-white/[0.02] border border-dashed border-black/5 dark:border-white/5 opacity-40 grayscale pointer-events-none'}`}>
+              <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10' : 'bg-white/[0.02] border border-dashed border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 opacity-40 grayscale pointer-events-none'}`}>
                 <div className="flex items-center justify-between mb-6">
                   <label className="text-xs font-black uppercase tracking-[0.2em] text-rose-500">💧 Custom Watermark</label>
                   {event?.plan_type !== 'WHITE_LABEL' && <span className="text-[10px] font-black uppercase tracking-widest bg-rose-500/10 text-rose-500 px-3 py-1 rounded-full border border-rose-500/20">Locked</span>}
                 </div>
-                <input type="file" accept="image/png, image/jpeg" onChange={(e) => setWatermarkFile(e.target.files?.[0] || null)} className="w-full text-xs text-slate-600 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-500 hover:file:bg-amber-500/20 cursor-pointer transition-all" disabled={event?.plan_type !== 'WHITE_LABEL'} />
-                {watermarkPreview && <img src={watermarkPreview} alt="Watermark preview" className="w-32 h-32 object-contain mt-6 mx-auto rounded-xl /40 p-4 border border-black/5 dark:border-white/5 shadow-inner" />}
+                <input type="file" accept="image/png, image/jpeg" onChange={(e) => setWatermarkFile(e.target.files?.[0] || null)} className="w-full text-xs text-slate-600 dark:text-slate-600 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-500 hover:file:bg-amber-500/20 cursor-pointer transition-all" disabled={event?.plan_type !== 'WHITE_LABEL'} />
+                {watermarkPreview && <img src={watermarkPreview} alt="Watermark preview" className="w-32 h-32 object-contain mt-6 mx-auto rounded-xl /40 p-4 border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 shadow-inner" />}
               </div>
               <div>
-                <label className="flex items-center justify-between px-6 py-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
+                <label className="flex items-center justify-between px-6 py-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
                   <div>
                     <span className="font-bold text-sm block mb-1">🛡️ Automatic Safety Filter</span>
                     <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Pro Edition Protection</p>
@@ -221,26 +221,26 @@ export default function EditEventPage() {
                   </div>
                 </label>
               </div>
-              <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+              <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                 <label className="block text-xs font-bold mb-3 uppercase tracking-[0.2em] text-cyan-400">📅 Wall Active Until</label>
                 <input type="datetime-local" value={expiresAt || ''} onChange={e => setExpiresAt(e.target.value)} 
-                  className="w-full px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none focus:border-cyan-500/40 transition-all font-mono text-sm" />
-                <p className="text-[10px] mt-4 text-slate-600 dark:text-slate-400 leading-relaxed font-medium">Determines when the live wall stops accepting new guest uploads. Photos are safely retained for your plan's full storage duration.</p>
+                  className="w-full px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 focus:outline-none focus:border-cyan-500/40 transition-all font-mono text-sm" />
+                <p className="text-[10px] mt-4 text-slate-600 dark:text-slate-600 dark:text-slate-400 leading-relaxed font-medium">Determines when the live wall stops accepting new guest uploads. Photos are safely retained for your plan's full storage duration.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
+                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
                   <span className="font-bold text-xs uppercase tracking-widest">🤖 AI Album</span>
                   <div onClick={() => setEnableAiAlbum(!enableAiAlbum)} className={`w-10 h-5 rounded-full flex items-center transition-all ${enableAiAlbum ? 'bg-emerald-500' : 'bg-slate-700'}`}>
                     <span className={`w-3.5 h-3.5 bg-white rounded-full mx-1 transition-all transform ${enableAiAlbum ? 'translate-x-4.5' : 'translate-x-0'}`} />
                   </div>
                 </label>
-                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
+                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer">
                   <span className="font-bold text-xs uppercase tracking-widest">🔒 Privacy</span>
                   <div onClick={() => setEnableSmartPrivacy(!enableSmartPrivacy)} className={`w-10 h-5 rounded-full flex items-center transition-all ${enableSmartPrivacy ? 'bg-emerald-500' : 'bg-slate-700'}`}>
                     <span className={`w-3.5 h-3.5 bg-white rounded-full mx-1 transition-all transform ${enableSmartPrivacy ? 'translate-x-4.5' : 'translate-x-0'}`} />
                   </div>
                 </label>
-                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer col-span-1 sm:col-span-2">
+                <label className="flex items-center justify-between px-5 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-white/[0.08] transition-all cursor-pointer col-span-1 sm:col-span-2">
                   <span className="font-bold text-xs uppercase tracking-widest">☁️ Google Drive Sync</span>
                   <div onClick={() => setGoogleDriveSync(!googleDriveSync)} className={`w-10 h-5 rounded-full flex items-center transition-all ${googleDriveSync ? 'bg-indigo-500' : 'bg-slate-700'}`}>
                     <span className={`w-3.5 h-3.5 bg-white rounded-full mx-1 transition-all transform ${googleDriveSync ? 'translate-x-4.5' : 'translate-x-0'}`} />

@@ -11,9 +11,9 @@ export default function TermsPage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-white transition-all font-bold text-sm">
+            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-all font-bold text-sm">
                <ArrowLeft size={16} /> Back to Home
             </Link>
             <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden md:block" />
@@ -88,7 +88,7 @@ export default function TermsPage() {
                </div>
                <p className="text-text-secondary leading-relaxed">Questions? Reach out to our legal team directly:</p>
                <div className="flex flex-wrap gap-4 mt-4">
-                  <div className="px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold">support@memento.app</div>
+                  <div className="px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-xs font-bold">support@memento.app</div>
                   <div className="px-5 py-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold">+968 96095692 (WhatsApp)</div>
                </div>
             </section>

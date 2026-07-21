@@ -23,7 +23,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
       <div className="container mx-auto w-full">
         {!isEmbedded && (
           <div className="mb-12">
-            <a href="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-white transition-all">
+            <a href="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-black dark:text-white transition-all">
                <ArrowLeft size={14} /> Back to Homepage
             </a>
           </div>
@@ -61,7 +61,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 
                 {/* Section 1: Icon + Plan Name — fixed height for alignment */}
                 <div className="flex items-center gap-3 mb-5" style={{ minHeight: '40px' }}>
-                   <div className={`w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 ${plan.iconColor}`}>
+                   <div className={`w-10 h-10 rounded-xl bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center flex-shrink-0 ${plan.iconColor}`}>
                       <Icon size={20} />
                    </div>
                    <h3 className="text-xl font-bold leading-tight">{plan.name}</h3>
@@ -94,7 +94,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 {/* Section 5: CTA button — pushed to bottom with mt-auto */}
                 <a 
                    href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white'}`}
+                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-white/10 text-white'}`}
                 >
                    {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
                 </a>
@@ -107,7 +107,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
         <div className="flex flex-col" style={{ gap: '40px' }}>
            <h3 className="text-3xl font-bold text-center">Feature Breakdown</h3>
            <div
-              className="glass-panel overflow-hidden border-white/10"
+              className="glass-panel overflow-hidden border-black/20 dark:border-black/10 dark:border-white/10"
               style={{ padding: '0' }}
            >
               <div className="overflow-x-auto" style={{ padding: '24px 24px 32px' }}>
@@ -200,7 +200,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
               >
                  {/* Headline — 56-64px on desktop, responsive */}
                  <h3
-                    className="font-bold tracking-tight text-white"
+                    className="font-bold tracking-tight text-black dark:text-white"
                     style={{
                       fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
                       lineHeight: 1.15,
@@ -229,7 +229,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                     {/* Primary CTA */}
                     <a
                        href="/create"
-                       className="inline-flex items-center justify-center font-semibold text-white transition-all duration-300 hover:-translate-y-0.5"
+                       className="inline-flex items-center justify-center font-semibold text-black dark:text-white transition-all duration-300 hover:-translate-y-0.5"
                        style={{
                          height: '56px',
                          padding: '0 40px',
@@ -274,7 +274,7 @@ function ComparisonRow({ label, values }: { label: string, values: any[] }) {
        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
     >
        <td
-          className="font-semibold text-white/80 text-sm"
+          className="font-semibold text-black dark:text-black/80 dark:text-white/80 text-sm"
           style={{ padding: '18px 24px 18px 32px' }}
        >
           {label}

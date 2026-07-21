@@ -136,7 +136,7 @@
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.04em;
-  color: white;
+  color: var(--text-primary);
 }
 
 .h1-text {
@@ -163,7 +163,7 @@
 .stat-value {
   font-size: var(--fs-h2);
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
   margin-bottom: 4px;
 }
 

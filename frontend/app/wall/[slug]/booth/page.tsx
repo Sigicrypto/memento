@@ -88,7 +88,7 @@ export default function PhotoBoothPage() {
           )}
         </AnimatePresence>
 
-        {overlay === 'frame' && <div className="absolute inset-0 border-[20px] border-black/20 dark:border-white/20 z-30 pointer-events-none" />}
+        {overlay === 'frame' && <div className="absolute inset-0 border-[20px] border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 z-30 pointer-events-none" />}
 
         {!imgSrc ? (
           <Webcam
@@ -107,7 +107,7 @@ export default function PhotoBoothPage() {
             <button 
               onClick={startCountdown}
               disabled={countdown !== null}
-              className="w-20 h-20 rounded-full bg-white/20 border-4 border-white flex items-center justify-center hover:bg-white/40 transition-colors"
+              className="w-20 h-20 rounded-full bg-white/20 border-4 border-black/20 dark:border-white flex items-center justify-center hover:bg-white/40 transition-colors"
             >
               <Camera size={32} className="" />
             </button>

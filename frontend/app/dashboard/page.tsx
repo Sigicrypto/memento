@@ -141,7 +141,7 @@ export default function DashboardPage() {
       <div className="grain" />
 
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-white/5 bg-white/70 dark:bg-black/70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 bg-white/70 dark:bg-black/70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
         <div className="flex items-center gap-6">
           <Link href="/">
             <AnimatedLogo width={140} height={40} />
@@ -158,7 +158,7 @@ export default function DashboardPage() {
           )}
           <button
             onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-text-muted hover:text-black dark:hover:text-white hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-text-muted hover:text-black dark:hover:text-black dark:text-white hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold"
           >
             <LogOut size={16} /> <span className="hidden sm:inline">Sign out</span>
           </button>
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search events..." 
-                  className="w-full sm:w-64 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full sm:w-64 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
               <Link href="/create" className="btn-premium flex items-center gap-2 !py-2.5 !px-6 text-sm flex-shrink-0">
@@ -271,7 +271,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="glass-panel p-20 text-center flex flex-col items-center"
             >
-               <div className="w-20 h-20 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-3xl mb-8">
+               <div className="w-20 h-20 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center text-3xl mb-8">
                  🎈
                </div>
                <h3 className="text-2xl font-bold mb-3">No active events yet</h3>
@@ -331,7 +331,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 mb-8">
+              <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 mb-8">
                 <p className="text-text-muted text-xs mb-1">Confirm deletion of:</p>
                 <p className="font-bold">{deleteEvent.name}</p>
                 <p className="text-text-muted text-[10px] mt-2 italic">{deleteEvent.photo_count || 0} photos will be permanently erased.</p>
@@ -347,7 +347,7 @@ export default function DashboardPage() {
                     value={deleteText}
                     onChange={(e) => setDeleteText(e.target.value)}
                     placeholder="Enter event name..."
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
                   />
                 </div>
 
@@ -384,7 +384,7 @@ function StatCard({ icon, value, label, color, delay }: { icon: React.ReactNode;
       transition={{ duration: 0.6, delay }}
       className="gcard flex items-center gap-6"
     >
-      <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center" style={{ color }}>
+      <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center" style={{ color }}>
         {icon}
       </div>
       <div>
@@ -422,7 +422,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
                <span className="text-primary text-[10px] font-bold uppercase tracking-widest">{event.photo_count || 0} Photos</span>
             </div>
           </div>
-          <Link href={`/dashboard/edit/${event.id}`} className="w-9 h-9 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-text-muted hover:text-black dark:hover:text-white transition-colors flex-shrink-0">
+          <Link href={`/dashboard/edit/${event.id}`} className="w-9 h-9 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-colors flex-shrink-0">
             <Settings size={16} />
           </Link>
         </div>
@@ -434,7 +434,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
             { href: `/moderate/${event.slug}`, icon: <Shield size={16} />, label: 'Mod', color: 'text-white' },
             { href: `/dashboard/${event.id}/analytics`, icon: <BarChart2 size={16} />, label: 'Stats', color: 'text-white' },
           ].map((btn) => (
-            <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-2 py-3 px-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 hover:border-black/20 dark:border-white/20 transition-all group/btn">
+            <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-2 py-3 px-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 transition-all group/btn">
               <div className={`text-${btn.color} group-hover/btn:scale-110 transition-transform`}>{btn.icon}</div>
               <span className="text-[8px] font-black tracking-widest uppercase text-text-muted">{btn.label}</span>
             </Link>
@@ -442,10 +442,10 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
         </div>
       </div>
 
-      <div className="flex gap-2.5 pt-5 border-t border-black/5 dark:border-white/5 mt-auto">
+      <div className="flex gap-2.5 pt-5 border-t border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 mt-auto">
         <button
           onClick={() => onCopy(event.slug)}
-          className="flex-1 flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all text-xs font-medium text-text-secondary truncate"
+          className="flex-1 flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all text-xs font-medium text-text-secondary truncate"
         >
           <span className="truncate">{copied === event.slug ? 'Copied' : `memento.live/${event.slug}`}</span>
           <Copy size={copied === event.slug ? 0 : 14} className="flex-shrink-0 ml-2" />

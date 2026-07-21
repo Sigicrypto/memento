@@ -88,9 +88,9 @@ export default function TVModePage() {
         <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
         
         <div className="relative z-10 text-center flex flex-col items-center">
-          <div className="w-16 h-16 border-4 rounded-full border-black/10 dark:border-white/10 border-t-amber-500 animate-spin mb-6" />
+          <div className="w-16 h-16 border-4 rounded-full border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 border-t-amber-500 animate-spin mb-6" />
           <h1 className="text-4xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-rose-400">{eventName}</h1>
-          <p className="text-slate-600 dark:text-slate-400 text-lg uppercase tracking-widest font-bold animate-pulse">Waiting for photos...</p>
+          <p className="text-slate-600 dark:text-slate-600 dark:text-slate-400 text-lg uppercase tracking-widest font-bold animate-pulse">Waiting for photos...</p>
         </div>
       </div>
     );
@@ -102,7 +102,7 @@ export default function TVModePage() {
       <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
       
       <div className="absolute top-6 right-6 z-50">
-        <Link href={`/wall/${slug}`} className="px-5 py-3 rounded-xl /40 backdrop-blur-md border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-sm text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-white flex items-center gap-2">
+        <Link href={`/wall/${slug}`} className="px-5 py-3 rounded-xl /40 backdrop-blur-md border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-sm text-slate-700 dark:text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-black dark:text-white flex items-center gap-2">
           ✕ Exit TV Mode
         </Link>
       </div>
@@ -110,20 +110,20 @@ export default function TVModePage() {
       <div className="relative z-10 w-full h-full flex items-center justify-center p-8">
         <div className="relative w-full h-full flex items-center justify-center">
           {currentPhoto.media_type === 'video' ? (
-            <video key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} autoPlay muted loop playsInline className="max-h-full max-w-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-black/10 dark:border-white/10" />
+            <video key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} autoPlay muted loop playsInline className="max-h-full max-w-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10" />
           ) : (
-            <div className="relative w-full h-full"><Image key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} alt="" fill className="object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-black/10 dark:border-white/10" priority /></div>
+            <div className="relative w-full h-full"><Image key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} alt="" fill className="object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10" priority /></div>
           )}
         </div>
       </div>
 
       {(currentPhoto.caption || currentPhoto.uploader_name) && (
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-20 w-full max-w-4xl px-6">
-          <div className="/40 backdrop-blur-xl border border-black/10 dark:border-white/10 p-6 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+          <div className="/40 backdrop-blur-xl border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 p-6 rounded-2xl text-center shadow-2xl relative overflow-hidden">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
             
             {currentPhoto.caption && <p className="text-2xl md:text-3xl font-medium mb-3 leading-relaxed tracking-wide">"{currentPhoto.caption}"</p>}
-            <div className="inline-block px-4 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+            <div className="inline-block px-4 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
               <p className="text-base font-bold text-amber-400 uppercase tracking-widest">{currentPhoto.uploader_name}</p>
             </div>
           </div>

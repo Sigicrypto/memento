@@ -126,9 +126,9 @@ export default function ModeratePage() {
       </AnimatePresence>
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-white transition-all font-bold text-sm">
+            <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-all font-bold text-sm">
                <ArrowLeft size={16} /> Back to Wall
             </Link>
             <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden md:block" />
@@ -158,7 +158,7 @@ export default function ModeratePage() {
             </div>
  
             <div className="flex flex-col gap-4 items-end">
-               <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
+               <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
                   {(['pending', 'approved', 'all'] as const).map(f => (
                     <button key={f} onClick={() => { setFilter(f); setSelectedIds(new Set()); }} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-black/5 dark:bg-white/5'}`}>
                        {f}
@@ -186,16 +186,16 @@ export default function ModeratePage() {
             ) : (
                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                    {filteredPhotos.map((photo, i) => (
-                     <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} onClick={() => toggleSelection(photo.id)} className={`relative group aspect-[3/4] rounded-3xl overflow-hidden border cursor-pointer ${selectedIds.has(photo.id) ? 'border-primary shadow-[0_0_20px_rgba(99,102,241,0.5)]' : !photo.approved ? 'border-primary/50' : 'border-black/5 dark:border-white/5'} bg-black/5 dark:bg-white/5`}>
+                     <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} onClick={() => toggleSelection(photo.id)} className={`relative group aspect-[3/4] rounded-3xl overflow-hidden border cursor-pointer ${selectedIds.has(photo.id) ? 'border-primary shadow-[0_0_20px_rgba(99,102,241,0.5)]' : !photo.approved ? 'border-primary/50' : 'border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5'} bg-black/5 dark:bg-white/5`}>
                         {selectedIds.has(photo.id) && (
                           <div className="absolute inset-0 bg-primary/20 z-10 pointer-events-none" />
                         )}
                         <div className="absolute top-4 left-4 z-20">
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${selectedIds.has(photo.id) ? 'bg-primary border-primary' : 'border-white/50 bg-black/50'}`}>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${selectedIds.has(photo.id) ? 'bg-primary border-primary' : 'border-black/20 dark:border-black/10 dark:border-white/50 bg-black/50'}`}>
                              {selectedIds.has(photo.id) && <Check size={14} className="" />}
                           </div>
                         </div>
-                        <div className="absolute inset-0 border border-black/5 dark:border-white/5 overflow-hidden">
+                        <div className="absolute inset-0 border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 overflow-hidden">
                            {photo.media_type === 'video' ? (
                               <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
                            ) : (
@@ -232,7 +232,7 @@ export default function ModeratePage() {
       </main>
  
       {/* Footer Nav */}
-      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-black/5 dark:border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
+      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
          <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-text-muted hover:text-primary transition-all">
             <Layout size={18} /> Direct to Wall View
          </Link>

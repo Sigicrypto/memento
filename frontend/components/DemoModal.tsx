@@ -245,15 +245,15 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
           </>
         )}
         
-        <div className="h-20 flex items-center justify-between px-6 border-b border-white/5 bg-white/5">
+        <div className="h-20 flex items-center justify-between px-6 border-b border-black/20 dark:border-black/10 dark:border-white/5 bg-white/5">
            <div className="flex items-center gap-6">
               <AnimatedLogo width={140} height={40} />
               <div className="hidden sm:flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10">
                     <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-secondary' : 'bg-red-500'} ${isConnected ? 'animate-pulse' : ''}`} />
                     <span className="text-[10px] font-bold tracking-widest text-text-secondary">{isConnected ? 'LIVE CONNECTION' : 'RECONNECTING...'}</span>
                   </div>
-                  <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                  <div className="px-3 py-1 rounded-full bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10">
                     <span className="text-[10px] font-bold tracking-widest text-text-secondary">{minutes}:{seconds < 10 ? `0${seconds}` : seconds} LEFT</span>
                   </div>
               </div>
@@ -274,7 +274,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
 
               <div className="w-px h-6 bg-white/10" />
 
-              <button onClick={toggleFullscreen} className="p-2 text-text-muted hover:text-white transition-all">
+              <button onClick={toggleFullscreen} className="p-2 text-text-muted hover:text-black dark:text-white transition-all">
                 {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
               </button>
               <button onClick={onClose} className="p-2 text-text-muted hover:text-red-500 transition-all">
@@ -284,9 +284,9 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
         </div>
 
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-            <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-white/5 p-8 flex flex-col items-center bg-white/20">
+            <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-black/20 dark:border-black/10 dark:border-white/5 p-8 flex flex-col items-center bg-white/20">
                <div className="text-center mb-8">
-                  <h3 className="text-xl font-bold text-white mb-2">Join the Wall</h3>
+                  <h3 className="text-xl font-bold text-black dark:text-white mb-2">Join the Wall</h3>
                   <p className="text-sm text-text-secondary">Scan to upload photos and see them live</p>
                </div>
 
@@ -309,7 +309,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                      <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
                        <ImageIcon size={32} className="text-text-muted" />
                      </div>
-                     <h2 className="text-2xl font-bold text-white mb-2">Waiting for first photo...</h2>
+                     <h2 className="text-2xl font-bold text-black dark:text-white mb-2">Waiting for first photo...</h2>
                      <p className="text-text-secondary max-w-sm">Use the QR code to upload something beautiful and watch it appear here instantly.</p>
                   </div>
                ) : (
@@ -322,7 +322,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                              initial={{ opacity: 0, y: 20 }}
                              animate={{ opacity: 1, y: 0 }}
                              transition={{ delay: i * 0.05 }}
-                             className="group relative aspect-square rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all"
+                             className="group relative aspect-square rounded-2xl overflow-hidden border border-black/20 dark:border-black/10 dark:border-white/5 hover:border-black/20 dark:border-black/10 dark:border-white/20 transition-all"
                            >
                               {photo.type === 'video' ? (
                                 <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
@@ -330,8 +330,8 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                                 <img src={photo.url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Upload" loading="lazy" />
                               )}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
-                                 <p className="text-white text-sm font-medium line-clamp-1">{photo.caption}</p>
-                                 <p className="text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
+                                 <p className="text-black dark:text-white text-sm font-medium line-clamp-1">{photo.caption}</p>
+                                 <p className="text-black dark:text-black/60 dark:text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
                               </div>
                            </motion.div>
                          ))}
@@ -377,8 +377,8 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                               ) : (
                                  <img src={photos[currentSlide]?.url} className="w-full h-full object-contain" alt="Upload" />
                               )}
-                              <div className="absolute bottom-10 left-10 p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 max-w-md">
-                                 <h3 className="text-2xl font-bold text-white mb-2">{photos[currentSlide]?.caption}</h3>
+                              <div className="absolute bottom-10 left-10 p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-black/20 dark:border-black/10 dark:border-white/10 max-w-md">
+                                 <h3 className="text-2xl font-bold text-black dark:text-white mb-2">{photos[currentSlide]?.caption}</h3>
                                  <p className="text-primary font-bold tracking-widest text-xs uppercase">by {photos[currentSlide]?.uploader}</p>
                               </div>
                            </motion.div>

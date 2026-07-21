@@ -152,7 +152,7 @@ export default function VideoMessagePage() {
               <Square size={24} fill="currentColor" />
             </button>
           ) : (
-            <button onClick={startRecording} className="w-20 h-20 border-4 border-white rounded-full flex items-center justify-center">
+            <button onClick={startRecording} className="w-20 h-20 border-4 border-black/20 dark:border-white rounded-full flex items-center justify-center">
               <div className="w-16 h-16 bg-red-500 rounded-full" />
             </button>
           )

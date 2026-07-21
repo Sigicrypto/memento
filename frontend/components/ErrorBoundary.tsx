@@ -25,7 +25,7 @@ export class ErrorBoundary extends React.Component<{children: React.ReactNode}, 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center text-white relative overflow-hidden">
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center text-black dark:text-white relative overflow-hidden">
           <div className="orbs">
             <div className="orb orb-primary opacity-30" />
             <div className="orb orb-secondary opacity-30" />

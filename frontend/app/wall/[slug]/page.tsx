@@ -76,7 +76,7 @@ const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) =>
         initial={{ y: 40, opacity: 0, scale: 0.9 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="relative max-w-2xl w-full group overflow-hidden rounded-[2rem] border border-black/10 dark:border-white/10"
+        className="relative max-w-2xl w-full group overflow-hidden rounded-[2rem] border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10"
       >
         <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
         {photo.media_type === 'video'
@@ -107,7 +107,7 @@ const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) =>
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
         onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
-        className="absolute top-10 right-10 w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-text-muted hover:text-black dark:hover:text-white transition-all hover:scale-110 active:scale-95"
+        className="absolute top-10 right-10 w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-all hover:scale-110 active:scale-95"
       >
         <X size={20} />
       </motion.button>
@@ -349,7 +349,7 @@ export default function WallPage() {
              </div>
           </div>
           {hasFeature(planTier, 'SLIDESHOW_MODE') && (
-             <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-xs">
+             <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-xs">
                EXIT SLIDESHOW
              </button>
           )}
@@ -363,7 +363,7 @@ export default function WallPage() {
                 
                 <div className="flex flex-col lg:flex-row gap-16 items-center w-full max-w-7xl">
                    {/* QR Section */}
-                   <div className="hidden lg:flex flex-col items-center gap-6 glass-panel p-8 /40 border-black/5 dark:border-white/5 order-2 lg:order-1">
+                   <div className="hidden lg:flex flex-col items-center gap-6 glass-panel p-8 /40 border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 order-2 lg:order-1">
                       <div className="p-4 bg-white rounded-2xl shadow-2xl">
                          <QRCodeSVG value={uploadUrl} size={160} />
                       </div>
@@ -375,7 +375,7 @@ export default function WallPage() {
  
                    {/* Media Content */}
                    <div className="flex-grow relative order-1 lg:order-2">
-                     <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-black/10 dark:border-white/10">
+                     <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                         {current.media_type === 'video'
                           ? <video src={getPublicUrl(current.storage_path)} className="max-h-[70vh] w-full block object-contain" autoPlay muted onEnded={() => setSlideIndex(p => (p + 1) % displayedPhotos.length)} />
                           : <div className="relative w-full aspect-video max-h-[70vh]"><Image src={getPublicUrl(current.storage_path)} fill className="object-contain" alt="" /></div>
@@ -391,11 +391,11 @@ export default function WallPage() {
                            </div>
                            <div className="flex gap-4">
                               {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                                 <div className="px-5 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center gap-2 text-sm font-bold">
+                                 <div className="px-5 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center gap-2 text-sm font-bold">
                                     <Heart size={16} className="text-pink-500 fill-pink-500" /> {current.reaction_count || 0}
                                  </div>
                               )}
-                              <div className="px-5 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center gap-2 text-sm font-bold">
+                              <div className="px-5 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center gap-2 text-sm font-bold">
                                  <Clock size={16} className="text-text-muted" /> {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </div>
                            </div>
@@ -424,7 +424,7 @@ export default function WallPage() {
       {revealPhoto && <NewPhotoReveal photo={revealPhoto} getPublicUrl={getPublicUrl} onDone={() => setRevealPhoto(null)} />}
  
       {/* Header */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-24 border-b border-black/5 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-24 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
             {(hasFeature(planTier, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
                <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" />
@@ -439,7 +439,7 @@ export default function WallPage() {
  
          <div className="flex items-center gap-4">
             {isAdmin ? (
-               <Link href="/dashboard" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-bold hover:bg-black/10 dark:bg-white/10 transition-all">
+               <Link href="/dashboard" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-xs font-bold hover:bg-black/10 dark:bg-white/10 transition-all">
                   <Settings size={14} /> Dashboard
                </Link>
             ) : hasFeature(planTier, 'SLIDESHOW_MODE') ? (
@@ -459,7 +459,7 @@ export default function WallPage() {
                <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">{eventName}</h1>
                <div className="flex flex-wrap items-center gap-4">
                   {hasFeature(planTier, 'SELFIE_MATCH') && (
-                     <button onClick={() => setShowSelfieCam(true)} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-bold hover:bg-black/10 dark:bg-white/10 transition-all hover:scale-105 active:scale-95 group">
+                     <button onClick={() => setShowSelfieCam(true)} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-sm font-bold hover:bg-black/10 dark:bg-white/10 transition-all hover:scale-105 active:scale-95 group">
                         <Search size={18} className="text-primary group-hover:rotate-12 transition-transform" /> Find My Photos
                      </button>
                   )}
@@ -472,7 +472,7 @@ export default function WallPage() {
             </div>
  
             <div className="flex flex-col items-end gap-6">
-               <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
+               <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
                   {(['grid', 'polaroid', 'album'] as ViewMode[]).map(m => (
                     <button key={m} onClick={() => setViewMode(m)} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === m ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-black/5 dark:bg-white/5'}`}>
                        {m}
@@ -494,8 +494,8 @@ export default function WallPage() {
          </div>
  
          {/* Filters */}
-         <div className="flex items-center justify-between mb-12 border-b border-black/5 dark:border-white/5 pb-8">
-            <button onClick={() => setShowBestShots(!showBestShots)} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all font-bold text-xs ${showBestShots ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-text-muted hover:border-black/20 dark:border-white/20'}`}>
+         <div className="flex items-center justify-between mb-12 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 pb-8">
+            <button onClick={() => setShowBestShots(!showBestShots)} className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all font-bold text-xs ${showBestShots ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-text-muted hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20'}`}>
                <Sparkles size={16} /> {showBestShots ? 'Curated Selection Active' : 'Show Only Best Shots'}
             </button>
  
@@ -503,7 +503,7 @@ export default function WallPage() {
                {matchedPhotoIds && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex items-center gap-4">
                     <span className="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary">Matched {matchedPhotoIds.length} Photos</span>
-                    <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black text-text-muted hover:text-black dark:hover:text-white uppercase transition-colors">Clear Filter ×</button>
+                    <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black text-text-muted hover:text-black dark:hover:text-black dark:text-white uppercase transition-colors">Clear Filter ×</button>
                  </motion.div>
                )}
             </AnimatePresence>
@@ -521,7 +521,7 @@ export default function WallPage() {
             ) : viewMode === 'grid' ? (
                <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {displayedPhotos.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5">
+                    <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 bg-black/5 dark:bg-white/5">
                        <Image src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" loading="lazy" />
                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
                           <div className="flex justify-between items-start">
@@ -545,9 +545,9 @@ export default function WallPage() {
                           {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <Image src={getPublicUrl(p.storage_path)} className="object-cover" fill alt="" loading="lazy" />}
                        </div>
                        <div className="absolute inset-x-0 bottom-0 p-4 text-center">
-                          <p className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">MEMENTO BY <span className="text-primary">{p.uploader_name}</span>
+                          <p className="text-[10px] font-black text-slate-600 dark:text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">MEMENTO BY <span className="text-primary">{p.uploader_name}</span>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                                <button onClick={() => handleReaction(p.id)} className="text-slate-600 dark:text-slate-400 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-1">
+                                <button onClick={() => handleReaction(p.id)} className="text-slate-600 dark:text-slate-600 dark:text-slate-400 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-1">
                                    <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
                                 </button>
                              )}
@@ -570,7 +570,7 @@ export default function WallPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                            {gPhotos.map((p, i) => (
-                             <motion.div key={p.id} className="relative aspect-[3/4] overflow-hidden rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                             <motion.div key={p.id} className="relative aspect-[3/4] overflow-hidden rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                                 <Image src={getPublicUrl(p.storage_path)} className="object-cover group-hover:scale-105 transition-all" alt="" fill sizes="200px" loading="lazy" />
                                 <div className="absolute bottom-4 left-4 right-4 p-3 /60 backdrop-blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                                    <p className="text-[9px] font-black text-primary tracking-widest uppercase">BY {p.uploader_name}</p>
@@ -591,7 +591,7 @@ export default function WallPage() {
          {showSelfieCam && (
            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] /95 backdrop-blur-3xl flex items-center justify-center p-6">
               <div className="glass-panel max-w-xl w-full p-10 text-center relative">
-                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-black dark:hover:text-white transition-colors"><X size={24} /></button>
+                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-colors"><X size={24} /></button>
                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto mb-6"><User size={32} /></div>
                  <h2 className="text-3xl font-bold mb-3">Find My Photos</h2>
                  <p className="text-text-secondary mb-10">Our AI will scan the entire wall and find every moment you&apos;re in. Private and instant.</p>
@@ -602,7 +602,7 @@ export default function WallPage() {
                  </div>
                  
                  <button onClick={captureSelfieAndSearch} disabled={isSearching} className="btn-premium w-full py-5 flex items-center justify-center gap-3">
-                    {isSearching ? <div className="w-5 h-5 border-2 border-black/20 dark:border-white/20 border-t-white rounded-full animate-spin" /> : <Camera size={20} />}
+                    {isSearching ? <div className="w-5 h-5 border-2 border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white rounded-full animate-spin" /> : <Camera size={20} />}
                     {isSearching ? 'Scanning Memories...' : 'Start Facial Match'}
                  </button>
               </div>
@@ -615,7 +615,7 @@ export default function WallPage() {
       {/* Music Control */}
       {musicTrack && hasFeature(planTier, 'SLIDESHOW_MUSIC') && (
         <div className="fixed bottom-8 left-8 z-[100]">
-          <div className="p-4 glass-panel border-black/10 dark:border-white/10 flex items-center gap-4">
+          <div className="p-4 glass-panel border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 flex items-center gap-4">
             <button 
               onClick={() => {
                  setIsAudioPlaying(!isAudioPlaying);
@@ -640,7 +640,7 @@ export default function WallPage() {
  
       {/* WhatsApp Message Me */}
       <div className="fixed bottom-8 right-8 z-[100] hidden lg:block">
-         <Link href="https://wa.me/96896095692" target="_blank" className="p-4 glass-panel border-black/10 dark:border-white/10 hover:border-primary/50 transition-all flex items-center gap-4 group">
+         <Link href="https://wa.me/96896095692" target="_blank" className="p-4 glass-panel border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:border-primary/50 transition-all flex items-center gap-4 group">
             <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
                <ExternalLink size={20} />
             </div>

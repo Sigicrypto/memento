@@ -95,23 +95,23 @@ export default function BrandingPage() {
               White-Label Branding
             </h1>
             <form onSubmit={handleUpdate} className="space-y-8">
-              <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+              <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                 <label className="block text-xs font-bold mb-4 uppercase tracking-widest text-slate-500">Brand Logo</label>
                 <input type="file" accept="image/png, image/jpeg" onChange={(e) => setBrandLogoFile(e.target.files?.[0] || null)} 
-                  className="w-full text-xs text-slate-600 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-400 hover:file:bg-amber-500/20 cursor-pointer transition-all" />
-                {brandLogoPreview && <img src={brandLogoPreview} alt="Logo preview" className="w-32 h-auto object-contain mt-6 mx-auto rounded-xl /40 p-4 border border-black/5 dark:border-white/5 shadow-inner" />}
+                  className="w-full text-xs text-slate-600 dark:text-slate-600 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-400 hover:file:bg-amber-500/20 cursor-pointer transition-all" />
+                {brandLogoPreview && <img src={brandLogoPreview} alt="Logo preview" className="w-32 h-auto object-contain mt-6 mx-auto rounded-xl /40 p-4 border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 shadow-inner" />}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                   <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Primary Color</label>
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                     <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" />
                     <span className="text-xs font-mono font-bold tracking-widest">{primaryColor.toUpperCase()}</span>
                   </div>
                 </div>
-                <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                   <label className="block text-[10px] font-bold mb-4 uppercase tracking-widest text-slate-500">Secondary Color</label>
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
                     <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" />
                     <span className="text-xs font-mono font-bold tracking-widest">{secondaryColor.toUpperCase()}</span>
                   </div>

@@ -87,9 +87,9 @@ export default function EditEventPage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-white/5 /70 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 /70 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-white transition-all font-bold text-xs uppercase tracking-widest group">
+            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-all font-bold text-xs uppercase tracking-widest group">
                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Dashboard
             </Link>
             <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden md:block" />
@@ -123,7 +123,7 @@ export default function EditEventPage() {
                   <div className="grid gap-6">
                      <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Event Name</label>
-                        <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="My Grand Celebration" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
+                        <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="My Grand Celebration" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
                      </div>
  
                      <div className="space-y-2">
@@ -133,14 +133,14 @@ export default function EditEventPage() {
                         </div>
                         <div className="relative">
                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-sm font-medium">/wall/</div>
-                           <input type="text" value={slug} disabled={!isStandardPlus} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="your-event" className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl pl-16 pr-4 py-3.5 text-white focus:outline-none ${isStandardPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
+                           <input type="text" value={slug} disabled={!isStandardPlus} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="your-event" className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl pl-16 pr-4 py-3.5 text-black dark:text-white focus:outline-none ${isStandardPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
                         </div>
                      </div>
  
                      <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Privacy Password</label>
                         <div className="relative">
-                           <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Leave blank for public access" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
+                           <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Leave blank for public access" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
                            <Lock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted" />
                         </div>
                      </div>
@@ -164,7 +164,7 @@ export default function EditEventPage() {
                            <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Wall Theme</label>
                            {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" color="#06b6d4" />}
                         </div>
-                        <select value={theme} onChange={e => setTheme(e.target.value)} disabled={!isStandardPlus} className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none ${isStandardPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm appearance-none`}>
+                        <select value={theme} onChange={e => setTheme(e.target.value)} disabled={!isStandardPlus} className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-black dark:text-white focus:outline-none ${isStandardPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm appearance-none`}>
                            <option value="light">Classic Light</option>
                            <option value="dark">Cinematic Dark</option>
                            <option value="dreamy">Dreamy Glassmorphism</option>
@@ -176,7 +176,7 @@ export default function EditEventPage() {
                            <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Soundtrack</label>
                            {!isPremiumPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" color="#ec4899" />}
                         </div>
-                        <select value={musicTrack} onChange={e => setMusicTrack(e.target.value)} disabled={!isPremiumPlus} className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none ${isPremiumPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm appearance-none`}>
+                        <select value={musicTrack} onChange={e => setMusicTrack(e.target.value)} disabled={!isPremiumPlus} className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-black dark:text-white focus:outline-none ${isPremiumPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm appearance-none`}>
                            <option value="none">No Music</option>
                            <option value="lofi">Lofi Chill</option>
                            <option value="acoustic">Acoustic Sunset</option>
@@ -205,12 +205,12 @@ export default function EditEventPage() {
                   <div className="grid gap-6 relative z-10">
                      <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Custom Domain</label>
-                        <input type="text" value={customDomain} disabled={!isWhiteLabel} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.yourevent.com" className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none ${isWhiteLabel ? 'focus:border-secondary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
+                        <input type="text" value={customDomain} disabled={!isWhiteLabel} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.yourevent.com" className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-black dark:text-white focus:outline-none ${isWhiteLabel ? 'focus:border-secondary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Brand Logo URL</label>
                         <div className="relative">
-                           <input type="text" value={logoUrl} disabled={!isWhiteLabel} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none ${isWhiteLabel ? 'focus:border-secondary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
+                           <input type="text" value={logoUrl} disabled={!isWhiteLabel} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-xl px-4 py-3.5 text-black dark:text-white focus:outline-none ${isWhiteLabel ? 'focus:border-secondary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
                            <ImageIcon size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted" />
                         </div>
                      </div>
@@ -225,7 +225,7 @@ export default function EditEventPage() {
  
                <button type="submit" disabled={saving} className="btn-premium w-full !py-5 flex items-center justify-center gap-3 disabled:opacity-50 group">
                   {saving ? (
-                    <div className="w-5 h-5 border-2 border-black/20 dark:border-white/20 border-t-white rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
                       <Save size={18} className="group-hover:scale-110 transition-transform" />
@@ -237,7 +237,7 @@ export default function EditEventPage() {
          </form>
  
          <div className="mt-12 text-center">
-            <Link href="/" className="text-[10px] font-black text-text-muted hover:text-black dark:hover:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+            <Link href="/" className="text-[10px] font-black text-text-muted hover:text-black dark:hover:text-black dark:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
                <ArrowLeft size={12} /> Discard & Exit
             </Link>
          </div>

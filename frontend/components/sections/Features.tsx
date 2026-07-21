@@ -48,10 +48,10 @@ const Features: React.FC = () => {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
               }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">
                 {f.icon}
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{f.title}</h3>
+              <h3 className="text-2xl font-bold text-black dark:text-white mb-4">{f.title}</h3>
               <p className="text-text-secondary text-lg leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}

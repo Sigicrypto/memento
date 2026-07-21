@@ -81,7 +81,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 <Link 
                   key={item} 
                   href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                  className="text-sm font-medium text-text-secondary hover:text-white transition-colors relative group"
+                  className="text-sm font-medium text-text-secondary hover:text-black dark:text-white transition-colors relative group"
                 >
                   {item}
                   <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
@@ -99,13 +99,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                     <Link href="/dashboard" className="btn-secondary px-5 py-2 text-sm font-semibold rounded-xl transition-all">
                       Dashboard
                     </Link>
-                    <button onClick={handleSignOut} className="text-text-secondary hover:text-white transition-colors p-2">
+                    <button onClick={handleSignOut} className="text-text-secondary hover:text-black dark:text-white transition-colors p-2">
                       <LogOut size={18} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => openAuth('login')} className="text-sm font-medium text-text-secondary hover:text-white transition-colors">
+                    <button onClick={() => openAuth('login')} className="text-sm font-medium text-text-secondary hover:text-black dark:text-white transition-colors">
                       Log in
                     </button>
                     <button onClick={() => openAuth('signup')} className="btn-primary px-6 py-2.5 text-sm font-bold rounded-xl shadow-lg shadow-primary/20">
@@ -121,7 +121,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             {/* Hamburger Toggle */}
             {!mini && (
               <button 
-                className="md:hidden relative z-[101] p-2 text-white hover:bg-white/5 rounded-xl transition-colors"
+                className="md:hidden relative z-[101] p-2 text-black dark:text-white hover:bg-white/5 rounded-xl transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -151,7 +151,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   >
                     <Link 
                       href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                      className="text-4xl font-bold text-white hover:text-primary transition-colors"
+                      className="text-4xl font-bold text-black dark:text-white hover:text-primary transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item}
@@ -172,7 +172,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                     </Link>
                     <button 
                       onClick={handleSignOut}
-                      className="w-full h-14 rounded-2xl border border-white/10 text-text-secondary font-bold text-lg"
+                      className="w-full h-14 rounded-2xl border border-black/20 dark:border-black/10 dark:border-white/10 text-text-secondary font-bold text-lg"
                     >
                       Sign Out
                     </button>
@@ -187,7 +187,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                     </button>
                     <button 
                       onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
-                      className="w-full h-14 rounded-2xl border border-white/10 text-white font-bold text-lg"
+                      className="w-full h-14 rounded-2xl border border-black/20 dark:border-black/10 dark:border-white/10 text-black dark:text-white font-bold text-lg"
                     >
                       Log In
                     </button>

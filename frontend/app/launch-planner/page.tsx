@@ -156,7 +156,7 @@ export default function LaunchPlanner() {
       <div className="grain" />
 
       {/* Navigation Override */}
-      <nav className="lp-nav scrolled flex items-center justify-between px-6 py-4 rounded-2xl mx-auto max-w-5xl mt-4 z-50 relative bg-white/50 border border-white/60 shadow-lg backdrop-blur-xl">
+      <nav className="lp-nav scrolled flex items-center justify-between px-6 py-4 rounded-2xl mx-auto max-w-5xl mt-4 z-50 relative bg-white/50 border border-black/20 dark:border-black/10 dark:border-white/60 shadow-lg backdrop-blur-xl">
         <Link href="/" className="nav-logo">
           <AnimatedLogo width={160} height={50} />
         </Link>
@@ -214,7 +214,7 @@ export default function LaunchPlanner() {
                 <div className={`gcard overflow-hidden transition-all duration-500 ${isComplete ? 'opacity-80' : ''}`}>
                   <div className="gcard-border" />
                   <div className="gcard-inner !p-0">
-                    <div className="p-6 md:p-8 border-b border-white/40 bg-white/20">
+                    <div className="p-6 md:p-8 border-b border-black/20 dark:border-black/10 dark:border-white/40 bg-white/20">
                       <div className="flex justify-between items-start gap-4">
                         <div>
                           <h3 className={`text-2xl font-bold mb-1 flex items-center gap-3 ${isComplete ? 'text-amber-600' : 'text-slate-800'}`}>
@@ -223,7 +223,7 @@ export default function LaunchPlanner() {
                           </h3>
                           <p className="text-slate-600 text-sm md:text-base">{category.description}</p>
                         </div>
-                        <span className="text-sm font-bold px-3 py-1 bg-white/50 rounded-full border border-white text-slate-700 shadow-sm shrink-0">
+                        <span className="text-sm font-bold px-3 py-1 bg-white/50 rounded-full border border-black/20 dark:border-white text-slate-700 shadow-sm shrink-0">
                           {catDone} / {catTotal}
                         </span>
                       </div>
@@ -240,7 +240,7 @@ export default function LaunchPlanner() {
                           <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl cursor-pointer border transition-all duration-300
                              ${item.done 
                                 ? 'bg-white/40 border-green-200/50 hover:bg-white/60' 
-                                : 'bg-white/60 border-white/60 shadow-sm hover:shadow-md hover:-translate-y-0.5'}`}
+                                : 'bg-white/60 border-black/20 dark:border-black/10 dark:border-white/60 shadow-sm hover:shadow-md hover:-translate-y-0.5'}`}
                           >
                             <div className="relative flex items-center justify-center shrink-0 mt-0.5">
                               <input 
