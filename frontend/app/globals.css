@@ -4,6 +4,8 @@
 @import "./theme.css";
 @source "../**/*.{js,ts,jsx,tsx,mdx}";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Default cursor is managed by CustomCursor.tsx programmatically */
 
 /* Show default cursor on mobile/tablet */
