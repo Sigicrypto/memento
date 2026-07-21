@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { X, Maximize2, Minimize2, Image as ImageIcon, Grid, Play } from 'lucide-react';
+import { X, Maximize2, Minimize2, Image as ImageIcon, Grid, Play, Pause, Heart, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import {
@@ -38,6 +38,9 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
   const [isConnected, setIsConnected] = useState(false);
   const [uploadUrl, setUploadUrl] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [demoReactions, setDemoReactions] = useState<Record<string, number>>({});
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const fsDotRef = useRef<HTMLDivElement>(null);
   const fsOuterRef = useRef<HTMLDivElement>(null);
@@ -176,6 +179,11 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
     }
   };
 
+  const handleReaction = (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setDemoReactions(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  };
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -244,6 +252,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
             <div ref={fsDotRef} className="fixed pointer-events-none z-[100000] w-2 h-2 -translate-x-1/2 -translate-y-1/2 bg-primary rounded-full shadow-[0_0_15px_var(--primary)] transition-opacity duration-300" />
           </>
         )}
+        {isAudioPlaying && <audio ref={audioRef} autoPlay loop src="/music/lofi.mp3" />}
         
         <div className="h-20 flex items-center justify-between px-6 border-b border-black/20 dark:border-black/10 dark:border-white/5 bg-white/5">
            <div className="flex items-center gap-6">
@@ -260,6 +269,15 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
            </div>
            
            <div className="flex items-center gap-4">
+              <button onClick={() => {
+                setIsAudioPlaying(!isAudioPlaying);
+                if (audioRef.current) {
+                  if (isAudioPlaying) audioRef.current.pause();
+                  else audioRef.current.play();
+                }
+              }} className={`p-2 rounded-lg transition-all ${isAudioPlaying ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
+                {isAudioPlaying ? <Pause size={18} /> : <Music size={18} />}
+              </button>
               <div className="flex bg-white/5 p-1 rounded-xl">
                 <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
                   <Grid size={18} />
@@ -322,7 +340,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                              initial={{ opacity: 0, y: 20 }}
                              animate={{ opacity: 1, y: 0 }}
                              transition={{ delay: i * 0.05 }}
-                             className="group relative aspect-square rounded-2xl overflow-hidden border border-black/20 dark:border-black/10 dark:border-white/5 hover:border-black/20 dark:border-black/10 dark:border-white/20 transition-all"
+                             className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-black/20 dark:border-black/10 dark:border-white/5 hover:border-black/20 dark:border-black/10 dark:border-white/20 transition-all shadow-lg"
                            >
                               {photo.type === 'video' ? (
                                 <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
@@ -331,7 +349,12 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                               )}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
                                  <p className="text-white text-sm font-medium line-clamp-1">{photo.caption}</p>
-                                 <p className="text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
+                                 <div className="flex justify-between items-center mt-1">
+                                   <p className="text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
+                                   <button onClick={(e) => handleReaction(photo.id, e)} className="text-white/60 hover:text-pink-500 transition-colors flex items-center gap-1 text-[10px] font-bold">
+                                     <Heart size={14} className={demoReactions[photo.id] ? 'fill-pink-500 text-pink-500' : ''} /> {demoReactions[photo.id] || 0}
+                                   </button>
+                                 </div>
                               </div>
                            </motion.div>
                          ))}
@@ -346,9 +369,10 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                              initial={{ opacity: 0, scale: 0.8 }}
                              animate={{ opacity: 1, scale: 1, rotate: (i % 5) * 4 - 8 }}
                              transition={{ delay: i * 0.1, type: 'spring' }}
-                             className="bg-white p-4 pb-12 shadow-2xl w-64 flex-shrink-0"
+                             whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
+                             className="bg-white p-4 pb-12 shadow-2xl w-64 flex-shrink-0 relative group"
                            >
-                              <div className="aspect-square overflow-hidden bg-zinc-100 mb-4">
+                              <div className="aspect-[4/5] overflow-hidden bg-zinc-100 mb-4 rounded-sm relative">
                                 {photo.type === 'video' ? (
                                   <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
                                 ) : (
@@ -356,30 +380,42 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                                 )}
                               </div>
                               <p className="text-zinc-800 font-medium text-sm text-center font-handwriting line-clamp-2">{photo.caption}</p>
+                              <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-4 text-[10px] font-bold text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="uppercase tracking-wider mt-0.5">BY {photo.uploader}</span>
+                                <button onClick={(e) => handleReaction(photo.id, e)} className="hover:text-pink-500 transition-colors flex items-center gap-1">
+                                  <Heart size={12} className={demoReactions[photo.id] ? 'fill-pink-500 text-pink-500' : ''} /> {demoReactions[photo.id] || 0}
+                                </button>
+                              </div>
                            </motion.div>
                          ))}
                       </div>
                     )}
 
                     {viewMode === 'slideshow' && (
-                      <div className="h-full flex items-center justify-center">
-                         <AnimatePresence mode="wait">
-                           <motion.div 
-                             key={photos[currentSlide]?.id}
-                             initial={{ opacity: 0, scale: 1.1 }}
-                             animate={{ opacity: 1, scale: 1 }}
-                             exit={{ opacity: 0, scale: 0.95 }}
-                             transition={{ duration: 0.8 }}
-                             className="relative w-full h-full max-h-[600px] flex items-center justify-center rounded-3xl overflow-hidden shadow-2xl"
-                           >
+                       <div className="h-full flex items-center justify-center relative">
+                          <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full" />
+                          <AnimatePresence mode="wait">
+                            <motion.div 
+                              key={photos[currentSlide]?.id}
+                              initial={{ opacity: 0, scale: 1.05 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              transition={{ duration: 0.8 }}
+                              className="relative w-full h-full max-h-[70vh] flex items-center justify-center rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.4)] border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 bg-black/5"
+                            >
                               {photos[currentSlide]?.type === 'video' ? (
                                  <video src={photos[currentSlide]?.url} className="w-full h-full object-contain" autoPlay muted onEnded={() => setCurrentSlide((prev) => (prev + 1) % photos.length)} playsInline preload="metadata" />
                               ) : (
                                  <img src={photos[currentSlide]?.url} className="w-full h-full object-contain" alt="Upload" />
                               )}
-                              <div className="absolute bottom-10 left-10 p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-black/20 dark:border-black/10 dark:border-white/10 max-w-md">
-                                 <h3 className="text-2xl font-bold text-white mb-2">{photos[currentSlide]?.caption}</h3>
-                                 <p className="text-primary font-bold tracking-widest text-xs uppercase">by {photos[currentSlide]?.uploader}</p>
+                              <div className="absolute bottom-10 left-10 p-8 rounded-3xl bg-black/40 backdrop-blur-xl border border-black/20 dark:border-black/10 dark:border-white/10 max-w-md">
+                                 <h3 className="text-3xl font-bold text-white mb-3">{photos[currentSlide]?.caption}</h3>
+                                 <div className="flex items-center gap-6">
+                                   <p className="text-primary font-black tracking-widest text-xs uppercase">by {photos[currentSlide]?.uploader}</p>
+                                   <button onClick={(e) => photos[currentSlide] && handleReaction(photos[currentSlide].id, e)} className="text-white/80 hover:text-pink-500 transition-colors flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-white/10 border border-white/20">
+                                     <Heart size={14} className={photos[currentSlide] && demoReactions[photos[currentSlide].id] ? 'fill-pink-500 text-pink-500' : ''} /> {photos[currentSlide] ? (demoReactions[photos[currentSlide].id] || 0) : 0}
+                                   </button>
+                                 </div>
                               </div>
                            </motion.div>
                          </AnimatePresence>

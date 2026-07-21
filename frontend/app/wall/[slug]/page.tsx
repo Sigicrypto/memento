@@ -13,7 +13,7 @@ import Webcam from 'react-webcam';
 import { extractFaceDescriptorRobust, MATCH_THRESHOLD } from '@/lib/faceEngine';
 import { useAuth } from '@/hooks/useAuth';
 import { hasFeature } from '@/lib/permissions';
-import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music } from 'lucide-react';
+import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music, QrCode } from 'lucide-react';
  
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
  
@@ -174,6 +174,7 @@ export default function WallPage() {
   const [musicTrack, setMusicTrack] = useState<string | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
+  const [showMobileQR, setShowMobileQR] = useState(false);
   const webcamRef = useRef<Webcam>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
  
@@ -438,6 +439,9 @@ export default function WallPage() {
          </div>
  
          <div className="flex items-center gap-4">
+            <button onClick={() => setShowMobileQR(true)} className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-all">
+               <QrCode size={18} />
+            </button>
             {isAdmin ? (
                <Link href="/dashboard" className="hidden md:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-xs font-bold hover:bg-black/10 dark:bg-white/10 transition-all">
                   <Settings size={14} /> Dashboard
@@ -650,6 +654,21 @@ export default function WallPage() {
             </div>
          </Link>
       </div>
+      {/* Mobile QR Modal */}
+      <AnimatePresence>
+         {showMobileQR && (
+           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-3xl flex items-center justify-center p-6">
+              <div className="glass-panel w-full max-w-sm p-10 text-center relative flex flex-col items-center">
+                 <button onClick={() => setShowMobileQR(false)} className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors"><X size={24} /></button>
+                 <div className="p-4 bg-white rounded-2xl shadow-2xl mb-6">
+                    <QRCodeSVG value={uploadUrl} size={200} />
+                 </div>
+                 <h3 className="text-2xl font-bold mb-2 text-white">Scan to Join</h3>
+                 <p className="text-text-secondary text-sm">Scan this QR code to upload memories directly to the wall.</p>
+              </div>
+           </motion.div>
+         )}
+      </AnimatePresence>
     </div>
   );
 }
