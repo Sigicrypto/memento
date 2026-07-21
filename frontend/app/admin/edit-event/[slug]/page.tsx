@@ -20,6 +20,8 @@ interface Event {
   watermark_url: string | null;
   google_drive_sync_enabled: boolean;
   plan_type: string;
+  custom_domain: string | null;
+  brand_logo_url: string | null;
 }
 
 export default function EditEventPage() {
@@ -41,6 +43,8 @@ export default function EditEventPage() {
   const [watermarkFile, setWatermarkFile] = useState<File | null>(null);
   const [watermarkPreview, setWatermarkPreview] = useState<string | null>(null);
   const [googleDriveSync, setGoogleDriveSync] = useState(false);
+  const [customDomain, setCustomDomain] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
 
   useEffect(() => {
     if (isLoading) return;
@@ -81,6 +85,8 @@ export default function EditEventPage() {
         setEnableSmartPrivacy(data.enable_smart_privacy || false);
         setWatermarkPreview(data.watermark_url || null);
         setGoogleDriveSync(data.google_drive_sync_enabled || false);
+        setCustomDomain(data.custom_domain || '');
+        setLogoUrl(data.brand_logo_url || '');
       }
       setLoading(false);
     };
@@ -115,6 +121,8 @@ export default function EditEventPage() {
         enable_smart_privacy: enableSmartPrivacy,
         watermark_url: watermarkUrl,
         google_drive_sync_enabled: googleDriveSync,
+        custom_domain: event.plan_type === 'WHITE_LABEL' ? customDomain : null,
+        brand_logo_url: event.plan_type === 'WHITE_LABEL' ? logoUrl : null,
       })
       .eq('id', event.id);
 
@@ -180,6 +188,16 @@ export default function EditEventPage() {
                       <input type="color" value={secondaryColor} onChange={e => setSecondaryColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-none" disabled={event?.plan_type !== 'WHITE_LABEL'} />
                       <span className="text-xs font-mono font-bold tracking-widest">{secondaryColor.toUpperCase()}</span>
                     </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Custom Domain</label>
+                    <input type="text" value={customDomain} disabled={event?.plan_type !== 'WHITE_LABEL'} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.client.com" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none transition-all text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold mb-3 uppercase tracking-widest text-slate-500">Brand Logo URL</label>
+                    <input type="text" value={logoUrl} disabled={event?.plan_type !== 'WHITE_LABEL'} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none transition-all text-sm" />
                   </div>
                 </div>
               </div>
