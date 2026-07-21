@@ -65,9 +65,15 @@ export const useAuth = () => {
       }
     });
 
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []); // Run once on mount
+
+  useEffect(() => {
     // Real-time profile subscription
     let profileChannel: any;
-    if (user) {
+    if (user?.id) {
       profileChannel = supabase
         .channel(`profile-${user.id}`)
         .on(
@@ -82,7 +88,6 @@ export const useAuth = () => {
     }
 
     return () => {
-      subscription.unsubscribe();
       if (profileChannel) supabase.removeChannel(profileChannel);
     };
   }, [user?.id]); // Re-subscribe if user ID changes
