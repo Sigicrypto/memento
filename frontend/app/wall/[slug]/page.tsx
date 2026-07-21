@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import Image from 'next/image';
 import { QRCodeSVG } from 'qrcode.react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -80,7 +81,7 @@ const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) =>
         <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
         {photo.media_type === 'video'
           ? <video src={getPublicUrl(photo.storage_path)} className="w-full relative z-10 block object-contain max-h-[60vh] mx-auto" autoPlay loop muted />
-          : <img src={getPublicUrl(photo.storage_path)} className="w-full relative z-10 block object-contain max-h-[60vh] mx-auto" alt="" />
+          : <div className="relative w-full aspect-video"><Image src={getPublicUrl(photo.storage_path)} fill className="relative z-10 object-contain" alt="" priority /></div>
         }
       </motion.div>
  
@@ -267,7 +268,7 @@ export default function WallPage() {
     if (!screenshot) return;
     setIsSearching(true);
     try {
-      const img = new Image(); img.src = screenshot;
+      const img = new window.Image(); img.src = screenshot;
       await new Promise(r => img.onload = r);
       const descriptor = await extractFaceDescriptorRobust(img, 'ssd');
       if (!descriptor) { alert("Couldn't see your face clearly. Please try again!"); return; }
@@ -377,7 +378,7 @@ export default function WallPage() {
                      <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/10">
                         {current.media_type === 'video'
                           ? <video src={getPublicUrl(current.storage_path)} className="max-h-[70vh] w-full block object-contain" autoPlay muted onEnded={() => setSlideIndex(p => (p + 1) % displayedPhotos.length)} />
-                          : <img src={getPublicUrl(current.storage_path)} className="max-h-[70vh] w-full block object-contain" alt="" />
+                          : <div className="relative w-full aspect-video max-h-[70vh]"><Image src={getPublicUrl(current.storage_path)} fill className="object-contain" alt="" /></div>
                         }
                      </div>
  
@@ -521,7 +522,7 @@ export default function WallPage() {
                <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {displayedPhotos.map((p, i) => (
                     <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/5 bg-white/5">
-                       <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" loading="lazy" />
+                       <Image src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" loading="lazy" />
                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
                           <div className="flex justify-between items-start">
                              <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
@@ -540,8 +541,8 @@ export default function WallPage() {
                <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-12 justify-center py-10">
                   {displayedPhotos.map((p, i) => (
                     <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }} transition={{ duration: 0.6 }} className="bg-white p-3 pb-16 shadow-2xl relative rounded-sm group">
-                       <div className="w-[280px] h-[300px] overflow-hidden bg-slate-100">
-                          {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" alt="" loading="lazy" />}
+                       <div className="w-[280px] h-[300px] overflow-hidden bg-slate-100 relative">
+                          {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <Image src={getPublicUrl(p.storage_path)} className="object-cover" fill alt="" loading="lazy" />}
                        </div>
                        <div className="absolute inset-x-0 bottom-0 p-4 text-center">
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">MEMENTO BY <span className="text-primary">{p.uploader_name}</span>
@@ -569,8 +570,8 @@ export default function WallPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                            {gPhotos.map((p, i) => (
-                             <motion.div key={p.id} className="relative aspect-square rounded-3xl overflow-hidden border border-white/5 bg-white/5 group">
-                                <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-105 transition-all" alt="" />
+                             <motion.div key={p.id} className="relative aspect-[3/4] overflow-hidden rounded-xl bg-white/5 border border-white/10">
+                                <Image src={getPublicUrl(p.storage_path)} className="object-cover group-hover:scale-105 transition-all" alt="" fill sizes="200px" loading="lazy" />
                                 <div className="absolute bottom-4 left-4 right-4 p-3 bg-black/60 backdrop-blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                                    <p className="text-[9px] font-black text-primary tracking-widest uppercase">BY {p.uploader_name}</p>
                                 </div>

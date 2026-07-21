@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, CheckCircle, XCircle, ArrowLeft, Clock, Trash2, Check, Layout, AlertTriangle } from 'lucide-react';
  
@@ -194,11 +195,13 @@ export default function ModeratePage() {
                              {selectedIds.has(photo.id) && <Check size={14} className="text-white" />}
                           </div>
                         </div>
-                        {photo.media_type === 'video' ? (
-                           <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
-                        ) : (
-                           <img src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
-                        )}
+                        <div className="absolute inset-0 border border-white/5 overflow-hidden">
+                           {photo.media_type === 'video' ? (
+                              <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
+                           ) : (
+                              <Image src={getPublicUrl(photo.storage_path)} className="object-cover group-hover:scale-110 transition-transform duration-700" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" />
+                           )}
+                        </div>
                        
                        <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end">
                           <div className="flex items-center justify-between mb-3">

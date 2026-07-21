@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Photo {
   id: string;
@@ -111,7 +112,7 @@ export default function TVModePage() {
           {currentPhoto.media_type === 'video' ? (
             <video key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} autoPlay muted loop playsInline className="max-h-full max-w-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10" />
           ) : (
-            <img key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} alt="" className="max-h-full max-w-full object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10" />
+            <div className="relative w-full h-full"><Image key={currentPhoto.id} src={getPublicUrl(currentPhoto.storage_path)} alt="" fill className="object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10" priority /></div>
           )}
         </div>
       </div>

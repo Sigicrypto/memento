@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import AnimatedLogo from '@/components/AnimatedLogo';
 
@@ -96,12 +97,12 @@ export default function AnalyticsPage() {
             <div key={stat.photo_id} className="gcard cinematic-glow group overflow-hidden transition-all duration-300 hover:scale-[1.05]">
               <div className="gcard-border" />
               <div className="gcard-inner">
-                <div className="aspect-square w-full overflow-hidden">
-                  <img src={getPublicUrl(stat.storage_path)} alt="Photo" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                </div>
-                <div className="p-4 text-center bg-black/40 backdrop-blur-md">
-                  <p className="text-2xl font-black text-white">{stat.download_count}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Downloads</p>
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-white/5 group">
+                  <Image src={getPublicUrl(stat.storage_path)} alt="Photo" fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
+                    <p className="text-2xl font-black text-white">{stat.download_count}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Downloads</p>
+                  </div>
                 </div>
               </div>
             </div>

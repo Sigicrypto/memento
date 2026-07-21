@@ -19,6 +19,19 @@ const TIER_RANK: Record<PlanTier, number> = {
   WHITELABEL: 3,
 };
 
+export const GUEST_UPLOAD_LIMITS: Record<PlanTier, number> = {
+  STARTER: 5,
+  STANDARD: 15,
+  PREMIUM: Infinity,
+  WHITELABEL: Infinity,
+};
+
+export function getGuestPhotoLimit(currentPlan: string | null | undefined): number {
+  if (!currentPlan) return GUEST_UPLOAD_LIMITS.STARTER;
+  const normalizedPlan = currentPlan.toUpperCase() as PlanTier;
+  return GUEST_UPLOAD_LIMITS[normalizedPlan] ?? GUEST_UPLOAD_LIMITS.STARTER;
+}
+
 const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
   ZIP_DOWNLOAD: 'STARTER', // Updated based on marketing
   CUSTOM_THEME: 'STANDARD',

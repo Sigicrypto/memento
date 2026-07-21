@@ -8,7 +8,7 @@ import Image from 'next/image';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download } from 'lucide-react';
-import { hasFeature } from '@/lib/permissions';
+import { hasFeature, getGuestPhotoLimit } from '@/lib/permissions';
 import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
  
 const MAX_IMAGES = 10;
@@ -52,6 +52,7 @@ export default function MobilePage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [uploaderName, setUploaderName] = useState('');
+  const [localUploadCount, setLocalUploadCount] = useState(0);
   const [sessionPhotoIds, setSessionPhotoIds] = useState<string[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
@@ -81,9 +82,12 @@ export default function MobilePage() {
       localStorage.setItem(GUEST_ID_KEY, id);
     }
     setGuestId(id);
-    const name = localStorage.getItem(GUEST_NAME_KEY);
-    if (name) setUploaderName(name);
-  }, []);
+    const savedName = localStorage.getItem(GUEST_NAME_KEY);
+    if (savedName) setUploaderName(savedName);
+
+    const savedCount = parseInt(localStorage.getItem(`memento_uploads_${slug}`) || '0', 10);
+    setLocalUploadCount(savedCount);
+  }, [slug]);
  
   useEffect(() => {
     if (uploaderName.trim()) localStorage.setItem(GUEST_NAME_KEY, uploaderName.trim());
@@ -180,7 +184,12 @@ export default function MobilePage() {
         setUploadProgress(((i + 1) / files.length) * 100);
       }
       setSuccessMessage('Successfully shared to wall!');
-      setFiles([]); setCaption('');
+        // Increment LocalStorage counter
+        const newCount = localUploadCount + files.length;
+        setLocalUploadCount(newCount);
+        localStorage.setItem(`memento_uploads_${slug}`, newCount.toString());
+
+        setFiles([]); setCaption('');
       setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err: any) { setError(err.message || 'Upload failed.'); }
     finally { setUploading(false); setStatusText(''); setUploadProgress(0); }
@@ -232,6 +241,11 @@ export default function MobilePage() {
     }
   };
 
+  if (error) return <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 text-center">{error}</div>;
+
+  const limit = getGuestPhotoLimit(event?.plan_type);
+  const isLimited = localUploadCount >= limit;
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
       <div className="grain" />
@@ -273,6 +287,16 @@ export default function MobilePage() {
  
          {/* ── Upload Panel ── */}
          <div className="glass-panel p-8 mb-8 space-y-6">
+            {isLimited ? (
+               <div className="text-center py-6">
+                  <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold mb-2">Upload Limit Reached</h3>
+                  <p className="text-text-secondary text-sm">
+                     You've hit the {limit} photo limit for this event's plan. Enjoy the party!
+                  </p>
+               </div>
+            ) : (
+            <>
             <div className="space-y-4">
                <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Your Name</label>
@@ -319,7 +343,7 @@ export default function MobilePage() {
  
             <button 
               onClick={handleUpload} 
-              disabled={uploading || files.length === 0 || processingFiles}
+              disabled={uploading || files.length === 0 || processingFiles || isLimited}
               className="btn-premium w-full !py-4 flex flex-col items-center justify-center relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed group"
             >
                {uploading && <div className="absolute inset-0 bg-white/20 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
@@ -328,6 +352,8 @@ export default function MobilePage() {
                   {!uploading && !processingFiles && <Sparkles size={14} />}
                </span>
             </button>
+            </>
+            )}
          </div>
  
          {/* ── Actions ── */}
