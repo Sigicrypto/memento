@@ -85,16 +85,16 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                       {plan.features.map((f, i) => (
                          <div key={i} className={`flex items-start gap-3 text-xs ${f.included ? 'text-text-secondary' : 'text-text-muted opacity-40'}`}>
                             {f.included ? <Check size={14} className="text-primary mt-0.5 flex-shrink-0" /> : <X size={14} className="mt-0.5 flex-shrink-0" />}
-                            <span className={f.included ? 'text-white/80' : ''}>{f.label}</span>
+                            <span className={f.included ? 'text-black/80 dark:text-white/80' : ''}>{f.label}</span>
                          </div>
                       ))}
                    </div>
                 </div>
 
                 {/* Section 5: CTA button — pushed to bottom with mt-auto */}
-                <a 
+                 <a 
                    href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-white/10 text-white'}`}
+                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white'}`}
                 >
                    {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
                 </a>
@@ -274,7 +274,7 @@ function ComparisonRow({ label, values }: { label: string, values: any[] }) {
        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
     >
        <td
-          className="font-semibold text-black dark:text-black/80 dark:text-white/80 text-sm"
+          className="font-semibold text-black/80 dark:text-white/80 text-sm"
           style={{ padding: '18px 24px 18px 32px' }}
        >
           {label}

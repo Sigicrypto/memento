@@ -261,13 +261,13 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
            
            <div className="flex items-center gap-4">
               <div className="flex bg-white/5 p-1 rounded-xl">
-                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-white'}`}>
+                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
                   <Grid size={18} />
                 </button>
-                <button onClick={() => setViewMode('polaroid')} className={`p-2 rounded-lg transition-all ${viewMode === 'polaroid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-white'}`}>
+                <button onClick={() => setViewMode('polaroid')} className={`p-2 rounded-lg transition-all ${viewMode === 'polaroid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
                   <ImageIcon size={18} />
                 </button>
-                <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`p-2 rounded-lg transition-all ${viewMode === 'slideshow' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-white'}`}>
+                <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`p-2 rounded-lg transition-all ${viewMode === 'slideshow' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
                   <Play size={18} />
                 </button>
               </div>
@@ -330,8 +330,8 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                                 <img src={photo.url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Upload" loading="lazy" />
                               )}
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
-                                 <p className="text-black dark:text-white text-sm font-medium line-clamp-1">{photo.caption}</p>
-                                 <p className="text-black dark:text-black/60 dark:text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
+                                 <p className="text-white text-sm font-medium line-clamp-1">{photo.caption}</p>
+                                 <p className="text-white/60 text-[10px] uppercase font-bold tracking-wider">by {photo.uploader}</p>
                               </div>
                            </motion.div>
                          ))}
@@ -378,7 +378,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                                  <img src={photos[currentSlide]?.url} className="w-full h-full object-contain" alt="Upload" />
                               )}
                               <div className="absolute bottom-10 left-10 p-8 rounded-2xl bg-black/40 backdrop-blur-xl border border-black/20 dark:border-black/10 dark:border-white/10 max-w-md">
-                                 <h3 className="text-2xl font-bold text-black dark:text-white mb-2">{photos[currentSlide]?.caption}</h3>
+                                 <h3 className="text-2xl font-bold text-white mb-2">{photos[currentSlide]?.caption}</h3>
                                  <p className="text-primary font-bold tracking-widest text-xs uppercase">by {photos[currentSlide]?.uploader}</p>
                               </div>
                            </motion.div>
