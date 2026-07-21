@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import Image from 'next/image';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download } from 'lucide-react';
@@ -190,7 +191,7 @@ export default function MobilePage() {
     if (!screenshot) return;
     setIsSearching(true); setShowSelfieCam(false);
     try {
-      const img = new Image(); img.src = screenshot;
+      const img = new window.Image(); img.src = screenshot;
       await new Promise(r => img.onload = r);
       const descriptor = await extractFaceDescriptorRobust(img, 'ssd');
       if (!descriptor) { alert("Couldn't see face. Try better light!"); return; }
@@ -351,11 +352,10 @@ export default function MobilePage() {
                   <div className="h-px w-full bg-white/5" />
                </div>
  
-               <motion.div layout className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-2 gap-4">
                   <AnimatePresence mode="popLayout">
                   {photos.map((p, i) => (
                     <motion.div 
-                      layout
                       initial={{ opacity: 0, scale: 0.8, y: 20 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.8 }}
@@ -363,7 +363,14 @@ export default function MobilePage() {
                       key={p.id} 
                       className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 bg-white/5 group shadow-lg"
                     >
-                       <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                       <Image 
+                          src={getPublicUrl(p.storage_path)} 
+                          alt={p.caption || "Guest memory"} 
+                          fill 
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                          priority={i < 4}
+                       />
                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                          {hasFeature(event?.plan_type, 'LIVE_REACTIONS') && (
                            <button onClick={() => handleReaction(p.id)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-pink-500 hover:scale-110 transition-all border border-white/10">
@@ -382,7 +389,7 @@ export default function MobilePage() {
                     </motion.div>
                   ))}
                   </AnimatePresence>
-               </motion.div>
+               </div>
  
                {matchedPhotoIds && photos.length === 0 && (
                  <div className="text-center py-12 glass-panel">
