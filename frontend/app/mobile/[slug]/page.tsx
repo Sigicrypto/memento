@@ -236,16 +236,16 @@ export default function MobilePage() {
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
-      {/* ── Modern Header ── */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 backdrop-blur-xl px-6 flex items-center justify-between">
+      {/* ── Dynamic Island Header ── */}
+      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-white/10 bg-black/60 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] shadow-primary/5">
          {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
-            <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" />
+            <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
          ) : (
-            <Link href="/" className="text-xl font-bold tracking-tighter">memento</Link>
+            <Link href="/" className="text-lg font-bold tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">memento</Link>
          )}
-         <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black uppercase tracking-widest text-primary">
-            <div className={`w-1.5 h-1.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-green-500' : 'bg-primary'} animate-pulse`} />
-            {realtimeStatus === 'SUBSCRIBED' ? 'Connected' : 'Syncing'}
+         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white shadow-inner">
+            <div className={`live-pulse ${realtimeStatus === 'SUBSCRIBED' ? '!bg-green-500' : ''}`} style={{ width: 6, height: 6 }} />
+            <span className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-400' : 'text-primary'}>{realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Sync'}</span>
          </div>
       </nav>
  
@@ -275,11 +275,11 @@ export default function MobilePage() {
             <div className="space-y-4">
                <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Your Name</label>
-                  <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-all text-sm" />
+                  <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm shadow-inner" />
                </div>
                <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Add a Caption</label>
-                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-all text-sm resize-none" />
+                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm resize-none shadow-inner" />
                </div>
             </div>
  
@@ -319,11 +319,12 @@ export default function MobilePage() {
             <button 
               onClick={handleUpload} 
               disabled={uploading || files.length === 0 || processingFiles}
-              className="btn-premium w-full !py-4 flex flex-col items-center justify-center relative overflow-hidden disabled:opacity-30"
+              className="btn-premium w-full !py-4 flex flex-col items-center justify-center relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed group"
             >
-               {uploading && <div className="absolute inset-0 bg-primary/10 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
-               <span className="relative z-10 font-bold uppercase tracking-widest text-xs">
-                  {uploading ? statusText : processingFiles ? 'Processing...' : `Share to Wall (${files.length}) ✦`}
+               {uploading && <div className="absolute inset-0 bg-white/20 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
+               <span className="relative z-10 font-bold uppercase tracking-widest text-xs flex items-center gap-2 group-hover:scale-105 transition-transform">
+                  {uploading ? statusText : processingFiles ? 'Processing...' : `Share to Wall (${files.length})`}
+                  {!uploading && !processingFiles && <Sparkles size={14} />}
                </span>
             </button>
          </div>
@@ -350,9 +351,18 @@ export default function MobilePage() {
                   <div className="h-px w-full bg-white/5" />
                </div>
  
-               <div className="grid grid-cols-2 gap-4">
-                  {photos.map(p => (
-                    <div key={p.id} className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/5 bg-white/5 group">
+               <motion.div layout className="grid grid-cols-2 gap-4">
+                  <AnimatePresence mode="popLayout">
+                  {photos.map((p, i) => (
+                    <motion.div 
+                      layout
+                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.4, type: 'spring', bounce: 0.3, delay: i < 6 ? i * 0.1 : 0 }}
+                      key={p.id} 
+                      className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 bg-white/5 group shadow-lg"
+                    >
                        <img src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                          {hasFeature(event?.plan_type, 'LIVE_REACTIONS') && (
@@ -369,9 +379,10 @@ export default function MobilePage() {
                             <p className="text-[10px] italic text-white/80 line-clamp-2">"{p.caption}"</p>
                          </div>
                        )}
-                    </div>
+                    </motion.div>
                   ))}
-               </div>
+                  </AnimatePresence>
+               </motion.div>
  
                {matchedPhotoIds && photos.length === 0 && (
                  <div className="text-center py-12 glass-panel">
@@ -391,9 +402,9 @@ export default function MobilePage() {
                  <h2 className="text-2xl font-bold mb-2">Find My Photos</h2>
                  <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-8 italic">Smile for the Wall</p>
                  
-                 <div className="aspect-square w-full rounded-2xl overflow-hidden border-2 border-white/10 mb-8 items-center justify-center flex bg-white/5 relative">
-                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: 'user' }} className="w-full h-full object-cover" mirrored />
-                    <div className="absolute inset-0 border-4 border-transparent border-t-primary animate-spin" style={{ animationDuration: '3s' }} />
+                 <div className="aspect-square w-full rounded-2xl overflow-hidden border-2 border-primary/50 mb-8 items-center justify-center flex bg-black relative shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: 'user' }} className="w-full h-full object-cover opacity-80" mirrored />
+                    <div className="absolute inset-0 border-[4px] border-transparent border-t-primary border-b-primary rounded-full animate-spin opacity-50 pointer-events-none" style={{ animationDuration: '4s' }} />
                  </div>
  
                  <div className="flex gap-4">

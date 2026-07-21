@@ -55,6 +55,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState('');
   const [plan, setPlan] = useState<PlanType>(selectedPlan);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -71,6 +72,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
   useEffect(() => {
     if (isOpen) {
       setError('');
+      setFieldErrors({});
       setMessage('');
       setStep('auth');
     }
@@ -90,12 +92,21 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setMessage('');
 
-    if (!name.trim()) { setError('Please enter your name'); return; }
-    if (!email.trim()) { setError('Please enter your email'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
-    if (password !== confirmPassword) { setError('Passwords do not match'); return; }
+    const newErrors: Record<string, string> = {};
+    if (!name.trim()) newErrors.name = 'Name is required';
+    if (!email.trim()) newErrors.email = 'Email is required';
+    if (password.length < 6) newErrors.password = 'Min 6 characters';
+    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setError('Please fix the highlighted errors');
+      setTimeout(() => setFieldErrors({}), 3000);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -116,6 +127,17 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
       });
 
       if (signUpError) throw signUpError;
+
+      // Trigger welcome email asynchronously
+      fetch('/api/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email.trim(),
+          template: 'welcome',
+          templateData: [name.trim()]
+        })
+      }).catch(err => console.error('Failed to send welcome email:', err));
 
       if (data.user) {
         // Insert profile row
@@ -154,10 +176,18 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
     setMessage('');
 
-    if (!email.trim()) { setError('Please enter your email'); return; }
-    if (!password) { setError('Please enter your password'); return; }
+    const newErrors: Record<string, string> = {};
+    if (!email.trim()) newErrors.email = 'Email is required';
+    if (!password) newErrors.password = 'Password is required';
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      setTimeout(() => setFieldErrors({}), 3000);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -207,8 +237,14 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
   };
 
   const handleForgotPassword = async () => {
-    if (!email.trim()) { setError('Enter your email first, then click Forgot Password'); return; }
+    if (!email.trim()) {
+      setFieldErrors({ email: 'Required for reset' });
+      setError('Enter your email first, then click Forgot Password');
+      setTimeout(() => setFieldErrors({}), 3000);
+      return;
+    }
     setError('');
+    setFieldErrors({});
     setLoading(true);
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
@@ -231,7 +267,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
       className="auth-dialog-overlay"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
-      <div className="auth-dialog glass-card relative overflow-hidden" style={{ padding: 40, border: 'none' }}>
+      <div className="auth-dialog glass-card relative overflow-hidden" style={{ padding: 'clamp(24px, 5vw, 40px)', border: 'none' }}>
         {/* Decorative Background Glows */}
         <div className="absolute top-[-150px] right-[-150px] w-[300px] h-[300px] rounded-full blur-[100px] opacity-20 pointer-events-none -z-10" 
              style={{ background: 'conic-gradient(from 0deg, #06b6d4, #ec4899, #6366f1, #06b6d4)' }} />
@@ -311,7 +347,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
                       placeholder="John Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="auth-input"
+                      className={`auth-input ${fieldErrors.name ? 'border-rose-500/50 bg-rose-500/10 animate-shake' : ''}`}
                       autoComplete="name"
                     />
                   </div>
@@ -327,7 +363,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="auth-input"
+                    className={`auth-input ${fieldErrors.email ? 'border-rose-500/50 bg-rose-500/10 animate-shake' : ''}`}
                     autoComplete="email"
                   />
                 </div>
@@ -342,13 +378,15 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
                     placeholder="Min 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="auth-input"
+                    className={`auth-input ${fieldErrors.password ? 'border-rose-500/50 bg-rose-500/10 animate-shake' : ''}`}
                     autoComplete={tab === 'signup' ? 'new-password' : 'current-password'}
                   />
                   <button
                     type="button"
                     className="auth-eye-btn"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label="Toggle password visibility"
+                    aria-pressed={showPassword}
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -365,7 +403,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
                       placeholder="Re-enter password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="auth-input"
+                      className={`auth-input ${fieldErrors.confirmPassword ? 'border-rose-500/50 bg-rose-500/10 animate-shake' : ''}`}
                       autoComplete="new-password"
                     />
                   </div>

@@ -31,17 +31,13 @@ export default function SystemAdminPage() {
 
       // If user is already logged in (e.g. Google), ensure profile exists with admin role
       if (user) {
-        const { error: upsertError } = await supabase
-          .from('profiles')
-          .upsert({ 
-            id: user.id, 
-            email: user.email,
-            role: 'admin',
-            // Preserve existing data if any
-            full_name: profile?.full_name || user.user_metadata?.full_name || 'Admin',
-          });
-
-        if (upsertError) throw upsertError;
+        const response = await fetch('/api/admin/elevate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, accessCode: password }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Elevation failed');
       } else {
         // Traditional Email/Password flow (Fallback)
         const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -61,19 +57,22 @@ export default function SystemAdminPage() {
           if (signUpError) throw signUpError;
 
           if (signUpData.user) {
-            await supabase.from('profiles').upsert({
-              id: signUpData.user.id,
-              email: signUpData.user.email || email,
-              role: 'admin',
-              full_name: 'Admin',
+            const response = await fetch('/api/admin/elevate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: signUpData.user.id, accessCode: adminCode }),
             });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Elevation failed');
           }
         } else if (authData.user) {
-          await supabase.from('profiles').upsert({
-            id: authData.user.id,
-            email: authData.user.email || email,
-            role: 'admin',
+          const response = await fetch('/api/admin/elevate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: authData.user.id, accessCode: adminCode }),
           });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Elevation failed');
         }
       }
 
@@ -85,7 +84,7 @@ export default function SystemAdminPage() {
 
       setMessage('Access granted! Redirecting to admin panel...');
       setTimeout(() => {
-        router.push('/admin');
+        window.location.href = '/admin';
       }, 1000);
     } catch (error: any) {
       setError(error.message || 'Access denied');
@@ -138,7 +137,7 @@ export default function SystemAdminPage() {
                 <div>
                   <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-amber-500/80">Access Code</label>
                   <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
+                    className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
                     placeholder="Enter system access code" required />
                 </div>
 
@@ -160,12 +159,12 @@ export default function SystemAdminPage() {
 
                 <div className="pt-4">
                   <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 mb-4">Or use emergency fallback</p>
-                  <form onSubmit={handleLogin} className="space-y-4 text-left">
+                  <form onSubmit={handleLogin} className="space-y-6 text-left">
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none text-sm" 
+                      className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none text-sm" 
                       placeholder="Admin Email" required />
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none text-sm" 
+                      className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none text-sm" 
                       placeholder="Access Code" required />
                     <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all text-sm">
                       Access System

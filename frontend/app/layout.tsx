@@ -1,6 +1,6 @@
 // Trigger fresh deployment
 import type { Metadata, Viewport } from "next";
-import { Outfit, Cormorant_Garamond } from "next/font/google";
+import { Outfit, Cormorant_Garamond, Inter, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/AppProviders";
 import LayoutShell from "@/components/LayoutShell";
@@ -17,6 +17,16 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-cormorant",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  variable: "--font-dancing",
 });
 
 export const viewport: Viewport = {
@@ -80,7 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${cormorant.variable} ${inter.variable} ${dancingScript.variable}`}>
       <body className="min-h-screen w-full antialiased transition-colors duration-300 font-sans" suppressHydrationWarning={true}>
         <AppProviders>
           <ErrorBoundary>
