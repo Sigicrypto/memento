@@ -34,7 +34,12 @@ const BackgroundDecoration = () => {
   const x3 = useTransform(smoothX, [-1000, 1000], [-60, 60]);
   const y3 = useTransform(smoothY, [-1000, 1000], [60, -60]);
 
-  if (pathname?.startsWith('/wall/') || pathname?.startsWith('/mobile/')) return null;
+  if (pathname?.startsWith('/wall/') || 
+      pathname?.startsWith('/mobile/') ||
+      pathname?.startsWith('/dashboard') ||
+      pathname?.startsWith('/create') ||
+      pathname?.startsWith('/moderate/')
+  ) return null;
 
   return (
     <div style={{ 

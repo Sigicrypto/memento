@@ -11,11 +11,17 @@ export default function MainContent({ children }: { children: React.ReactNode })
     setMounted(true);
   }, []);
   
-  // Use pathname directly to ensure server and client render the same layout
-  const isLanding = pathname === '/';
+  // Pages that manage their own layout (have custom navbars + padding)
+  const isSelfManaged =
+    pathname === '/' ||
+    pathname?.startsWith('/dashboard') ||
+    pathname?.startsWith('/create') ||
+    pathname?.startsWith('/wall/') ||
+    pathname?.startsWith('/mobile/') ||
+    pathname?.startsWith('/moderate/');
 
   return (
-    <main className={`flex-1 w-full ${isLanding ? '' : 'pt-32'}`}>
+    <main className={`flex-1 w-full ${isSelfManaged ? '' : 'pt-32'}`}>
       {children}
     </main>
   );
