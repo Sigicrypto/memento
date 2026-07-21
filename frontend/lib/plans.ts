@@ -32,7 +32,7 @@ export const PLANS: Plan[] = [
     features: [
       { label: 'Collect guest photos instantly', included: true },
       { label: 'Live photo wall experience', included: true },
-      { label: 'Unlimited photo uploads', included: true },
+      { label: '5 photo uploads per guest', included: true },
       { label: 'Download all photos as ZIP', included: true },
       { label: '1 Month Secure Storage', included: true },
       { label: 'AI Face Discovery', included: false },
@@ -55,6 +55,7 @@ export const PLANS: Plan[] = [
     stats: 'Up to 300 guests',
     features: [
       { label: 'Everything in Starter +', included: true },
+      { label: '15 photo uploads per guest', included: true },
       { label: '🎥 Auto AI Album Creation', included: true },
       { label: '🎨 Custom wall branding', included: true },
       { label: '📊 Engagement Analytics', included: true },
@@ -78,6 +79,7 @@ export const PLANS: Plan[] = [
     stats: 'Unlimited guests',
     features: [
       { label: 'Everything in Standard +', included: true },
+      { label: 'Unlimited photo uploads', included: true },
       { label: '🎶 Cinematic Soundtrack', included: true },
       { label: '⏳ Auto-expiring galleries', included: true },
       { label: '🛡️ Priority 24/7 Support', included: true },
