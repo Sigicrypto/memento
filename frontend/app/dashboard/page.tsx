@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Search } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface Profile {
   id: string;
@@ -131,7 +132,7 @@ export default function DashboardPage() {
   const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-black text-white">
+    <div className="min-h-screen relative overflow-hidden ">
       {/* Background foundation */}
       <div className="orbs">
         <div className="orb orb-primary" />
@@ -140,12 +141,16 @@ export default function DashboardPage() {
       <div className="grain" />
 
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/5 bg-black/70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
-        <Link href="/" className="group">
-          <AnimatedLogo width={160} height={44} />
-        </Link>
-
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-white/5 bg-white/70 dark:bg-black/70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
+        <div className="flex items-center gap-6">
+          <Link href="/">
+            <AnimatedLogo width={140} height={40} />
+          </Link>
+          <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden md:block" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary hidden md:block">Studio</span>
+        </div>
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           {isSuperAdmin && (
             <Link href="/admin" className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-[10px] font-black tracking-widest uppercase hover:bg-secondary/20 transition-all">
               <Shield size={14} /> Admin
@@ -153,7 +158,7 @@ export default function DashboardPage() {
           )}
           <button
             onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-text-muted hover:text-white hover:bg-white/10 transition-all text-sm font-bold"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-text-muted hover:text-black dark:hover:text-white hover:bg-black/10 dark:bg-white/10 transition-all text-sm font-bold"
           >
             <LogOut size={16} /> <span className="hidden sm:inline">Sign out</span>
           </button>
@@ -188,7 +193,7 @@ export default function DashboardPage() {
               <BarChart2 size={22} />
             </div>
             <div>
-              <div className="text-3xl font-bold text-white leading-none mb-1">{events.length}</div>
+              <div className="text-3xl font-bold leading-none mb-1">{events.length}</div>
               <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Active Events</div>
             </div>
           </div>
@@ -198,7 +203,7 @@ export default function DashboardPage() {
               <ImageIcon size={22} />
             </div>
             <div>
-              <div className="text-3xl font-bold text-white leading-none mb-1">{totalPhotos}</div>
+              <div className="text-3xl font-bold leading-none mb-1">{totalPhotos}</div>
               <div className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Photos Collected</div>
             </div>
           </div>
@@ -212,7 +217,7 @@ export default function DashboardPage() {
                 <div className="flex justify-between items-start mb-5">
                    <div className="flex items-center gap-3">
                       <span className="text-2xl">{planInfo.icon}</span>
-                      <span className="text-lg font-bold text-white">{planInfo.name}</span>
+                      <span className="text-lg font-bold ">{planInfo.name}</span>
                    </div>
                    <span className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/20">Active</span>
                 </div>
@@ -227,7 +232,7 @@ export default function DashboardPage() {
                 </div>
 
                 {currentPlan !== 'whitelabel' && (
-                  <Link href="/#pricing" className="text-[10px] font-black tracking-widest uppercase text-white hover:text-primary transition-colors flex items-center gap-2 group/link">
+                  <Link href="/#pricing" className="text-[10px] font-black tracking-widest uppercase hover:text-primary transition-colors flex items-center gap-2 group/link">
                     Upgrade Plan <ArrowRight size={10} className="group-hover/link:translate-x-1 transition-transform" />
                   </Link>
                 )}
@@ -239,7 +244,7 @@ export default function DashboardPage() {
         <section>
           <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-white tracking-tight mb-1">Your Events</h2>
+              <h2 className="text-2xl font-bold tracking-tight mb-1">Your Events</h2>
               <p className="text-text-secondary text-sm">Capture and moderate shared memories from your walls.</p>
             </div>
             
@@ -251,7 +256,7 @@ export default function DashboardPage() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search events..." 
-                  className="w-full sm:w-64 bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                  className="w-full sm:w-64 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
               <Link href="/create" className="btn-premium flex items-center gap-2 !py-2.5 !px-6 text-sm flex-shrink-0">
@@ -266,10 +271,10 @@ export default function DashboardPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="glass-panel p-20 text-center flex flex-col items-center"
             >
-               <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-3xl mb-8">
+               <div className="w-20 h-20 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-3xl mb-8">
                  🎈
                </div>
-               <h3 className="text-2xl font-bold text-white mb-3">No active events yet</h3>
+               <h3 className="text-2xl font-bold mb-3">No active events yet</h3>
                <p className="text-text-secondary max-w-sm mb-10">Create your first photo wall and start collecting cinematic memories instantly.</p>
                <Link href="/create" className="btn-premium flex items-center gap-2">
                  <Plus size={20} /> Launch your first wall
@@ -304,7 +309,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              className="absolute inset-0 /80 backdrop-blur-md"
               onClick={() => setDeleteEvent(null)}
             />
             <motion.div
@@ -321,35 +326,35 @@ export default function DashboardPage() {
                   <Trash2 size={24} />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Delete Event</h3>
+                  <h3 className="text-xl font-bold ">Delete Event</h3>
                   <p className="text-red-500 text-xs font-bold uppercase tracking-widest">Permanent Action</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-8">
+              <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 mb-8">
                 <p className="text-text-muted text-xs mb-1">Confirm deletion of:</p>
-                <p className="text-white font-bold">{deleteEvent.name}</p>
+                <p className="font-bold">{deleteEvent.name}</p>
                 <p className="text-text-muted text-[10px] mt-2 italic">{deleteEvent.photo_count || 0} photos will be permanently erased.</p>
               </div>
 
               <div className="space-y-6">
                 <div>
                   <label className="block text-[10px] font-black tracking-widest uppercase text-text-muted mb-3">
-                    Type <span className="text-white">{deleteEvent.name}</span> to confirm
+                    Type <span className="">{deleteEvent.name}</span> to confirm
                   </label>
                   <input
                     type="text"
                     value={deleteText}
                     onChange={(e) => setDeleteText(e.target.value)}
                     placeholder="Enter event name..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 transition-colors"
                   />
                 </div>
 
                 <div className="flex gap-4">
                   <button
                     onClick={() => setDeleteEvent(null)}
-                    className="flex-1 py-3 rounded-xl bg-white/5 text-text-muted font-bold hover:bg-white/10 transition-colors"
+                    className="flex-1 py-3 rounded-xl bg-black/5 dark:bg-white/5 text-text-muted font-bold hover:bg-black/10 dark:bg-white/10 transition-colors"
                   >
                     Cancel
                   </button>
@@ -379,11 +384,11 @@ function StatCard({ icon, value, label, color, delay }: { icon: React.ReactNode;
       transition={{ duration: 0.6, delay }}
       className="gcard flex items-center gap-6"
     >
-      <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center" style={{ color }}>
+      <div className="w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center" style={{ color }}>
         {icon}
       </div>
       <div>
-        <div className="text-3xl font-bold text-white leading-none mb-2">{value}</div>
+        <div className="text-3xl font-bold leading-none mb-2">{value}</div>
         <div className="text-xs font-bold text-text-muted uppercase tracking-widest">{label}</div>
       </div>
     </motion.div>
@@ -410,14 +415,14 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-start gap-4">
           <div className="min-w-0">
-            <h3 className="text-lg font-bold text-white tracking-tight truncate mb-1.5">{event.name}</h3>
+            <h3 className="text-lg font-bold tracking-tight truncate mb-1.5">{event.name}</h3>
             <div className="flex items-center gap-2">
                <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{dateStr}</span>
-               <span className="w-1 h-1 rounded-full bg-white/10" />
+               <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/10" />
                <span className="text-primary text-[10px] font-bold uppercase tracking-widest">{event.photo_count || 0} Photos</span>
             </div>
           </div>
-          <Link href={`/dashboard/edit/${event.id}`} className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-text-muted hover:text-white transition-colors flex-shrink-0">
+          <Link href={`/dashboard/edit/${event.id}`} className="w-9 h-9 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-text-muted hover:text-black dark:hover:text-white transition-colors flex-shrink-0">
             <Settings size={16} />
           </Link>
         </div>
@@ -429,7 +434,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
             { href: `/moderate/${event.slug}`, icon: <Shield size={16} />, label: 'Mod', color: 'text-white' },
             { href: `/dashboard/${event.id}/analytics`, icon: <BarChart2 size={16} />, label: 'Stats', color: 'text-white' },
           ].map((btn) => (
-            <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-2 py-3 px-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group/btn">
+            <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-2 py-3 px-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 hover:border-black/20 dark:border-white/20 transition-all group/btn">
               <div className={`text-${btn.color} group-hover/btn:scale-110 transition-transform`}>{btn.icon}</div>
               <span className="text-[8px] font-black tracking-widest uppercase text-text-muted">{btn.label}</span>
             </Link>
@@ -437,10 +442,10 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
         </div>
       </div>
 
-      <div className="flex gap-2.5 pt-5 border-t border-white/5 mt-auto">
+      <div className="flex gap-2.5 pt-5 border-t border-black/5 dark:border-white/5 mt-auto">
         <button
           onClick={() => onCopy(event.slug)}
-          className="flex-1 flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-xs font-medium text-text-secondary truncate"
+          className="flex-1 flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all text-xs font-medium text-text-secondary truncate"
         >
           <span className="truncate">{copied === event.slug ? 'Copied' : `memento.live/${event.slug}`}</span>
           <Copy size={copied === event.slug ? 0 : 14} className="flex-shrink-0 ml-2" />

@@ -113,7 +113,7 @@ export default function VideoMessagePage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex flex-col">
+    <div className="fixed inset-0 flex flex-col">
       <div className="p-4 flex justify-between items-center z-50 absolute top-0 inset-x-0 bg-gradient-to-b from-black/80 to-transparent">
         <button onClick={() => router.back()} className="p-2"><X /></button>
         <div className="font-bold">Leave a Message</div>
@@ -139,13 +139,13 @@ export default function VideoMessagePage() {
         )}
         
         {isRecording && (
-          <div className="absolute top-20 right-6 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
+          <div className="absolute top-20 right-6 bg-red-500 px-3 py-1 rounded-full text-sm font-bold flex items-center gap-2 animate-pulse">
             <div className="w-2 h-2 bg-white rounded-full" /> {timeLeft}s
           </div>
         )}
       </div>
 
-      <div className="h-32 bg-black flex items-center justify-center gap-8 pb-8">
+      <div className="h-32 flex items-center justify-center gap-8 pb-8">
         {!videoUrl ? (
           isRecording ? (
             <button onClick={stopRecording} className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.5)]">
@@ -160,7 +160,7 @@ export default function VideoMessagePage() {
           <>
             <button 
               onClick={() => { setVideoUrl(null); setRecordedChunks([]); }}
-              className="px-6 py-3 bg-white/10 rounded-full font-bold flex items-center gap-2"
+              className="px-6 py-3 bg-black/10 dark:bg-white/10 rounded-full font-bold flex items-center gap-2"
             >
               <RefreshCcw size={18} /> Retake
             </button>

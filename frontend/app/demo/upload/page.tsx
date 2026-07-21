@@ -295,7 +295,7 @@ function DemoUploadContent() {
           --upload-radius: 20px;
           --upload-zone-bg: rgba(30,41,59,0.04);
           --upload-zone-border: rgba(100,116,139,0.18);
-          --upload-zone-hover: rgba(245,158,11,0.08);
+          --upload-zone-hover:text-black dark:hover:text-white rgba(245,158,11,0.08);
           --upload-zone-hover-border: rgba(245,158,11,0.45);
           --input-bg: rgba(255,255,255,0.04);
           --input-border: rgba(255,255,255,0.08);
@@ -562,7 +562,7 @@ function DemoUploadContent() {
           opacity: 1;
         }
         /* Always visible on touch devices */
-        @media (hover: none) {
+        @media (hover:text-black dark:hover:text-white none) {
           .photo-remove-btn { opacity: 1; }
         }
         .photo-remove-btn:hover { background: rgba(239,68,68,0.85); transform: scale(1.1); }

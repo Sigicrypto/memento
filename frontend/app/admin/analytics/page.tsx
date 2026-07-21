@@ -70,7 +70,7 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="lp min-h-screen text-white relative overflow-hidden flex flex-col pt-24 pb-12 px-4">
+    <div className="lp min-h-screen relative overflow-hidden flex flex-col pt-24 pb-12 px-4">
       <div className="aurora-bg fixed inset-0 z-0" />
       <div className="grain fixed inset-0 z-1 opacity-[0.04] pointer-events-none" />
 
@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
           <div className="gcard-inner p-8 lg:p-12">
             <h1 className="text-3xl font-black mb-2 tracking-tight">Download Analytics</h1>
             <p className="text-sm font-bold uppercase tracking-widest text-amber-500">
-              Total Community Downloads: <span className="text-white text-xl ml-2">{totalDownloads.toLocaleString()}</span>
+              Total Community Downloads: <span className="text-xl ml-2">{totalDownloads.toLocaleString()}</span>
             </p>
           </div>
         </div>
@@ -97,10 +97,10 @@ export default function AnalyticsPage() {
             <div key={stat.photo_id} className="gcard cinematic-glow group overflow-hidden transition-all duration-300 hover:scale-[1.05]">
               <div className="gcard-border" />
               <div className="gcard-inner">
-                <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-white/5 group">
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 group">
                   <Image src={getPublicUrl(stat.storage_path)} alt="Photo" fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
-                    <p className="text-2xl font-black text-white">{stat.download_count}</p>
+                    <p className="text-2xl font-black ">{stat.download_count}</p>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Downloads</p>
                   </div>
                 </div>

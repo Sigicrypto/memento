@@ -18,14 +18,14 @@ export default function PendingApproval() {
   }, [isLoading, user, isApproved, router]);
  
   if (isLoading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
     </div>
   );
  
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center p-6">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
@@ -57,9 +57,9 @@ export default function PendingApproval() {
               </p>
  
               <div className="space-y-4">
-                 <div className="flex items-center gap-4 justify-center p-4 rounded-2xl bg-white/5 border border-white/10 text-sm font-medium text-text-muted">
+                 <div className="flex items-center gap-4 justify-center p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-medium text-text-muted">
                     <Mail size={18} className="text-primary" />
-                    We'll email you at <span className="text-white">{user?.email}</span>
+                    We'll email you at <span className="">{user?.email}</span>
                  </div>
                  <Link href="/" className="btn-premium w-full !py-4 flex items-center justify-center gap-3">
                     <ArrowLeft size={18} /> Return to Homepage

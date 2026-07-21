@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
+import ThemeToggle from './ThemeToggle';
 import { LogOut, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -114,6 +115,8 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 )}
               </div>
             )}
+            
+            <ThemeToggle />
 
             {/* Hamburger Toggle */}
             {!mini && (

@@ -6,7 +6,7 @@ import { ArrowLeft, Home, Sparkles } from 'lucide-react';
  
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center p-6 text-center">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
@@ -34,7 +34,7 @@ export default function NotFound() {
            <Link href="/" className="btn-premium !px-10 !py-4 flex items-center gap-3">
               <Home size={18} /> Back to Homepage
            </Link>
-           <button onClick={() => window.history.back()} className="px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+           <button onClick={() => window.history.back()} className="px-8 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-xs uppercase tracking-widest flex items-center gap-2">
               <ArrowLeft size={16} /> Previous View
            </button>
         </div>

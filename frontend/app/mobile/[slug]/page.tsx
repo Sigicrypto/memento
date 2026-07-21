@@ -241,24 +241,24 @@ export default function MobilePage() {
     }
   };
 
-  if (error) return <div className="min-h-screen flex items-center justify-center bg-black text-white p-6 text-center">{error}</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center p-6 text-center">{error}</div>;
 
   const limit = getGuestPhotoLimit(event?.plan_type);
   const isLimited = localUploadCount >= limit;
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden flex flex-col">
+    <div className="min-h-screen relative overflow-x-hidden flex flex-col">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* ── Dynamic Island Header ── */}
-      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-white/10 bg-black/60 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] shadow-primary/5">
+      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-black/10 dark:border-white/10 /60 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)] shadow-primary/5">
          {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
             <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
          ) : (
             <Link href="/" className="text-lg font-bold tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">memento</Link>
          )}
-         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-white shadow-inner">
+         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[9px] font-black uppercase tracking-widest shadow-inner">
             <div className={`live-pulse ${realtimeStatus === 'SUBSCRIBED' ? '!bg-green-500' : ''}`} style={{ width: 6, height: 6 }} />
             <span className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-400' : 'text-primary'}>{realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Sync'}</span>
          </div>
@@ -300,15 +300,15 @@ export default function MobilePage() {
             <div className="space-y-4">
                <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Your Name</label>
-                  <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm shadow-inner" />
+                  <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm shadow-inner" />
                </div>
                <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Add a Caption</label>
-                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm resize-none shadow-inner" />
+                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm resize-none shadow-inner" />
                </div>
             </div>
  
-            <div className="h-px bg-white/5" />
+            <div className="h-px bg-black/5 dark:bg-white/5" />
  
             {/* Drop Zone */}
             <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.heic,.heif" className="hidden" onChange={handleFileChange} />
@@ -318,19 +318,19 @@ export default function MobilePage() {
                   {files.map((f, i) => (
                     <div key={i} className="relative aspect-square rounded-xl overflow-hidden group">
                        <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="" />
-                       <button onClick={() => setFiles(p => p.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center border border-white/10 text-white">
+                       <button onClick={() => setFiles(p => p.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 w-6 h-6 /60 rounded-full flex items-center justify-center border border-black/10 dark:border-white/10 ">
                           <X size={12} />
                        </button>
                     </div>
                   ))}
                   {files.length < MAX_IMAGES && (
-                    <button onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-white/10 flex items-center justify-center text-text-muted hover:border-primary/50 transition-all">
+                    <button onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-black/10 dark:border-white/10 flex items-center justify-center text-text-muted hover:border-primary/50 transition-all">
                        <Upload size={20} />
                     </button>
                   )}
                </div>
             ) : (
-               <button onClick={() => fileInputRef.current?.click()} className="w-full aspect-video rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all group">
+               <button onClick={() => fileInputRef.current?.click()} className="w-full aspect-video rounded-2xl border-2 border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 flex flex-col items-center justify-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all group">
                   <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                      <Camera size={28} />
                   </div>
@@ -359,7 +359,7 @@ export default function MobilePage() {
          {/* ── Actions ── */}
          {hasFeature(event?.plan_type, 'SELFIE_MATCH') && (
            <div className="flex flex-col gap-4">
-              <button onClick={() => setShowSelfieCam(true)} className="w-full py-5 rounded-2xl border border-white/5 bg-white/5 font-bold text-xs uppercase tracking-[.2em] flex items-center justify-center gap-3 hover:bg-white/10 transition-all">
+              <button onClick={() => setShowSelfieCam(true)} className="w-full py-5 rounded-2xl border border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 font-bold text-xs uppercase tracking-[.2em] flex items-center justify-center gap-3 hover:bg-black/10 dark:bg-white/10 transition-all">
                  <User size={18} className="text-primary" /> Find Me on Wall
               </button>
               {matchedPhotoIds && (
@@ -375,7 +375,7 @@ export default function MobilePage() {
                   <h2 className="text-[10px] font-black uppercase tracking-[.3em] text-text-muted whitespace-nowrap">
                      {matchedPhotoIds ? 'FOUND FOR YOU' : 'MEMORY FEED'}
                   </h2>
-                  <div className="h-px w-full bg-white/5" />
+                  <div className="h-px w-full bg-black/5 dark:bg-white/5" />
                </div>
  
                <div className="grid grid-cols-2 gap-4">
@@ -387,7 +387,7 @@ export default function MobilePage() {
                       exit={{ opacity: 0, scale: 0.8 }}
                       transition={{ duration: 0.4, type: 'spring', bounce: 0.3, delay: i < 6 ? i * 0.1 : 0 }}
                       key={p.id} 
-                      className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-white/10 bg-white/5 group shadow-lg"
+                      className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 group shadow-lg"
                     >
                        <Image 
                           src={getPublicUrl(p.storage_path)} 
@@ -399,17 +399,17 @@ export default function MobilePage() {
                        />
                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                          {hasFeature(event?.plan_type, 'LIVE_REACTIONS') && (
-                           <button onClick={() => handleReaction(p.id)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-pink-500 hover:scale-110 transition-all border border-white/10">
+                           <button onClick={() => handleReaction(p.id)} className="w-8 h-8 /60 backdrop-blur-md rounded-full flex items-center justify-center /80 hover:text-pink-500 hover:scale-110 transition-all border border-black/10 dark:border-white/10">
                              <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} />
                            </button>
                          )}
-                         <button onClick={() => handleDownload(p)} className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-primary hover:scale-110 transition-all border border-white/10">
+                         <button onClick={() => handleDownload(p)} className="w-8 h-8 /60 backdrop-blur-md rounded-full flex items-center justify-center /80 hover:text-primary hover:scale-110 transition-all border border-black/10 dark:border-white/10">
                            <Download size={14} />
                          </button>
                        </div>
                        {p.caption && (
-                         <div className="absolute inset-x-0 bottom-0 p-3 bg-black/60 backdrop-blur-md">
-                            <p className="text-[10px] italic text-white/80 line-clamp-2">"{p.caption}"</p>
+                         <div className="absolute inset-x-0 bottom-0 p-3 /60 backdrop-blur-md">
+                            <p className="text-[10px] italic /80 line-clamp-2">"{p.caption}"</p>
                          </div>
                        )}
                     </motion.div>
@@ -429,20 +429,20 @@ export default function MobilePage() {
       {/* ── Selfie Modal ── */}
       <AnimatePresence>
          {showSelfieCam && (
-           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-6">
+           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] /95 backdrop-blur-3xl flex items-center justify-center p-6">
               <div className="glass-panel p-8 w-full max-w-sm text-center relative">
-                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-white transition-colors"><X size={20} /></button>
+                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-black dark:hover:text-white transition-colors"><X size={20} /></button>
                  <h2 className="text-2xl font-bold mb-2">Find My Photos</h2>
                  <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-8 italic">Smile for the Wall</p>
                  
-                 <div className="aspect-square w-full rounded-2xl overflow-hidden border-2 border-primary/50 mb-8 items-center justify-center flex bg-black relative shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+                 <div className="aspect-square w-full rounded-2xl overflow-hidden border-2 border-primary/50 mb-8 items-center justify-center flex relative shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                     <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: 'user' }} className="w-full h-full object-cover opacity-80" mirrored />
                     <div className="absolute inset-0 border-[4px] border-transparent border-t-primary border-b-primary rounded-full animate-spin opacity-50 pointer-events-none" style={{ animationDuration: '4s' }} />
                  </div>
  
                  <div className="flex gap-4">
-                    <button onClick={() => setShowSelfieCam(false)} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-white/5 rounded-xl border border-white/10">Cancel</button>
-                    <button onClick={captureSelfie} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-primary text-white rounded-xl shadow-lg shadow-primary/20 font-black">Scan Face</button>
+                    <button onClick={() => setShowSelfieCam(false)} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10">Cancel</button>
+                    <button onClick={captureSelfie} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-primary rounded-xl shadow-lg shadow-primary/20 font-black">Scan Face</button>
                  </div>
               </div>
            </motion.div>
@@ -450,7 +450,7 @@ export default function MobilePage() {
       </AnimatePresence>
  
       {/* Footer Nav */}
-      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
+      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-black/5 dark:border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
          <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-text-muted hover:text-primary transition-all">
             <Layout size={18} /> View Wall Experience
          </Link>

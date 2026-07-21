@@ -23,16 +23,16 @@
 }
 
 :root {
-  /* -- Refined Color Palette -- */
-  --bg: #030303;
-  --bg-subtle: #09090b;
-  --surface: rgba(15, 15, 18, 0.7);
-  --border: rgba(255, 255, 255, 0.06);
-  --border-focus: rgba(99, 102, 241, 0.4);
+  /* -- Light Mode Palette -- */
+  --bg: #f9f8f6;
+  --bg-subtle: #f0efea;
+  --surface: rgba(255, 255, 255, 0.85);
+  --border: rgba(0, 0, 0, 0.08);
+  --border-focus: rgba(99, 102, 241, 0.5);
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #94a3b8;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
   
   --primary: #f59e0b;
   --primary-glow: rgba(245, 158, 11, 0.2);
@@ -47,8 +47,8 @@
 
   /* -- Premium Glassmorphism -- */
   --glass-blur: 24px;
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-  --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  --glass-border: 1px solid rgba(0, 0, 0, 0.06);
+  --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
 
   /* -- Dynamic Typography -- */
   --fs-display: clamp(2.5rem, 6vw, 5rem);
@@ -67,6 +67,20 @@
   --space-lg: calc(var(--space-unit) * 2);
   --space-xl: calc(var(--space-unit) * 4);
   --space-container: clamp(1rem, 5vw, 4rem);
+}
+
+.dark {
+  --bg: #030303;
+  --bg-subtle: #09090b;
+  --surface: rgba(15, 15, 18, 0.7);
+  --border: rgba(255, 255, 255, 0.06);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #94a3b8;
+
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
 }
 
 * {
@@ -149,15 +163,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.04);
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
+.dark .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+}
 
 .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+.dark .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
 }
 
 .btn-ghost {
@@ -167,8 +188,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   color: var(--text-primary);
+}
+.dark .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* -- Cards & Surfaces -- */
@@ -199,8 +223,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(0, 0, 0, 0.12);
   transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+.dark .card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
@@ -220,7 +248,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .input {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
   border: var(--border);
   border-radius: var(--radius-md);
   padding: 0.75rem 1rem;
@@ -229,6 +257,9 @@ h1, h2, h3, h4, h5, h6 {
   font-size: var(--fs-small);
   transition: all 0.2s;
   width: 100%;
+}
+.dark .input {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .input:focus {

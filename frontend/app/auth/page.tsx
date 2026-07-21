@@ -53,7 +53,7 @@ function AuthPageContent() {
   };
  
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center p-6">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
@@ -73,7 +73,7 @@ function AuthPageContent() {
               <p className="text-text-secondary text-sm">{isSignUp ? 'Join the next generation of event sharing.' : 'Sign in to manage your memories.'}</p>
            </div>
  
-           <button onClick={() => signInWithGoogle()} className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold text-sm group">
+           <button onClick={() => signInWithGoogle()} className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition-all font-bold text-sm group">
               <svg width="20" height="20" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -84,9 +84,9 @@ function AuthPageContent() {
            </button>
  
            <div className="flex items-center gap-4">
-              <div className="h-px w-full bg-white/5" />
+              <div className="h-px w-full bg-black/5 dark:bg-white/5" />
               <span className="text-[9px] font-black uppercase tracking-widest text-text-muted whitespace-nowrap">OR EMAIL</span>
-              <div className="h-px w-full bg-white/5" />
+              <div className="h-px w-full bg-black/5 dark:bg-white/5" />
            </div>
  
            <form onSubmit={handleSubmit} className="space-y-5">
@@ -95,7 +95,7 @@ function AuthPageContent() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Full Name</label>
                     <div className="relative group">
                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-primary transition-all text-sm" />
+                       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
                     </div>
                  </div>
               )}
@@ -104,7 +104,7 @@ function AuthPageContent() {
                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Email Address</label>
                  <div className="relative group">
                     <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="sarah@example.com" className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-primary transition-all text-sm" />
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="sarah@example.com" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
                  </div>
               </div>
  
@@ -115,7 +115,7 @@ function AuthPageContent() {
                  </div>
                  <div className="relative group">
                     <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-primary transition-all text-sm" />
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
                  </div>
               </div>
  
@@ -124,7 +124,7 @@ function AuthPageContent() {
                     <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Mobile Number</label>
                     <div className="relative group">
                        <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                       <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+968 0000 0000" className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-primary transition-all text-sm" />
+                       <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+968 0000 0000" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl pl-12 pr-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
                     </div>
                  </div>
               )}
@@ -154,14 +154,14 @@ function AuthPageContent() {
  
            <p className="text-center text-sm text-text-secondary">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-              <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }} className="text-white font-bold hover:text-primary transition-colors">
+              <button onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }} className="font-bold hover:text-primary transition-colors">
                  {isSignUp ? 'Sign In' : 'Sign Up Free'}
               </button>
            </p>
         </div>
  
         <div className="mt-12 text-center">
-           <Link href="/" className="text-[10px] font-black text-text-muted hover:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+           <Link href="/" className="text-[10px] font-black text-text-muted hover:text-black dark:hover:text-white uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
               <ArrowLeft size={12} /> Back to Homepage
            </Link>
         </div>
@@ -173,7 +173,7 @@ function AuthPageContent() {
 export default function AuthPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
       </div>
     }>

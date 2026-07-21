@@ -42,11 +42,11 @@ export default function ThemeCustomizationPage() {
     alert('Theme updated successfully!');
   };
 
-  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-text-muted hover:text-white mb-8 transition-colors">
+    <div className="min-h-screen p-8">
+      <button onClick={() => router.back()} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-white mb-8 transition-colors">
         <ArrowLeft size={16} /> Back to Dashboard
       </button>
 
@@ -69,7 +69,7 @@ export default function ThemeCustomizationPage() {
                  <button 
                    key={theme.id}
                    onClick={() => setActiveTheme(theme.id)}
-                   className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden ${activeTheme === theme.id ? 'border-primary bg-primary/10' : 'border-white/10 hover:border-white/30 bg-white/5'}`}
+                   className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden ${activeTheme === theme.id ? 'border-primary bg-primary/10' : 'border-black/10 dark:border-white/10 hover:border-white/30 bg-black/5 dark:bg-white/5'}`}
                  >
                    <div className="flex justify-between items-center mb-4">
                      <span className="font-bold">{theme.name}</span>
@@ -89,7 +89,7 @@ export default function ThemeCustomizationPage() {
              <select 
                value={customFont}
                onChange={(e) => setCustomFont(e.target.value)}
-               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-primary"
+               className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-4 focus:outline-none focus:border-primary"
              >
                <option value="Inter">Inter (Modern, Clean)</option>
                <option value="Playfair Display">Playfair Display (Elegant, Wedding)</option>
@@ -102,7 +102,7 @@ export default function ThemeCustomizationPage() {
         {/* Live Preview */}
         <div className="sticky top-8">
           <h3 className="text-xl font-bold mb-6 flex items-center gap-2"><Layout size={20} className="text-text-muted" /> Live Preview</h3>
-          <div className="aspect-[4/3] rounded-3xl overflow-hidden border border-white/10 relative shadow-2xl">
+          <div className="aspect-[4/3] rounded-3xl overflow-hidden border border-black/10 dark:border-white/10 relative shadow-2xl">
             {/* Theming injection for preview */}
             <div className={`absolute inset-0 p-8 flex flex-col items-center justify-center text-center ${THEMES.find(t => t.id === activeTheme)?.bg} ${THEMES.find(t => t.id === activeTheme)?.text}`} style={{ fontFamily: customFont }}>
                <Sparkles className="mb-4 opacity-50" size={32} />

@@ -1,12 +1,15 @@
 "use client";
 
-import { useTheme } from './ThemeProvider';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // Don't render until theme is available
-  if (typeof theme === 'undefined') {
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
     return (
       <div className="w-14 h-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
     );
@@ -14,8 +17,8 @@ export default function ThemeToggle() {
 
   return (
     <button
-      onClick={toggleTheme}
-      className="relative inline-flex h-8 w-14 items-center rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      className="relative inline-flex h-8 w-14 items-center rounded-full bg-slate-300 dark:bg-slate-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-900 border border-slate-400/20 dark:border-white/10"
       aria-label="Toggle theme"
     >
       <span className="sr-only">Toggle theme</span>

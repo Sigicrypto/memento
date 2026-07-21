@@ -234,7 +234,7 @@ export default function LaunchPlanner() {
                       </div>
                     </div>
 
-                    <div className="p-4 md:p-6 bg-white/10">
+                    <div className="p-4 md:p-6 bg-black/10 dark:bg-white/10">
                       <div className="flex flex-col gap-3">
                         {category.items.map((item) => (
                           <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl cursor-pointer border transition-all duration-300
@@ -249,7 +249,7 @@ export default function LaunchPlanner() {
                                 checked={item.done}
                                 onChange={() => toggleItem(category.id, item.id)}
                               />
-                              <svg className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <svg className="absolute w-4 h-4 opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                               </svg>
                             </div>
