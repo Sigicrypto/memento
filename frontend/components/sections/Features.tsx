@@ -52,7 +52,7 @@ const Features: React.FC = () => {
                 {f.icon}
               </div>
               <h3 className="text-2xl font-bold text-black dark:text-white mb-4">{f.title}</h3>
-              <p className="text-text-secondary text-lg leading-relaxed">{f.desc}</p>
+              <p className="text-black dark:text-white text-lg leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>

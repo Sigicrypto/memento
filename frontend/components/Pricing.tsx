@@ -71,9 +71,9 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 <div className="mb-5" style={{ minHeight: '72px' }}>
                    <div className="flex items-baseline gap-1">
                       <span className="text-4xl font-bold tracking-tighter">{price}</span>
-                      <span className="text-text-muted text-xs font-medium">/event</span>
+                      <span className="text-black dark:text-white text-xs font-medium">/event</span>
                    </div>
-                   <p className="text-text-secondary text-xs mt-2 italic leading-relaxed">"{plan.description}"</p>
+                   <p className="text-black dark:text-white text-xs mt-2 italic leading-relaxed">"{plan.description}"</p>
                 </div>
 
                 {/* Section 3: Stats badge */}
@@ -83,9 +83,9 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 <div className="flex-grow mb-6">
                    <div className="flex flex-col gap-[10px]">
                       {plan.features.map((f, i) => (
-                         <div key={i} className={`flex items-start gap-3 text-xs ${f.included ? 'text-text-secondary' : 'text-text-muted opacity-40'}`}>
+                         <div key={i} className={`flex items-start gap-3 text-xs ${f.included ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/40'}`}>
                             {f.included ? <Check size={14} className="text-primary mt-0.5 flex-shrink-0" /> : <X size={14} className="mt-0.5 flex-shrink-0" />}
-                            <span className={f.included ? 'text-black/80 dark:text-white/80' : ''}>{f.label}</span>
+                            <span className={f.included ? 'text-black dark:text-white' : ''}>{f.label}</span>
                          </div>
                       ))}
                    </div>
@@ -274,7 +274,7 @@ function ComparisonRow({ label, values }: { label: string, values: any[] }) {
        style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}
     >
        <td
-          className="font-semibold text-black/80 dark:text-white/80 text-sm"
+          className="font-semibold text-black dark:text-white text-sm"
           style={{ padding: '18px 24px 18px 32px' }}
        >
           {label}
@@ -289,11 +289,11 @@ function ComparisonRow({ label, values }: { label: string, values: any[] }) {
                 v ? (
                    <Check size={18} className="text-primary mx-auto" style={{ display: 'block' }} />
                 ) : (
-                   <X size={18} className="text-text-muted opacity-20 mx-auto" style={{ display: 'block' }} />
+                   <X size={18} className="text-black dark:text-white opacity-20 mx-auto" style={{ display: 'block' }} />
                 )
              ) : (
-                <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">{v}</span>
-             )}
+                 <span className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{v}</span>
+              )}
           </td>
        ))}
     </tr>
