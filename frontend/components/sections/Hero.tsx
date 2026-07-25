@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, ArrowRight } from 'lucide-react';
+import { Play, ArrowRight, ScanLine } from 'lucide-react';
+import Corners from '@/components/Corners';
 
 interface HeroProps {
   setIsDemoOpen: (open: boolean) => void;
@@ -18,6 +19,8 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center max-w-3xl"
         >
+          <div className="hero-badge mb-6">Live &middot; QR Photo Capture</div>
+
           <h1 className="display-text mb-6">
             Collect Every Moment.
             <br />
@@ -26,7 +29,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           <p className="text-lg text-text-secondary mb-10 max-w-xl mx-auto leading-relaxed">
             The minimal QR-based photo sharing platform for modern events. No apps required, zero hassle. A premium experience for your guests.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => setIsDemoOpen(true)}
@@ -41,23 +44,24 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           </div>
         </motion.div>
 
-        {/* Hero Visuals - High-Fidelity App Window Mockup */}
+        {/* Hero Visuals — Live Viewfinder Mockup */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="mt-20 relative w-full max-w-4xl mx-auto"
         >
-          <div className="card p-2 rounded-2xl overflow-hidden shadow-2xl bg-bg-subtle border border-border">
-            <div className="h-10 border-b border-border flex items-center px-4 gap-2 bg-surface">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-border" />
-                <div className="w-2.5 h-2.5 rounded-full bg-border" />
-                <div className="w-2.5 h-2.5 rounded-full bg-border" />
+          <div className="viewfinder card p-2 rounded-2xl overflow-hidden shadow-2xl bg-bg-subtle border border-border">
+            <Corners />
+            <div className="h-10 border-b border-border flex items-center px-4 gap-3 bg-surface">
+              <div className="flex items-center gap-1.5 text-accent-cyan">
+                <ScanLine size={13} strokeWidth={2} />
+                <span className="live-pulse" />
               </div>
-              <div className="mx-auto w-48 h-5 bg-bg-subtle border border-border rounded-md flex items-center justify-center">
-                <span className="text-[9px] text-text-muted font-medium font-mono">memento.live/demo</span>
+              <div className="mx-auto w-52 h-5 bg-bg-subtle border border-border rounded-md flex items-center justify-center">
+                <span className="font-mono-ui text-[9px] text-text-muted tracking-wide">memento.live/demo</span>
               </div>
+              <span className="font-mono-ui text-[9px] text-accent-cyan tracking-wider hidden sm:inline">REC</span>
             </div>
             <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4 bg-bg">
               {[
@@ -70,7 +74,8 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                 { name: "David P.", color: "from-cyan-500/20 via-blue-500/25 to-zinc-900/10", likes: 11 },
                 { name: "Chloe B.", color: "from-rose-400/20 via-orange-400/25 to-zinc-900/10", likes: 14 }
               ].map((card, i) => (
-                <div key={i} className="aspect-[4/5] bg-surface border border-border rounded-xl overflow-hidden relative group transition-all duration-300 hover:border-border-hover">
+                <div key={i} className="viewfinder aspect-[4/5] bg-surface border border-border rounded-xl overflow-hidden relative group transition-all duration-300 hover:border-border-hover">
+                   <Corners />
                    <div className={`w-full h-full bg-gradient-to-tr ${card.color} group-hover:scale-105 transition-transform duration-700`} />
                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
                    <div className="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between items-center z-10">

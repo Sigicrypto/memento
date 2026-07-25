@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Corners from '@/components/Corners';
 
 const Gallery: React.FC = () => {
   return (
@@ -14,15 +15,15 @@ const Gallery: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+          <div className="hud-chip mb-6">
             Inspiration
           </div>
           <h2 className="h1-text mb-6">
-            Real <span className="text-secondary italic">Event Walls</span>
+            Real <span className="hero-title-accent italic">Event Walls</span>
           </h2>
           <p className="text-lg text-text-secondary max-w-2xl mx-auto">See how people are using Memento to capture their special moments in high resolution.</p>
         </motion.div>
- 
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             { title: 'Sarah & John Wedding', src: '/landing-hero/photo5.jpg', count: '156 photos' },
@@ -38,12 +39,13 @@ const Gallery: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="gcard !p-0 aspect-[4/3] group cursor-pointer"
+              className="viewfinder gcard !p-0 aspect-[4/3] group cursor-pointer overflow-hidden"
             >
+              <Corners />
               <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-8 flex flex-col justify-end">
                 <h3 className="text-text-primary font-bold text-xl mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">{item.title}</h3>
-                <p className="text-primary text-xs font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.count}</p>
+                <p className="font-mono-ui text-accent-cyan text-xs font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.count}</p>
               </div>
             </motion.div>
           ))}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Corners from '@/components/Corners';
 
 const Features: React.FC = () => {
   return (
@@ -21,8 +22,8 @@ const Features: React.FC = () => {
             The Best Experience. Built in.
           </h2>
         </motion.div>
- 
-        <motion.div 
+
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           variants={{
             hidden: { opacity: 0 },
@@ -40,15 +41,16 @@ const Features: React.FC = () => {
             { icon: '📱', title: 'Zero Friction', desc: 'No apps. No accounts. No logins. Just scan a QR and start sharing within 3 seconds.' },
             { icon: '🛡️', title: 'Safety & Moderation', desc: 'Control your event. Remove or approve photos with one tap to keep the energy positive.' },
           ].map((f, i) => (
-            <motion.div 
-              key={i} 
-              className={`card-interactive h-full flex flex-col items-start bg-bg ${f.big ? 'lg:col-span-2' : ''}`}
+            <motion.div
+              key={i}
+              className={`viewfinder card-interactive h-full flex flex-col items-start bg-bg group ${f.big ? 'lg:col-span-2' : ''}`}
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
               }}
             >
-              <div className="w-10 h-10 rounded bg-bg-subtle border border-border flex items-center justify-center text-xl mb-4 text-text-primary">
+              <Corners />
+              <div className="w-10 h-10 rounded bg-bg-subtle border border-border flex items-center justify-center text-xl mb-4 text-text-primary group-hover:border-border-hover transition-colors">
                 {f.icon}
               </div>
               <h3 className="text-base font-semibold text-text-primary mb-2">{f.title}</h3>
