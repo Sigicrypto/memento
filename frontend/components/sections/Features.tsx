@@ -12,12 +12,12 @@ const Features: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
           <div className="hero-badge mb-6">
             Everything you need
           </div>
-          <h2 className="h1-text mb-6">
+          <h2 className="h2-text mb-4 text-text-primary">
             The Best Experience. Built in.
           </h2>
         </motion.div>
@@ -42,17 +42,17 @@ const Features: React.FC = () => {
           ].map((f, i) => (
             <motion.div 
               key={i} 
-              className={`gcard h-full flex flex-col items-start ${f.big ? 'lg:col-span-2' : ''}`}
+              className={`card h-full flex flex-col items-start bg-bg ${f.big ? 'lg:col-span-2' : ''}`}
               variants={{
                 hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+                visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
               }}
             >
-              <div className="w-12 h-12 rounded-lg bg-bg border border-border flex items-center justify-center text-2xl mb-6 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded bg-bg-subtle border border-border flex items-center justify-center text-xl mb-4 text-text-primary">
                 {f.icon}
               </div>
-              <h3 className="text-xl font-semibold text-text-primary mb-2">{f.title}</h3>
-              <p className="text-text-secondary text-base leading-relaxed">{f.desc}</p>
+              <h3 className="text-base font-semibold text-text-primary mb-2">{f.title}</h3>
+              <p className="text-text-secondary text-sm leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>

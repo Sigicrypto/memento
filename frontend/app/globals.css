@@ -18,39 +18,44 @@
   --bg-subtle: #FAFAFA;
   --surface: #FFFFFF;
   --border: #EAEAEA;
-  --border-focus: #0070F3;
+  --border-focus: #000000;
   
-  --text-primary: #000000;
+  --text-primary: #111111;
   --text-secondary: #666666;
-  --text-muted: #888888;
+  --text-muted: #999999;
   
   --primary: #000000;
   --secondary: #666666;
-  --accent: #0070F3;
+  --accent: #000000;
+  --error: #E00000;
+  --success: #007000;
   
+  /* -- Border Radius -- */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* -- Dynamic Typography -- */
-  --fs-display: clamp(2rem, 5vw, 4rem);
-  --fs-h1: clamp(1.5rem, 4vw, 2.5rem);
-  --fs-h2: clamp(1.25rem, 3vw, 2rem);
-  --fs-h3: clamp(1.1rem, 2vw, 1.5rem);
-  --fs-body: 0.875rem;
-  --fs-small: 0.8125rem;
-  --fs-xs: 0.75rem;
+  /* -- Typography Scale -- */
+  --fs-display: 2.5rem; /* 40px */
+  --fs-h1: 2rem; /* 32px */
+  --fs-h2: 1.5rem; /* 24px */
+  --fs-h3: 1.25rem; /* 20px */
+  --fs-body: 0.875rem; /* 14px */
+  --fs-small: 0.8125rem; /* 13px */
+  --fs-xs: 0.75rem; /* 12px */
 
-  /* -- Spacing Scale -- */
-  --space-unit: 1rem;
-  --space-xs: 0.5rem;
-  --space-sm: 0.75rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-container: clamp(1rem, 5vw, 2rem);
+  /* -- Strict 8px Spacing Scale -- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-8: 48px;
+  --space-10: 64px;
+  --space-container: 24px;
 }
 
 .dark {
@@ -58,14 +63,15 @@
   --bg-subtle: #0A0A0A;
   --surface: #000000;
   --border: #333333;
+  --border-focus: #FFFFFF;
   
-  --text-primary: #FFFFFF;
+  --text-primary: #EEEEEE;
   --text-secondary: #888888;
-  --text-muted: #666666;
+  --text-muted: #555555;
 
   --primary: #FFFFFF;
   --secondary: #888888;
-  --accent: #0070F3;
+  --accent: #FFFFFF;
 }
 
 * {
@@ -96,20 +102,33 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-/* -- Interactive Elements -- */
+/* -- Standardized Interactive Elements -- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-xs);
-  padding: 0.5rem 1rem;
+  gap: var(--space-2);
+  height: 36px;
+  padding: 0 var(--space-4);
   font-weight: 500;
-  font-size: var(--fs-small);
+  font-size: var(--fs-body);
   border-radius: var(--radius-md);
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
+}
+
+.btn-sm {
+  height: 32px;
+  padding: 0 var(--space-3);
+  font-size: var(--fs-small);
+}
+
+.btn-lg {
+  height: 44px;
+  padding: 0 var(--space-5);
+  font-size: var(--fs-body);
 }
 
 .btn-primary {
@@ -144,24 +163,12 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-/* -- Cards & Surfaces -- */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  transition: border-color 0.15s ease;
-}
-
-.card:hover {
-  border-color: var(--text-muted);
-}
-
-/* -- Inputs -- */
+/* -- Unified Form Controls -- */
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
 }
 
 .label {
@@ -171,14 +178,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .input {
+  height: 36px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 0.5rem 0.75rem;
+  padding: 0 var(--space-3);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: var(--fs-small);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-size: var(--fs-body);
+  transition: border-color 0.1s ease, box-shadow 0.1s ease;
   width: 100%;
 }
 
@@ -188,29 +196,82 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 1px var(--border-focus);
 }
 
-/* -- Layout Helpers -- */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--space-container);
+.input:disabled {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
-.section {
-  padding: var(--space-xl) 0;
+/* -- Standard Cards -- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--text-muted);
+}
+
+/* -- Minimal Data Tables -- */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--fs-body);
+}
+
+.data-table th {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+
+.data-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.data-table tr:hover td {
+  background: var(--bg-subtle);
+}
+
+/* -- Layout Helpers -- */
+.container {
+  max-width: 1024px; /* Narrower for better readability */
+  margin: 0 auto;
+  padding: 0 var(--space-container);
 }
 
 /* -- Scrollbar -- */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -226,34 +287,6 @@ h1, h2, h3, h4, h5, h6 {
 /* Responsive Overrides */
 @media (max-width: 768px) {
   :root {
-    --space-xl: 1.5rem;
+    --space-container: 16px;
   }
-}
-
-/* Masonry grid support */
-.masonry-grid {
-  container-type: inline-size;
-}
-
-@container (min-width: 640px) {
-  .masonry-grid { columns: 3; }
-}
-
-@container (min-width: 1024px) {
-  .masonry-grid { columns: 4; }
-}
-
-@container (min-width: 1280px) {
-  .masonry-grid { columns: 5; }
-}
-
-/* Footer Link */
-.footer-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-
-.footer-link:hover {
-  color: var(--text-primary);
 }

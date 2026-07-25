@@ -5,8 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Globe, Music, Palette, Lock, Link2, Star, Sparkles, Settings, Save, ExternalLink, Image as ImageIcon, Check, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Globe, Palette, Lock, Star, Sparkles, Settings, Save, Image as ImageIcon, AlertTriangle } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
  
 export default function EditEventPage() {
@@ -70,9 +70,8 @@ export default function EditEventPage() {
  
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-border border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -82,173 +81,150 @@ export default function EditEventPage() {
   const isStandardPlus = ['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planType);
  
   return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col">
-      <div className="grain" />
-      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
- 
+    <div className="min-h-screen flex flex-col bg-bg-subtle">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 /70 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
-         <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-text-primary transition-all font-bold text-xs uppercase tracking-widest group">
-               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Dashboard
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg border-b border-border flex items-center justify-between px-6">
+         <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors font-medium text-sm">
+               <ArrowLeft size={16} /> Dashboard
             </Link>
             <div className="h-6 w-px bg-border hidden md:block" />
             <Link href="/" className="hidden md:block">
-              <AnimatedLogo width={140} height={40} />
+              <AnimatedLogo width={120} height={32} />
             </Link>
          </div>
-         <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black uppercase tracking-widest text-primary">
-            <Settings size={12} /> Event Settings
+         <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-subtle border border-border text-xs font-medium text-text-primary">
+            <Settings size={14} /> Event Settings
          </div>
       </nav>
  
-      <main className="relative z-10 pt-32 px-8 pb-32 max-w-2xl mx-auto w-full">
-         <div className="text-center mb-12">
-            <p className="text-primary text-[10px] font-black uppercase tracking-[.3em] mb-4">MEMENTO DASHBOARD</p>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Edit Your Event</h1>
-            <p className="text-text-secondary">Customize your wall experience and branding.</p>
+      <main className="flex-grow pt-24 px-6 pb-24 max-w-2xl mx-auto w-full">
+         <div className="mb-8">
+            <h1 className="h2-text mb-2 text-text-primary">Edit Event</h1>
+            <p className="text-text-secondary text-sm">Customize your wall experience and branding.</p>
          </div>
  
-         <form onSubmit={handleUpdate} className="space-y-8">
-            <div className="glass-panel p-8 md:p-10 space-y-8">
-               {/* Basic Settings */}
-               <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                        <Star size={16} />
-                     </div>
-                     <h2 className="text-sm font-black uppercase tracking-widest">Base Identity</h2>
+         <form onSubmit={handleUpdate} className="space-y-6">
+            <div className="card space-y-6 bg-bg">
+               <div className="flex items-center gap-2 text-text-primary font-semibold border-b border-border pb-4 mb-4">
+                  <Star size={18} /> Base Identity
+               </div>
+ 
+               <div className="input-group">
+                  <label className="label">Event Name</label>
+                  <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="My Grand Celebration" className="input" />
+               </div>
+
+               <div className="input-group">
+                  <div className="flex items-center justify-between">
+                     <label className="label">Custom Slug (URL)</label>
+                     {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" />}
                   </div>
+                  <div className="flex">
+                     <span className="inline-flex items-center px-3 border border-r-0 border-border bg-bg-subtle text-text-muted text-sm rounded-l-md font-mono">/wall/</span>
+                     <input type="text" value={slug} disabled={!isStandardPlus} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="your-event" className="input rounded-l-none" />
+                  </div>
+               </div>
+
+               <div className="input-group">
+                  <label className="label">Privacy Password</label>
+                  <div className="relative">
+                     <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                     <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Leave blank for public access" className="input pl-9" />
+                  </div>
+               </div>
+            </div>
  
-                  <div className="grid gap-6">
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Event Name</label>
-                        <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="My Grand Celebration" className="w-full bg-bg-subtle border border-border rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
+            <div className="card space-y-6 bg-bg">
+               <div className="flex items-center gap-2 text-text-primary font-semibold border-b border-border pb-4 mb-4">
+                  <Palette size={18} /> Experience & Style
+               </div>
+ 
+               <div className="grid md:grid-cols-2 gap-6">
+                  <div className="input-group">
+                     <div className="flex items-center justify-between">
+                        <label className="label">Wall Theme</label>
+                        {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" />}
                      </div>
- 
-                     <div className="space-y-2">
-                        <div className="flex items-center justify-between ml-1">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Custom Slug (URL)</label>
-                           {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" color="#06b6d4" />}
-                        </div>
-                        <div className="relative">
-                           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-sm font-medium">/wall/</div>
-                           <input type="text" value={slug} disabled={!isStandardPlus} onChange={e => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))} placeholder="your-event" className={`w-full bg-bg-subtle border border-border rounded-xl pl-16 pr-4 py-3.5 text-text-primary focus:outline-none ${isStandardPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
-                        </div>
+                     <select value={theme} onChange={e => setTheme(e.target.value)} disabled={!isStandardPlus} className="input">
+                        <option value="light">Classic Light</option>
+                        <option value="dark">Cinematic Dark</option>
+                        <option value="dreamy">Dreamy Glassmorphism</option>
+                     </select>
+                  </div>
+
+                  <div className="input-group">
+                     <div className="flex items-center justify-between">
+                        <label className="label">Soundtrack</label>
+                        {!isPremiumPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" />}
                      </div>
+                     <select value={musicTrack} onChange={e => setMusicTrack(e.target.value)} disabled={!isPremiumPlus} className="input">
+                        <option value="none">No Music</option>
+                        <option value="lofi">Lofi Chill</option>
+                        <option value="acoustic">Acoustic Sunset</option>
+                        <option value="upbeat">Upbeat Party</option>
+                     </select>
+                  </div>
+               </div>
+            </div>
  
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Privacy Password</label>
-                        <div className="relative">
-                           <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Leave blank for public access" className="w-full bg-bg-subtle border border-border rounded-xl px-4 py-3.5 focus:outline-none focus:border-primary transition-all text-sm" />
-                           <Lock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted" />
-                        </div>
+            {/* White Label Section */}
+            <div className="card space-y-6 bg-bg">
+               <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
+                  <div className="flex items-center gap-2 text-text-primary font-semibold">
+                     <Globe size={18} /> White Label & Branding
+                  </div>
+                  {!isWhiteLabel && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade to Partner" />}
+               </div>
+ 
+               <div className="grid gap-6">
+                  <div className="input-group">
+                     <label className="label">Custom Domain</label>
+                     <input type="text" value={customDomain} disabled={!isWhiteLabel} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.yourevent.com" className="input" />
+                  </div>
+                  <div className="input-group">
+                     <label className="label">Brand Logo URL</label>
+                     <div className="relative">
+                        <ImageIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                        <input type="text" value={logoUrl} disabled={!isWhiteLabel} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className="input pl-9" />
                      </div>
                   </div>
                </div>
+            </div>
  
-               <div className="h-px bg-bg-subtle" />
+            {error && (
+              <div className="p-3 rounded-md bg-error/10 border border-error/20 flex items-center gap-2 text-error text-sm font-medium">
+                 <AlertTriangle size={16} /> {error}
+              </div>
+            )}
  
-               {/* Experience Settings */}
-               <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-lg bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-500">
-                        <Palette size={16} />
-                     </div>
-                     <h2 className="text-sm font-black uppercase tracking-widest">Experience & Style</h2>
-                  </div>
- 
-                  <div className="grid md:grid-cols-2 gap-6">
-                     <div className="space-y-2">
-                        <div className="flex items-center justify-between ml-1">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Wall Theme</label>
-                           {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" color="#06b6d4" />}
-                        </div>
-                        <select value={theme} onChange={e => setTheme(e.target.value)} disabled={!isStandardPlus} className={`w-full bg-bg-subtle border border-border rounded-xl px-4 py-3.5 text-text-primary focus:outline-none ${isStandardPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm appearance-none`}>
-                           <option value="light">Classic Light</option>
-                           <option value="dark">Cinematic Dark</option>
-                           <option value="dreamy">Dreamy Glassmorphism</option>
-                        </select>
-                     </div>
- 
-                     <div className="space-y-2">
-                        <div className="flex items-center justify-between ml-1">
-                           <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Soundtrack</label>
-                           {!isPremiumPlus && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade" color="#ec4899" />}
-                        </div>
-                        <select value={musicTrack} onChange={e => setMusicTrack(e.target.value)} disabled={!isPremiumPlus} className={`w-full bg-bg-subtle border border-border rounded-xl px-4 py-3.5 text-text-primary focus:outline-none ${isPremiumPlus ? 'focus:border-primary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm appearance-none`}>
-                           <option value="none">No Music</option>
-                           <option value="lofi">Lofi Chill</option>
-                           <option value="acoustic">Acoustic Sunset</option>
-                           <option value="upbeat">Upbeat Party</option>
-                        </select>
-                     </div>
-                  </div>
-               </div>
- 
-               {/* White Label Section */}
-               <div className="rounded-[2rem] border border-secondary/20 bg-secondary/5 p-8 space-y-6 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-10">
-                     <Sparkles size={120} />
-                  </div>
-                  
-                  <div className="flex items-center justify-between relative z-10">
-                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary">
-                           <Globe size={16} />
-                        </div>
-                        <h2 className="text-sm font-black uppercase tracking-widest text-secondary">White Label & Branding</h2>
-                     </div>
-                     {!isWhiteLabel && <UpgradeBadge href={`/pricing?eventId=${id}`} label="Upgrade to Partner" color="#6366f1" />}
-                  </div>
- 
-                  <div className="grid gap-6 relative z-10">
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Custom Domain</label>
-                        <input type="text" value={customDomain} disabled={!isWhiteLabel} onChange={e => setCustomDomain(e.target.value)} placeholder="gallery.yourevent.com" className={`w-full bg-bg-subtle border border-border rounded-xl px-4 py-3.5 text-text-primary focus:outline-none ${isWhiteLabel ? 'focus:border-secondary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
-                     </div>
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Brand Logo URL</label>
-                        <div className="relative">
-                           <input type="text" value={logoUrl} disabled={!isWhiteLabel} onChange={e => setLogoUrl(e.target.value)} placeholder="https://domain.com/logo.png" className={`w-full bg-bg-subtle border border-border rounded-xl px-4 py-3.5 text-text-primary focus:outline-none ${isWhiteLabel ? 'focus:border-secondary' : 'opacity-40 cursor-not-allowed'} transition-all text-sm`} />
-                           <ImageIcon size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted" />
-                        </div>
-                     </div>
-                  </div>
-               </div>
- 
-               {error && (
-                 <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold flex items-center gap-3">
-                    <AlertTriangle size={16} /> {error}
-                 </div>
-               )}
- 
-               <button type="submit" disabled={saving} className="btn-premium w-full !py-5 flex items-center justify-center gap-3 disabled:opacity-50 group">
+            <div className="pt-4 flex gap-4">
+               <button type="submit" disabled={saving} className="btn btn-primary flex-1 btn-lg">
                   {saving ? (
-                    <div className="w-5 h-5 border-2 border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white rounded-full animate-spin" />
+                    <>
+                      <div className="w-4 h-4 border-2 border-border border-t-bg rounded-full animate-spin" />
+                      <span>Saving...</span>
+                    </>
                   ) : (
                     <>
-                      <Save size={18} className="group-hover:scale-110 transition-transform" />
-                      <span>Save Changes ✦</span>
+                      <Save size={18} />
+                      <span>Save Changes</span>
                     </>
                   )}
                </button>
+               <Link href="/dashboard" className="btn btn-secondary btn-lg">
+                 Cancel
+               </Link>
             </div>
          </form>
- 
-         <div className="mt-12 text-center">
-            <Link href="/" className="text-[10px] font-black text-text-muted hover:text-black dark:hover:text-text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
-               <ArrowLeft size={12} /> Discard & Exit
-            </Link>
-         </div>
       </main>
     </div>
   );
 }
  
-function UpgradeBadge({ href, label, color }: { href: string; label: string; color: string }) {
+function UpgradeBadge({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95" style={{ background: `${color}15`, border: `1px solid ${color}30`, color }}>
+    <Link href={href} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-bg-subtle border border-border text-text-secondary hover:text-text-primary transition-colors">
       <Sparkles size={10} /> {label}
     </Link>
   );

@@ -85,7 +85,7 @@ export default function MobilePage() {
     setGuestId(id);
     const savedName = localStorage.getItem(GUEST_NAME_KEY);
     if (savedName) setUploaderName(savedName);
-
+ 
     const savedCount = parseInt(localStorage.getItem(`memento_uploads_${slug}`) || '0', 10);
     setLocalUploadCount(savedCount);
   }, [slug]);
@@ -189,7 +189,7 @@ export default function MobilePage() {
         const newCount = localUploadCount + files.length;
         setLocalUploadCount(newCount);
         localStorage.setItem(`memento_uploads_${slug}`, newCount.toString());
-
+ 
         setFiles([]); setCaption('');
       setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err: any) { setError(err.message || 'Upload failed.'); }
@@ -216,7 +216,7 @@ export default function MobilePage() {
   };
  
   const getPublicUrl = (path: string) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl;
-
+ 
   const handleReaction = async (photoId: string) => {
     if (!hasFeature(event?.plan_type, 'LIVE_REACTIONS')) return;
     setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, reaction_count: (p.reaction_count || 0) + 1 } : p));
@@ -224,7 +224,7 @@ export default function MobilePage() {
     localStorage.setItem('memento_guest_id', gId);
     await supabase.from('reactions').insert({ photo_id: photoId, guest_id: gId });
   };
-
+ 
   const handleDownload = async (p: Photo) => {
     try {
       const response = await fetch(getPublicUrl(p.storage_path));
@@ -241,179 +241,173 @@ export default function MobilePage() {
       console.error('Download failed', e);
     }
   };
-
-  if (error) return <div className="min-h-screen flex items-center justify-center p-6 text-center">{error}</div>;
-
+ 
+  if (error && !event) return <div className="min-h-screen flex items-center justify-center p-6 text-center text-error bg-bg font-medium">{error}</div>;
+ 
   const limit = getGuestPhotoLimit(event?.plan_type);
   const isLimited = localUploadCount >= limit;
-
-  return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col">
-      <div className="grain" />
-      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
+  return (
+    <div className="min-h-screen bg-bg flex flex-col relative pb-20">
       {/* ── Dynamic Island Header ── */}
-      <nav className="fixed top-4 left-4 right-4 z-[100] h-16 rounded-full border border-white/10 bg-zinc-900/95 backdrop-blur-2xl px-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+      <nav className="fixed top-4 left-4 right-4 z-50 h-[52px] rounded-full bg-bg shadow-sm border border-border px-4 flex items-center justify-between">
          {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
             <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
          ) : (
-            <Link href="/" className="text-lg font-bold tracking-tighter bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">memento</Link>
+            <Link href="/" className="text-sm font-bold tracking-tight text-text-primary">memento</Link>
          )}
          <div className="flex items-center gap-3">
            <ThemeToggle />
-           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-subtle border border-border text-[9px] font-black uppercase tracking-widest shadow-inner">
-              <div className={`live-pulse ${realtimeStatus === 'SUBSCRIBED' ? '!bg-green-500' : ''}`} style={{ width: 6, height: 6 }} />
-              <span className={realtimeStatus === 'SUBSCRIBED' ? 'text-green-400' : 'text-primary'}>{realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Sync'}</span>
+           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-subtle border border-border text-[10px] font-semibold text-text-primary">
+              <div className={`w-1.5 h-1.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-success' : 'bg-primary'}`} />
+              <span>{realtimeStatus === 'SUBSCRIBED' ? 'Live' : 'Sync'}</span>
            </div>
          </div>
       </nav>
  
-      <main className="relative z-10 pt-32 px-6 pb-32 max-w-lg mx-auto w-full">
-         <div className="text-center mb-10">
-            <p className="text-primary text-[10px] font-black uppercase tracking-[.3em] mb-2">{slug.toUpperCase()}</p>
-            <h1 className="text-4xl font-bold tracking-tight mb-3">Share the Moment</h1>
-            <p className="text-text-secondary">{event?.name || 'Live Photo Wall'}</p>
+      <main className="flex-grow pt-24 px-6 w-full max-w-lg mx-auto">
+         <div className="text-center mb-8">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-1">{slug}</p>
+            <h1 className="text-2xl font-bold mb-1 text-text-primary">Share the Moment</h1>
+            <p className="text-text-secondary text-sm">{event?.name || 'Live Photo Wall'}</p>
          </div>
  
          {/* Feedback */}
          <AnimatePresence>
            {successMessage && (
-             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-4 rounded-2xl bg-green-500/10 border border-green-500/20 text-green-500 text-sm font-bold flex items-center gap-3 mb-6">
-                <CheckCircle size={18} /> {successMessage}
+             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 rounded-md bg-success/10 border border-success/20 text-success text-sm font-medium flex items-center gap-2 mb-6">
+                <CheckCircle size={16} /> {successMessage}
              </motion.div>
            )}
            {error && (
-             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-500 text-sm font-bold flex items-center gap-3 mb-6">
-                <AlertTriangle size={18} /> {error}
+             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 rounded-md bg-error/10 border border-error/20 text-error text-sm font-medium flex items-center gap-2 mb-6">
+                <AlertTriangle size={16} /> {error}
              </motion.div>
            )}
          </AnimatePresence>
  
          {/* ── Upload Panel ── */}
-         <div className="glass-panel p-8 mb-8 space-y-6">
+         <div className="card mb-8">
             {isLimited ? (
                <div className="text-center py-6">
-                  <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold mb-2">Upload Limit Reached</h3>
+                  <AlertTriangle className="w-10 h-10 text-error mx-auto mb-3" />
+                  <h3 className="text-lg font-bold mb-1 text-text-primary">Upload Limit Reached</h3>
                   <p className="text-text-secondary text-sm">
                      You've hit the {limit} photo limit for this event's plan. Enjoy the party!
                   </p>
                </div>
             ) : (
-            <>
-            <div className="space-y-4">
-               <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Your Name</label>
-                  <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="w-full bg-bg-subtle border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm shadow-inner" />
+            <div className="space-y-5">
+               <div className="input-group">
+                  <label className="label">Your Name</label>
+                  <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="input" />
                </div>
-               <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted ml-1">Add a Caption</label>
-                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="w-full bg-bg-subtle border border-border rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm resize-none shadow-inner" />
+               <div className="input-group">
+                  <label className="label">Add a Caption</label>
+                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="input h-auto py-2 resize-none" />
                </div>
-            </div>
  
-            <div className="h-px bg-bg-subtle" />
+               <div className="h-px bg-border my-2" />
  
-            {/* Drop Zone */}
-            <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.heic,.heif" className="hidden" onChange={handleFileChange} />
-            
-            {files.length > 0 ? (
-               <div className="grid grid-cols-3 gap-2">
-                  {files.map((f, i) => (
-                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden group">
-                       <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="" />
-                       <button onClick={() => setFiles(p => p.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 w-6 h-6 /60 rounded-full flex items-center justify-center border border-border ">
-                          <X size={12} />
+               {/* Drop Zone */}
+               <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.heic,.heif" className="hidden" onChange={handleFileChange} />
+               
+               {files.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2">
+                     {files.map((f, i) => (
+                       <div key={i} className="relative aspect-square rounded-md overflow-hidden bg-bg-subtle border border-border group">
+                          <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="" />
+                          <button onClick={() => setFiles(p => p.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 w-6 h-6 bg-bg/80 backdrop-blur rounded-full flex items-center justify-center text-text-primary hover:bg-bg transition-colors">
+                             <X size={12} />
+                          </button>
+                       </div>
+                     ))}
+                     {files.length < MAX_IMAGES && (
+                       <button onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-border flex items-center justify-center text-text-muted hover:border-primary/50 transition-colors">
+                          <Upload size={20} />
                        </button>
-                    </div>
-                  ))}
-                  {files.length < MAX_IMAGES && (
-                    <button onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-xl border-2 border-dashed border-black/10 dark:border-border flex items-center justify-center text-text-muted hover:border-primary/50 transition-all">
-                       <Upload size={20} />
-                    </button>
-                  )}
-               </div>
-            ) : (
-               <button onClick={() => fileInputRef.current?.click()} className="w-full aspect-video rounded-2xl border-2 border-dashed border-black/10 dark:border-border bg-bg-subtle flex flex-col items-center justify-center gap-4 hover:border-primary/50 hover:bg-primary/5 transition-all group">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                     <Camera size={28} />
+                     )}
                   </div>
-                  <div className="text-center">
-                     <p className="text-sm font-bold">Pick Photos or Videos</p>
-                     <p className="text-[10px] text-text-muted uppercase tracking-widest mt-1">Up to {MAX_IMAGES} files</p>
-                  </div>
-               </button>
-            )}
+               ) : (
+                  <button onClick={() => fileInputRef.current?.click()} className="w-full aspect-video rounded-lg border-2 border-dashed border-border bg-bg-subtle flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors">
+                     <div className="w-12 h-12 rounded-full bg-bg border border-border flex items-center justify-center text-text-primary">
+                        <Camera size={24} />
+                     </div>
+                     <div className="text-center">
+                        <p className="text-sm font-medium text-text-primary">Pick Photos or Videos</p>
+                        <p className="text-xs text-text-muted mt-0.5">Up to {MAX_IMAGES} files</p>
+                     </div>
+                  </button>
+               )}
  
-            <button 
-              onClick={handleUpload} 
-              disabled={uploading || files.length === 0 || processingFiles || isLimited}
-              className="btn-premium w-full !py-4 flex flex-col items-center justify-center relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed group"
-            >
-               {uploading && <div className="absolute inset-0 bg-white/20 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
-               <span className="relative z-10 font-bold uppercase tracking-widest text-xs flex items-center gap-2 group-hover:scale-105 transition-transform">
-                  {uploading ? statusText : processingFiles ? 'Processing...' : `Share to Wall (${files.length})`}
-                  {!uploading && !processingFiles && <Sparkles size={14} />}
-               </span>
-            </button>
-            </>
+               <button 
+                 onClick={handleUpload} 
+                 disabled={uploading || files.length === 0 || processingFiles || isLimited}
+                 className="btn btn-primary w-full btn-lg relative overflow-hidden"
+               >
+                  {uploading && <div className="absolute inset-0 bg-white/20 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
+                  <span className="relative z-10 flex items-center gap-2">
+                     {uploading ? statusText : processingFiles ? 'Processing...' : `Share to Wall (${files.length})`}
+                     {!uploading && !processingFiles && <Sparkles size={14} />}
+                  </span>
+               </button>
+            </div>
             )}
          </div>
  
          {/* ── Actions ── */}
          {hasFeature(event?.plan_type, 'SELFIE_MATCH') && (
-           <div className="flex flex-col gap-4">
-              <button onClick={() => setShowSelfieCam(true)} className="w-full py-5 rounded-2xl border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 bg-bg-subtle font-bold text-xs uppercase tracking-[.2em] flex items-center justify-center gap-3 hover:bg-border transition-all">
-                 <User size={18} className="text-primary" /> Find Me on Wall
+           <div className="flex flex-col gap-3">
+              <button onClick={() => setShowSelfieCam(true)} className="btn btn-secondary w-full btn-lg">
+                 <User size={16} /> Find Me on Wall
               </button>
               {matchedPhotoIds && (
-                 <button onClick={() => setMatchedPhotoIds(null)} className="text-[10px] font-black uppercase tracking-widest text-primary text-center">✕ Clear Filter & Show My Uploads</button>
+                 <button onClick={() => setMatchedPhotoIds(null)} className="text-xs font-semibold text-text-primary hover:underline text-center mt-2">✕ Clear Filter & Show My Uploads</button>
               )}
            </div>
          )}
  
          {/* ── Gallery ── */}
          {(matchedPhotoIds || photos.length > 0) && (
-            <div className="mt-16 space-y-8">
-               <div className="flex items-center gap-6">
-                  <h2 className="text-[10px] font-black uppercase tracking-[.3em] text-text-muted whitespace-nowrap">
-                     {matchedPhotoIds ? 'FOUND FOR YOU' : 'MEMORY FEED'}
+            <div className="mt-12 space-y-6">
+               <div className="flex items-center gap-4">
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-text-muted whitespace-nowrap">
+                     {matchedPhotoIds ? 'Found for You' : 'Memory Feed'}
                   </h2>
-                  <div className="h-px w-full bg-bg-subtle" />
+                  <div className="h-px w-full bg-border" />
                </div>
  
-               <div className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-2 gap-3">
                   <AnimatePresence mode="popLayout">
                   {photos.map((p, i) => (
                     <motion.div 
-                      initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.4, type: 'spring', bounce: 0.3, delay: i < 6 ? i * 0.1 : 0 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
                       key={p.id} 
-                      className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-border bg-bg-subtle group shadow-lg"
+                      className="relative aspect-[4/5] rounded-md overflow-hidden border border-border bg-bg-subtle group"
                     >
                        <Image 
                           src={getPublicUrl(p.storage_path)} 
                           alt={p.caption || "Guest memory"} 
                           fill 
                           sizes="(max-width: 768px) 50vw, 33vw"
-                          className="object-cover group-hover:scale-110 transition-transform duration-700" 
-                          priority={i < 4}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105" 
                        />
                        <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                          {hasFeature(event?.plan_type, 'LIVE_REACTIONS') && (
-                           <button onClick={() => handleReaction(p.id)} className="w-8 h-8 /60 backdrop-blur-md rounded-full flex items-center justify-center /80 hover:text-pink-500 hover:scale-110 transition-all border border-border">
+                           <button onClick={() => handleReaction(p.id)} className="w-8 h-8 bg-bg/80 backdrop-blur rounded-full flex items-center justify-center hover:text-pink-500 transition-colors border border-border shadow-sm text-text-primary">
                              <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} />
                            </button>
                          )}
-                         <button onClick={() => handleDownload(p)} className="w-8 h-8 /60 backdrop-blur-md rounded-full flex items-center justify-center /80 hover:text-primary hover:scale-110 transition-all border border-border">
+                         <button onClick={() => handleDownload(p)} className="w-8 h-8 bg-bg/80 backdrop-blur rounded-full flex items-center justify-center hover:text-primary transition-colors border border-border shadow-sm text-text-primary">
                            <Download size={14} />
                          </button>
                        </div>
                        {p.caption && (
-                         <div className="absolute inset-x-0 bottom-0 p-3 /60 backdrop-blur-md">
-                            <p className="text-[10px] italic /80 line-clamp-2">"{p.caption}"</p>
+                         <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                            <p className="text-xs text-white line-clamp-2 font-medium">{p.caption}</p>
                          </div>
                        )}
                     </motion.div>
@@ -422,7 +416,7 @@ export default function MobilePage() {
                </div>
  
                {matchedPhotoIds && photos.length === 0 && (
-                 <div className="text-center py-12 glass-panel">
+                 <div className="text-center py-10 card">
                     <p className="text-sm text-text-secondary font-medium">No matches found for your face yet.</p>
                  </div>
                )}
@@ -433,20 +427,19 @@ export default function MobilePage() {
       {/* ── Selfie Modal ── */}
       <AnimatePresence>
          {showSelfieCam && (
-           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] /95 backdrop-blur-3xl flex items-center justify-center p-6">
-              <div className="glass-panel p-8 w-full max-w-sm text-center relative">
-                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-black dark:hover:text-text-primary transition-colors"><X size={20} /></button>
-                 <h2 className="text-2xl font-bold mb-2">Find My Photos</h2>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-8 italic">Smile for the Wall</p>
+           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-bg/95 backdrop-blur-sm flex items-center justify-center p-6">
+              <div className="card p-6 w-full max-w-sm text-center relative border-border shadow-xl">
+                 <button onClick={() => setShowSelfieCam(false)} className="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors"><X size={20} /></button>
+                 <h2 className="text-lg font-bold mb-1 text-text-primary">Find My Photos</h2>
+                 <p className="text-sm text-text-secondary mb-6">Smile for the Wall</p>
                  
-                 <div className="aspect-square w-full rounded-2xl overflow-hidden border-2 border-primary/50 mb-8 items-center justify-center flex relative shadow-[0_0_30px_rgba(245,158,11,0.2)]">
-                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: 'user' }} className="w-full h-full object-cover opacity-80" mirrored />
-                    <div className="absolute inset-0 border-[4px] border-transparent border-t-primary border-b-primary rounded-full animate-spin opacity-50 pointer-events-none" style={{ animationDuration: '4s' }} />
+                 <div className="aspect-square w-full rounded-md overflow-hidden border border-border mb-6 flex items-center justify-center relative bg-bg-subtle">
+                    <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" videoConstraints={{ facingMode: 'user' }} className="w-full h-full object-cover" mirrored />
                  </div>
  
-                 <div className="flex gap-4">
-                    <button onClick={() => setShowSelfieCam(false)} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-bg-subtle rounded-xl border border-border">Cancel</button>
-                    <button onClick={captureSelfie} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest bg-primary rounded-xl shadow-lg shadow-primary/20 font-black">Scan Face</button>
+                 <div className="flex gap-3">
+                    <button onClick={() => setShowSelfieCam(false)} className="btn btn-secondary flex-1 btn-lg">Cancel</button>
+                    <button onClick={captureSelfie} className="btn btn-primary flex-1 btn-lg">Scan Face</button>
                  </div>
               </div>
            </motion.div>
@@ -454,9 +447,9 @@ export default function MobilePage() {
       </AnimatePresence>
  
       {/* Footer Nav */}
-      <footer className="fixed bottom-0 left-0 right-0 h-24 border-t border-white/10 bg-zinc-900/95 backdrop-blur-xl z-[100] px-10 flex items-center justify-center pb-4">
-         <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-white/80 hover:text-primary transition-all">
-            <Layout size={18} /> View Wall Experience
+      <footer className="fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-bg/95 backdrop-blur z-50 px-6 flex items-center justify-center">
+         <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors">
+            <Layout size={16} /> View Wall Experience
          </Link>
       </footer>
     </div>

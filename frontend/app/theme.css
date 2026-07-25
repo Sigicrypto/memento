@@ -13,22 +13,23 @@
 .glass-nav {
   background: var(--bg);
   border-bottom: 1px solid var(--border);
+  height: 64px;
 }
 .glass-nav.scrolled {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 .dark .glass-nav.scrolled {
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
 }
 
-/* Cards */
+/* Legacy Cards mapped to global .card */
 .gcard {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: var(--space-5);
   transition: border-color 0.15s ease;
 }
 
@@ -43,16 +44,24 @@
   border-bottom: 2px solid var(--text-primary);
 }
 
-/* Buttons */
+/* Legacy Buttons mapped to global .btn .btn-primary */
 .btn-premium {
-  padding: 0.75rem 1.5rem;
-  font-size: var(--fs-small);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 36px;
+  padding: 0 var(--space-4);
   font-weight: 500;
+  font-size: var(--fs-body);
+  border-radius: var(--radius-md);
+  transition: all 0.1s ease;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
   color: var(--bg);
   background: var(--primary);
-  border-radius: var(--radius-md);
   border: 1px solid var(--primary);
-  transition: all 0.15s ease;
 }
 
 .btn-premium:hover {
@@ -64,8 +73,9 @@
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 12px;
+  gap: var(--space-2);
+  height: 28px;
+  padding: 0 var(--space-3);
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
   background: var(--bg-subtle);
@@ -96,12 +106,12 @@
 .premium-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-md);
-  padding: var(--space-lg) 0;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
 }
 
 .premium-stat {
-  padding: var(--space-sm);
+  padding: var(--space-3);
   text-align: left;
 }
 
@@ -109,7 +119,7 @@
   font-size: var(--fs-h2);
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-1);
 }
 
 .stat-label {

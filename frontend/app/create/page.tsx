@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Printer, CheckCircle, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, Layout, Shield, Copy, Image as ImageIcon, ArrowRight, Printer, CheckCircle, AlertTriangle } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
  
 function generateSlug(name: string): string {
@@ -17,7 +17,7 @@ function generateSlug(name: string): string {
 }
  
 export default function CreateEventPage() {
-  const { user, profile, isLoading, plan, isPaid, isApproved } = useAuth();
+  const { user, isLoading, plan, isPaid, isApproved } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [customSlug, setCustomSlug] = useState('');
@@ -71,8 +71,7 @@ export default function CreateEventPage() {
   if (isLoading) {
     return (
       <div className="lp flex items-center justify-center p-6">
-        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
+        <div className="w-8 h-8 border-2 border-border border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -81,54 +80,48 @@ export default function CreateEventPage() {
   if (createdSlug) {
     return (
       <div className="lp flex items-center justify-center p-6">
-        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-        <div className="grain" />
-        
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="glass-container w-full max-w-2xl p-8 md:p-12 text-center relative z-10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card w-full max-w-2xl text-center"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-black uppercase tracking-widest mb-10 shadow-lg shadow-green-500/5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-success/10 text-success text-xs font-medium mb-6">
             <CheckCircle size={14} /> Wall Created Successfully
           </div>
           
-          <h1 className="display-text mb-4 text-gradient">Wall Ready!</h1>
-          <p className="text-text-secondary mb-12 max-w-md mx-auto text-lg">Your event space is now live. Capture every moment with your guests.</p>
+          <h1 className="h1-text mb-2">Wall Ready!</h1>
+          <p className="text-text-secondary mb-8 text-sm max-w-md mx-auto">Your event space is now live. Capture every moment with your guests.</p>
  
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-12">
-            <div className="flex flex-col items-center">
-              <div className="p-6 bg-white rounded-[2.5rem] shadow-[0_0_60px_rgba(255,255,255,0.15)] group transition-transform hover:scale-105 duration-500">
-                <QRCodeSVG value={uploadUrl} size={200} bgColor="#ffffff" fgColor="#000000" />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-8 text-left">
+            <div className="flex flex-col items-center p-6 bg-bg-subtle rounded-lg border border-border">
+              <QRCodeSVG value={uploadUrl} size={160} bgColor="transparent" fgColor="currentColor" className="text-text-primary" />
               <div style={{display:'none'}}>
                 <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#ffffff" fgColor="#000000" />
               </div>
-              <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.3em] text-text-muted">Scan to join wall</p>
+              <p className="mt-4 text-xs font-medium text-text-muted uppercase">Scan to join</p>
             </div>
  
-            <div className="text-left space-y-6">
-               <div className="space-y-2">
-                 <p className="text-[10px] font-black tracking-widest text-primary uppercase ml-1">Event URL</p>
-                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-bg-subtle border border-border group hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 transition-all shadow-inner">
-                    <span className="text-sm font-medium text-text-secondary truncate flex-grow italic">{uploadUrl}</span>
-                    <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="p-2.5 rounded-lg bg-bg-subtle text-text-muted hover:text-black dark:hover:text-text-primary hover:bg-border transition-all">
+            <div className="space-y-4">
+               <div className="input-group">
+                 <label className="label">Event URL</label>
+                 <div className="flex gap-2">
+                    <input type="text" readOnly value={uploadUrl} className="input" />
+                    <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="btn btn-secondary px-3" title="Copy link">
                       <Copy size={16} />
                     </button>
                  </div>
                </div>
                
-               <div className="grid grid-cols-2 gap-4">
+               <div className="grid grid-cols-2 gap-2">
                  <button onClick={() => {
                    const canvas = qrCanvasRef.current;
                    if (!canvas) return;
                    canvas.toBlob((blob) => {
                      if (blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `memento-${createdSlug}-qr.png`; a.click(); URL.revokeObjectURL(url); }
                    });
-                 }} className="btn-secondary py-4 !rounded-2xl flex items-center justify-center gap-2 group">
-                    <ImageIcon size={16} className="text-text-muted group-hover:text-primary transition-colors" />
-                    <span className="text-xs font-bold">PNG Image</span>
+                 }} className="btn btn-secondary w-full">
+                    <ImageIcon size={14} />
+                    <span>PNG Image</span>
                  </button>
                  <button onClick={async () => {
                    const qrCanvas = qrCanvasRef.current;
@@ -160,19 +153,19 @@ export default function CreateEventPage() {
                      doc.addImage(imgData, 'JPEG', 0, 0, 210, 297);
                      doc.save(`Memento-Sign-${createdSlug}.pdf`);
                    } catch (err) { alert('Failed to generate PDF.'); } finally { document.body.removeChild(container); }
-                 }} className="btn-secondary py-4 !rounded-2xl flex items-center justify-center gap-2 group">
-                    <Printer size={16} className="text-text-muted group-hover:text-secondary transition-colors" />
-                    <span className="text-xs font-bold">PDF Poster</span>
+                 }} className="btn btn-secondary w-full">
+                    <Printer size={14} />
+                    <span>PDF Poster</span>
                  </button>
                </div>
             </div>
           </div>
  
-          <div className="flex flex-col sm:flex-row gap-5">
-            <button onClick={() => router.push(`/wall/${createdSlug}`)} className="btn-premium flex-1 !py-5 flex items-center justify-center gap-3 text-lg">
-              <Layout size={20} /> Open Live Wall
+          <div className="flex gap-4">
+            <button onClick={() => router.push(`/wall/${createdSlug}`)} className="btn btn-primary flex-1 btn-lg">
+              <Layout size={18} /> Open Live Wall
             </button>
-            <button onClick={() => router.push('/dashboard')} className="flex-1 py-5 rounded-2xl bg-bg-subtle border border-border font-bold hover:bg-border transition-all text-lg">
+            <button onClick={() => router.push('/dashboard')} className="btn btn-secondary flex-1 btn-lg">
               Back to Dashboard
             </button>
           </div>
@@ -183,114 +176,103 @@ export default function CreateEventPage() {
  
   // ── Create Form ──
   return (
-    <div className="lp flex flex-col">
-      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-      <div className="grain" />
- 
-      {/* ── Standardized Nav ── */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 /70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
-        <Link href="/dashboard" className="flex items-center gap-3 text-text-muted hover:text-black dark:hover:text-text-primary transition-all font-bold text-xs uppercase tracking-widest group">
-           <ArrowRight size={16} className="rotate-180 group-hover:-translate-x-1 transition-transform" /> Dashboard
+    <div className="lp min-h-screen flex flex-col bg-bg-subtle">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg border-b border-border flex items-center justify-between px-6">
+        <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors text-sm font-medium">
+           <ArrowRight size={16} className="rotate-180" /> Dashboard
         </Link>
         <Link href="/">
-          <AnimatedLogo width={160} height={44} />
+          <AnimatedLogo width={120} height={32} />
         </Link>
-        <div className="w-24 hidden md:block" />
+        <div className="w-[100px] hidden md:block" />
       </nav>
-
-      <main className="flex-grow flex items-center justify-center p-6 relative z-10 pt-28 pb-24">
+ 
+      <main className="flex-grow flex items-center justify-center p-6 pt-24">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="glass-container w-full max-w-xl p-10 md:p-14"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card w-full max-w-lg bg-bg shadow-sm"
         >
-          <div className="text-center mb-12">
-            <div className="w-20 h-20 rounded-[2rem] bg-primary/10 border border-primary/20 flex items-center justify-center text-4xl mx-auto mb-8 shadow-2xl shadow-primary/10">
-              ✨
-            </div>
-            <h1 className="h1-text mb-4 text-gradient">Create a Photo Wall</h1>
-            <p className="text-text-secondary text-lg">Set up your cinematic event space in seconds.</p>
+          <div className="mb-8">
+            <h1 className="h2-text mb-2 text-text-primary">Create a Photo Wall</h1>
+            <p className="text-text-secondary text-sm">Set up your cinematic event space in seconds.</p>
           </div>
  
-          <form onSubmit={handleCreate} className="space-y-10">
-            <div className="space-y-8">
-              {/* Event Name */}
-              <div className="space-y-3 font-medium">
-                <label className="text-[10px] font-black tracking-[0.2em] uppercase text-text-muted ml-1">Event Identity</label>
+          <form onSubmit={handleCreate} className="space-y-6">
+            <div className="input-group">
+              <label className="label">Event Name</label>
+              <input 
+                type="text" 
+                value={name} 
+                onChange={(e) => setName(e.target.value)} 
+                placeholder="The Midnight Gala" 
+                required 
+                autoFocus 
+                className="input"
+              />
+            </div>
+
+            <div className="input-group">
+              <div className="flex items-center justify-between">
+                <label className="label">Personalized Link</label>
+                {plan === 'starter' && (
+                  <Link href="/#pricing" className="text-[10px] text-accent font-medium hover:underline">Upgrade for Custom</Link>
+                )}
+              </div>
+              <div className="flex">
+                <span className="inline-flex items-center px-3 border border-r-0 border-border bg-bg-subtle text-text-muted text-sm rounded-l-md font-mono">
+                  memento.live/
+                </span>
                 <input 
                   type="text" 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  placeholder="The Midnight Gala…" 
-                  required 
-                  autoFocus 
-                  className="w-full bg-bg-subtle border border-border rounded-2xl px-6 py-5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-xl placeholder:/5 font-semibold"
+                  value={customSlug} 
+                  disabled={plan === 'starter'}
+                  onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  placeholder={plan === 'starter' ? 'Standard Plan' : 'my-event'} 
+                  className="input rounded-l-none"
                 />
               </div>
- 
-              {/* Custom Link */}
-              <div className="space-y-3 font-medium">
-                <div className="flex items-center justify-between ml-1">
-                  <label className="text-[10px] font-black tracking-[0.2em] uppercase text-text-muted">Personalized Link</label>
-                  {plan === 'starter' && (
-                    <Link href="/#pricing" className="text-[9px] font-black px-3 py-1 rounded-full bg-secondary/10 text-secondary border border-secondary/20 uppercase tracking-widest hover:bg-secondary/20 transition-all">Upgrade for Custom</Link>
-                  )}
-                </div>
-                <div className="relative group">
-                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-sm /20 font-bold pointer-events-none group-focus-within:text-primary/50 transition-colors uppercase tracking-tighter">memento.live/mobile/</span>
-                  <input 
-                    type="text" 
-                    value={customSlug} 
-                    disabled={plan === 'starter'}
-                    onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                    placeholder={plan === 'starter' ? 'Standard Plan' : 'my-event'} 
-                    className={`w-full bg-bg-subtle border border-border rounded-2xl px-6 py-5 !pl-[175px] text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-bold ${plan === 'starter' ? 'opacity-30 cursor-not-allowed' : 'group-hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20'}`}
-                  />
-                </div>
-              </div>
- 
-              {/* Password */}
-              <div className="space-y-3 font-medium">
-                <label className="text-[10px] font-black tracking-[0.2em] uppercase text-text-muted ml-1">Privacy Shield <span className="opacity-40 italic font-normal">(Optional)</span></label>
-                <div className="relative">
-                  <Shield size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted" />
-                  <input 
-                    type="password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    placeholder="Set a guest password…" 
-                    className="w-full bg-bg-subtle border border-border rounded-2xl px-6 py-5 !pl-[56px] focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base placeholder:/5"
-                  />
-                </div>
+            </div>
+
+            <div className="input-group">
+              <label className="label">Privacy Password (Optional)</label>
+              <div className="relative">
+                <Shield size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="Set a guest password" 
+                  className="input pl-9"
+                />
               </div>
             </div>
  
             {error && (
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-5 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center gap-4 text-pink-500 text-sm font-bold">
-                <AlertTriangle size={20} />
+              <div className="p-3 rounded-md bg-error/10 border border-error/20 flex items-center gap-2 text-error text-sm font-medium">
+                <AlertTriangle size={16} />
                 <span>{error}</span>
-              </motion.div>
+              </div>
             )}
  
-            <div className="pt-4">
+            <div className="pt-2">
               <button 
                 type="submit" 
                 disabled={loading || !user} 
-                className="btn-premium w-full flex items-center justify-center gap-3 !py-6 shadow-2xl shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all text-lg"
+                className="btn btn-primary w-full btn-lg"
               >
                 {loading ? (
                   <>
-                    <div className="w-6 h-6 border-3 border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white rounded-full animate-spin" />
-                    <span>Creating your space...</span>
+                    <div className="w-4 h-4 border-2 border-border border-t-bg rounded-full animate-spin" />
+                    <span>Creating...</span>
                   </>
                 ) : (
                   <>
-                    <Plus size={24} />
+                    <Plus size={18} />
                     <span>Launch Photo Wall</span>
                   </>
                 )}
               </button>
-              <p className="text-center text-[10px] text-text-muted mt-6 font-medium uppercase tracking-[0.2em]">Instantly live across all devices</p>
             </div>
           </form>
         </motion.div>

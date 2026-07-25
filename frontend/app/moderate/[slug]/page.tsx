@@ -32,7 +32,7 @@ export default function ModeratePage() {
   const [loading, setLoading] = useState(true);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
-
+ 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
@@ -69,7 +69,7 @@ export default function ModeratePage() {
     setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
     showToast('Photo rejected and deleted');
   };
-
+ 
   const handleBulkApprove = async () => {
     if (selectedIds.size === 0) return;
     const ids = Array.from(selectedIds);
@@ -78,7 +78,7 @@ export default function ModeratePage() {
     setSelectedIds(new Set());
     showToast(`Approved ${ids.length} photos`);
   };
-
+ 
   const handleBulkReject = async () => {
     if (selectedIds.size === 0) return;
     if (!confirm(`Reject and delete ${selectedIds.size} photos permanently?`)) return;
@@ -90,7 +90,7 @@ export default function ModeratePage() {
     setSelectedIds(new Set());
     showToast(`Rejected and deleted ${ids.length} photos`);
   };
-
+ 
   const toggleSelection = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
@@ -102,9 +102,8 @@ export default function ModeratePage() {
  
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-        <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin relative z-10" />
+      <div className="min-h-screen flex items-center justify-center bg-bg-subtle">
+        <div className="w-8 h-8 border-2 border-border border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -112,64 +111,61 @@ export default function ModeratePage() {
   const filteredPhotos = photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved);
  
   return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col">
-      <div className="grain" />
-      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-
+    <div className="min-h-screen flex flex-col bg-bg-subtle relative pb-20">
       <AnimatePresence>
         {toast && (
-          <motion.div initial={{ opacity: 0, y: -20, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: -20, x: '-50%' }} className={`fixed top-24 left-1/2 z-[200] px-6 py-3 rounded-full flex items-center gap-2 font-bold text-sm shadow-2xl backdrop-blur-xl border ${toast.type === 'success' ? 'bg-green-500/20 text-green-500 border-green-500/30' : 'bg-red-500/20 text-red-500 border-red-500/30'}`}>
+          <motion.div initial={{ opacity: 0, y: -20, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: -20, x: '-50%' }} className={`fixed top-20 left-1/2 z-[200] px-4 py-2 rounded-md flex items-center gap-2 font-medium text-sm shadow-md border ${toast.type === 'success' ? 'bg-success/10 text-success border-success/20' : 'bg-error/10 text-error border-error/20'}`}>
             {toast.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
             {toast.message}
           </motion.div>
         )}
       </AnimatePresence>
-
+ 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
-         <div className="flex items-center gap-6">
-            <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-text-primary transition-all font-bold text-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg flex items-center justify-between px-6">
+         <div className="flex items-center gap-4">
+            <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors font-medium text-sm">
                <ArrowLeft size={16} /> Back to Wall
             </Link>
             <div className="h-6 w-px bg-border hidden md:block" />
-            <span className="text-xl font-bold tracking-tighter hidden md:block">memento</span>
+            <span className="text-sm font-bold tracking-tight hidden md:block text-text-primary">memento</span>
          </div>
-         <div className="flex items-center gap-3 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black uppercase tracking-widest text-primary">
-            <Shield size={12} /> Moderation Portal
+         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-bg-subtle border border-border text-xs font-semibold text-text-primary">
+            <Shield size={14} /> Moderation
          </div>
       </nav>
  
-      <main className="relative z-10 pt-32 px-8 pb-32 max-w-[1400px] mx-auto w-full">
+      <main className="flex-grow pt-24 px-6 max-w-7xl mx-auto w-full">
          {/* Header Card */}
-         <div className="glass-panel p-8 md:p-12 mb-12 flex flex-col md:flex-row items-center justify-between gap-8">
+         <div className="card mb-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-bg">
             <div className="text-center md:text-left">
-               <div className="flex items-center justify-center md:justify-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                     <Shield size={24} />
+               <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-md bg-bg-subtle border border-border flex items-center justify-center text-text-primary">
+                     <Shield size={20} />
                   </div>
                   <div>
-                     <p className="text-[10px] font-black uppercase tracking-[.3em] text-primary">EVENT CONTROL</p>
-                     <h1 className="text-3xl font-bold tracking-tight">{eventName}</h1>
+                     <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Event Control</p>
+                     <h1 className="text-xl font-bold text-text-primary">{eventName}</h1>
                   </div>
                </div>
-               <p className="text-sm text-text-secondary flex items-center justify-center md:justify-start gap-2">
-                  <Clock size={16} /> {photos.filter(p => !p.approved).length} photos awaiting your approval
+               <p className="text-sm text-text-secondary flex items-center justify-center md:justify-start gap-1.5">
+                  <Clock size={14} /> {photos.filter(p => !p.approved).length} photos awaiting approval
                </p>
             </div>
  
-            <div className="flex flex-col gap-4 items-end">
-               <div className="bg-bg-subtle border border-border p-1.5 rounded-2xl flex items-center gap-1 backdrop-blur-3xl">
+            <div className="flex flex-col gap-3 items-end w-full md:w-auto">
+               <div className="flex bg-bg-subtle p-1 rounded-md border border-border w-full md:w-auto">
                   {(['pending', 'approved', 'all'] as const).map(f => (
-                    <button key={f} onClick={() => { setFilter(f); setSelectedIds(new Set()); }} className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-text-muted hover:text-white hover:bg-bg-subtle'}`}>
+                    <button key={f} onClick={() => { setFilter(f); setSelectedIds(new Set()); }} className={`flex-1 md:flex-none px-4 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition-colors ${filter === f ? 'bg-bg shadow-sm text-text-primary' : 'text-text-muted hover:text-text-primary'}`}>
                        {f}
                     </button>
                   ))}
                </div>
                {selectedIds.size > 0 && (
-                 <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold mr-2 text-text-muted">{selectedIds.size} selected</span>
-                    <button onClick={handleBulkApprove} className="px-4 py-2 bg-primary rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"><Check size={14} className="inline mr-1" /> Approve</button>
-                    <button onClick={handleBulkReject} className="px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-colors"><Trash2 size={14} className="inline mr-1" /> Reject</button>
+                 <div className="flex items-center gap-2 w-full md:w-auto">
+                    <span className="text-xs font-medium text-text-secondary whitespace-nowrap">{selectedIds.size} selected</span>
+                    <button onClick={handleBulkApprove} className="btn btn-primary btn-sm flex-1 md:flex-none"><Check size={14} /> Approve</button>
+                    <button onClick={handleBulkReject} className="btn btn-secondary btn-sm flex-1 md:flex-none text-error hover:bg-error/10 hover:border-error/20"><Trash2 size={14} /> Reject</button>
                  </div>
                )}
             </div>
@@ -178,63 +174,66 @@ export default function ModeratePage() {
          {/* Grid */}
          <AnimatePresence mode="wait">
             {filteredPhotos.length === 0 ? (
-               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-32 text-center glass-panel">
-                  <div className="text-6xl mb-6 opacity-20">✨</div>
-                  <h2 className="text-2xl font-bold mb-2">All Caught Up!</h2>
-                  <p className="text-text-secondary">No {filter !== 'all' ? filter : ''} photos to moderate right now.</p>
+               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="py-20 text-center card bg-bg border-dashed">
+                  <div className="w-12 h-12 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-text-muted mx-auto mb-4">
+                     <CheckCircle size={24} />
+                  </div>
+                  <h2 className="text-lg font-semibold mb-1 text-text-primary">All Caught Up!</h2>
+                  <p className="text-sm text-text-secondary">No {filter !== 'all' ? filter : ''} photos to moderate right now.</p>
                </motion.div>
             ) : (
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                    {filteredPhotos.map((photo, i) => (
-                     <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} onClick={() => toggleSelection(photo.id)} className={`relative group aspect-[3/4] rounded-3xl overflow-hidden border cursor-pointer ${selectedIds.has(photo.id) ? 'border-primary shadow-[0_0_20px_rgba(99,102,241,0.5)]' : !photo.approved ? 'border-primary/50' : 'border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5'} bg-bg-subtle`}>
+                     <motion.div key={photo.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: (i % 8) * 0.05 }} onClick={() => toggleSelection(photo.id)} className={`relative group aspect-[3/4] rounded-md overflow-hidden border cursor-pointer ${selectedIds.has(photo.id) ? 'border-primary ring-2 ring-primary/20' : !photo.approved ? 'border-border' : 'border-border'} bg-bg-subtle`}>
                         {selectedIds.has(photo.id) && (
-                          <div className="absolute inset-0 bg-primary/20 z-10 pointer-events-none" />
+                          <div className="absolute inset-0 bg-primary/10 z-10 pointer-events-none" />
                         )}
-                        <div className="absolute top-4 left-4 z-20">
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${selectedIds.has(photo.id) ? 'bg-primary border-primary' : 'border-black/20 dark:border-black/10 dark:border-white/50 bg-black/50'}`}>
-                             {selectedIds.has(photo.id) && <Check size={14} className="" />}
+                        <div className="absolute top-2 left-2 z-20">
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${selectedIds.has(photo.id) ? 'bg-primary border-primary text-bg' : 'border-border bg-bg/80 backdrop-blur text-transparent'}`}>
+                             <Check size={12} />
                           </div>
                         </div>
-                        <div className="absolute inset-0 border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 overflow-hidden">
+                        <div className="absolute inset-0">
                            {photo.media_type === 'video' ? (
                               <video src={getPublicUrl(photo.storage_path)} className="w-full h-full object-cover" muted playsInline />
                            ) : (
-                              <Image src={getPublicUrl(photo.storage_path)} className="object-cover group-hover:scale-110 transition-transform duration-700" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" />
+                              <Image src={getPublicUrl(photo.storage_path)} className="object-cover transition-transform duration-500 group-hover:scale-105" alt="" fill sizes="(max-width: 768px) 50vw, 25vw" loading="lazy" />
                            )}
                         </div>
                        
-                       <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end">
-                          <div className="flex items-center justify-between mb-3">
+                       <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end">
+                          <div className="flex items-center justify-between mb-2">
                              <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-0.5">{photo.uploader_name}</p>
-                                <p className="text-[10px] text-text-muted">{new Date(photo.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                <p className="text-[10px] font-bold text-white truncate max-w-[80px]">{photo.uploader_name}</p>
+                                <p className="text-[10px] text-white/70">{new Date(photo.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                              </div>
-                             {photo.approved && <div className="px-2 py-1 rounded bg-green-500/20 text-green-500 text-[8px] font-black uppercase tracking-widest border border-green-500/20">Approved</div>}
+                             {photo.approved && <div className="px-1.5 py-0.5 rounded bg-success/20 text-success text-[9px] font-bold uppercase tracking-wider border border-success/20">Approved</div>}
                           </div>
                           
-                          {photo.caption && <p className="text-xs italic mb-4 line-clamp-2">&quot;{photo.caption}&quot;</p>}
-                                                    <div className="flex gap-2 relative z-20">
+                          {photo.caption && <p className="text-xs text-white/90 italic mb-3 line-clamp-2">"{photo.caption}"</p>}
+                          
+                          <div className="flex gap-2 relative z-20">
                               {!photo.approved && (
-                                <button onClick={(e) => { e.stopPropagation(); approvePhoto(photo.id); showToast('Photo approved'); }} className="flex-1 py-2.5 rounded-xl bg-primary text-[10px] font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
-                                   <Check size={14} /> Approve
+                                <button onClick={(e) => { e.stopPropagation(); approvePhoto(photo.id); showToast('Photo approved'); }} className="flex-1 py-1.5 rounded bg-bg text-text-primary text-[10px] font-bold hover:bg-bg-subtle transition-colors flex items-center justify-center gap-1.5 border border-border">
+                                   <Check size={12} /> Approve
                                 </button>
                               )}
-                              <button onClick={(e) => { e.stopPropagation(); rejectPhoto(photo); }} className="flex-1 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2">
-                                 <Trash2 size={14} /> Reject
+                              <button onClick={(e) => { e.stopPropagation(); rejectPhoto(photo); }} className="flex-1 py-1.5 rounded bg-error/90 text-white text-[10px] font-bold hover:bg-error transition-colors flex items-center justify-center gap-1.5">
+                                 <Trash2 size={12} /> Reject
                               </button>
                            </div>
                        </div>
-                    </motion.div>
-                  ))}
+                     </motion.div>
+                   ))}
                </motion.div>
             )}
          </AnimatePresence>
       </main>
  
       {/* Footer Nav */}
-      <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl z-[100] px-10 flex items-center justify-center">
-         <Link href={`/wall/${slug}`} className="flex items-center gap-3 text-sm font-bold text-text-muted hover:text-primary transition-all">
-            <Layout size={18} /> Direct to Wall View
+      <footer className="fixed bottom-0 left-0 right-0 h-[64px] border-t border-border bg-bg flex items-center justify-center z-50">
+         <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+            <Layout size={16} /> Direct to Wall View
          </Link>
       </footer>
     </div>

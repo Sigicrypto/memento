@@ -23,7 +23,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -46,66 +46,52 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
   return (
     <>
-      <motion.nav 
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ 
-          y: scrolled ? 12 : 0, 
-          opacity: 1,
-          width: '100%',
-          backgroundColor: scrolled ? 'var(--bg)' : 'transparent',
-          borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
-          boxShadow: 'none'
-        }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        style={{ zIndex: 9999 }}
-        className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-20 flex items-center"
-      >
-        <div className="w-full flex items-center justify-between px-6 md:px-12">
+      <header className={`fixed top-0 left-0 w-full z-[9999] transition-colors duration-200 ${scrolled ? 'glass-nav scrolled' : 'bg-transparent border-b border-transparent'}`}>
+        <div className="container h-[64px] flex items-center justify-between">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="relative z-[101]"
             >
-              <AnimatedLogo width={scrolled ? 180 : 200} height={50} />
+              <AnimatedLogo width={160} height={40} />
             </motion.div>
           </Link>
 
           {/* Desktop Menu */}
           {!mini && (
-            <div className="hidden md:flex items-center gap-10">
+            <nav className="hidden md:flex items-center gap-6">
               {navLinks.map((item) => (
                 <Link 
                   key={item} 
                   href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                  className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors relative group"
+                  className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
                 >
                   {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
-            </div>
+            </nav>
           )}
 
           {/* Right Section */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             {!mini && showAuthButtons && (
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-3">
                 {user ? (
                   <>
-                    <Link href="/dashboard" className="btn btn-secondary">
+                    <Link href="/dashboard" className="btn btn-secondary btn-sm">
                       Dashboard
                     </Link>
-                    <button onClick={handleSignOut} className="text-text-secondary hover:text-text-primary transition-colors p-2">
+                    <button onClick={handleSignOut} className="text-text-muted hover:text-text-primary transition-colors p-1" title="Sign out">
                       <LogOut size={18} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => openAuth('login')} className="btn btn-ghost">
+                    <button onClick={() => openAuth('login')} className="btn btn-ghost btn-sm">
                       Log in
                     </button>
-                    <button onClick={() => openAuth('signup')} className="btn btn-primary">
+                    <button onClick={() => openAuth('signup')} className="btn btn-primary btn-sm">
                       Get Started
                     </button>
                   </>
@@ -118,7 +104,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             {/* Hamburger Toggle */}
             {!mini && (
               <button 
-                className="md:hidden relative z-[101] p-2 text-text-primary hover:bg-bg-subtle rounded-md transition-colors"
+                className="md:hidden relative z-[101] p-1 text-text-primary hover:bg-bg-subtle rounded-md transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -126,7 +112,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             )}
           </div>
         </div>
-      </motion.nav>
+      </header>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -135,10 +121,10 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-bg/98 backdrop-blur-md md:hidden overflow-hidden"
+            className="fixed inset-0 z-[100] bg-bg/98 backdrop-blur-md md:hidden overflow-hidden flex flex-col"
           >
-            <div className="flex flex-col h-full pt-32 px-10 pb-12">
-              <div className="flex flex-col gap-10">
+            <div className="flex flex-col flex-1 pt-24 px-6 pb-8">
+              <nav className="flex flex-col gap-6">
                 {navLinks.map((item, i) => (
                   <motion.div
                     key={item}
@@ -148,28 +134,28 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   >
                     <Link 
                       href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                      className="text-3xl font-semibold text-text-primary hover:text-text-secondary transition-colors"
+                      className="text-2xl font-semibold text-text-primary hover:text-text-secondary transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item}
                     </Link>
                   </motion.div>
                 ))}
-              </div>
+              </nav>
 
-              <div className="mt-auto space-y-6">
+              <div className="mt-auto space-y-4">
                 {user ? (
                   <>
                     <Link 
                       href="/dashboard" 
-                      className="w-full h-12 rounded-lg bg-primary text-bg flex items-center justify-center font-medium text-lg"
+                      className="btn btn-primary w-full btn-lg"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Go to Dashboard
+                      Dashboard
                     </Link>
                     <button 
                       onClick={handleSignOut}
-                      className="w-full h-12 rounded-lg border border-border text-text-secondary hover:text-text-primary transition-colors font-medium text-lg"
+                      className="btn btn-secondary w-full btn-lg"
                     >
                       Sign Out
                     </button>
@@ -178,13 +164,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <div className="flex flex-col gap-3">
                     <button 
                       onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
-                      className="w-full h-12 rounded-lg bg-primary text-bg font-medium text-lg"
+                      className="btn btn-primary w-full btn-lg"
                     >
                       Get Started
                     </button>
                     <button 
                       onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
-                      className="w-full h-12 rounded-lg border border-border text-text-primary hover:bg-bg-subtle transition-colors font-medium text-lg"
+                      className="btn btn-secondary w-full btn-lg"
                     >
                       Log In
                     </button>
