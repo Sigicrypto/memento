@@ -23,8 +23,8 @@ export const PLANS: Plan[] = [
   {
     id: 'starter',
     name: 'Starter',
-    priceIN: '2,500',
-    priceGlobal: '30',
+    priceIN: '₹2,500',
+    priceGlobal: '$30',
     iconColor: 'text-green-400',
     description: 'Perfect for small, basic events',
     tagline: 'Simple, fast photo sharing for your event.',
@@ -45,8 +45,8 @@ export const PLANS: Plan[] = [
   {
     id: 'standard',
     name: 'Standard',
-    priceIN: '5,000',
-    priceGlobal: '60',
+    priceIN: '₹5,000',
+    priceGlobal: '$60',
     highlight: true,
     badge: '⭐ Highly Recommended',
     iconColor: 'text-primary',
@@ -70,8 +70,8 @@ export const PLANS: Plan[] = [
   {
     id: 'premium',
     name: 'Premium',
-    priceIN: '7,500',
-    priceGlobal: '90',
+    priceIN: '₹7,500',
+    priceGlobal: '$90',
     badge: '🔥 Best Value',
     iconColor: 'text-secondary',
     description: 'For luxury weddings & VIP events',
@@ -94,8 +94,8 @@ export const PLANS: Plan[] = [
   {
     id: 'whitelabel',
     name: 'White Label',
-    priceIN: '10,000',
-    priceGlobal: '120',
+    priceIN: '₹10,000',
+    priceGlobal: '$120',
     iconColor: 'text-indigo-400',
     description: 'For agencies & photographers',
     tagline: 'Launch your own branded platform.',
