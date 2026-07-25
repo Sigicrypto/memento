@@ -127,32 +127,34 @@ export default function DashboardPage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg/90 backdrop-blur-md flex items-center justify-between px-6">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <AnimatedLogo width={120} height={32} />
-          </Link>
-          <div className="h-4 w-px bg-border hidden md:block" />
-          <span className="text-xs font-semibold text-text-secondary hidden md:block uppercase tracking-wider">Studio</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          {isSuperAdmin && (
-            <Link href="/admin" className="hidden sm:flex items-center gap-2 px-3 py-1 rounded bg-bg-subtle border border-border text-xs font-medium text-text-primary hover:bg-border transition-colors">
-              <Shield size={14} /> Admin
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg/90 backdrop-blur-md flex items-center">
+        <div className="container w-full flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <AnimatedLogo width={120} height={32} />
             </Link>
-          )}
-          <button
-            onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-            className="flex items-center gap-2 px-3 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-subtle rounded transition-colors text-sm font-medium"
-          >
-            <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
-          </button>
+            <div className="h-4 w-px bg-border hidden md:block" />
+            <span className="text-xs font-semibold text-text-secondary hidden md:block uppercase tracking-wider">Studio</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            {isSuperAdmin && (
+              <Link href="/admin" className="hidden sm:flex items-center gap-2 px-3 py-1 rounded bg-bg-subtle border border-border text-xs font-medium text-text-primary hover:bg-border transition-colors">
+                <Shield size={14} /> Admin
+              </Link>
+            )}
+            <button
+              onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
+              className="flex items-center gap-2 px-3 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-subtle rounded transition-colors text-sm font-medium"
+            >
+              <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
+            </button>
+          </div>
         </div>
       </nav>
 
       {/* ── MAIN ── */}
-      <main className="flex-grow pt-24 pb-20 px-6 container">
+      <main className="flex-grow pt-24 pb-20 container">
         
         {/* Profile Header */}
         <div className="flex items-center gap-5 mb-10">
@@ -345,7 +347,7 @@ function EventCard({ event, index, copied, onCopy, onDelete }: {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: index * 0.05 }}
-      className="card flex flex-col justify-between h-full p-5"
+      className="card-interactive flex flex-col justify-between h-full p-5"
     >
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-start gap-3">

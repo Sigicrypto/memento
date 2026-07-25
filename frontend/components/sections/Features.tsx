@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 const Features: React.FC = () => {
   return (
     <section id="features" className="py-24 relative overflow-hidden scroll-mt-32">
-      <div className="container mx-auto px-6">
+      <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -42,7 +42,7 @@ const Features: React.FC = () => {
           ].map((f, i) => (
             <motion.div 
               key={i} 
-              className={`card h-full flex flex-col items-start bg-bg ${f.big ? 'lg:col-span-2' : ''}`}
+              className={`card-interactive h-full flex flex-col items-start bg-bg ${f.big ? 'lg:col-span-2' : ''}`}
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }

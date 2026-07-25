@@ -181,14 +181,16 @@ export default function CreateEventPage() {
     <div className="lp min-h-screen flex flex-col bg-bg-subtle relative">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center justify-between px-6">
-        <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors text-sm font-medium">
-           <ArrowRight size={16} className="rotate-180" /> Dashboard
-        </Link>
-        <Link href="/">
-          <AnimatedLogo width={120} height={32} />
-        </Link>
-        <div className="w-[100px] hidden md:block" />
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center">
+        <div className="container w-full flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors text-sm font-medium">
+             <ArrowRight size={16} className="rotate-180" /> Dashboard
+          </Link>
+          <Link href="/">
+            <AnimatedLogo width={120} height={32} />
+          </Link>
+          <div className="w-[100px] hidden md:block" />
+        </div>
       </nav>
  
       <main className="flex-grow flex items-center justify-center p-6 pt-24">

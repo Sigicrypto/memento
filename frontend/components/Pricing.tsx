@@ -19,8 +19,8 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
   }, []);
  
   return (
-    <section id="pricing" className={`${isEmbedded ? 'py-20' : 'pt-32 pb-24'} px-6 relative z-10 scroll-mt-32 w-full flex justify-center bg-bg`}>
-      <div className="container mx-auto w-full">
+    <section id="pricing" className={`${isEmbedded ? 'py-20' : 'pt-32 pb-24'} relative z-10 scroll-mt-32 w-full bg-bg`}>
+      <div className="container">
         {!isEmbedded && (
           <div className="mb-10">
             <a href="/" className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-text-primary transition-colors">
@@ -49,7 +49,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className={`card flex flex-col h-full relative ${plan.highlight ? 'border-primary shadow-sm' : ''}`}
+                className={`card-interactive flex flex-col h-full relative ${plan.highlight ? 'border-primary shadow-sm' : ''}`}
               >
                 {/* Recommended badge */}
                 {plan.highlight && (

@@ -85,22 +85,24 @@ export default function EditEventPage() {
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center justify-between px-6">
-         <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors font-medium text-sm">
-               <ArrowLeft size={16} /> Dashboard
-            </Link>
-            <div className="h-6 w-px bg-border hidden md:block" />
-            <Link href="/" className="hidden md:block">
-              <AnimatedLogo width={120} height={32} />
-            </Link>
-         </div>
-         <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-subtle border border-border text-xs font-medium text-text-primary">
-            <Settings size={14} /> Event Settings
-         </div>
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center">
+        <div className="container w-full flex items-center justify-between">
+          <div className="flex items-center gap-4">
+             <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors font-medium text-sm">
+                <ArrowLeft size={16} /> Dashboard
+             </Link>
+             <div className="h-6 w-px bg-border hidden md:block" />
+             <Link href="/" className="hidden md:block">
+               <AnimatedLogo width={120} height={32} />
+             </Link>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-subtle border border-border text-xs font-medium text-text-primary">
+             <Settings size={14} /> Event Settings
+          </div>
+        </div>
       </nav>
  
-      <main className="flex-grow pt-24 px-6 pb-24 max-w-2xl mx-auto w-full">
+      <main className="flex-grow pt-24 pb-24 max-w-2xl mx-auto w-full">
          <div className="mb-8">
             <h1 className="h2-text mb-2 text-text-primary">Edit Event</h1>
             <p className="text-text-secondary text-sm">Customize your wall experience and branding.</p>
