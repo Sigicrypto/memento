@@ -123,9 +123,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg-subtle relative flex flex-col">
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg flex items-center justify-between px-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg/90 backdrop-blur-md flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <Link href="/">
             <AnimatedLogo width={120} height={32} />

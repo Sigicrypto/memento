@@ -248,9 +248,11 @@ export default function MobilePage() {
   const isLimited = localUploadCount >= limit;
  
   return (
-    <div className="min-h-screen bg-bg flex flex-col relative pb-20">
+    <div className="min-h-screen bg-bg flex flex-col relative pb-20 overflow-x-hidden">
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       {/* ── Dynamic Island Header ── */}
-      <nav className="fixed top-4 left-4 right-4 z-50 h-[52px] rounded-full bg-bg shadow-sm border border-border px-4 flex items-center justify-between">
+      <nav className="fixed top-4 left-4 right-4 z-50 h-[52px] rounded-full bg-bg/90 backdrop-blur-md shadow-sm border border-border px-4 flex items-center justify-between">
          {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
             <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
          ) : (

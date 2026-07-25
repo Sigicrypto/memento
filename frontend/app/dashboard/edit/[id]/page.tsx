@@ -81,9 +81,11 @@ export default function EditEventPage() {
   const isStandardPlus = ['STANDARD', 'PREMIUM', 'WHITE_LABEL'].includes(planType);
  
   return (
-    <div className="min-h-screen flex flex-col bg-bg-subtle">
+    <div className="min-h-screen flex flex-col bg-bg-subtle relative">
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg border-b border-border flex items-center justify-between px-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center justify-between px-6">
          <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors font-medium text-sm">
                <ArrowLeft size={16} /> Dashboard

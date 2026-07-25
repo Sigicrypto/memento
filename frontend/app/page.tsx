@@ -200,8 +200,13 @@ export default function LandingPage() {
 
   return (
     <>
-    <div className="lp">
-      <div className="flex flex-col gap-16">
+    <div className="lp relative">
+      <div className="grain" />
+      <div className="orbs">
+        <div className="orb orb-primary" />
+        <div className="orb orb-secondary" />
+      </div>
+      <div className="flex flex-col gap-16 relative z-10">
         <Hero setIsDemoOpen={setIsDemoOpen} />
         <Stats />
         <WhyChoose />

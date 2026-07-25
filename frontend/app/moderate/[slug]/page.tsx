@@ -111,7 +111,9 @@ export default function ModeratePage() {
   const filteredPhotos = photos.filter(p => filter === 'all' ? true : filter === 'pending' ? !p.approved : p.approved);
  
   return (
-    <div className="min-h-screen flex flex-col bg-bg-subtle relative pb-20">
+    <div className="min-h-screen flex flex-col bg-bg-subtle relative pb-20 overflow-x-hidden">
+      <div className="grain" />
+      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -20, x: '-50%' }} animate={{ opacity: 1, y: 0, x: '-50%' }} exit={{ opacity: 0, y: -20, x: '-50%' }} className={`fixed top-20 left-1/2 z-[200] px-4 py-2 rounded-md flex items-center gap-2 font-medium text-sm shadow-md border ${toast.type === 'success' ? 'bg-success/10 text-success border-success/20' : 'bg-error/10 text-error border-error/20'}`}>
@@ -122,7 +124,7 @@ export default function ModeratePage() {
       </AnimatePresence>
  
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg flex items-center justify-between px-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg/90 backdrop-blur-md flex items-center justify-between px-6">
          <div className="flex items-center gap-4">
             <Link href={`/wall/${slug}`} className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors font-medium text-sm">
                <ArrowLeft size={16} /> Back to Wall
