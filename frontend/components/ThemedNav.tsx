@@ -51,13 +51,10 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
         animate={{ 
           y: scrolled ? 12 : 0, 
           opacity: 1,
-          width: scrolled ? '92%' : '100%',
-          maxWidth: scrolled ? '1400px' : '100%',
-          backgroundColor: 'rgba(3, 3, 4, 0.98)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: scrolled ? '24px' : '0px',
-          border: scrolled ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid transparent',
-          boxShadow: scrolled ? '0 25px 50px -12px rgba(0, 0, 0, 0.5)' : 'none'
+          width: '100%',
+          backgroundColor: scrolled ? 'var(--bg)' : 'transparent',
+          borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+          boxShadow: 'none'
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         style={{ zIndex: 9999 }}
@@ -81,7 +78,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 <Link 
                   key={item} 
                   href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                  className="text-sm font-medium text-white/70 hover:text-white transition-colors relative group"
+                  className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors relative group"
                 >
                   {item}
                   <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
@@ -96,19 +93,19 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               <div className="hidden md:flex items-center gap-4">
                 {user ? (
                   <>
-                    <Link href="/dashboard" className="btn-secondary px-5 py-2 text-sm font-semibold rounded-xl transition-all">
+                    <Link href="/dashboard" className="btn btn-secondary">
                       Dashboard
                     </Link>
-                    <button onClick={handleSignOut} className="text-white/70 hover:text-white transition-colors p-2">
+                    <button onClick={handleSignOut} className="text-text-secondary hover:text-text-primary transition-colors p-2">
                       <LogOut size={18} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => openAuth('login')} className="text-sm font-medium text-white/70 hover:text-white transition-colors">
+                    <button onClick={() => openAuth('login')} className="btn btn-ghost">
                       Log in
                     </button>
-                    <button onClick={() => openAuth('signup')} className="btn-primary px-6 py-2.5 text-sm font-bold rounded-xl shadow-lg shadow-primary/20">
+                    <button onClick={() => openAuth('signup')} className="btn btn-primary">
                       Get Started
                     </button>
                   </>
@@ -121,7 +118,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             {/* Hamburger Toggle */}
             {!mini && (
               <button 
-                className="md:hidden relative z-[101] p-2 text-white hover:bg-white/10 rounded-xl transition-colors"
+                className="md:hidden relative z-[101] p-2 text-text-primary hover:bg-bg-subtle rounded-md transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -138,7 +135,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-[#030304]/98 backdrop-blur-2xl md:hidden overflow-hidden"
+            className="fixed inset-0 z-[100] bg-bg/98 backdrop-blur-md md:hidden overflow-hidden"
           >
             <div className="flex flex-col h-full pt-32 px-10 pb-12">
               <div className="flex flex-col gap-10">
@@ -151,7 +148,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   >
                     <Link 
                       href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                      className="text-4xl font-bold text-white hover:text-primary transition-colors"
+                      className="text-3xl font-semibold text-text-primary hover:text-text-secondary transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item}
@@ -165,29 +162,29 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <>
                     <Link 
                       href="/dashboard" 
-                      className="w-full h-14 rounded-2xl bg-primary text-white flex items-center justify-center font-bold text-lg"
+                      className="w-full h-12 rounded-lg bg-primary text-bg flex items-center justify-center font-medium text-lg"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Go to Dashboard
                     </Link>
                     <button 
                       onClick={handleSignOut}
-                      className="w-full h-14 rounded-2xl border border-white/10 text-white/70 hover:text-white transition-colors font-bold text-lg"
+                      className="w-full h-12 rounded-lg border border-border text-text-secondary hover:text-text-primary transition-colors font-medium text-lg"
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-3">
                     <button 
                       onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
-                      className="w-full h-14 rounded-2xl bg-primary text-white font-bold text-lg shadow-xl shadow-primary/20"
+                      className="w-full h-12 rounded-lg bg-primary text-bg font-medium text-lg"
                     >
                       Get Started
                     </button>
                     <button 
                       onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
-                      className="w-full h-14 rounded-2xl border border-white/10 text-white hover:bg-white/5 transition-colors font-bold text-lg"
+                      className="w-full h-12 rounded-lg border border-border text-text-primary hover:bg-bg-subtle transition-colors font-medium text-lg"
                     >
                       Log In
                     </button>

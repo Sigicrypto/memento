@@ -14,11 +14,11 @@ const Features: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+          <div className="hero-badge mb-6">
             Everything you need
           </div>
           <h2 className="h1-text mb-6">
-            The Best Experience. <span className="text-secondary italic">Built in.</span>
+            The Best Experience. Built in.
           </h2>
         </motion.div>
  
@@ -48,11 +48,11 @@ const Features: React.FC = () => {
                 visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
               }}
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-lg bg-bg border border-border flex items-center justify-center text-2xl mb-6 group-hover:scale-105 transition-transform">
                 {f.icon}
               </div>
-              <h3 className="text-2xl font-bold text-black dark:text-white mb-4">{f.title}</h3>
-              <p className="text-black dark:text-white text-lg leading-relaxed">{f.desc}</p>
+              <h3 className="text-xl font-semibold text-text-primary mb-2">{f.title}</h3>
+              <p className="text-text-secondary text-base leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </motion.div>

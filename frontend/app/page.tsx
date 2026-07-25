@@ -200,7 +200,7 @@ export default function LandingPage() {
 
   return (
     <>
-    <div className="lp aurora-bg">
+    <div className="lp">
       <div className="flex flex-col gap-16">
         <Hero setIsDemoOpen={setIsDemoOpen} />
         <Stats />

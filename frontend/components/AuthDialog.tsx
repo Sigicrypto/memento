@@ -267,13 +267,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
       className="auth-dialog-overlay"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
-      <div className="auth-dialog glass-card relative overflow-hidden" style={{ padding: 'clamp(24px, 5vw, 40px)', border: 'none' }}>
-        {/* Decorative Background Glows */}
-        <div className="absolute top-[-150px] right-[-150px] w-[300px] h-[300px] rounded-full blur-[100px] opacity-20 pointer-events-none -z-10" 
-             style={{ background: 'conic-gradient(from 0deg, #06b6d4, #ec4899, #6366f1, #06b6d4)' }} />
-        <div className="absolute bottom-[-100px] left-[-100px] w-[200px] h-[200px] rounded-full blur-[80px] opacity-10 pointer-events-none -z-10" 
-             style={{ background: '#06b6d4' }} />
-
+      <div className="auth-dialog relative overflow-hidden">
         {/* Close button */}
         <button className="auth-close-btn" onClick={onClose} style={{ zIndex: 100 }}>
           <X size={20} />
@@ -281,9 +275,8 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
 
         {/* Plan badge */}
         {planInfo && (
-          <div className="auth-plan-badge" style={{ borderColor: `${planInfo.color}30`, background: `${planInfo.color}08` }}>
-            <span>{planInfo.emoji}</span>
-            <span style={{ color: planInfo.color, fontWeight: 600 }}>{planInfo.name} Plan</span>
+          <div className="auth-plan-badge">
+            <span>{planInfo.name} Plan</span>
           </div>
         )}
 
@@ -303,7 +296,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
 
             {/* OAuth buttons */}
             <div className="auth-oauth-row">
-              <button className="auth-oauth-btn" onClick={() => handleOAuth('google')} disabled={loading} style={{ width: '100%' }}>
+              <button className="auth-oauth-btn" onClick={() => handleOAuth('google')} disabled={loading}>
                 <svg width="18" height="18" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -419,13 +412,12 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
               {error && <div className="auth-error">{error}</div>}
               {message && <div className="auth-message">{message}</div>}
 
-              <button type="submit" className="auth-submit-btn btn-glow" disabled={loading} style={{ height: 54, borderRadius: 16 }}>
+              <button type="submit" className="auth-submit-btn" disabled={loading}>
                 {loading ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2 size={16} className="animate-spin" />
                 ) : (
                   <>
                     <span>{tab === 'signup' ? 'Create Account' : 'Sign In'}</span>
-                    <ArrowRight size={16} />
                   </>
                 )}
               </button>

@@ -7,7 +7,6 @@ import SocialFloat from "@/components/SocialFloat";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/CustomCursor";
 import CookieBanner from "@/components/CookieBanner";
-import BackgroundDecoration from "@/components/BackgroundDecoration";
 import "@/styles/cursor.css";
 
 /**
@@ -28,7 +27,6 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   return (
     <>
       <div className="min-h-screen w-full flex flex-col">
-        <BackgroundDecoration />
         <Navbar />
         <MainContent>
           {children}

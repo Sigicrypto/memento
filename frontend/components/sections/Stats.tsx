@@ -7,7 +7,7 @@ const Stats: React.FC = () => {
   return (
     <section className="py-24 relative">
       <div className="container mx-auto px-6">
-        <div className="premium-stats bg-white/5 backdrop-blur-sm border border-black/20 dark:border-black/10 dark:border-white/5 rounded-[2rem] p-8 md:p-12">
+        <div className="premium-stats gcard px-8 md:px-12 py-10">
           {[
             { val: '∞', label: 'Photos per wall' },
             { val: '0s', label: 'App install time' },

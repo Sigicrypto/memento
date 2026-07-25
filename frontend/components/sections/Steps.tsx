@@ -14,11 +14,11 @@ const Steps: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-widest uppercase mb-6">
+          <div className="hero-badge mb-6">
             Process
           </div>
           <h2 className="h1-text mb-6">
-            Three steps. <span className="text-secondary italic">That&apos;s it.</span>
+            Three steps. That&apos;s it.
           </h2>
           <p className="text-lg text-text-secondary">No downloads. No accounts. No friction.</p>
         </motion.div>
@@ -43,10 +43,10 @@ const Steps: React.FC = () => {
               >
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-8">
-                    <span className="text-sm font-black text-primary tracking-tighter uppercase">{s.num}</span>
-                    <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{s.icon}</span>
+                    <span className="text-sm font-semibold text-text-muted">STEP {s.num}</span>
+                    <span className="text-3xl group-hover:scale-105 transition-transform duration-300">{s.icon}</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-black dark:text-white mb-4">{s.title}</h3>
+                  <h3 className="text-xl font-semibold text-text-primary mb-2">{s.title}</h3>
                   <p className="text-text-secondary leading-relaxed">{s.desc}</p>
                 </div>
               </motion.div>

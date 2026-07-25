@@ -30,10 +30,10 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
         )}
  
         <div className="text-center mb-20">
-          <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-widest text-primary mb-6">
-             <Sparkles size={12} /> Transparent Pricing
-          </motion.div>
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">Pricing That <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Fits Every Event</span></h2>
+          <div className="hero-badge mb-6">
+            Transparent Pricing
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Pricing That Fits Every Event</h2>
           <p className="text-text-secondary text-lg max-w-2xl mx-auto">One-time payment. No hidden subscriptions. Just lifetime access to your memories.</p>
         </div>
  
@@ -49,22 +49,21 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`h-full flex flex-col glass-panel !overflow-visible relative group transition-all duration-500 hover:border-primary/50 ${plan.highlight ? 'border-primary/40 ring-1 ring-primary/20 bg-primary/5 shadow-2xl shadow-primary/10' : ''}`}
-                style={{ padding: '32px' }}
+                className={`h-full flex flex-col gcard relative group ${plan.highlight ? 'gcard-accent' : ''}`}
               >
-                {/* Recommended badge — absolutely positioned, doesn't affect flow */}
+                {/* Recommended badge */}
                 {plan.highlight && (
-                   <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full shadow-xl shadow-primary/30 whitespace-nowrap z-20">
-                      ✨ Recommended
+                   <div className="absolute top-0 right-4 -translate-y-1/2 bg-text-primary text-bg text-[10px] font-semibold uppercase tracking-widest px-3 py-1 rounded-full whitespace-nowrap z-20">
+                      Recommended
                    </div>
                 )}
 
-                {/* Section 1: Icon + Plan Name — fixed height for alignment */}
+                {/* Section 1: Icon + Plan Name */}
                 <div className="flex items-center gap-3 mb-5" style={{ minHeight: '40px' }}>
-                   <div className={`w-10 h-10 rounded-xl bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10 flex items-center justify-center flex-shrink-0 ${plan.iconColor}`}>
-                      <Icon size={20} />
+                   <div className={`w-8 h-8 rounded-lg bg-bg-subtle border border-border flex items-center justify-center flex-shrink-0`}>
+                      <Icon size={16} className="text-text-primary" />
                    </div>
-                   <h3 className="text-xl font-bold leading-tight">{plan.name}</h3>
+                   <h3 className="text-lg font-bold leading-tight text-text-primary">{plan.name}</h3>
                 </div>
 
                 {/* Section 2: Price + Description — fixed height for alignment */}
@@ -91,12 +90,12 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                    </div>
                 </div>
 
-                {/* Section 5: CTA button — pushed to bottom with mt-auto */}
+                {/* Section 5: CTA button */}
                  <a 
                    href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                   className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest transition-all text-center mt-auto flex items-center justify-center gap-2 ${plan.highlight ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white'}`}
+                   className={`btn w-full mt-auto ${plan.highlight ? 'btn-primary' : 'btn-secondary'}`}
                 >
-                   {plan.name === 'White Label' ? 'Get Started ✦' : 'Select Plan ✦'}
+                   {plan.name === 'White Label' ? 'Get Started' : 'Select Plan'}
                 </a>
               </motion.div>
             );
@@ -165,25 +164,15 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
            </div>
         </div>
  
-        {/* CTA Section — 64px spacing from Feature Breakdown */}
-        <div style={{ marginTop: '64px' }}>
+        {/* CTA Section */}
+        <div className="mt-16">
            <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative overflow-hidden bg-black/5 dark:bg-[#0f0f12]/70 border border-black/10 dark:border-white/10 shadow-xl shadow-black/5 dark:shadow-none"
-              style={{
-                borderRadius: '24px',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-              }}
+              className="gcard overflow-hidden"
            >
-              {/* Ambient glow effects */}
-              <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
-                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-primary/10 rounded-full blur-[100px]" />
-                 <div className="absolute bottom-0 right-0 w-[200px] h-[200px] bg-secondary/5 rounded-full blur-[80px]" />
-              </div>
               {/* Subtle top gradient line */}
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
@@ -226,18 +215,9 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                     {/* Primary CTA */}
                     <a
                        href="/create"
-                       className="inline-flex items-center justify-center font-semibold text-black dark:text-white transition-all duration-300 hover:-translate-y-0.5"
-                       style={{
-                         height: '56px',
-                         padding: '0 40px',
-                         borderRadius: '16px',
-                         background: 'linear-gradient(135deg, #6366f1, #818cf8)',
-                         boxShadow: '0 8px 24px -4px rgba(99, 102, 241, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.06) inset',
-                         fontSize: '0.95rem',
-                         letterSpacing: '0.01em',
-                       }}
+                       className="btn btn-primary px-8 py-3"
                     >
-                       Create My Wall ✦
+                       Create My Wall
                     </a>
 
                     {/* Secondary CTA */}
