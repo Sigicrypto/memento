@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 const Steps: React.FC = () => {
   return (
     <section id="howitworks" className="py-24 relative overflow-hidden scroll-mt-32">
-      <div className="container mx-auto px-6">
+      <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

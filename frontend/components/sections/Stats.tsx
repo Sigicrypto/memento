@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 const Stats: React.FC = () => {
   return (
     <section className="py-24 relative">
-      <div className="container mx-auto px-6">
+      <div className="container">
         <div className="premium-stats gcard px-8 md:px-12 py-10">
           {[
             { val: '∞', label: 'Photos per wall' },

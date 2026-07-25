@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 const WhyChoose: React.FC = () => {
   return (
     <section id="why" className="py-24 relative overflow-hidden">
-      <div className="container mx-auto px-6">
+      <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
