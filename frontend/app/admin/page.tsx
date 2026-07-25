@@ -254,7 +254,7 @@ export default function AdminPage() {
             <Link href="/auth" className="w-full px-6 py-3.5 bg-amber-500 text-black font-black rounded-xl hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20">
               🔐 Login as Admin
             </Link>
-            <Link href="/" className="w-full px-6 py-3.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-700 dark:text-slate-300 font-bold rounded-xl hover:bg-black/10 dark:bg-white/10 transition-all">
+            <Link href="/" className="w-full px-6 py-3.5 bg-bg-subtle border border-border text-text-primary font-bold rounded-xl hover:bg-border transition-all">
               🏠 Back to Home
             </Link>
           </div>
@@ -274,7 +274,7 @@ export default function AdminPage() {
           <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" style={{color: accent, background: `${accent}15`, border: `1px solid ${accent}30`}}>Live</span>
         </div>
         <p className="text-3xl font-black tracking-tight">{value.toLocaleString()}</p>
-        <p className="text-xs text-slate-500 mt-1 font-medium">{label}</p>
+        <p className="text-xs text-text-secondary mt-1 font-medium">{label}</p>
       </div>
     </div>
   );
@@ -306,9 +306,9 @@ export default function AdminPage() {
             <div className="gcard-border" />
             <div className="gcard-inner relative z-10">
               <div className="text-4xl mb-4">⚠️</div>
-              <p className="text-sm text-slate-700 dark:text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">{confirmDialog.message}</p>
+              <p className="text-sm text-text-primary mb-6 leading-relaxed">{confirmDialog.message}</p>
               <div className="flex gap-3">
-                <button onClick={closeConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition">Cancel</button>
+                <button onClick={closeConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">Cancel</button>
                 <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition">Confirm Delete</button>
               </div>
             </div>
@@ -338,7 +338,7 @@ export default function AdminPage() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                   activeTab === tab.id
                     ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-700 dark:text-slate-300 hover:bg-black/5 dark:bg-white/5'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
                 }`}
               >
                 <span className="text-lg">{tab.icon}</span>
@@ -359,7 +359,7 @@ export default function AdminPage() {
                 <p className="text-[10px] text-amber-500 font-bold">{isSuperAdmin ? '⚡ Super Admin' : 'Admin'}</p>
               </div>
             </div>
-            <Link href="/" className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs text-slate-500 hover:text-black dark:hover:text-black dark:text-white hover:bg-black/5 dark:bg-white/5 transition">
+            <Link href="/" className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs text-text-secondary hover:text-black dark:hover:text-text-primary hover:bg-bg-subtle transition">
               ← Back to Site
             </Link>
           </div>
@@ -376,7 +376,7 @@ export default function AdminPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={`Search ${activeTab}...`}
-                className="w-full max-w-md px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-sm placeholder-slate-500 outline-none focus:border-amber-500/40 transition"
+                className="w-full max-w-md px-5 py-3 rounded-xl bg-bg-subtle border border-border text-sm placeholder-slate-500 outline-none focus:border-amber-500/40 transition"
               />
             </div>
           )}
@@ -386,7 +386,7 @@ export default function AdminPage() {
             <div className="space-y-8">
               <div>
                 <h2 className="text-2xl font-black tracking-tight mb-1">Dashboard</h2>
-                <p className="text-sm text-slate-500">Platform overview at a glance</p>
+                <p className="text-sm text-text-secondary">Platform overview at a glance</p>
               </div>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -404,11 +404,11 @@ export default function AdminPage() {
                 <div className="gcard-inner p-6">
                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">Quick Actions</h3>
                   <div className="flex flex-wrap gap-3">
-                    <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition">👥 Manage Users</button>
-                    <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition">🎉 Manage Events</button>
+                    <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">👥 Manage Users</button>
+                    <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">🎉 Manage Events</button>
                     <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">✅ Approve All Pending</button>
                     <Link href="/create" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">✨ Create Event</Link>
-                    <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition">🔄 Refresh Stats</button>
+                    <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">🔄 Refresh Stats</button>
                   </div>
                 </div>
               </div>
@@ -421,7 +421,7 @@ export default function AdminPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-black tracking-tight mb-1">User Management</h2>
-                  <p className="text-sm text-slate-500">{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</p>
+                  <p className="text-sm text-text-secondary">{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</p>
                 </div>
                 {stats.pendingApprovals > 0 && (
                   <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
@@ -431,9 +431,9 @@ export default function AdminPage() {
               </div>
 
               {loading ? (
-                <div className="py-20 text-center text-slate-500">Loading users...</div>
+                <div className="py-20 text-center text-text-secondary">Loading users...</div>
               ) : filteredUsers.length === 0 ? (
-                <div className={`${cardClass} text-center py-16 text-slate-500`}>No users found</div>
+                <div className={`${cardClass} text-center py-16 text-text-secondary`}>No users found</div>
               ) : (
                 <div className="space-y-2">
                   {filteredUsers.map(u => (
@@ -446,7 +446,7 @@ export default function AdminPage() {
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-bold truncate">{u.email}</p>
-                            <p className="text-[11px] text-slate-500">
+                            <p className="text-[11px] text-text-secondary">
                               {u.full_name || 'No name'} • Joined {new Date(u.created_at).toLocaleDateString()} • 
                               <span className="text-amber-400 ml-1">{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
                               {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
@@ -457,7 +457,7 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2 shrink-0 flex-wrap">
                           {/* Role Selector */}
                           <select
-                            className="text-[11px] bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-lg px-2 py-1.5 text-slate-700 dark:text-slate-700 dark:text-slate-300 outline-none font-bold cursor-pointer"
+                            className="text-[11px] bg-bg-subtle border border-border rounded-lg px-2 py-1.5 text-text-primary outline-none font-bold cursor-pointer"
                             value={u.role || 'user'}
                             onChange={(e) => handleUpdateRole(u.id, e.target.value)}
                           >
@@ -511,13 +511,13 @@ export default function AdminPage() {
             <div className="space-y-4">
               <div>
                 <h2 className="text-2xl font-black tracking-tight mb-1">Event Management</h2>
-                <p className="text-sm text-slate-500">{filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}</p>
+                <p className="text-sm text-text-secondary">{filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}</p>
               </div>
 
               {loading ? (
-                <div className="py-20 text-center text-slate-500">Loading events...</div>
+                <div className="py-20 text-center text-text-secondary">Loading events...</div>
               ) : filteredEvents.length === 0 ? (
-                <div className={`${cardClass} text-center py-16 text-slate-500`}>No events found</div>
+                <div className={`${cardClass} text-center py-16 text-text-secondary`}>No events found</div>
               ) : (
                 <div className="space-y-2">
                   {filteredEvents.map(event => (
@@ -527,7 +527,7 @@ export default function AdminPage() {
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <h3 className="text-sm font-bold ">{event.name}</h3>
-                            <p className="text-[11px] text-slate-500">
+                            <p className="text-[11px] text-text-secondary">
                               By <span className="text-amber-400">{event.owner_email}</span> • {new Date(event.created_at).toLocaleDateString()}
                               {event.plan_type && <span className="ml-2 text-slate-600 dark:text-slate-600 dark:text-slate-400">({event.plan_type})</span>}
                             </p>
@@ -541,11 +541,11 @@ export default function AdminPage() {
                           </button>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold">📸 {event.photo_count} photos</span>
-                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-600 dark:text-slate-400 font-mono">/{event.slug}</span>
+                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold">📸 {event.photo_count} photos</span>
+                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-mono">/{event.slug}</span>
                           <Link href={`/wall/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold hover:bg-amber-500/20 transition">🖼️ Wall</Link>
-                          <Link href={`/mobile/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold hover:bg-black/10 dark:bg-white/10 transition">📱 Upload</Link>
-                          <Link href={`/moderate/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold hover:bg-black/10 dark:bg-white/10 transition">🛡️ Moderate</Link>
+                          <Link href={`/mobile/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold hover:bg-border transition">📱 Upload</Link>
+                          <Link href={`/moderate/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold hover:bg-border transition">🛡️ Moderate</Link>
                           <Link href={`/admin/edit-event/${event.slug}`} className="text-[11px] px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20 transition">✏️ Edit</Link>
                         </div>
                       </div>
@@ -561,7 +561,7 @@ export default function AdminPage() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-black tracking-tight mb-1">Payment Management</h2>
-                <p className="text-sm text-slate-500">Manual payment approvals for Oman bank transfers and pending Indian payments</p>
+                <p className="text-sm text-text-secondary">Manual payment approvals for Oman bank transfers and pending Indian payments</p>
               </div>
 
               <div className={cardClass}>
@@ -582,16 +582,16 @@ export default function AdminPage() {
                 <div className="gcard-inner p-6">
                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">Omani Payment Details (Your Account)</h3>
                   <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                    <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Bank Transfer (IBAN)</p>
+                    <div className="p-4 rounded-xl bg-bg-subtle border border-border">
+                      <p className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">Bank Transfer (IBAN)</p>
                       <p className="font-bold">Sagar Shaik Trade LLC</p>
                       <p className="text-slate-600 dark:text-slate-600 dark:text-slate-400 font-mono text-xs mt-1">0364073422230017</p>
-                      <p className="text-slate-500 text-xs mt-1">Bank Muscat</p>
+                      <p className="text-text-secondary text-xs mt-1">Bank Muscat</p>
                     </div>
-                    <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Mobile Transfer</p>
+                    <div className="p-4 rounded-xl bg-bg-subtle border border-border">
+                      <p className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">Mobile Transfer</p>
                       <p className="font-bold font-mono text-lg tracking-widest">9609 5692</p>
-                      <p className="text-slate-500 text-xs mt-1">Bank Muscat Mobile</p>
+                      <p className="text-text-secondary text-xs mt-1">Bank Muscat Mobile</p>
                     </div>
                   </div>
                 </div>
@@ -604,14 +604,14 @@ export default function AdminPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-left text-slate-500 border-b border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10">
+                        <tr className="text-left text-text-secondary border-b border-black/10 dark:border-border">
                           <th className="pb-3 font-bold">Plan</th>
                           <th className="pb-3 font-bold">🇴🇲 OMR</th>
                           <th className="pb-3 font-bold">🇮🇳 INR</th>
                           <th className="pb-3 font-bold">🌐 USD</th>
                         </tr>
                       </thead>
-                      <tbody className="text-slate-700 dark:text-slate-700 dark:text-slate-300">
+                      <tbody className="text-text-primary">
                         <tr className="border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5"><td className="py-2.5 font-bold">Starter</td><td>15</td><td>₹2,499</td><td>$30</td></tr>
                         <tr className="border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5"><td className="py-2.5 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td>29</td><td>₹4,999</td><td>$60</td></tr>
                         <tr className="border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5"><td className="py-2.5 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td>39</td><td>₹7,499</td><td>$90</td></tr>
@@ -629,7 +629,7 @@ export default function AdminPage() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-black tracking-tight mb-1">System Settings</h2>
-                <p className="text-sm text-slate-500">Platform configuration and environment info</p>
+                <p className="text-sm text-text-secondary">Platform configuration and environment info</p>
               </div>
 
               {/* Super Admin Info */}
@@ -638,10 +638,10 @@ export default function AdminPage() {
                 <div className="gcard-inner p-6">
                   <h3 className="text-sm font-black uppercase tracking-widest text-amber-400 mb-4">⚡ Super Admin</h3>
                   <div className="space-y-2 text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400">
-                    <p><span className="text-slate-500 w-28 inline-block">Email:</span> <span className="font-bold">sagarfalcon@gmail.com</span></p>
-                    <p><span className="text-slate-500 w-28 inline-block">Plan Override:</span> <span className="text-amber-400 font-bold">White Label (All Features)</span></p>
-                    <p><span className="text-slate-500 w-28 inline-block">Walls:</span> <span className="text-emerald-400 font-bold">Unlimited</span></p>
-                    <p><span className="text-slate-500 w-28 inline-block">Status:</span> <span className="text-emerald-400 font-bold">Always Approved, Always Paid</span></p>
+                    <p><span className="text-text-secondary w-28 inline-block">Email:</span> <span className="font-bold">sagarfalcon@gmail.com</span></p>
+                    <p><span className="text-text-secondary w-28 inline-block">Plan Override:</span> <span className="text-amber-400 font-bold">White Label (All Features)</span></p>
+                    <p><span className="text-text-secondary w-28 inline-block">Walls:</span> <span className="text-emerald-400 font-bold">Unlimited</span></p>
+                    <p><span className="text-text-secondary w-28 inline-block">Status:</span> <span className="text-emerald-400 font-bold">Always Approved, Always Paid</span></p>
                   </div>
                 </div>
               </div>
@@ -653,16 +653,16 @@ export default function AdminPage() {
                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">🔑 Environment</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Supabase URL</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300 font-mono text-xs truncate max-w-[300px]">{process.env.NEXT_PUBLIC_SUPABASE_URL || '—'}</span>
+                      <span className="text-text-secondary">Supabase URL</span>
+                      <span className="text-text-primary font-mono text-xs truncate max-w-[300px]">{process.env.NEXT_PUBLIC_SUPABASE_URL || '—'}</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Supabase Anon Key</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300 font-mono text-xs">{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '••••' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.slice(-8) : '—'}</span>
+                      <span className="text-text-secondary">Supabase Anon Key</span>
+                      <span className="text-text-primary font-mono text-xs">{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '••••' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.slice(-8) : '—'}</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Node Env</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300 font-mono text-xs">{process.env.NODE_ENV}</span>
+                      <span className="text-text-secondary">Node Env</span>
+                      <span className="text-text-primary font-mono text-xs">{process.env.NODE_ENV}</span>
                     </div>
                   </div>
                 </div>
@@ -680,10 +680,10 @@ export default function AdminPage() {
                       { label: 'Razorpay Dashboard', url: 'https://dashboard.razorpay.com', icon: '💳' },
                       { label: 'WhatsApp Business', url: 'https://wa.me/96896095692', icon: '💬' },
                     ].map(link => (
-                      <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 hover:bg-black/10 dark:bg-white/10 transition text-sm text-slate-700 dark:text-slate-700 dark:text-slate-300 font-medium">
+                      <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-bg-subtle border border-border hover:bg-border transition text-sm text-text-primary font-medium">
                         <span className="text-lg">{link.icon}</span>
                         {link.label}
-                        <span className="ml-auto text-slate-500">↗</span>
+                        <span className="ml-auto text-text-secondary">↗</span>
                       </a>
                     ))}
                   </div>
@@ -697,28 +697,28 @@ export default function AdminPage() {
                   <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">ℹ️ Platform</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Framework</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300">Next.js 16 (Turbopack)</span>
+                      <span className="text-text-secondary">Framework</span>
+                      <span className="text-text-primary">Next.js 16 (Turbopack)</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Database</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300">Supabase (PostgreSQL)</span>
+                      <span className="text-text-secondary">Database</span>
+                      <span className="text-text-primary">Supabase (PostgreSQL)</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Storage</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300">Supabase Storage (S3)</span>
+                      <span className="text-text-secondary">Storage</span>
+                      <span className="text-text-primary">Supabase Storage (S3)</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">Auth</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300">Supabase Auth + Google OAuth</span>
+                      <span className="text-text-secondary">Auth</span>
+                      <span className="text-text-primary">Supabase Auth + Google OAuth</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-slate-500">AI Engine</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300">face-api.js (TensorFlow)</span>
+                      <span className="text-text-secondary">AI Engine</span>
+                      <span className="text-text-primary">face-api.js (TensorFlow)</span>
                     </div>
                     <div className="flex items-center justify-between py-2">
-                      <span className="text-slate-500">Payments</span>
-                      <span className="text-slate-700 dark:text-slate-700 dark:text-slate-300">Razorpay (IN) / Manual (OM)</span>
+                      <span className="text-text-secondary">Payments</span>
+                      <span className="text-text-primary">Razorpay (IN) / Manual (OM)</span>
                     </div>
                   </div>
                 </div>

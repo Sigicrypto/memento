@@ -234,7 +234,7 @@ export default function LaunchPlanner() {
                       </div>
                     </div>
 
-                    <div className="p-4 md:p-6 bg-black/10 dark:bg-white/10">
+                    <div className="p-4 md:p-6 bg-border">
                       <div className="flex flex-col gap-3">
                         {category.items.map((item) => (
                           <label key={item.id} className={`flex items-start gap-4 p-4 rounded-xl cursor-pointer border transition-all duration-300
@@ -253,7 +253,7 @@ export default function LaunchPlanner() {
                                 <polyline points="20 6 9 17 4 12"></polyline>
                               </svg>
                             </div>
-                            <span className={`text-base font-medium flex-1 ${item.done ? 'text-slate-500 line-through decoration-slate-300' : 'text-slate-800'}`}>
+                            <span className={`text-base font-medium flex-1 ${item.done ? 'text-text-secondary line-through decoration-slate-300' : 'text-slate-800'}`}>
                               {item.label}
                             </span>
                           </label>
@@ -268,7 +268,7 @@ export default function LaunchPlanner() {
         </div>
 
         {/* Footer Polish */}
-        <div className="mt-16 text-center text-slate-500 text-sm reveal visible" style={{animationDelay: '0.8s'}}>
+        <div className="mt-16 text-center text-text-secondary text-sm reveal visible" style={{animationDelay: '0.8s'}}>
           Remember – Quality over speed. Market release is a one-way door. <br/>
           <span className="text-rose-400">♥</span> Internal Memento Tool
         </div>

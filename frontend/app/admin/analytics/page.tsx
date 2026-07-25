@@ -97,11 +97,11 @@ export default function AnalyticsPage() {
             <div key={stat.photo_id} className="gcard cinematic-glow group overflow-hidden transition-all duration-300 hover:scale-[1.05]">
               <div className="gcard-border" />
               <div className="gcard-inner">
-                <div className="relative aspect-square rounded-2xl overflow-hidden border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 group">
+                <div className="relative aspect-square rounded-2xl overflow-hidden border border-border bg-bg-subtle group">
                   <Image src={getPublicUrl(stat.storage_path)} alt="Photo" fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-end">
                     <p className="text-2xl font-black ">{stat.download_count}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Downloads</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Downloads</p>
                   </div>
                 </div>
               </div>

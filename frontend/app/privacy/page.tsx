@@ -13,10 +13,10 @@ export default function PrivacyPage() {
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-all font-bold text-sm">
+            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-text-primary transition-all font-bold text-sm">
                <ArrowLeft size={16} /> Back to Home
             </Link>
-            <div className="h-6 w-px bg-black/10 dark:bg-white/10 hidden md:block" />
+            <div className="h-6 w-px bg-border hidden md:block" />
             <span className="text-xl font-bold tracking-tighter">memento</span>
          </div>
       </nav>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
                </div>
                <p className="text-text-secondary leading-relaxed">For privacy-related inquiries or data requests, please contact our Data Officer:</p>
                <div className="flex flex-wrap gap-4 mt-4">
-                  <div className="px-5 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-xs font-bold">privacy@memento.app</div>
+                  <div className="px-5 py-3 rounded-xl bg-bg-subtle border border-border text-xs font-bold">privacy@memento.app</div>
                   <div className="px-5 py-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold">+968 96095692 (WhatsApp)</div>
                </div>
             </section>
@@ -104,7 +104,7 @@ function PrivacyItem({ label }: { label: string }) {
  
 function RetentionCard({ label, duration }: { label: string, duration: string }) {
   return (
-    <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-center">
+    <div className="p-4 rounded-xl bg-bg-subtle border border-border text-center">
        <p className="text-[9px] font-black uppercase tracking-widest text-text-muted mb-1">{label}</p>
        <p className="text-lg font-bold ">{duration}</p>
     </div>

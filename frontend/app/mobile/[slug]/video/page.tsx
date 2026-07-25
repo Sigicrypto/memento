@@ -160,7 +160,7 @@ export default function VideoMessagePage() {
           <>
             <button 
               onClick={() => { setVideoUrl(null); setRecordedChunks([]); }}
-              className="px-6 py-3 bg-black/10 dark:bg-white/10 rounded-full font-bold flex items-center gap-2"
+              className="px-6 py-3 bg-border rounded-full font-bold flex items-center gap-2"
             >
               <RefreshCcw size={18} /> Retake
             </button>

@@ -111,9 +111,9 @@ export default function CreateEventPage() {
             <div className="text-left space-y-6">
                <div className="space-y-2">
                  <p className="text-[10px] font-black tracking-widest text-primary uppercase ml-1">Event URL</p>
-                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 group hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 transition-all shadow-inner">
+                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-bg-subtle border border-border group hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 transition-all shadow-inner">
                     <span className="text-sm font-medium text-text-secondary truncate flex-grow italic">{uploadUrl}</span>
-                    <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="p-2.5 rounded-lg bg-black/5 dark:bg-white/5 text-text-muted hover:text-black dark:hover:text-black dark:text-white hover:bg-black/10 dark:bg-white/10 transition-all">
+                    <button onClick={() => navigator.clipboard.writeText(uploadUrl)} className="p-2.5 rounded-lg bg-bg-subtle text-text-muted hover:text-black dark:hover:text-text-primary hover:bg-border transition-all">
                       <Copy size={16} />
                     </button>
                  </div>
@@ -172,7 +172,7 @@ export default function CreateEventPage() {
             <button onClick={() => router.push(`/wall/${createdSlug}`)} className="btn-premium flex-1 !py-5 flex items-center justify-center gap-3 text-lg">
               <Layout size={20} /> Open Live Wall
             </button>
-            <button onClick={() => router.push('/dashboard')} className="flex-1 py-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 font-bold hover:bg-black/10 dark:bg-white/10 transition-all text-lg">
+            <button onClick={() => router.push('/dashboard')} className="flex-1 py-5 rounded-2xl bg-bg-subtle border border-border font-bold hover:bg-border transition-all text-lg">
               Back to Dashboard
             </button>
           </div>
@@ -189,7 +189,7 @@ export default function CreateEventPage() {
  
       {/* ── Standardized Nav ── */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 /70 backdrop-blur-2xl flex items-center justify-between px-6 md:px-12">
-        <Link href="/dashboard" className="flex items-center gap-3 text-text-muted hover:text-black dark:hover:text-black dark:text-white transition-all font-bold text-xs uppercase tracking-widest group">
+        <Link href="/dashboard" className="flex items-center gap-3 text-text-muted hover:text-black dark:hover:text-text-primary transition-all font-bold text-xs uppercase tracking-widest group">
            <ArrowRight size={16} className="rotate-180 group-hover:-translate-x-1 transition-transform" /> Dashboard
         </Link>
         <Link href="/">
@@ -224,7 +224,7 @@ export default function CreateEventPage() {
                   placeholder="The Midnight Gala…" 
                   required 
                   autoFocus 
-                  className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-2xl px-6 py-5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-xl placeholder:/5 font-semibold"
+                  className="w-full bg-bg-subtle border border-border rounded-2xl px-6 py-5 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-xl placeholder:/5 font-semibold"
                 />
               </div>
  
@@ -244,7 +244,7 @@ export default function CreateEventPage() {
                     disabled={plan === 'starter'}
                     onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                     placeholder={plan === 'starter' ? 'Standard Plan' : 'my-event'} 
-                    className={`w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-2xl px-6 py-5 !pl-[175px] text-black dark:text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-bold ${plan === 'starter' ? 'opacity-30 cursor-not-allowed' : 'group-hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20'}`}
+                    className={`w-full bg-bg-subtle border border-border rounded-2xl px-6 py-5 !pl-[175px] text-text-primary focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-bold ${plan === 'starter' ? 'opacity-30 cursor-not-allowed' : 'group-hover:border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20'}`}
                   />
                 </div>
               </div>
@@ -259,7 +259,7 @@ export default function CreateEventPage() {
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)} 
                     placeholder="Set a guest password…" 
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 rounded-2xl px-6 py-5 !pl-[56px] focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base placeholder:/5"
+                    className="w-full bg-bg-subtle border border-border rounded-2xl px-6 py-5 !pl-[56px] focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base placeholder:/5"
                   />
                 </div>
               </div>

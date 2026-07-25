@@ -258,11 +258,11 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
            <div className="flex items-center gap-6">
               <AnimatedLogo width={140} height={40} />
               <div className="hidden sm:flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10">
+                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-border">
                     <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-secondary' : 'bg-red-500'} ${isConnected ? 'animate-pulse' : ''}`} />
                     <span className="text-[10px] font-bold tracking-widest text-text-secondary">{isConnected ? 'LIVE CONNECTION' : 'RECONNECTING...'}</span>
                   </div>
-                  <div className="px-3 py-1 rounded-full bg-white/5 border border-black/20 dark:border-black/10 dark:border-white/10">
+                  <div className="px-3 py-1 rounded-full bg-white/5 border border-border">
                     <span className="text-[10px] font-bold tracking-widest text-text-secondary">{minutes}:{seconds < 10 ? `0${seconds}` : seconds} LEFT</span>
                   </div>
               </div>
@@ -275,24 +275,24 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                   if (isAudioPlaying) audioRef.current.pause();
                   else audioRef.current.play();
                 }
-              }} className={`p-2 rounded-lg transition-all ${isAudioPlaying ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
+              }} className={`p-2 rounded-lg transition-all ${isAudioPlaying ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-primary'}`}>
                 {isAudioPlaying ? <Pause size={18} /> : <Music size={18} />}
               </button>
               <div className="flex bg-white/5 p-1 rounded-xl">
-                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
+                <button onClick={() => setViewMode('grid')} className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-primary'}`}>
                   <Grid size={18} />
                 </button>
-                <button onClick={() => setViewMode('polaroid')} className={`p-2 rounded-lg transition-all ${viewMode === 'polaroid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
+                <button onClick={() => setViewMode('polaroid')} className={`p-2 rounded-lg transition-all ${viewMode === 'polaroid' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-primary'}`}>
                   <ImageIcon size={18} />
                 </button>
-                <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`p-2 rounded-lg transition-all ${viewMode === 'slideshow' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-black dark:hover:text-white'}`}>
+                <button onClick={() => { setViewMode('slideshow'); setCurrentSlide(0); setIsPlaying(true); }} className={`p-2 rounded-lg transition-all ${viewMode === 'slideshow' ? 'bg-primary text-white shadow-lg' : 'text-text-muted hover:text-text-primary'}`}>
                   <Play size={18} />
                 </button>
               </div>
 
               <div className="w-px h-6 bg-white/10" />
 
-              <button onClick={toggleFullscreen} className="p-2 text-text-muted hover:text-black dark:text-white transition-all">
+              <button onClick={toggleFullscreen} className="p-2 text-text-muted hover:text-text-primary transition-all">
                 {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
               </button>
               <button onClick={onClose} className="p-2 text-text-muted hover:text-red-500 transition-all">
@@ -304,7 +304,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-black/20 dark:border-black/10 dark:border-white/5 p-8 flex flex-col items-center bg-white/20">
                <div className="text-center mb-8">
-                  <h3 className="text-xl font-bold text-black dark:text-white mb-2">Join the Wall</h3>
+                  <h3 className="text-xl font-bold text-text-primary mb-2">Join the Wall</h3>
                   <p className="text-sm text-text-secondary">Scan to upload photos and see them live</p>
                </div>
 
@@ -327,7 +327,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                      <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
                        <ImageIcon size={32} className="text-text-muted" />
                      </div>
-                     <h2 className="text-2xl font-bold text-black dark:text-white mb-2">Waiting for first photo...</h2>
+                     <h2 className="text-2xl font-bold text-text-primary mb-2">Waiting for first photo...</h2>
                      <p className="text-text-secondary max-w-sm">Use the QR code to upload something beautiful and watch it appear here instantly.</p>
                   </div>
                ) : (
@@ -401,14 +401,14 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                               animate={{ opacity: 1, scale: 1 }}
                               exit={{ opacity: 0, scale: 0.95 }}
                               transition={{ duration: 0.8 }}
-                              className="relative w-full h-full max-h-[70vh] flex items-center justify-center rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.4)] border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 bg-black/5"
+                              className="relative w-full h-full max-h-[70vh] flex items-center justify-center rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.4)] border border-border bg-black/5"
                             >
                               {photos[currentSlide]?.type === 'video' ? (
                                  <video src={photos[currentSlide]?.url} className="w-full h-full object-contain" autoPlay muted onEnded={() => setCurrentSlide((prev) => (prev + 1) % photos.length)} playsInline preload="metadata" />
                               ) : (
                                  <img src={photos[currentSlide]?.url} className="w-full h-full object-contain" alt="Upload" />
                               )}
-                              <div className="absolute bottom-10 left-10 p-8 rounded-3xl bg-black/40 backdrop-blur-xl border border-black/20 dark:border-black/10 dark:border-white/10 max-w-md">
+                              <div className="absolute bottom-10 left-10 p-8 rounded-3xl bg-black/40 backdrop-blur-xl border border-border max-w-md">
                                  <h3 className="text-3xl font-bold text-white mb-3">{photos[currentSlide]?.caption}</h3>
                                  <div className="flex items-center gap-6">
                                    <p className="text-primary font-black tracking-widest text-xs uppercase">by {photos[currentSlide]?.uploader}</p>

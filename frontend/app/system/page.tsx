@@ -128,8 +128,8 @@ export default function SystemAdminPage() {
                 )}
                 
                 <div>
-                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-slate-500">Authenticated As</label>
-                  <div className="px-4 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-700 dark:text-slate-300 font-medium">
+                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-text-secondary">Authenticated As</label>
+                  <div className="px-4 py-3 rounded-xl bg-bg-subtle border border-border text-text-primary font-medium">
                     {user.email}
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export default function SystemAdminPage() {
                 <div>
                   <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-amber-500/80">Access Code</label>
                   <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
+                    className="w-full px-6 py-4 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
                     placeholder="Enter system access code" required />
                 </div>
 
@@ -158,15 +158,15 @@ export default function SystemAdminPage() {
                 </Link>
 
                 <div className="pt-4">
-                  <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 mb-4">Or use emergency fallback</p>
+                  <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary mb-4">Or use emergency fallback</p>
                   <form onSubmit={handleLogin} className="space-y-6 text-left">
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none text-sm" 
+                      className="w-full px-6 py-4 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none text-sm" 
                       placeholder="Admin Email" required />
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-6 py-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 placeholder-slate-500 focus:outline-none text-sm" 
+                      className="w-full px-6 py-4 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none text-sm" 
                       placeholder="Access Code" required />
-                    <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 font-bold hover:bg-black/10 dark:bg-white/10 transition-all text-sm">
+                    <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-bg-subtle border border-border font-bold hover:bg-border transition-all text-sm">
                       Access System
                     </button>
                     {error && <p className="text-[10px] text-rose-400 text-center">{error}</p>}
@@ -176,9 +176,9 @@ export default function SystemAdminPage() {
             )}
 
             <div className="mt-8 pt-6 text-center">
-              <div className="w-full h-px bg-black/10 dark:bg-white/10 mb-6" />
-              <p className="text-xs mb-4 text-slate-500 font-medium uppercase tracking-widest">Return to main site?</p>
-              <Link href="/" className="px-6 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-black/20 dark:border-black/10 dark:border-white/10 text-slate-700 dark:text-slate-700 dark:text-slate-300 hover:text-black dark:hover:text-black dark:text-white hover:bg-black/10 dark:bg-white/10 transition-all inline-block font-semibold shadow-sm">🏠 Back Home</Link>
+              <div className="w-full h-px bg-border mb-6" />
+              <p className="text-xs mb-4 text-text-secondary font-medium uppercase tracking-widest">Return to main site?</p>
+              <Link href="/" className="px-6 py-2 rounded-xl bg-bg-subtle border border-border text-text-primary hover:text-black dark:hover:text-text-primary hover:bg-border transition-all inline-block font-semibold shadow-sm">🏠 Back Home</Link>
             </div>
           </div>
         </div>

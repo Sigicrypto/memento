@@ -69,7 +69,7 @@ export default function PhotoBoothPage() {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute top-6 left-6 z-50">
-        <button onClick={() => router.back()} className="p-3 bg-black/10 dark:bg-white/10 rounded-full backdrop-blur-md">
+        <button onClick={() => router.back()} className="p-3 bg-border rounded-full backdrop-blur-md">
           <X size={24} />
         </button>
       </div>
@@ -115,7 +115,7 @@ export default function PhotoBoothPage() {
             <>
               <button 
                 onClick={() => setImgSrc(null)}
-                className="px-8 py-4 bg-black/10 dark:bg-white/10 rounded-xl backdrop-blur-md font-bold hover:bg-white/20 transition-colors flex items-center gap-2"
+                className="px-8 py-4 bg-border rounded-xl backdrop-blur-md font-bold hover:bg-white/20 transition-colors flex items-center gap-2"
               >
                 <RefreshCcw size={20} /> Retake
               </button>
@@ -132,8 +132,8 @@ export default function PhotoBoothPage() {
       </div>
       
       <div className="mt-8 flex gap-4">
-         <button onClick={() => setOverlay('none')} className={`px-4 py-2 rounded-lg font-bold text-sm ${overlay === 'none' ? 'bg-primary text-white' : 'bg-black/10 dark:bg-white/10 text-white/70'}`}>No Frame</button>
-         <button onClick={() => setOverlay('frame')} className={`px-4 py-2 rounded-lg font-bold text-sm ${overlay === 'frame' ? 'bg-primary text-white' : 'bg-black/10 dark:bg-white/10 text-white/70'}`}>Classic Frame</button>
+         <button onClick={() => setOverlay('none')} className={`px-4 py-2 rounded-lg font-bold text-sm ${overlay === 'none' ? 'bg-primary text-white' : 'bg-border text-white/70'}`}>No Frame</button>
+         <button onClick={() => setOverlay('frame')} className={`px-4 py-2 rounded-lg font-bold text-sm ${overlay === 'frame' ? 'bg-primary text-white' : 'bg-border text-white/70'}`}>Classic Frame</button>
       </div>
     </div>
   );
