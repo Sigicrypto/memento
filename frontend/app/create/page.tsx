@@ -8,8 +8,9 @@ import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Plus, Layout, Shield, Copy, Image as ImageIcon, ArrowRight, Printer, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Layout, Shield, Copy, Image as ImageIcon, ArrowRight, Printer, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import FloatingParticles from '@/components/FloatingParticles';
  
 function generateSlug(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -178,31 +179,61 @@ export default function CreateEventPage() {
  
   // ── Create Form ──
   return (
-    <div className="lp min-h-screen flex flex-col bg-bg-subtle relative">
-      <div className="grain" />
-      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center">
-        <div className="container w-full flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors text-sm font-medium">
-             <ArrowRight size={16} className="rotate-180" /> Dashboard
-          </Link>
-          <Link href="/">
-            <AnimatedLogo width={120} height={32} />
-          </Link>
-          <div className="w-[100px] hidden md:block" />
-        </div>
-      </nav>
- 
-      <main className="flex-grow flex items-center justify-center p-6 pt-24">
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card w-full max-w-lg bg-bg shadow-sm"
-        >
-          <div className="mb-8">
-            <h1 className="h2-text mb-2 text-text-primary">Create a Photo Wall</h1>
-            <p className="text-text-secondary text-sm">Set up your cinematic event space in seconds.</p>
-          </div>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-bg relative">
+      {/* Left Panel: Visual/Branding */}
+      <div className="relative hidden lg:flex flex-col justify-between bg-zinc-950 text-white overflow-hidden p-12 border-r border-white/10">
+         <FloatingParticles className="opacity-60" />
+         <div className="relative z-10 flex justify-between items-center w-full">
+           <Link href="/dashboard" className="flex items-center gap-2 text-text-muted hover:text-white transition-colors text-sm font-medium">
+              <ArrowRight size={16} className="rotate-180" /> Dashboard
+           </Link>
+           <Link href="/">
+             <AnimatedLogo width={120} height={32} />
+           </Link>
+         </div>
+         
+         <div className="relative z-10 max-w-lg mb-20 drop-shadow-xl">
+           <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-lg mb-6">
+              <Sparkles size={20} />
+           </div>
+           <motion.h2 
+             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+             className="text-4xl lg:text-5xl font-bold tracking-tight mb-6 leading-[1.1]"
+           >
+             Set the stage for cinematic memories.
+           </motion.h2>
+           <motion.p 
+             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+             className="text-zinc-300 text-lg leading-relaxed font-medium"
+           >
+             Create your event space in seconds. Guests scan the QR code and instantly share their photos directly to the live wall.
+           </motion.p>
+         </div>
+      </div>
+
+      {/* Right Panel: Form */}
+      <div className="flex flex-col relative z-10">
+         {/* Mobile Nav */}
+         <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center px-4">
+           <Link href="/dashboard" className="text-text-muted hover:text-text-primary transition-colors">
+              <ArrowRight size={20} className="rotate-180" />
+           </Link>
+           <div className="flex-1 flex justify-center">
+             <AnimatedLogo width={100} height={28} />
+           </div>
+           <div className="w-5" />
+         </nav>
+
+         <main className="flex-grow flex items-center justify-center p-6 pt-24 lg:pt-6">
+           <motion.div 
+             initial={{ opacity: 0, x: 20 }}
+             animate={{ opacity: 1, x: 0 }}
+             className="w-full max-w-md"
+           >
+             <div className="mb-10 text-center lg:text-left">
+               <h1 className="h2-text mb-2 text-text-primary">Create a Photo Wall</h1>
+               <p className="text-text-secondary text-sm">Set up your event space in seconds.</p>
+             </div>
  
           <form onSubmit={handleCreate} className="space-y-6">
             <div className="input-group">
@@ -265,24 +296,20 @@ export default function CreateEventPage() {
               <button 
                 type="submit" 
                 disabled={loading || !user} 
-                className="btn btn-primary w-full btn-lg"
+                className="btn-premium w-full !py-4 flex items-center justify-center gap-2 group"
               >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-border border-t-bg rounded-full animate-spin" />
-                    <span>Creating...</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus size={18} />
-                    <span>Launch Photo Wall</span>
-                  </>
-                )}
+                 {loading ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : (
+                   <>
+                     <span>Create Wall</span>
+                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                   </>
+                 )}
               </button>
             </div>
           </form>
         </motion.div>
       </main>
     </div>
+  </div>
   );
 }

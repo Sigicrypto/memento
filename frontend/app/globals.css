@@ -26,6 +26,7 @@
 
   --animate-shimmer: shimmer 1.5s infinite;
   --animate-marquee: marquee 30s linear infinite;
+  --animate-aurora: aurora 60s linear infinite;
 }
 
 @keyframes shimmer {
@@ -36,6 +37,15 @@
 @keyframes marquee {
   from { transform: translateX(0); }
   to { transform: translateX(calc(-50% - 1rem)); }
+}
+
+@keyframes aurora {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
+  }
 }
 
 :root {
@@ -468,3 +478,7 @@ h1, h2, h3, h4, h5, h6 {
 .pause-on-hover:hover {
   animation-play-state: paused !important;
 }
+  
+@keyframes animatedgradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } } 
+  
+.bg-animated-gradient { background-size: 300% 300%; animation: animatedgradient 12s ease infinite alternate; } 

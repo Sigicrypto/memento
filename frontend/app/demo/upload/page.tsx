@@ -725,14 +725,9 @@ function DemoUploadContent() {
         }
       `}</style>
 
-      <div className="lp upload-page">
+      <div className="lp upload-page bg-bg-animated-gradient bg-[linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab)] dark:bg-[linear-gradient(-45deg,#8a2387,#e94057,#f27121)]">
         {/* Background elements */}
-        <div className="orbs">
-          <div className="orb orb1" />
-          <div className="orb orb2" />
-          <div className="orb orb3" />
-        </div>
-        <div className="grain" />
+        <div className="absolute inset-0 bg-bg/80 backdrop-blur-[100px] z-0 pointer-events-none" />
 
         {/* ── NAV ── */}
         <nav className="lp-nav scrolled" style={{ background: 'rgba(24, 24, 27, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>

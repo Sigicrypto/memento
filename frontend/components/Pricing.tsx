@@ -49,7 +49,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.05 }}
-                className={`card-interactive flex flex-col h-full relative ${plan.highlight ? 'border-primary shadow-sm' : ''}`}
+                className={`card-interactive flex flex-col h-full relative bg-surface/60 backdrop-blur-xl ${plan.highlight ? 'border-primary shadow-[0_0_30px_rgba(var(--primary-rgb),0.2)]' : 'border-border/50'}`}
               >
                 {/* Recommended badge */}
                 {plan.highlight && (
@@ -96,9 +96,9 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
         </div>
  
         {/* Feature Breakdown Section */}
-        <div className="flex flex-col gap-8 max-w-6xl mx-auto">
+        <div className="flex flex-col gap-8 max-w-6xl mx-auto relative z-10">
            <h3 className="h3-text text-center text-text-primary">Feature Breakdown</h3>
-           <div className="card overflow-x-auto p-0 border-border">
+           <div className="card overflow-x-auto p-0 border-border/50 bg-surface/60 backdrop-blur-xl">
               <table className="w-full text-left min-w-[720px] border-collapse">
                  <thead>
                     <tr className="border-b border-border bg-bg">
@@ -124,14 +124,13 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
            </div>
         </div>
  
-        {/* CTA Section */}
-        <div className="mt-20 max-w-4xl mx-auto">
+        <div className="mt-20 max-w-4xl mx-auto relative z-10">
            <motion.div
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
-              className="card text-center py-16 px-6 bg-bg-subtle"
+              className="card text-center py-16 px-6 bg-surface/60 backdrop-blur-xl border-border/50"
            >
               <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-text-primary mb-4">
                  Ready to preserve every heartbeat?

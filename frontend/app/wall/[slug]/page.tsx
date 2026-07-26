@@ -523,10 +523,10 @@ export default function WallPage() {
                   <Link href={uploadUrl} className="btn-premium px-10 py-4">Share First Memory</Link>
                </motion.div>
             ) : viewMode === 'grid' ? (
-               <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+               <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8">
                   {displayedPhotos.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative aspect-[4/5] rounded-3xl overflow-hidden border border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 bg-bg-subtle">
-                       <Image src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" loading="lazy" />
+                    <motion.div key={p.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: (i % 8) * 0.05 }} className="group relative rounded-3xl overflow-hidden border border-black/5 dark:border-white/5 bg-bg-subtle break-inside-avoid">
+                       <img src={getPublicUrl(p.storage_path)} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" alt="" loading="lazy" />
                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
                           <div className="flex justify-between items-start">
                              <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
@@ -572,10 +572,10 @@ export default function WallPage() {
                            <h3 className="text-xs font-black text-text-muted tracking-[.3em] uppercase whitespace-nowrap">{label}</h3>
                            <div className="h-px w-full bg-bg-subtle" />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8">
                            {gPhotos.map((p, i) => (
-                             <motion.div key={p.id} className="relative aspect-[3/4] overflow-hidden rounded-xl bg-bg-subtle border border-border">
-                                <Image src={getPublicUrl(p.storage_path)} className="object-cover group-hover:scale-105 transition-all" alt="" fill sizes="200px" loading="lazy" />
+                             <motion.div key={p.id} className="relative overflow-hidden rounded-xl bg-bg-subtle border border-border break-inside-avoid group">
+                                <img src={getPublicUrl(p.storage_path)} className="w-full h-auto object-cover group-hover:scale-105 transition-all duration-700" alt="" loading="lazy" />
                                 <div className="absolute bottom-4 left-4 right-4 p-3 /60 backdrop-blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-all">
                                    <p className="text-[9px] font-black text-primary tracking-widest uppercase">BY {p.uploader_name}</p>
                                 </div>

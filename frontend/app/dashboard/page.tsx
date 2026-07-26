@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Search, CheckCircle, Zap, Star, Heart } from 'lucide-react';
+import Lottie from 'lottie-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import ThemeToggle from '@/components/ThemeToggle';
 import EventSettingsDrawer from '@/components/EventSettingsDrawer';
@@ -65,6 +66,14 @@ export default function DashboardPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [emptyLottieData, setEmptyLottieData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('https://assets4.lottiefiles.com/packages/lf20_t2xm9bsw.json')
+      .then(res => res.json())
+      .then(setEmptyLottieData)
+      .catch(() => {});
+  }, []);
 
   const fetchEvents = async () => {
     if (!user) return;
@@ -232,9 +241,17 @@ export default function DashboardPage() {
           </div>
 
           {events.length === 0 ? (
-            <div className="card p-12 text-center flex flex-col items-center border-dashed border-2">
-               <div className="w-12 h-12 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-text-muted mb-4">
-                 <Layout size={20} />
+            <div className="card p-12 text-center flex flex-col items-center border-dashed border-2 border-border/60 bg-surface/30">
+               <div className="w-48 h-48 mb-2 flex items-center justify-center opacity-80 mix-blend-screen dark:mix-blend-lighten">
+                 {emptyLottieData ? (
+                   <Lottie 
+                     animationData={emptyLottieData}
+                     loop={true} 
+                     autoplay={true} 
+                   />
+                 ) : (
+                   <Layout size={48} className="text-text-muted opacity-50" />
+                 )}
                </div>
                <h3 className="text-base font-semibold mb-2 text-text-primary">No active events yet</h3>
                <p className="text-text-secondary max-w-sm mb-6 text-sm">Create your first photo wall and start collecting cinematic memories instantly.</p>
