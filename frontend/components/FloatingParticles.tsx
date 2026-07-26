@@ -14,7 +14,7 @@ export default function FloatingParticles({ className }: { className?: string })
     <ParticlesProvider init={particlesInit}>
       <Particles
         id="tsparticles"
-        className={`absolute inset-0 z-0 pointer-events-none ${className || ''}`}
+        className={`fixed inset-0 z-0 pointer-events-none ${className || ''}`}
         options={{
           background: { color: { value: "transparent" } },
           fpsLimit: 120,
