@@ -15,11 +15,11 @@ const WhyChoose: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-20"
         >
-          <div className="hero-badge mb-6 backdrop-blur-md bg-white/5 border-white/10">Use Cases</div>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
+          <div className="hero-badge mb-6 backdrop-blur-md bg-surface/50 border-border">Use Cases</div>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-text-primary">
             Capture what matters. <span className="text-accent-cyan">Instantly.</span>
           </h2>
-          <p className="text-lg text-zinc-400 max-w-2xl mx-auto font-medium">
+          <p className="text-lg text-text-secondary max-w-2xl mx-auto font-medium">
             From intimate weddings to grand festivals, Memento turns every guest into a contributor, creating a shared memory that lasts forever.
           </p>
         </motion.div>
@@ -38,15 +38,15 @@ const WhyChoose: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className={`flex flex-col items-start group relative overflow-hidden rounded-3xl bg-surface/30 backdrop-blur-md border border-white/10 p-8 hover:bg-surface/50 hover:border-white/20 transition-all duration-500 shadow-2xl ${f.big ? 'lg:col-span-2' : ''}`}
+              className={`flex flex-col items-start group relative overflow-hidden rounded-3xl bg-surface/70 backdrop-blur-xl border border-border p-8 hover:bg-surface hover:border-border-hover transition-all duration-500 shadow-xl ${f.big ? 'lg:col-span-2' : ''}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="relative z-10">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:border-white/30 group-hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all duration-500">
+                <div className="w-14 h-14 rounded-2xl bg-bg backdrop-blur-md border border-border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:border-accent-cyan/30 shadow-sm transition-all duration-500">
                   {f.icon}
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-accent-cyan transition-colors">{f.title}</h3>
-                <p className="text-zinc-400 text-lg leading-relaxed font-medium">{f.desc}</p>
+                <h3 className="text-2xl font-bold text-text-primary mb-4 group-hover:text-accent-cyan transition-colors">{f.title}</h3>
+                <p className="text-text-secondary text-lg leading-relaxed font-medium">{f.desc}</p>
               </div>
             </motion.div>
           ))}

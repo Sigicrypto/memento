@@ -56,6 +56,7 @@ const PricingSection = dynamic(() => import('@/components/sections/PricingSectio
 
 
 import DemoModal from '@/components/DemoModal';
+import FloatingParticles from '@/components/FloatingParticles';
 
 export default function LandingPage() {
 
@@ -200,7 +201,14 @@ export default function LandingPage() {
 
   return (
     <>
-    <div className="min-h-screen bg-bg relative">
+    <div className="min-h-screen bg-bg relative lp overflow-hidden">
+      <div className="grain" />
+      <div className="orbs">
+        <div className="orb orb-primary" />
+        <div className="orb orb-secondary" />
+      </div>
+      <FloatingParticles className="opacity-60" />
+      
       <div className="flex flex-col gap-16 relative z-10">
         <Hero setIsDemoOpen={setIsDemoOpen} />
         <Stats />

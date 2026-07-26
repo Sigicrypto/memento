@@ -15,7 +15,7 @@ const Features: React.FC = () => {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-16 relative z-10"
         >
-          <div className="hero-badge mb-6 backdrop-blur-md bg-white/5 border-white/10">
+          <div className="hero-badge mb-6 backdrop-blur-md bg-surface/50 border-border">
             Everything you need
           </div>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-text-primary">
@@ -43,7 +43,7 @@ const Features: React.FC = () => {
           ].map((f, i) => (
             <motion.div
               key={i}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-surface/40 backdrop-blur-xl border border-white/10 p-8 hover:bg-surface/60 hover:border-white/20 transition-all duration-500 shadow-2xl ${f.className}`}
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-surface/70 backdrop-blur-xl border border-border p-8 hover:bg-surface hover:border-border-hover transition-all duration-500 shadow-xl ${f.className}`}
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
@@ -52,12 +52,12 @@ const Features: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               
               <div className="relative z-10 flex flex-col h-full">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-2xl mb-6 shadow-[0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] group-hover:border-white/30 transition-all duration-500">
+                <div className="w-14 h-14 rounded-2xl bg-bg backdrop-blur-md border border-border flex items-center justify-center text-2xl mb-6 shadow-sm group-hover:scale-110 group-hover:border-accent-cyan/30 transition-all duration-500">
                   {f.icon}
                 </div>
                 <div className="mt-auto">
-                  <h3 className="text-xl font-bold text-white mb-2 tracking-tight group-hover:text-accent-cyan transition-colors">{f.title}</h3>
-                  <p className="text-zinc-400 text-sm leading-relaxed font-medium">{f.desc}</p>
+                  <h3 className="text-xl font-bold text-text-primary mb-2 tracking-tight group-hover:text-accent-cyan transition-colors">{f.title}</h3>
+                  <p className="text-text-secondary text-sm leading-relaxed font-medium">{f.desc}</p>
                 </div>
               </div>
             </motion.div>

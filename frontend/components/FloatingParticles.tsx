@@ -27,8 +27,8 @@ export default function FloatingParticles({ className }: { className?: string })
             },
           },
           particles: {
-            color: { value: "#ffffff" },
-            links: { color: "#ffffff", distance: 150, enable: true, opacity: 0.1, width: 1 },
+            color: { value: "#0891A8" },
+            links: { color: "#0891A8", distance: 150, enable: true, opacity: 0.2, width: 1 },
             move: {
               direction: "none",
               enable: true,
