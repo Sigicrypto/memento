@@ -7,38 +7,7 @@ import Corners from '@/components/Corners';
 import { cn } from '@/lib/utils';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 
-// Aceternity Background Beams (Minimalist Version)
-const BackgroundBeams = () => {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]">
-      <div className="absolute inset-0 bg-[url('https://ui.aceternity.com/_next/static/media/grid.864c0920.svg')] opacity-[0.03] bg-center [mask-image:linear-gradient(to_bottom,white,transparent)]" />
-      <div className="absolute w-full h-full">
-        <motion.div
-          animate={{
-            transform: [
-              "translateY(0px) translateX(0px)",
-              "translateY(-20px) translateX(20px)",
-              "translateY(0px) translateX(0px)",
-            ],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-1/2 left-1/2 w-[600px] h-[600px] bg-accent-cyan/10 blur-[100px] rounded-full pointer-events-none mix-blend-screen"
-        />
-        <motion.div
-          animate={{
-            transform: [
-              "translateY(0px) translateX(0px)",
-              "translateY(20px) translateX(-20px)",
-              "translateY(0px) translateX(0px)",
-            ],
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-1/2 right-1/4 w-[400px] h-[400px] bg-accent-indigo/10 blur-[80px] rounded-full pointer-events-none mix-blend-screen"
-        />
-      </div>
-    </div>
-  );
-};
+
 
 // Magic UI Shine Button
 const ShineButton = ({ children, onClick, className }: any) => {
@@ -66,8 +35,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
   return (
     <section className="relative overflow-hidden bg-bg min-h-screen flex flex-col items-center justify-center pt-32 pb-20 px-6 sm:px-12">
       {/* Full-width Backgrounds */}
-      <AuroraBackground className="absolute inset-0 z-0 opacity-40 dark:opacity-80" /> 
-      <BackgroundBeams />
+      <AuroraBackground className="absolute inset-0 z-0 opacity-40 dark:opacity-80" />
 
       <div className="container relative z-10 mx-auto flex flex-col items-center text-center">
         <motion.div

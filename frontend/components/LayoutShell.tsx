@@ -7,6 +7,7 @@ import SocialFloat from "@/components/SocialFloat";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/CustomCursor";
 import CookieBanner from "@/components/CookieBanner";
+import { BackgroundBeams } from "@/components/BackgroundBeams";
 import "@/styles/cursor.css";
 
 /**
@@ -26,7 +27,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   // ── All other routes: full site chrome ──
   return (
     <>
-      <div className="min-h-screen w-full flex flex-col">
+      <BackgroundBeams />
+      <div className="min-h-screen w-full flex flex-col relative z-10">
         <Navbar />
         <MainContent>
           {children}
