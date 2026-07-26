@@ -1,9 +1,61 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import { motion, useAnimation, useInView } from 'framer-motion';
 import { Play, ArrowRight, ScanLine } from 'lucide-react';
 import Corners from '@/components/Corners';
+import { cn } from '@/lib/utils';
+
+// Aceternity Background Beams (Minimalist Version)
+const BackgroundBeams = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]">
+      <div className="absolute inset-0 bg-[url('https://ui.aceternity.com/_next/static/media/grid.864c0920.svg')] opacity-[0.03] bg-center [mask-image:linear-gradient(to_bottom,white,transparent)]" />
+      <div className="absolute w-full h-full">
+        <motion.div
+          animate={{
+            transform: [
+              "translateY(0px) translateX(0px)",
+              "translateY(-20px) translateX(20px)",
+              "translateY(0px) translateX(0px)",
+            ],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-1/2 left-1/2 w-[600px] h-[600px] bg-accent-cyan/10 blur-[100px] rounded-full pointer-events-none mix-blend-screen"
+        />
+        <motion.div
+          animate={{
+            transform: [
+              "translateY(0px) translateX(0px)",
+              "translateY(20px) translateX(-20px)",
+              "translateY(0px) translateX(0px)",
+            ],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-1/2 right-1/4 w-[400px] h-[400px] bg-accent-indigo/10 blur-[80px] rounded-full pointer-events-none mix-blend-screen"
+        />
+      </div>
+    </div>
+  );
+};
+
+// Magic UI Shine Button
+const ShineButton = ({ children, onClick, className }: any) => {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "relative overflow-hidden group inline-flex items-center justify-center px-8 py-3",
+        "bg-white text-black rounded-lg font-medium tracking-tight transition-all",
+        "hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-[0.98]",
+        className
+      )}
+    >
+      <span className="relative z-10 flex items-center gap-2">{children}</span>
+      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-shimmer" />
+    </button>
+  );
+};
 
 interface HeroProps {
   setIsDemoOpen: (open: boolean) => void;
@@ -11,7 +63,8 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
   return (
-    <section className="relative overflow-hidden" style={{ paddingTop: '160px', paddingBottom: '120px' }}>
+    <section className="relative overflow-hidden bg-bg" style={{ paddingTop: '160px', paddingBottom: '120px' }}>
+      <BackgroundBeams />
       <div className="container relative z-10 flex flex-col items-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -30,16 +83,15 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
             The minimal QR-based photo sharing platform for modern events. No apps required, zero hassle. A premium experience for your guests.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => setIsDemoOpen(true)}
-              className="btn btn-primary px-8 py-3 group"
-            >
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+            <ShineButton onClick={() => setIsDemoOpen(true)}>
               <span>Watch Demo Wall</span>
-              <Play size={16} className="fill-current group-hover:translate-x-0.5 transition-transform" />
-            </button>
-            <button className="btn btn-ghost px-8 py-3 group">
-              How it works <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              <Play size={16} className="fill-current" />
+            </ShineButton>
+            <button className="relative group inline-flex items-center justify-center px-8 py-3 font-medium text-text-secondary hover:text-text-primary transition-colors">
+              How it works 
+              <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-text-primary/20 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
             </button>
           </div>
         </motion.div>

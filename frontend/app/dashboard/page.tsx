@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles, BarChart2, Image as ImageIcon, LogOut, Settings, ArrowRight, Search, CheckCircle, Zap, Star, Heart } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import ThemeToggle from '@/components/ThemeToggle';
+import EventSettingsDrawer from '@/components/EventSettingsDrawer';
 
 interface Profile {
   id: string;
@@ -63,30 +64,33 @@ export default function DashboardPage() {
   const [deleteText, setDeleteText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+
+  const fetchEvents = async () => {
+    if (!user) return;
+    const { data: eventData } = await supabase.from('events').select('*')
+      .eq('owner_id', user.id).order('created_at', { ascending: false });
+
+    if (eventData) {
+      const eventsWithCounts = await Promise.all(eventData.map(async (event) => {
+        const { count } = await supabase
+          .from('photos')
+          .select('*', { count: 'exact', head: true })
+          .eq('event_id', event.id);
+        return { ...event, photo_count: count || 0 };
+      }));
+      setEvents(eventsWithCounts);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (isLoading) return;
     if (!user) { router.push('/'); return; }
     if (!isApproved) { router.push('/pending'); return; }
 
-    const fetchEvents = async () => {
-      const { data: eventData } = await supabase.from('events').select('*')
-        .eq('owner_id', user.id).order('created_at', { ascending: false });
-
-      if (eventData) {
-        const eventsWithCounts = await Promise.all(eventData.map(async (event) => {
-          const { count } = await supabase
-            .from('photos')
-            .select('*', { count: 'exact', head: true })
-            .eq('event_id', event.id);
-          return { ...event, photo_count: count || 0 };
-        }));
-        setEvents(eventsWithCounts);
-      }
-      setLoading(false);
-    };
     fetchEvents();
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, isApproved]);
 
   const confirmDelete = (event: Event) => { setDeleteEvent(event); setDeleteText(''); };
 
@@ -122,39 +126,12 @@ export default function DashboardPage() {
   const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="min-h-screen bg-bg-subtle relative flex flex-col">
+    <div className="relative flex flex-col w-full">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
-      
-      {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] border-b border-border bg-bg/90 backdrop-blur-md flex items-center">
-        <div className="container w-full flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <AnimatedLogo width={120} height={32} />
-            </Link>
-            <div className="h-4 w-px bg-border hidden md:block" />
-            <span className="text-xs font-semibold text-text-secondary hidden md:block uppercase tracking-wider">Studio</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            {isSuperAdmin && (
-              <Link href="/admin" className="hidden sm:flex items-center gap-2 px-3 py-1 rounded bg-bg-subtle border border-border text-xs font-medium text-text-primary hover:bg-border transition-colors">
-                <Shield size={14} /> Admin
-              </Link>
-            )}
-            <button
-              onClick={() => supabase.auth.signOut().then(() => router.push('/'))}
-              className="flex items-center gap-2 px-3 py-1 text-text-secondary hover:text-text-primary hover:bg-bg-subtle rounded transition-colors text-sm font-medium"
-            >
-              <LogOut size={14} /> <span className="hidden sm:inline">Sign out</span>
-            </button>
-          </div>
-        </div>
-      </nav>
 
       {/* ── MAIN ── */}
-      <main className="flex-grow pt-24 pb-20 container">
+      <main className="flex-grow pt-10 pb-20 px-4 md:px-10 max-w-7xl mx-auto w-full">
         
         {/* Profile Header */}
         <div className="flex items-center gap-5 mb-10">
@@ -169,52 +146,63 @@ export default function DashboardPage() {
            </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Tremor-style Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="card flex items-center gap-4">
-            <div className="w-10 h-10 rounded bg-bg-subtle border border-border flex items-center justify-center text-text-primary flex-shrink-0">
-              <BarChart2 size={18} />
+          <div className="card flex flex-col justify-between p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-text-secondary">Active Events</span>
+              <BarChart2 size={16} className="text-text-muted" />
             </div>
-            <div>
-              <div className="text-xl font-bold leading-none mb-1 text-text-primary">{events.length}</div>
-              <div className="text-xs font-medium text-text-secondary">Active Events</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight text-text-primary">{events.length}</span>
             </div>
-          </div>
-
-          <div className="card flex items-center gap-4">
-            <div className="w-10 h-10 rounded bg-bg-subtle border border-border flex items-center justify-center text-text-primary flex-shrink-0">
-              <ImageIcon size={18} />
-            </div>
-            <div>
-              <div className="text-xl font-bold leading-none mb-1 text-text-primary">{totalPhotos}</div>
-              <div className="text-xs font-medium text-text-secondary">Photos Collected</div>
+            <div className="mt-4 h-12 w-full flex items-end gap-1 opacity-60">
+              {/* Dummy sparkline */}
+              {[40, 20, 60, 80, 50, 90, 70].map((h, i) => (
+                <div key={i} className="flex-1 bg-accent-cyan rounded-t-sm" style={{ height: `${h}%` }} />
+              ))}
             </div>
           </div>
 
-          {/* Plan Card */}
-          <div className="card flex flex-col justify-between p-5">
-             <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-2 text-text-primary">
-                   {planInfo.icon}
-                   <span className="text-sm font-semibold">{planInfo.name}</span>
+          <div className="card flex flex-col justify-between p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-text-secondary">Total Photos Collected</span>
+              <ImageIcon size={16} className="text-text-muted" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight text-text-primary">{totalPhotos}</span>
+              <span className="text-xs font-medium text-success bg-success/10 px-2 py-0.5 rounded-full">+12%</span>
+            </div>
+            <div className="mt-4 h-12 w-full flex items-end">
+              {/* Dummy area chart */}
+              <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible opacity-50">
+                <path d="M0,40 L0,30 L20,35 L40,15 L60,25 L80,5 L100,20 L100,40 Z" fill="var(--accent-cyan)" fillOpacity="0.2" />
+                <path d="M0,30 L20,35 L40,15 L60,25 L80,5 L100,20" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="card flex flex-col justify-between p-6 bg-gradient-to-br from-surface to-bg-subtle">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-2 text-text-primary">
+                {planInfo.icon}
+                <span className="text-sm font-semibold">{planInfo.name} Plan</span>
+              </div>
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-success/20 text-success tracking-wider border border-success/30">Active</span>
+            </div>
+            <div className="flex flex-col gap-2 mb-4 mt-2">
+              {planInfo.features.slice(0, 3).map((f, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-text-secondary">
+                  <CheckCircle size={12} className="text-accent-cyan" />
+                  {f}
                 </div>
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-success/10 text-success">Active</span>
-             </div>
-             
-             <div className="flex flex-col gap-2 mb-4">
-               {planInfo.features.slice(0, 2).map((f, i) => (
-                 <div key={i} className="flex items-center gap-2 text-xs text-text-secondary">
-                   <CheckCircle size={12} className="text-text-muted" />
-                   {f}
-                 </div>
-               ))}
-             </div>
-
-             {currentPlan !== 'whitelabel' && (
-               <Link href="/#pricing" className="text-xs font-semibold text-text-primary hover:underline flex items-center gap-1 w-max">
-                 Upgrade Plan <ArrowRight size={12} />
-               </Link>
-             )}
+              ))}
+            </div>
+            {currentPlan !== 'whitelabel' && (
+              <Link href="/#pricing" className="text-xs font-semibold text-text-primary hover:text-accent-cyan flex items-center gap-1 w-max mt-auto transition-colors">
+                Upgrade Plan <ArrowRight size={12} />
+              </Link>
+            )}
           </div>
         </div>
 
@@ -244,32 +232,72 @@ export default function DashboardPage() {
           </div>
 
           {events.length === 0 ? (
-            <div className="card p-12 text-center flex flex-col items-center">
+            <div className="card p-12 text-center flex flex-col items-center border-dashed border-2">
                <div className="w-12 h-12 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-text-muted mb-4">
                  <Layout size={20} />
                </div>
                <h3 className="text-base font-semibold mb-2 text-text-primary">No active events yet</h3>
                <p className="text-text-secondary max-w-sm mb-6 text-sm">Create your first photo wall and start collecting cinematic memories instantly.</p>
                <Link href="/create" className="btn btn-primary">
-                 Launch your first wall
+                 <Plus size={16} /> Launch your first wall
                </Link>
             </div>
           ) : filteredEvents.length === 0 ? (
-             <div className="card p-12 text-center text-text-muted text-sm">No events found matching "{searchQuery}"</div>
+             <div className="card p-12 text-center text-text-muted text-sm border-dashed">No events found matching "{searchQuery}"</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
-                {filteredEvents.map((event, i) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    index={i}
-                    copied={copied}
-                    onCopy={copyUrl}
-                    onDelete={confirmDelete}
-                  />
-                ))}
-              </AnimatePresence>
+            <div className="table-container shadow-card">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Event Name</th>
+                    <th>Date Created</th>
+                    <th>Photos</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <AnimatePresence mode="popLayout">
+                    {filteredEvents.map((event, i) => (
+                      <motion.tr 
+                        key={event.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="group"
+                      >
+                        <td className="font-medium">
+                          <Link href={`/wall/${event.slug}`} className="hover:text-accent-cyan transition-colors">{event.name}</Link>
+                        </td>
+                        <td className="text-text-secondary text-sm">
+                          {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </td>
+                        <td>
+                          <span className="inline-flex items-center justify-center bg-bg-subtle border border-border rounded-full px-3 py-1 text-xs font-semibold">
+                            {event.photo_count || 0}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => copyUrl(event.slug)} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-md transition-colors" title="Copy Link">
+                              {copied === event.slug ? <CheckCircle size={14} className="text-success" /> : <Copy size={14} />}
+                            </button>
+                            <Link href={`/dashboard/${event.id}/analytics`} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-md transition-colors" title="Analytics">
+                              <BarChart2 size={14} />
+                            </Link>
+                            <button onClick={() => setEditingEventId(event.id)} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-md transition-colors" title="Settings">
+                              <Settings size={14} />
+                            </button>
+                            <button onClick={() => confirmDelete(event)} className="p-2 text-text-muted hover:text-error hover:bg-error/10 rounded-md transition-colors" title="Delete">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </AnimatePresence>
+                </tbody>
+              </table>
             </div>
           )}
         </section>
@@ -329,72 +357,13 @@ export default function DashboardPage() {
           </div>
         )}
       </AnimatePresence>
+
+      <EventSettingsDrawer 
+        eventId={editingEventId}
+        onClose={() => setEditingEventId(null)}
+        onSuccess={fetchEvents}
+        user={user}
+      />
     </div>
-  );
-}
-
-/* ── EVENT CARD ── */
-function EventCard({ event, index, copied, onCopy, onDelete }: {
-  event: Event; index: number; copied: string;
-  onCopy: (slug: string) => void;
-  onDelete: (event: Event) => void;
-}) {
-  const dateStr = new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: index * 0.05 }}
-      className="card-interactive flex flex-col justify-between h-full p-5"
-    >
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-start gap-3">
-          <div className="min-w-0">
-            <h3 className="text-sm font-semibold truncate mb-1 text-text-primary">{event.name}</h3>
-            <div className="flex items-center gap-2 text-xs text-text-secondary">
-               <span>{dateStr}</span>
-               <span className="w-1 h-1 rounded-full bg-border" />
-               <span className="font-medium text-text-primary">{event.photo_count || 0} Photos</span>
-            </div>
-          </div>
-          <Link href={`/dashboard/edit/${event.id}`} className="p-1.5 rounded text-text-muted hover:bg-bg-subtle hover:text-text-primary transition-colors flex-shrink-0" title="Edit settings">
-            <Settings size={14} />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { href: `/wall/${event.slug}`, icon: <Layout size={14} />, label: 'Wall' },
-            { href: `/mobile/${event.slug}`, icon: <Camera size={14} />, label: 'Scan' },
-            { href: `/moderate/${event.slug}`, icon: <Shield size={14} />, label: 'Mod' },
-            { href: `/dashboard/${event.id}/analytics`, icon: <BarChart2 size={14} />, label: 'Stats' },
-          ].map((btn) => (
-            <Link key={btn.label} href={btn.href} className="flex flex-col items-center justify-center gap-1.5 py-2 px-1 rounded bg-bg-subtle hover:bg-border transition-colors text-text-primary border border-transparent hover:border-border">
-              <div>{btn.icon}</div>
-              <span className="text-[10px] font-medium">{btn.label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex gap-2 pt-4 mt-4 border-t border-border">
-        <button
-          onClick={() => onCopy(event.slug)}
-          className="flex-1 flex items-center justify-between px-3 py-1.5 rounded bg-bg-subtle hover:bg-border transition-colors text-xs font-medium text-text-primary truncate border border-transparent hover:border-border"
-        >
-          <span className="truncate">{copied === event.slug ? 'Copied' : `memento.live/${event.slug}`}</span>
-          <Copy size={copied === event.slug ? 0 : 12} className="flex-shrink-0 ml-2 text-text-muted" />
-        </button>
-        <button
-          onClick={() => onDelete(event)}
-          className="p-1.5 px-3 rounded text-text-muted hover:bg-bg-subtle hover:text-error transition-colors flex-shrink-0 flex items-center justify-center border border-transparent hover:border-error/20 hover:bg-error/10"
-          title="Delete event"
-        >
-          <Trash2 size={14} />
-        </button>
-      </div>
-    </motion.div>
   );
 }

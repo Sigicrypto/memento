@@ -4,6 +4,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Corners from '@/components/Corners';
 
+const testimonials = [
+  { quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free and magical.", author: "Rohan & Priya", role: "Happy Couple", event: "Mumbai Wedding", rating: 5 },
+  { quote: "Our clients loved seeing the live photo wall at their gala. It was the talk of the night—seamless interaction.", author: "Fatima Al Balushi", role: "Event Coordinator", event: "Muscat Corporate Gala", rating: 5 },
+  { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time. Highly recommended.", author: "Sarah Jenkins", role: "Wedding Planner", event: "London Destination Wedding", rating: 5 },
+  { quote: "Guests were raving about how easy it was. The live slideshow on the projector made the night unforgettable.", author: "Michael Chen", role: "Event Host", event: "Birthday Bash", rating: 5 },
+  { quote: "I’ve tried other apps, but Memento’s no-app QR scan is a game changer. Perfect for our corporate retreat.", author: "Amanda Smith", role: "HR Director", event: "Corporate Retreat", rating: 5 },
+];
+
 const Testimonials: React.FC = () => {
   return (
     <section className="py-24 relative overflow-hidden">
@@ -24,37 +32,31 @@ const Testimonials: React.FC = () => {
           <p className="text-lg text-text-secondary max-w-2xl mx-auto">See why thousands of planners trust Memento for their most important celebrations.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            { quote: "We collected 500+ photos in just one evening! Memento made our wedding hassle-free and magical.", author: "Rohan & Priya", role: "Happy Couple", event: "Mumbai Wedding", rating: 5 },
-            { quote: "Our clients loved seeing the live photo wall at their gala. It was the talk of the night—seamless interaction.", author: "Fatima Al Balushi", role: "Event Coordinator", event: "Muscat Corporate Gala", rating: 5 },
-            { quote: "The simplest way to gather memories. No app, no friction, just pure joy in real-time. Highly recommended.", author: "Sarah Jenkins", role: "Wedding Planner", event: "London Destination Wedding", rating: 5 }
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="viewfinder gcard flex flex-col"
-            >
-              <Corners />
-              <div className="flex gap-1 mb-6">
-                {[...Array(item.rating)].map((_, j) => <span key={j} className="text-accent-cyan text-sm">★</span>)}
-              </div>
-              <p className="text-text-primary text-lg leading-relaxed mb-10 flex-grow italic">&quot;{item.quote}&quot;</p>
-
-              <div className="flex items-center gap-4 border-t border-border pt-6">
-                <div className="w-12 h-12 rounded-full bg-bg-subtle border border-accent-cyan/30 flex items-center justify-center text-accent-cyan font-bold font-mono-ui text-sm">
-                  {item.author.split(' ').map(n => n[0]).join('')}
+        <div className="relative flex w-full flex-col items-center justify-center overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+          <div className="flex w-max animate-marquee gap-8 py-4 pause-on-hover">
+            {[...testimonials, ...testimonials].map((item, i) => (
+              <div
+                key={i}
+                className="viewfinder gcard flex flex-col w-[350px] md:w-[400px] shrink-0"
+              >
+                <Corners />
+                <div className="flex gap-1 mb-6">
+                  {[...Array(item.rating)].map((_, j) => <span key={j} className="text-accent-cyan text-sm">★</span>)}
                 </div>
-                <div>
-                  <p className="text-text-primary font-bold leading-none mb-1">{item.author}</p>
-                  <p className="mono-label">{item.role}</p>
+                <p className="text-text-primary text-lg leading-relaxed mb-10 flex-grow italic">&quot;{item.quote}&quot;</p>
+  
+                <div className="flex items-center gap-4 border-t border-border pt-6">
+                  <div className="w-12 h-12 rounded-full bg-bg-subtle border border-accent-cyan/30 flex items-center justify-center text-accent-cyan font-bold font-mono-ui text-sm">
+                    {item.author.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <p className="text-text-primary font-bold leading-none mb-1">{item.author}</p>
+                    <p className="mono-label">{item.role}</p>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Social Proof Bar */}

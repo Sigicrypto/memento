@@ -23,6 +23,19 @@
   --color-accent-warm: var(--accent-warm);
   --color-error: var(--error);
   --color-success: var(--success);
+
+  --animate-shimmer: shimmer 1.5s infinite;
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 1rem)); }
 }
 
 :root {
@@ -450,4 +463,8 @@ h1, h2, h3, h4, h5, h6 {
 @media (prefers-reduced-motion: reduce) {
   .scanline, .live-pulse::after { animation: none !important; }
   html { scroll-behavior: auto; }
+}
+
+.pause-on-hover:hover {
+  animation-play-state: paused !important;
 }
