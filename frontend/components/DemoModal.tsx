@@ -236,7 +236,7 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
   const seconds = timeLeft % 60;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-8">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

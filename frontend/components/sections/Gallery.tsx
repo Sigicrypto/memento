@@ -13,18 +13,18 @@ const Gallery: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-20"
+          className="text-center mb-20 relative z-10"
         >
-          <div className="hud-chip mb-6">
+          <div className="hero-badge mb-6 backdrop-blur-md bg-white/5 border-white/10">
             Inspiration
           </div>
-          <h2 className="h1-text mb-6">
-            Real <span className="hero-title-accent italic">Event Walls</span>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-white">
+            Real <span className="text-accent-cyan italic">Event Walls</span>
           </h2>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto">See how people are using Memento to capture their special moments in high resolution.</p>
+          <p className="text-lg text-zinc-400 font-medium max-w-2xl mx-auto">See how people are using Memento to capture their special moments in high resolution.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10 max-w-7xl mx-auto">
           {[
             { title: 'Sarah & John Wedding', src: '/landing-hero/photo5.jpg', count: '156 photos' },
             { title: 'Tech Conference 2024', src: '/landing-hero/photo2.jpg', count: '289 photos' },
@@ -39,13 +39,13 @@ const Gallery: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="viewfinder gcard !p-0 aspect-[4/3] group cursor-pointer overflow-hidden"
+              className="group relative cursor-pointer overflow-hidden rounded-3xl bg-surface/30 backdrop-blur-md border border-white/10 aspect-[4/3] shadow-2xl"
             >
-              <Corners />
-              <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-8 flex flex-col justify-end">
-                <h3 className="text-text-primary font-bold text-xl mb-1 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">{item.title}</h3>
-                <p className="font-mono-ui text-accent-cyan text-xs font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.count}</p>
+              <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                <h3 className="text-white font-bold text-2xl mb-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{item.title}</h3>
+                <p className="font-mono-ui text-accent-cyan text-sm font-bold tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">{item.count}</p>
               </div>
             </motion.div>
           ))}
