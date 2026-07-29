@@ -27,6 +27,11 @@
   --animate-shimmer: shimmer 1.5s infinite;
   --animate-marquee: marquee 30s linear infinite;
   --animate-aurora: aurora 60s linear infinite;
+
+  /* Synthwave custom accents */
+  --color-neon-magenta: #ff00ff;
+  --color-neon-cyan: #00ffff;
+  --color-neon-purple: #9d4edd;
 }
 
 @keyframes shimmer {
@@ -552,4 +557,23 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-float-3d {
   animation: float-3d 6s ease-in-out infinite;
+}
+
+/* -- Stitch Generated Utilities -- */
+.text-gradient-neon {
+  background: linear-gradient(to right, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.neon-glow {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.neon-glow-magenta {
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), inset 0 0 10px rgba(255, 0, 255, 0.1);
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
 }
