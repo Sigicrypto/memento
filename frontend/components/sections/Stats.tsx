@@ -8,7 +8,7 @@ const Stats: React.FC = () => {
   return (
     <section className="py-24 relative">
       <div className="container">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-surface/70 backdrop-blur-2xl border border-border px-8 md:px-16 py-12 shadow-xl max-w-6xl mx-auto">
+        <div className="relative overflow-hidden rounded-3xl bg-surface/70 backdrop-blur-xl border border-border px-8 md:px-16 py-12 shadow-xl max-w-6xl mx-auto">
           <div className="absolute inset-0 bg-gradient-to-r from-accent-cyan/5 via-transparent to-accent-cyan/5 opacity-50" />
           <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-border">
             {[

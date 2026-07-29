@@ -25,7 +25,7 @@ export class ErrorBoundary extends React.Component<{children: React.ReactNode}, 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center text-text-primary relative overflow-hidden">
+        <div className="min-h-screen bg-bg flex flex-col items-center justify-center p-6 text-center text-text-primary relative overflow-hidden">
           <div className="orbs">
             <div className="orb orb-primary opacity-30" />
             <div className="orb orb-secondary opacity-30" />
@@ -40,7 +40,7 @@ export class ErrorBoundary extends React.Component<{children: React.ReactNode}, 
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="btn-premium w-full py-4 flex items-center justify-center gap-2"
+              className="btn btn-primary w-full py-4 flex items-center justify-center gap-2"
             >
               <RefreshCcw size={18} /> Try Again
             </button>

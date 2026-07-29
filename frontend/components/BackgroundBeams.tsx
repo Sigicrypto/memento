@@ -28,7 +28,7 @@ export const BackgroundBeams = () => {
             ],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-accent-indigo/20 blur-[80px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen"
+          className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-accent-cyan/15 blur-[80px] rounded-full pointer-events-none mix-blend-multiply dark:mix-blend-screen"
         />
       </div>
     </div>

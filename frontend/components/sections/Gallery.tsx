@@ -39,7 +39,7 @@ const Gallery: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative cursor-pointer overflow-hidden rounded-3xl bg-surface/70 backdrop-blur-md border border-border aspect-[4/3] shadow-xl"
+              className="group relative cursor-pointer overflow-hidden rounded-3xl bg-surface/70 backdrop-blur-xl border border-border aspect-[4/3] shadow-xl"
             >
               <img src={item.src} alt={item.title} className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-500" />

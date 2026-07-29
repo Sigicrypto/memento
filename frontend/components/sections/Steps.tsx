@@ -54,7 +54,7 @@ const Steps: React.FC = () => {
                       {s.icon}
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-text-primary mb-3 tracking-tight">{s.title}</h3>
+                  <h3 className="text-xl font-bold text-text-primary mb-3 tracking-tight group-hover:text-accent-cyan transition-colors">{s.title}</h3>
                   <p className="text-text-secondary font-medium leading-relaxed">{s.desc}</p>
                 </div>
               </motion.div>

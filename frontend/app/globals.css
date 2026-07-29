@@ -172,6 +172,15 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-muted);
 }
 
+/* -- Glass Panel (used by Terms, Privacy, Pending, modals) -- */
+.glass-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card);
+}
+
 /* -- Atmospheric Elements -- */
 .grain {
   position: fixed;
@@ -180,12 +189,11 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.4;
+  opacity: 0.5;
   background-image:
     linear-gradient(var(--border) 1px, transparent 1px),
     linear-gradient(90deg, var(--border) 1px, transparent 1px);
   background-size: 42px 42px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 75%);
 }
 
 .scanline {
@@ -474,4 +482,74 @@ h1, h2, h3, h4, h5, h6 {
   
 @keyframes animatedgradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } } 
   
-.bg-animated-gradient { background-size: 300% 300%; animation: animatedgradient 12s ease infinite alternate; } 
+.bg-animated-gradient { background-size: 300% 300%; animation: animatedgradient 12s ease infinite alternate; }
+
+/* -- 3D Perspective Neon Grid -- */
+.perspective-grid-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: 1000px;
+  background-color: #050505; /* Deep black background */
+  z-index: 0;
+}
+
+.perspective-grid {
+  position: absolute;
+  width: 200vw;
+  height: 200vh;
+  left: -50vw;
+  top: 20vh; /* Shift down to create floor effect */
+  transform: rotateX(75deg); /* Angle it for perspective */
+  transform-origin: top center;
+  background-image: 
+    linear-gradient(rgba(255, 0, 255, 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 255, 0.4) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 5s linear infinite;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 100%);
+}
+
+@keyframes gridMove {
+  0% {
+    transform: rotateX(75deg) translateY(0);
+  }
+  100% {
+    transform: rotateX(75deg) translateY(60px);
+  }
+}
+
+/* -- Neon text and glow utilities -- */
+.text-neon-pink {
+  color: #ff00ff;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.6), 0 0 20px rgba(255, 0, 255, 0.4);
+}
+
+.text-neon-cyan {
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+.bg-gradient-neon {
+  background: linear-gradient(90deg, #a855f7, #06b6d4);
+}
+
+.glassmorphic-modal {
+  background: rgba(20, 20, 30, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 3D floating animation */
+@keyframes float-3d {
+  0% { transform: translateY(0px) rotate3d(1, 1, 1, 0deg); }
+  50% { transform: translateY(-15px) rotate3d(1, 1, 1, 5deg); }
+  100% { transform: translateY(0px) rotate3d(1, 1, 1, 0deg); }
+}
+
+.animate-float-3d {
+  animation: float-3d 6s ease-in-out infinite;
+}

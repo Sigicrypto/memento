@@ -75,7 +75,7 @@ const Testimonials: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 p-12 rounded-3xl bg-surface/70 backdrop-blur-2xl border border-border shadow-xl text-center relative z-10"
+          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 p-12 rounded-3xl bg-surface/70 backdrop-blur-xl border border-border shadow-xl text-center relative z-10"
         >
           {[
             { val: '10k+', label: 'Events' },

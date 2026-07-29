@@ -364,7 +364,7 @@ export default function DashboardPage() {
                   <button
                     onClick={executeDelete}
                     disabled={deleteText !== deleteEvent.name || isDeleting}
-                    className="btn flex-1 bg-[#E00000] text-white border-[#E00000] hover:bg-[#C00000] disabled:opacity-50 disabled:cursor-not-allowed border"
+                    className="btn flex-1 bg-error text-white border-error hover:bg-error/80 disabled:opacity-50 disabled:cursor-not-allowed border"
                   >
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </button>

@@ -40,7 +40,7 @@ const WhyChoose: React.FC = () => {
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               className={`flex flex-col items-start group relative overflow-hidden rounded-3xl bg-surface/70 backdrop-blur-xl border border-border p-8 hover:bg-surface hover:border-border-hover transition-all duration-500 shadow-xl ${f.big ? 'lg:col-span-2' : ''}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-br from-accent-cyan/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="relative z-10">
                 <div className="w-14 h-14 rounded-2xl bg-bg backdrop-blur-md border border-border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:border-accent-cyan/30 shadow-sm transition-all duration-500">
                   {f.icon}

@@ -46,26 +46,26 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
   return (
     <>
-      <header className={`fixed top-0 left-0 w-full z-[9999] transition-colors duration-200 ${scrolled ? 'glass-nav scrolled' : 'bg-transparent border-b border-transparent'}`}>
-        <div className="container h-[64px] flex items-center justify-between">
+      <header className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[95%] md:w-[90%] max-w-4xl z-[9999] transition-all duration-300 rounded-full ${scrolled ? 'glassmorphic-modal border-white/10' : 'bg-transparent border border-transparent'}`}>
+        <div className="container h-[60px] flex items-center justify-between px-6">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="relative z-[101]"
             >
-              <AnimatedLogo width={160} height={40} />
+              <AnimatedLogo width={140} height={32} />
             </motion.div>
           </Link>
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((item) => (
                 <Link 
                   key={item} 
                   href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                  className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
                 >
                   {item}
                 </Link>
@@ -79,19 +79,19 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               <div className="hidden md:flex items-center gap-3">
                 {user ? (
                   <>
-                    <Link href="/dashboard" className="btn btn-secondary btn-sm">
+                    <Link href="/dashboard" className="btn btn-secondary btn-sm rounded-full">
                       Dashboard
                     </Link>
-                    <button onClick={handleSignOut} className="text-text-muted hover:text-text-primary transition-colors p-1" title="Sign out">
+                    <button onClick={handleSignOut} className="text-white/50 hover:text-white transition-colors p-1" title="Sign out">
                       <LogOut size={18} />
                     </button>
                   </>
                 ) : (
                   <>
-                    <button onClick={() => openAuth('login')} className="btn btn-ghost btn-sm">
+                    <button onClick={() => openAuth('login')} className="btn btn-ghost btn-sm text-white/70 hover:text-white">
                       Log in
                     </button>
-                    <button onClick={() => openAuth('signup')} className="btn btn-primary btn-sm">
+                    <button onClick={() => openAuth('signup')} className="btn btn-sm px-5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all">
                       Get Started
                     </button>
                   </>
@@ -99,12 +99,15 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               </div>
             )}
             
-            <ThemeToggle />
+            {/* Theme Toggle omitted for purely dark landing page, or kept if needed. Keeping it for now. */}
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
 
             {/* Hamburger Toggle */}
             {!mini && (
               <button 
-                className="md:hidden relative z-[101] p-1 text-text-primary hover:bg-bg-subtle rounded-md transition-colors"
+                className="md:hidden relative z-[101] p-1 text-white hover:bg-white/10 rounded-md transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

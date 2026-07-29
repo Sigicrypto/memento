@@ -11,9 +11,9 @@ export default function TermsPage() {
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
  
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-border backdrop-blur-xl px-8 flex items-center justify-between">
          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-text-primary transition-all font-bold text-sm">
+            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-all font-bold text-sm">
                <ArrowLeft size={16} /> Back to Home
             </Link>
             <div className="h-6 w-px bg-border hidden md:block" />
@@ -54,7 +54,7 @@ export default function TermsPage() {
             </section>
  
             <section className="space-y-4">
-               <div className="flex items-center gap-3 text-indigo-400 mb-6">
+               <div className="flex items-center gap-3 text-accent-cyan mb-6">
                   <UserCheck size={24} />
                   <h2 className="text-2xl font-bold">3. User Accounts</h2>
                </div>
@@ -62,7 +62,7 @@ export default function TermsPage() {
             </section>
  
             <section className="space-y-4">
-               <div className="flex items-center gap-3 text-emerald-400 mb-6">
+               <div className="flex items-center gap-3 text-accent-cyan mb-6">
                   <CreditCard size={24} />
                   <h2 className="text-2xl font-bold">4. Payments & Refunds</h2>
                </div>
@@ -70,11 +70,11 @@ export default function TermsPage() {
             </section>
  
             <section className="space-y-6">
-               <div className="flex items-center gap-3 text-red-400 mb-6">
+               <div className="flex items-center gap-3 text-accent-warm mb-6">
                   <Scale size={24} />
                   <h2 className="text-2xl font-bold">5. Content & Conduct</h2>
                </div>
-               <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/20">
+               <div className="p-6 rounded-2xl bg-error/5 border border-error/20">
                   <p className="font-bold mb-4">Zero Tolerance Policy</p>
                   <p className="text-text-secondary text-sm leading-relaxed mb-4">You are strictly responsible for all content uploaded to your walls. Memento prohibits explicit, illegal, or abusive imagery.</p>
                   <p className="text-text-secondary text-sm leading-relaxed">We provide automated safety filters and manual moderation tools. Memento reserves the right to terminate any wall violating these terms without refund.</p>
@@ -82,14 +82,14 @@ export default function TermsPage() {
             </section>
  
             <section className="space-y-4">
-               <div className="flex items-center gap-3 text-amber-400 mb-6">
+               <div className="flex items-center gap-3 text-accent-cyan mb-6">
                   <HelpCircle size={24} />
                   <h2 className="text-2xl font-bold">12. Contact</h2>
                </div>
                <p className="text-text-secondary leading-relaxed">Questions? Reach out to our legal team directly:</p>
                <div className="flex flex-wrap gap-4 mt-4">
                   <div className="px-5 py-3 rounded-xl bg-bg-subtle border border-border text-xs font-bold">support@memento.app</div>
-                  <div className="px-5 py-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold">+968 96095692 (WhatsApp)</div>
+                  <div className="px-5 py-3 rounded-xl bg-success/10 border border-success/20 text-success text-xs font-bold">+968 96095692 (WhatsApp)</div>
                </div>
             </section>
          </div>
