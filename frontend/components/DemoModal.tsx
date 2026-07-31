@@ -376,11 +376,11 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
         <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10 pt-32 pb-32 px-8">
            {photos.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                 <div className="p-4 bg-white rounded-3xl shadow-2xl mb-8">
-                   <QRCode value={uploadUrl} size={140} qrStyle="dots" eyeRadius={10} fgColor="#000000" bgColor="#ffffff" />
+                 <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-8 border border-white/10 shadow-2xl">
+                   <ImageIcon size={40} className="text-white/40" />
                  </div>
                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Waiting for first photo...</h2>
-                 <p className="text-white/60 max-w-sm text-sm md:text-lg mb-8">Scan the QR code or click below to upload a photo and watch it appear instantly.</p>
+                 <p className="text-white/60 max-w-sm text-sm md:text-lg mb-8">Scan the corner QR code or click below to upload a photo and watch it appear instantly.</p>
                  <a href={uploadUrl} target="_blank" rel="noreferrer" className="px-8 py-4 bg-white text-black rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white/90 transition-colors shadow-[0_0_40px_rgba(255,255,255,0.3)]">
                     Upload Photo
                  </a>
