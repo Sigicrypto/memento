@@ -879,10 +879,13 @@ function DemoUploadContent() {
                     <div className="drop-zone-icon">{uploadPhotos.length === 0 && lifetimePhotos === 0 ? '🖼️' : '➕'}</div>
                     <p className="drop-zone-text">
                       {totalUsed === 0
-                        ? 'Choose or drop photos'
+                        ? 'Tap to select photos'
                         : `Add more — ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left`}
                     </p>
-                    <p className="drop-zone-hint">
+                    <div className="mt-2 px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg pointer-events-none">
+                      {totalUsed === 0 ? 'Select Photos' : 'Add Photos'}
+                    </div>
+                    <p className="drop-zone-hint mt-2">
                       {lifetimePhotos > 0
                         ? `${lifetimePhotos} already uploaded · ${slotsLeft} remaining`
                         : `JPG, PNG, HEIC — up to ${MAX_IMAGES} total`}
@@ -950,8 +953,11 @@ function DemoUploadContent() {
                     />
                   )}
                   <div className="drop-zone-icon">🎬</div>
-                  <p className="drop-zone-text">Choose or drop a video</p>
-                  <p className="drop-zone-hint">MP4, MOV, WEBM — 1 video maximum</p>
+                  <p className="drop-zone-text">Tap to select a video</p>
+                  <div className="mt-2 px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg pointer-events-none">
+                    Select Video
+                  </div>
+                  <p className="drop-zone-hint mt-2">MP4, MOV, WEBM — 1 video maximum</p>
                 </div>
               )}
             </div>

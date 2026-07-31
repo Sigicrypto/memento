@@ -340,7 +340,9 @@ export default function MobilePage() {
                         <Camera size={24} />
                      </div>
                      <div className="text-center pointer-events-none">
-                        <p className="text-sm font-medium text-text-primary">Pick Photos or Videos</p>
+                        <div className="mt-1 mb-2 px-6 py-2 bg-black text-white dark:bg-white dark:text-black rounded-full text-xs font-bold uppercase tracking-widest shadow-md">
+                           Select Files
+                        </div>
                         <p className="text-xs text-text-muted mt-0.5">Up to {MAX_IMAGES} files</p>
                      </div>
                   </div>
