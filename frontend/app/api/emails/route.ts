@@ -4,8 +4,9 @@ import { validateCSRF } from '@/lib/csrf';
 import { rateLimit } from '@/lib/rateLimit';
 import { EmailTemplates } from '@/lib/emailTemplates';
 
-// Initialize with environment variable
-const resend = new Resend(process.env.RESEND_API_KEY || '');
+// Initialize with environment variable or a dummy key for build time
+// The API key is validated inside the POST handler before sending
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
 
 // Only allow template-based emails for security (no raw HTML injection)
 const ALLOWED_TEMPLATES = Object.keys(EmailTemplates);
