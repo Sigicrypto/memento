@@ -116,33 +116,39 @@ const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) =>
 };
  
 const Confetti = ({ trigger }: { trigger: boolean }) => {
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; color: string; size: number }>>([]);
   useEffect(() => {
     if (!trigger) return;
-    const palette = ['#6366f1', '#06b6d4', '#ec4899', '#f59e0b', '#10b981'];
-    setParticles(Array.from({ length: 50 }, (_, i) => ({
-      id: Date.now() + i,
-      x: Math.random() * 100,
-      color: palette[Math.floor(Math.random() * palette.length)],
-      size: Math.random() * 8 + 4,
-    })));
-    setTimeout(() => setParticles([]), 3000);
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      import('canvas-confetti').then(({ default: confetti }) => {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#6366f1', '#06b6d4', '#ec4899', '#f59e0b', '#10b981'],
+          zIndex: 600
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#6366f1', '#06b6d4', '#ec4899', '#f59e0b', '#10b981'],
+          zIndex: 600
+        });
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
   }, [trigger]);
  
-  if (!particles.length) return null;
-  return (
-    <div className="fixed inset-0 pointer-events-none z-[600]">
-      {particles.map((p, i) => (
-        <div key={p.id} style={{
-          position: 'absolute', left: `${p.x}%`, top: '-20px',
-          width: p.size, height: p.size,
-          background: p.color, borderRadius: Math.random() > 0.5 ? '50%' : '2px',
-          animation: `fall ${2.5 + Math.random()}s ease-out ${i * 0.02}s forwards`,
-        }} />
-      ))}
-      <style>{`@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }`}</style>
-    </div>
-  );
+  return null;
 };
  
 type ViewMode = 'grid' | 'polaroid' | 'slideshow' | 'album';

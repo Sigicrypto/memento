@@ -157,7 +157,7 @@ export default function DashboardPage() {
 
         {/* Tremor-style Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="card flex flex-col justify-between p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="card flex flex-col justify-between p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-text-secondary">Active Events</span>
               <BarChart2 size={16} className="text-text-muted" />
@@ -171,9 +171,9 @@ export default function DashboardPage() {
                 <div key={i} className="flex-1 bg-accent-cyan rounded-t-sm" style={{ height: `${h}%` }} />
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="card flex flex-col justify-between p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="card flex flex-col justify-between p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-text-secondary">Total Photos Collected</span>
               <ImageIcon size={16} className="text-text-muted" />
@@ -189,9 +189,9 @@ export default function DashboardPage() {
                 <path d="M0,30 L20,35 L40,15 L60,25 L80,5 L100,20" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="card flex flex-col justify-between p-6 bg-gradient-to-br from-surface to-bg-subtle">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="card flex flex-col justify-between p-6 bg-gradient-to-br from-surface to-bg-subtle">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-2 text-text-primary">
                 {planInfo.icon}
@@ -212,7 +212,7 @@ export default function DashboardPage() {
                 Upgrade Plan <ArrowRight size={12} />
               </Link>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Events Section */}
@@ -262,7 +262,7 @@ export default function DashboardPage() {
           ) : filteredEvents.length === 0 ? (
              <div className="card p-12 text-center text-text-muted text-sm border-dashed">No events found matching "{searchQuery}"</div>
           ) : (
-            <div className="table-container shadow-card">
+            <div className="table-container shadow-card overflow-x-auto w-full">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -295,7 +295,7 @@ export default function DashboardPage() {
                           </span>
                         </td>
                         <td>
-                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                             <button onClick={() => copyUrl(event.slug)} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-md transition-colors" title="Copy Link">
                               {copied === event.slug ? <CheckCircle size={14} className="text-success" /> : <Copy size={14} />}
                             </button>

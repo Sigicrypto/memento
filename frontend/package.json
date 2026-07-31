@@ -14,6 +14,7 @@
     "@tsparticles/react": "^4.3.2",
     "@tsparticles/slim": "^4.3.2",
     "@vercel/analytics": "^2.0.1",
+    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "face-api.js": "^0.22.2",
     "file-saver": "^2.0.5",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/file-saver": "^2.0.7",
     "@types/node": "^20.19.37",
     "@types/react": "^19.2.14",
