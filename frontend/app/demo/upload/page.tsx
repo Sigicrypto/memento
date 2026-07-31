@@ -823,18 +823,6 @@ function DemoUploadContent() {
                 </span>
               </div>
 
-              {/* Hidden input */}
-              <input
-                ref={photoInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handlePhotoSelect}
-                className="hidden"
-                disabled={uploading}
-                style={{ display: 'none' }}
-              />
-
               {/* Previews */}
               {uploadPhotos.length > 0 && (
                 <div className="photo-preview-grid">
@@ -873,15 +861,21 @@ function DemoUploadContent() {
                 }
                 return (
                   <div
-                    className={`upload-drop-zone ${photoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
-                    onClick={() => !uploading && photoInputRef.current?.click()}
+                    className={`upload-drop-zone relative ${photoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
                     onDragOver={e => { e.preventDefault(); setPhotoDragOver(true); }}
                     onDragLeave={() => setPhotoDragOver(false)}
                     onDrop={handlePhotoDrop}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && photoInputRef.current?.click()}
                   >
+                    {!uploading && (
+                      <input
+                        type="file"
+                        accept="image/*,image/heic,image/heif"
+                        multiple
+                        onChange={handlePhotoSelect}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        title="Choose photos"
+                      />
+                    )}
                     <div className="drop-zone-icon">{uploadPhotos.length === 0 && lifetimePhotos === 0 ? '🖼️' : '➕'}</div>
                     <p className="drop-zone-text">
                       {totalUsed === 0
@@ -912,16 +906,6 @@ function DemoUploadContent() {
                 </span>
               </div>
 
-              <input
-                ref={videoInputRef}
-                type="file"
-                accept="video/*"
-                onChange={handleVideoSelect}
-                className="hidden"
-                disabled={uploading}
-                style={{ display: 'none' }}
-              />
-
               {uploadVideos.length > 0 && (
                 <div className="video-preview-wrap">
                   <video
@@ -951,15 +935,20 @@ function DemoUploadContent() {
                 </div>
               ) : (
                 <div
-                  className={`upload-drop-zone ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
-                  onClick={() => !uploading && videoInputRef.current?.click()}
+                  className={`upload-drop-zone relative ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
                   onDragOver={e => { e.preventDefault(); setVideoDragOver(true); }}
                   onDragLeave={() => setVideoDragOver(false)}
                   onDrop={handleVideoDrop}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => e.key === 'Enter' && videoInputRef.current?.click()}
                 >
+                  {!uploading && (
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoSelect}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      title="Choose video"
+                    />
+                  )}
                   <div className="drop-zone-icon">🎬</div>
                   <p className="drop-zone-text">Choose or drop a video</p>
                   <p className="drop-zone-hint">MP4, MOV, WEBM — 1 video maximum</p>

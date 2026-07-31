@@ -316,8 +316,6 @@ export default function MobilePage() {
                <div className="h-px bg-border my-2" />
  
                {/* Drop Zone */}
-               <input ref={fileInputRef} type="file" multiple accept="image/*,video/*,.heic,.heif" className="hidden" onChange={handleFileChange} />
-               
                {files.length > 0 ? (
                   <div className="grid grid-cols-3 gap-2">
                      {files.map((f, i) => (
@@ -329,21 +327,23 @@ export default function MobilePage() {
                        </div>
                      ))}
                      {files.length < MAX_IMAGES && (
-                       <button onClick={() => fileInputRef.current?.click()} className="aspect-square rounded-md border-2 border-dashed border-border flex items-center justify-center text-text-muted hover:border-primary/50 transition-colors">
+                       <div className="aspect-square rounded-md border-2 border-dashed border-border flex items-center justify-center text-text-muted hover:border-primary/50 transition-colors relative">
+                          <input type="file" multiple accept="image/*,video/*,.heic,.heif" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                           <Upload size={20} />
-                       </button>
+                       </div>
                      )}
                   </div>
                ) : (
-                  <button onClick={() => fileInputRef.current?.click()} className="w-full aspect-video rounded-lg border-2 border-dashed border-border bg-bg-subtle flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors">
-                     <div className="w-12 h-12 rounded-full bg-bg border border-border flex items-center justify-center text-text-primary">
+                  <div className="w-full aspect-video rounded-lg border-2 border-dashed border-border bg-bg-subtle flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors relative">
+                     <input type="file" multiple accept="image/*,video/*,.heic,.heif" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                     <div className="w-12 h-12 rounded-full bg-bg border border-border flex items-center justify-center text-text-primary pointer-events-none">
                         <Camera size={24} />
                      </div>
-                     <div className="text-center">
+                     <div className="text-center pointer-events-none">
                         <p className="text-sm font-medium text-text-primary">Pick Photos or Videos</p>
                         <p className="text-xs text-text-muted mt-0.5">Up to {MAX_IMAGES} files</p>
                      </div>
-                  </button>
+                  </div>
                )}
  
                <button 
