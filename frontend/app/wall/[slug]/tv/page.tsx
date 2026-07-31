@@ -33,7 +33,7 @@ export default function TVModePage() {
     if (!slug) return;
 
     const fetchEventAndPhotos = async () => {
-      const { data: eventData, error: eventError } = await supabase
+      const { data: dbEventData, error: eventError } = await supabase
         .from('events')
         .select('id, name, music_track, plan_type, brand_logo_url')
         .eq('slug', slug)
