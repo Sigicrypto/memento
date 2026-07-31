@@ -479,9 +479,17 @@ export default function WallPage() {
       <main className="relative z-10 pt-40 px-8 pb-32 max-w-[1600px] mx-auto w-full flex-grow">
          {/* Wall Hero */}
          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
-            <div className="max-w-3xl">
-               <p className="text-primary text-[10px] font-black uppercase tracking-[.4em] mb-4">THE OFFICIAL COLLECTION</p>
-               <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">{eventName}</h1>
+            <div className="max-w-3xl flex-grow">
+               <div className="flex flex-col md:flex-row md:items-center gap-8 mb-8">
+                  <div className="hidden md:block p-4 bg-white rounded-3xl shadow-xl border border-black/5 flex-shrink-0">
+                     <QRCodeSVG value={uploadUrl} size={120} />
+                  </div>
+                  <div>
+                     <p className="text-primary text-[10px] font-black uppercase tracking-[.4em] mb-4">THE OFFICIAL COLLECTION</p>
+                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">{eventName}</h1>
+                  </div>
+               </div>
+               
                <div className="flex flex-wrap items-center gap-4">
                   {hasFeature(planTier, 'SELFIE_MATCH') && (
                      <button onClick={() => setShowSelfieCam(true)} className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-bg-subtle border border-border text-sm font-bold hover:bg-border transition-all hover:scale-105 active:scale-95 group">
@@ -676,9 +684,12 @@ export default function WallPage() {
             </div>
          </Link>
       </div>
-      {/* Mobile Upload Floating CTA (Fallback since they can't scan QR) */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm">
-         <Link href={uploadUrl} className="btn-premium w-full py-4 shadow-2xl flex items-center justify-center gap-3 text-sm">
+      {/* Mobile Upload & QR Floating CTA */}
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm flex gap-3">
+         <button onClick={() => setShowMobileQR(true)} className="flex-shrink-0 w-14 h-14 bg-bg-subtle border border-border shadow-xl rounded-2xl flex items-center justify-center text-text-primary hover:bg-border transition-all">
+            <QrCode size={24} />
+         </button>
+         <Link href={uploadUrl} className="btn-premium flex-grow h-14 shadow-2xl flex items-center justify-center gap-3 text-sm rounded-2xl">
             <Upload size={18} /> Upload Photos
          </Link>
       </div>
