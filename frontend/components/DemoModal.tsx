@@ -425,12 +425,12 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                          animate={{ opacity: 1, scale: 1, rotate: (i % 7) * 4 - 12 }}
                          transition={{ delay: i * 0.1, type: 'spring' }}
                          whileHover={{ scale: 1.1, rotate: 0, zIndex: 50, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                         className="bg-white/5 backdrop-blur-3xl p-4 pb-24 border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer"
+                         className="bg-white/5 backdrop-blur-3xl p-4 border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.6)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col"
                        >
                           {/* Tape */}
                           <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/10 backdrop-blur-xl rotate-[-3deg] border border-white/10 shadow-sm z-20" style={{ clipPath: 'polygon(2% 15%, 98% 5%, 95% 95%, 5% 90%)' }} />
                           
-                          <div className="aspect-[4/5] overflow-hidden bg-black/20 rounded-2xl shadow-inner relative border border-white/5">
+                          <div className="aspect-[4/5] w-full shrink-0 overflow-hidden bg-black/20 rounded-2xl shadow-inner relative border border-white/5">
                             {photo.type === 'video' ? (
                               <video src={photo.url} className="w-full h-full object-cover" autoPlay muted loop playsInline preload="metadata" />
                             ) : (
@@ -440,8 +440,8 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                             <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                           </div>
                           
-                          <div className="absolute bottom-6 left-0 right-0 px-6">
-                             <p className="text-white/90 font-medium text-lg text-center line-clamp-2 leading-tight drop-shadow-md mb-2">{photo.caption}</p>
+                          <div className="pt-5 pb-2 px-2 flex flex-col flex-grow justify-center">
+                             {photo.caption && <p className="text-white/90 font-medium text-lg text-center leading-tight drop-shadow-md mb-3 whitespace-pre-wrap">{photo.caption}</p>}
                              <div className="flex justify-center items-center gap-4 text-[9px] font-black text-white/40 uppercase tracking-[0.2em] opacity-50 group-hover:opacity-100 transition-opacity duration-300">
                                <span>BY {photo.uploader}</span>
                                <button onClick={(e) => handleReaction(photo.id, e)} className="hover:text-pink-400 transition-colors flex items-center gap-1.5 px-2 py-1 bg-white/5 rounded-full">

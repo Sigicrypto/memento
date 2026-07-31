@@ -573,18 +573,18 @@ export default function WallPage() {
             ) : viewMode === 'polaroid' ? (
                <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-12 justify-center py-10">
                   {displayedPhotos.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.1, rotate: 0, zIndex: 50 }} transition={{ duration: 0.6 }} className="bg-surface/60 dark:bg-white/5 backdrop-blur-3xl p-4 pb-24 border border-black/5 dark:border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer">
+                    <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.1, rotate: 0, zIndex: 50 }} transition={{ duration: 0.6 }} className="bg-surface/60 dark:bg-white/5 backdrop-blur-3xl p-4 border border-black/5 dark:border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.8)] rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col">
                         {/* Tape */}
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-surface/40 dark:bg-white/10 backdrop-blur-xl rotate-[-3deg] border border-black/5 dark:border-white/10 shadow-sm z-20" style={{ clipPath: 'polygon(2% 15%, 98% 5%, 95% 95%, 5% 90%)' }} />
                         
-                        <div className="aspect-[4/5] overflow-hidden bg-bg-subtle/50 dark:bg-black/20 rounded-2xl shadow-inner relative border border-black/5 dark:border-white/5">
+                        <div className="aspect-[4/5] w-full shrink-0 overflow-hidden bg-bg-subtle/50 dark:bg-black/20 rounded-2xl shadow-inner relative border border-black/5 dark:border-white/5">
                            {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <Image src={getPublicUrl(p.storage_path)} className="object-cover" fill alt="" loading="lazy" />}
                            {/* Gloss overlay */}
                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/30 dark:to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                         </div>
                         
-                        <div className="absolute bottom-6 left-0 right-0 px-6">
-                           {p.caption && <p className="text-text-primary font-medium text-lg text-center line-clamp-2 leading-tight drop-shadow-sm mb-2">{p.caption}</p>}
+                        <div className="pt-5 pb-2 px-2 flex flex-col flex-grow justify-center">
+                           {p.caption && <p className="text-text-primary font-medium text-lg text-center leading-tight drop-shadow-sm mb-3 whitespace-pre-wrap">{p.caption}</p>}
                            <div className="flex justify-center items-center gap-4 text-[9px] font-black text-text-muted uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity duration-300">
                              <span>{hasFeature(planTier, 'BRANDING_REMOVAL') ? '' : 'BY '} {p.uploader_name}</span>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
