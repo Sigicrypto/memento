@@ -3,79 +3,92 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { QrCode, Zap, DownloadCloud } from 'lucide-react';
+import SectionHeader from './SectionHeader';
+
+const features = [
+  {
+    icon: QrCode,
+    color: 'neon-cyan',
+    title: 'No App Required',
+    desc: 'Guests simply scan a customized QR code to instantly join the gallery via their mobile browser.',
+  },
+  {
+    icon: Zap,
+    color: 'neon-magenta',
+    title: 'Real-time Sync',
+    desc: 'Photos hit the big screen the millisecond they are snapped, creating a live, pulsing heartbeat of your event.',
+  },
+  {
+    icon: DownloadCloud,
+    color: 'neon-purple',
+    title: 'High-Res Delivery',
+    desc: 'After the dust settles, attendees can download high-res versions of their favorite moments.',
+  },
+];
+
+const colorMap = {
+  'neon-cyan': {
+    glow: 'bg-neon-cyan/20 group-hover:bg-neon-cyan/40',
+    icon: 'text-neon-cyan',
+    border: 'group-hover:border-neon-cyan/50',
+  },
+  'neon-magenta': {
+    glow: 'bg-neon-magenta/20 group-hover:bg-neon-magenta/40',
+    icon: 'text-neon-magenta',
+    border: 'group-hover:border-neon-magenta/50',
+  },
+  'neon-purple': {
+    glow: 'bg-neon-purple/20 group-hover:bg-neon-purple/40',
+    icon: 'text-neon-purple',
+    border: 'group-hover:border-neon-purple/50',
+  },
+};
 
 const Features: React.FC = () => {
   return (
-    <section id="features" className="py-24 md:py-32 px-6 md:px-12 max-w-7xl mx-auto relative z-20">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-16"
-      >
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">Seamless Integration</h2>
-        <p className="text-white/60 max-w-2xl mx-auto text-lg">Designed for friction-less sharing, so your guests stay in the moment.</p>
-      </motion.div>
+    <section id="features" className="lp-section z-20 scroll-mt-32 w-full flex flex-col items-center justify-center">
+      <div className="section-container wide-section-container w-full max-w-[1800px] mx-auto px-6 md:px-10">
+        <SectionHeader
+          badge="Features"
+          badgeColor="magenta"
+          title="Seamless Integration"
+          description="Designed for friction-less sharing, so your guests stay in the moment."
+        />
 
-      <motion.div 
-        variants={{
-          hidden: { opacity: 0 },
-          visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-        }}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-8"
-      >
-        {/* Card 1 */}
-        <motion.div 
+        <motion.div
           variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
           }}
-          className="glass-panel rounded-2xl p-8 group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+          className="grid grid-cols-1 lg:grid-cols-3 items-stretch mt-20 gap-12 lg:gap-16"
         >
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-neon-cyan/20 blur-[50px] rounded-full group-hover:bg-neon-cyan/40 transition-all"></div>
-          <div className="w-14 h-14 rounded-full bg-[#1a1a1a] flex items-center justify-center mb-6 border border-white/10 group-hover:border-neon-cyan/50 transition-colors">
-            <QrCode size={24} className="text-neon-cyan" />
-          </div>
-          <h3 className="text-2xl font-semibold mb-3 text-white">No App Required</h3>
-          <p className="text-white/60 text-base leading-relaxed">Guests simply scan a customized QR code to instantly join the gallery via their mobile browser.</p>
-        </motion.div>
+          {features.map((feature, i) => {
+            const Icon = feature.icon;
+            const colors = colorMap[feature.color as keyof typeof colorMap];
 
-        {/* Card 2 */}
-        <motion.div 
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-          }}
-          className="glass-panel rounded-2xl p-8 group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
-        >
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-neon-magenta/20 blur-[50px] rounded-full group-hover:bg-neon-magenta/40 transition-all"></div>
-          <div className="w-14 h-14 rounded-full bg-[#1a1a1a] flex items-center justify-center mb-6 border border-white/10 group-hover:border-neon-magenta/50 transition-colors">
-            <Zap size={24} className="text-neon-magenta" />
-          </div>
-          <h3 className="text-2xl font-semibold mb-3 text-white">Real-time Sync</h3>
-          <p className="text-white/60 text-base leading-relaxed">Photos hit the big screen the millisecond they are snapped, creating a live, pulsing heartbeat of your event.</p>
+            return (
+              <motion.div
+                key={i}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                }}
+                className="lp-card p-10 md:p-16 group relative overflow-hidden flex flex-col items-start text-left h-full"
+              >
+                <div className={`absolute -right-12 -top-12 w-40 h-40 blur-[60px] rounded-full transition-all ${colors.glow}`} />
+                <div className={`w-16 h-16 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-10 border border-white/10 group-hover:scale-110 transition-transform duration-500 shadow-xl ${colors.border}`}>
+                  <Icon size={28} className={colors.icon} />
+                </div>
+                <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-white tracking-tight">{feature.title}</h3>
+                <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-sm">{feature.desc}</p>
+              </motion.div>
+            );
+          })}
         </motion.div>
-
-        {/* Card 3 */}
-        <motion.div 
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-          }}
-          className="glass-panel rounded-2xl p-8 group hover:-translate-y-2 transition-all duration-300 relative overflow-hidden"
-        >
-          <div className="absolute -right-8 -top-8 w-32 h-32 bg-neon-purple/20 blur-[50px] rounded-full group-hover:bg-neon-purple/40 transition-all"></div>
-          <div className="w-14 h-14 rounded-full bg-[#1a1a1a] flex items-center justify-center mb-6 border border-white/10 group-hover:border-neon-purple/50 transition-colors">
-            <DownloadCloud size={24} className="text-neon-purple" />
-          </div>
-          <h3 className="text-2xl font-semibold mb-3 text-white">High-Quality Downloads</h3>
-          <p className="text-white/60 text-base leading-relaxed">After the dust settles, attendees can download high-res versions of their favorite moments.</p>
-        </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 };

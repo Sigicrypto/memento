@@ -29,7 +29,7 @@ export default function CreateEventPage() {
  
   useEffect(() => {
     if (isLoading) return;
-    if (!user) { router.push('/'); return; }
+    if (!user) { router.push('/auth?redirect=/create'); return; }
     if (!isApproved) { router.push('/pending'); return; }
   }, [user, isLoading, isApproved, router]);
  
@@ -179,7 +179,7 @@ export default function CreateEventPage() {
  
   // ── Create Form ──
   return (
-    <div className="min-h-screen flex items-center justify-center py-24 px-6 bg-bg relative">
+    <div className="min-h-screen flex items-center justify-center py-12 px-6 bg-bg relative">
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center px-4">
         <Link href="/dashboard" className="text-text-muted hover:text-text-primary transition-colors">

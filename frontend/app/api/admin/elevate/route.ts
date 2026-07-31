@@ -1,10 +1,54 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { validateCSRF } from '@/lib/csrf';
+import { rateLimit } from '@/lib/rateLimit';
 
-export async function POST(request: Request) {
+const VALID_PLANS = ['STARTER', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'];
+
+export async function POST(request: NextRequest) {
+  // 1. CSRF Protection
+  if (!await validateCSRF()) {
+    return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+  }
+
+  // 2. Rate limiting
+  const ip = request.headers.get('x-forwarded-for') || 'unknown';
+  const { allowed, retryAfter } = rateLimit(ip, { maxRequests: 5, windowMs: 60000 });
+  if (!allowed) {
+    return NextResponse.json({ error: 'Rate limit exceeded', retryAfter }, { status: 429 });
+  }
+
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    const { userId, accessCode } = await request.json();
+
+    // 3. Validate inputs
+    if (!userId || typeof userId !== 'string') {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    if (!accessCode || typeof accessCode !== 'string') {
+      return NextResponse.json({ error: 'Access code is required' }, { status: 400 });
+    }
+
+    // 4. Validate access code against server-only environment variable
+    const validAdminCode = process.env.ADMIN_ACCESS_CODE;
+    if (!validAdminCode) {
+      console.error('[elevate] ADMIN_ACCESS_CODE environment variable is not configured');
+      return NextResponse.json({ error: 'Admin access is not configured' }, { status: 503 });
+    }
+
+    if (accessCode !== validAdminCode) {
+      return NextResponse.json({ error: 'Invalid access code' }, { status: 403 });
+    }
+
+    // 5. Require service role key (no fallback to anon key)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('[elevate] Missing SUPABASE_SERVICE_ROLE_KEY or SUPABASE_URL');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 503 });
+    }
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
@@ -13,32 +57,20 @@ export async function POST(request: Request) {
       }
     });
 
-    const { userId, accessCode } = await request.json();
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
-    }
-
-    const validAdminCode = process.env.NEXT_PUBLIC_ADMIN_ACCESS_CODE || 'memento-admin-2024';
-
-    if (accessCode !== validAdminCode) {
-      return NextResponse.json({ error: 'Invalid access code' }, { status: 403 });
-    }
-
-    // Use service role client to update the profile (bypasses RLS triggers restricting role changes)
+    // 6. Use service role client to update the profile (bypasses RLS)
     const { error: updateError } = await supabaseAdmin
       .from('profiles')
       .update({ role: 'admin' })
       .eq('id', userId);
 
     if (updateError) {
-      console.error('Error escalating privileges:', updateError);
+      console.error('[elevate] Error escalating privileges:', updateError.message);
       return NextResponse.json({ error: 'Failed to elevate privileges' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: 'Elevated to admin successfully' });
   } catch (err: any) {
-    console.error('Elevate API error:', err);
+    console.error('[elevate] API error:', err.message);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

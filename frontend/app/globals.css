@@ -179,11 +179,14 @@ h1, h2, h3, h4, h5, h6 {
 
 /* -- Glass Panel (used by Terms, Privacy, Pending, modals) -- */
 .glass-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* -- Atmospheric Elements -- */
@@ -428,11 +431,106 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-subtle);
 }
 
-/* -- Layout Helpers -- */
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 var(--space-container);
+:where(.section-container) {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+  box-sizing: border-box;
+}
+
+:where(.wide-section-container) {
+  width: 100%;
+  max-width: 1800px !important;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1.5rem, 5vw, 4rem);
+  padding-right: clamp(1.5rem, 5vw, 4rem);
+  box-sizing: border-box;
+}
+
+/* -- Landing Page Sections -- */
+.lp-section {
+  width: 100%;
+  position: relative;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .lp-section {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+  .section-header {
+    margin-bottom: 4rem;
+  }
+}
+
+.section-badge {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  backdrop-filter: blur(12px);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+.section-desc {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 42rem;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.lp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .lp-card {
+    padding: 3.5rem;
+  }
+}
+
+.lp-card:hover {
+  transform: translateY(-0.75rem) scale(1.02);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* -- Scrollbar -- */

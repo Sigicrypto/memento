@@ -215,26 +215,6 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
     }
   };
 
-  const handleOAuth = async (provider: 'google') => {
-    setError('');
-    setLoading(true);
-    try {
-      const baseUrl = typeof window !== 'undefined'
-        ? window.location.origin
-        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
-      const { error: oauthError } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${baseUrl}/auth/callback?plan=${plan || 'starter'}`,
-        },
-      });
-      if (oauthError) throw oauthError;
-    } catch (err: any) {
-      setError(err.message || 'OAuth login failed');
-      setLoading(false);
-    }
-  };
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
@@ -294,37 +274,6 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
               </p>
             </div>
 
-            {/* OAuth buttons */}
-            <div className="auth-oauth-row">
-              <button type="button" className="auth-oauth-btn" onClick={() => handleOAuth('google')} disabled={loading}>
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                </svg>
-                <span>Continue with<br/>Google</span>
-              </button>
-              
-              <button type="button" className="auth-oauth-btn" disabled={loading}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.379.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
-                </svg>
-                <span>Continue with<br/>GitHub</span>
-              </button>
-
-              <button type="button" className="auth-oauth-btn" disabled={loading}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-1.956.04-3.766 1.146-4.773 2.908-2.04 3.56-.52 8.814 1.47 11.724.975 1.42 2.115 3.018 3.655 2.96 1.492-.058 2.057-.966 3.864-.966 1.787 0 2.316.966 3.882.936 1.627-.04 2.62-1.464 3.578-2.88 1.109-1.636 1.564-3.218 1.585-3.303-.035-.014-3.08-1.186-3.116-4.764-.033-2.996 2.433-4.444 2.548-4.526-1.406-2.072-3.585-2.353-4.364-2.43-1.638-.168-3.411 1.084-4.331 1.084zM14.563 4.195c.801-.97 1.341-2.321 1.194-3.666-1.157.047-2.557.778-3.385 1.765-.662.778-1.282 2.156-1.11 3.473 1.298.1 2.502-.601 3.301-1.572z"/>
-                </svg>
-                <span>Continue with<br/>Apple</span>
-              </button>
-            </div>
-
-            {/* Divider */}
-            <div className="auth-divider">
-              <span>or continue with email</span>
-            </div>
 
             {/* Tabs */}
             <div className="auth-tabs">

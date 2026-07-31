@@ -177,6 +177,7 @@ export default function WallPage() {
   const [showMobileQR, setShowMobileQR] = useState(false);
   const webcamRef = useRef<Webcam>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
  
   const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/mobile/${slug}` : '';
   const displayedPhotos = (() => {
@@ -192,14 +193,21 @@ export default function WallPage() {
     return data.publicUrl;
   }, []);
  
+  const stopPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+  }, []);
+ 
   const startPolling = useCallback(() => {
+    if (pollingIntervalRef.current) return;
     setRealtimeStatus('polling');
-    const interval = setInterval(async () => {
+    pollingIntervalRef.current = setInterval(async () => {
       if (!eventId) return;
       const { data } = await supabase.rpc('get_photos_with_reactions', { event_uuid: eventId });
       if (data) setPhotos(data);
     }, 5000);
-    return () => clearInterval(interval);
   }, [eventId]);
  
   useEffect(() => {
@@ -250,10 +258,17 @@ export default function WallPage() {
       })
       .subscribe((status) => {
         setRealtimeStatus(status);
-        if (status !== 'SUBSCRIBED') startPolling();
+        if (status === 'SUBSCRIBED') {
+          stopPolling();
+        } else {
+          startPolling();
+        }
       });
-    return () => { supabase.removeChannel(channel); };
-  }, [eventId, startPolling]);
+    return () => {
+      stopPolling();
+      supabase.removeChannel(channel);
+    };
+  }, [eventId, startPolling, stopPolling]);
  
   useEffect(() => {
     if (viewMode === 'slideshow' && displayedPhotos.length > 0) {
@@ -262,6 +277,12 @@ export default function WallPage() {
       return () => clearTimeout(timer);
     }
   }, [viewMode, slideIndex, displayedPhotos.length]);
+
+  useEffect(() => {
+    if (slideIndex >= displayedPhotos.length) {
+      setSlideIndex(0);
+    }
+  }, [displayedPhotos.length, slideIndex]);
  
   const captureSelfieAndSearch = async () => {
     if (!webcamRef.current) return;

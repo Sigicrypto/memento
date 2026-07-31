@@ -95,12 +95,12 @@ export const useAuth = () => {
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
 
-  const signUp = (email: string, password: string, phone?: string) =>
+  const signUp = (email: string, password: string, phone?: string, fullName?: string) =>
     supabase.auth.signUp({ 
       email, 
       password, 
       options: { 
-        data: { phone: phone || '' },
+        data: { phone: phone || '', full_name: fullName || '' },
         emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`
       } 
     });
@@ -119,8 +119,8 @@ export const useAuth = () => {
   };
 
   // ── Super Admin Override ──────────────────────────────────
-  const SUPER_ADMIN_EMAIL = 'sagarfalcon@gmail.com';
-  const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+  const SUPER_ADMIN_EMAIL = process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || '';
+  const isSuperAdmin = !!(SUPER_ADMIN_EMAIL && user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
 
   // The plan is now derived from the database profile
   // Super admin always gets whitelabel (max tier) with full access

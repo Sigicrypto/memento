@@ -21,7 +21,7 @@ export default function MainContent({ children }: { children: React.ReactNode })
     pathname?.startsWith('/moderate/');
 
   return (
-    <main className={`flex-1 w-full ${isSelfManaged ? '' : 'pt-32'}`}>
+    <main className={`flex-1 w-full ${isSelfManaged ? '' : 'pt-24'}`}>
       {children}
     </main>
   );

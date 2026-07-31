@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
-import ThemeToggle from './ThemeToggle';
 import { LogOut, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -19,21 +18,34 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   const { user, signOut } = useAuth();
   const { openAuth } = useAuthModal();
   const router = useRouter();
+
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => {
+      const currentY = window.scrollY;
+
+      setScrolled(currentY > 10);
+
+      // Dynamic hide/show based on scroll direction
+      if (currentY > lastScrollY.current && currentY > 120) {
+        setHidden(true); // scrolling down
+      } else {
+        setHidden(false); // scrolling up
+      }
+
+      lastScrollY.current = currentY;
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : 'unset';
   }, [isMobileMenuOpen]);
 
   const handleSignOut = async () => {
@@ -42,80 +54,116 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
     router.push('/');
   };
 
-  const navLinks = ['Features', 'How it works', 'Pricing'];
+  const navLinks = ['Features', 'Pricing', 'Gallery', 'Contact'];
 
   return (
     <>
-      <header className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[95%] md:w-[90%] max-w-4xl z-[9999] transition-all duration-300 rounded-full ${scrolled ? 'glassmorphic-modal border-white/10' : 'bg-transparent border border-transparent'}`}>
-        <div className="container h-[60px] flex items-center justify-between px-6">
+      <motion.header
+        animate={{
+          y: hidden && !isMobileMenuOpen ? -100 : 0,
+          opacity: hidden && !isMobileMenuOpen ? 0 : 1,
+        }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1480px] z-[9999] rounded-full transition-all duration-500 ${
+          scrolled
+            ? 'bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.6)]'
+            : 'bg-[#0a0a0a]/50 backdrop-blur-md border border-white/[0.06]'
+        }`}
+      >
+        {/* subtle top gradient accent line */}
+        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+
+        <div className="h-16 md:h-20 flex items-center justify-between px-6 md:px-10">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="relative z-[101]"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center flex-shrink-0 cursor-pointer"
             >
-              <AnimatedLogo width={140} height={32} />
+              <div className="w-28 h-28 md:w-36 md:h-36 flex items-center justify-center overflow-hidden">
+                <AnimatedLogo width={180} height={180} />
+              </div>
             </motion.div>
           </Link>
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-10">
               {navLinks.map((item) => (
-                <Link 
-                  key={item} 
-                  href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                <Link
+                  key={item}
+                  href={`/#${item.toLowerCase().replace(/ /g, '')}`}
+                  className="group relative text-sm font-medium text-white/60 hover:text-white transition-colors duration-200"
                 >
                   {item}
+                  <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-neon transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
             </nav>
           )}
 
           {/* Right Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             {!mini && showAuthButtons && (
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-4">
                 {user ? (
                   <>
-                    <Link href="/dashboard" className="btn btn-secondary btn-sm rounded-full">
+                    <Link
+                      href="/dashboard"
+                      className="rounded-full bg-gradient-neon text-white text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit"
+                      style={{
+                        paddingLeft: '1rem',
+                        paddingRight: '1rem',
+                        paddingTop: '.5rem',
+                        paddingBottom: '.5rem',
+                        marginLeft: '0.5rem',
+                        marginRight: '0.5rem',
+                      }}
+                    >
                       Dashboard
                     </Link>
-                    <button onClick={handleSignOut} className="text-white/50 hover:text-white transition-colors p-1" title="Sign out">
+                    <button
+                      onClick={handleSignOut}
+                      className="text-white/50 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+                      title="Sign out"
+                    >
                       <LogOut size={18} />
                     </button>
                   </>
                 ) : (
-                  <>
-                    <button onClick={() => openAuth('login')} className="btn btn-ghost btn-sm text-white/70 hover:text-white">
-                      Log in
-                    </button>
-                    <button onClick={() => openAuth('signup')} className="btn btn-sm px-5 py-1.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all">
+                      <button
+                      onClick={() => openAuth('signup')}
+                      style={{
+                        paddingLeft: '1rem',
+                        paddingRight: '1rem',
+                        paddingTop: '.5rem',
+                        paddingBottom: '.5rem',
+                        marginLeft: '0.5rem',
+                        marginRight: '0.5rem',
+                      }}
+                      className="rounded-full bg-gradient-neon text-white text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit"
+                    >
                       Get Started
                     </button>
-                  </>
-                )}
+                )
+                }
               </div>
+
             )}
-            
-            {/* Theme Toggle omitted for purely dark landing page, or kept if needed. Keeping it for now. */}
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
 
             {/* Hamburger Toggle */}
             {!mini && (
-              <button 
-                className="md:hidden relative z-[101] p-1 text-white hover:bg-white/10 rounded-md transition-colors"
+              <button
+                className="md:hidden relative z-[101] p-2 text-white hover:bg-white/10 rounded-full transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             )}
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -124,9 +172,9 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-bg/98 backdrop-blur-md md:hidden overflow-hidden flex flex-col"
+            className="fixed inset-0 z-[100] bg-[#050505]/98 backdrop-blur-md md:hidden overflow-hidden flex flex-col"
           >
-            <div className="flex flex-col flex-1 pt-24 px-6 pb-8">
+            <div className="flex flex-col flex-1 pt-28 px-6 pb-8">
               <nav className="flex flex-col gap-6">
                 {navLinks.map((item, i) => (
                   <motion.div
@@ -135,9 +183,9 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + i * 0.1 }}
                   >
-                    <Link 
-                      href={`/#${item.toLowerCase().replace(/ /g, '')}`} 
-                      className="text-2xl font-semibold text-text-primary hover:text-text-secondary transition-colors"
+                    <Link
+                      href={`/#${item.toLowerCase().replace(/ /g, '')}`}
+                      className="text-2xl font-semibold text-white hover:text-neon-cyan transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item}
@@ -149,33 +197,27 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               <div className="mt-auto space-y-4">
                 {user ? (
                   <>
-                    <Link 
-                      href="/dashboard" 
-                      className="btn btn-primary w-full btn-lg"
+                    <Link
+                      href="/dashboard"
+                      className="w-full block py-4 rounded-xl border border-white/20 text-center text-white font-bold"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
-                    <button 
+                    <button
                       onClick={handleSignOut}
-                      className="btn btn-secondary w-full btn-lg"
+                      className="w-full py-4 rounded-xl bg-white/5 text-white/70 font-semibold"
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
                   <div className="flex flex-col gap-3">
-                    <button 
+                    <button
                       onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
-                      className="btn btn-primary w-full btn-lg"
+                      className="w-full py-4 rounded-xl bg-gradient-neon text-white font-bold"
                     >
                       Get Started
-                    </button>
-                    <button 
-                      onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
-                      className="btn btn-secondary w-full btn-lg"
-                    >
-                      Log In
                     </button>
                   </div>
                 )}

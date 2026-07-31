@@ -6,38 +6,37 @@ import { motion } from 'framer-motion';
 import { Check, X, Sparkles, Zap, Star, Shield, Layout, ArrowRight, Heart, Music, BarChart3, Globe, ArrowLeft } from 'lucide-react';
  
 import { PLANS } from '@/lib/plans';
+import SectionHeader from '@/components/sections/SectionHeader';
 type Region = 'IN' | 'GLOBAL';
  
  
 export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: boolean, eventId?: string }) {
-  const [region, setRegion] = useState<Region>('GLOBAL');
+  const [region, setRegion] = useState<Region>('IN');
  
   useEffect(() => {
-    // Simple client-side region detection fallback
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (tz.includes('Calcutta') || tz.includes('India')) setRegion('IN');
+    // Always display prices in INR
+    setRegion('IN');
   }, []);
  
   return (
-    <section id="pricing" className={`${isEmbedded ? 'py-20' : 'pt-32 pb-24'} relative z-10 scroll-mt-32 w-full bg-bg`}>
-      <div className="container">
+    <section id="pricing" className={`${isEmbedded ? 'lp-section' : 'pt-44 pb-40'} relative z-10 scroll-mt-32 w-full flex flex-col items-center justify-center`}>
+      <div className="section-container wide-section-container w-full px-4 md:px-8">
         {!isEmbedded && (
           <div className="mb-10">
-            <a href="/" className="inline-flex items-center gap-2 text-xs font-semibold text-text-muted hover:text-text-primary transition-colors">
+            <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors">
                <ArrowLeft size={16} /> Back to Homepage
             </a>
           </div>
         )}
- 
-        <div className="text-center mb-16">
-          <div className="hero-badge mb-4">
-            Transparent Pricing
-          </div>
-          <h2 className="h2-text mb-4 text-text-primary">Pricing That Fits Every Event</h2>
-          <p className="text-text-secondary text-sm max-w-xl mx-auto">One-time payment. No hidden subscriptions. Just lifetime access to your memories.</p>
-        </div>
- 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24 max-w-6xl mx-auto items-stretch">
+
+        <SectionHeader
+          badge="Transparent Pricing"
+          badgeColor="purple"
+          title="Pricing That Fits Every Event"
+          description="One-time payment. No hidden subscriptions. Just lifetime access to your memories."
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-14 xl:gap-20 mb-36 items-stretch w-full mx-auto" style={{ maxWidth: '1800px' }}>
           {PLANS.map((plan, idx) => {
             const price = region === 'IN' ? plan.priceIN : plan.priceGlobal;
             const Icon = plan.id === 'starter' ? Zap : plan.id === 'standard' ? Star : plan.id === 'premium' ? Heart : Shield;
@@ -45,48 +44,58 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
             return (
               <motion.div 
                 key={idx} 
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className={`card-interactive flex flex-col h-full relative bg-surface/60 backdrop-blur-xl ${plan.highlight ? 'border-primary shadow-[0_0_30px_rgba(var(--primary-rgb),0.2)]' : 'border-border/50'}`}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+                className={`lp-card flex flex-col h-full relative group w-full max-w-none p-12 md:p-16 text-center ${plan.highlight ? 'border-neon-magenta shadow-[0_0_40px_rgba(255,0,255,0.25)]' : ''}`}
               >
                 {/* Recommended badge */}
                 {plan.highlight && (
-                   <div className="absolute -top-3 right-4 bg-primary text-bg text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded">
+                   <div 
+                     className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-neon text-white text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit cursor-default"
+                     style={{
+                       paddingLeft: '1rem',
+                       paddingRight: '1rem',
+                       paddingTop: '.5rem',
+                       paddingBottom: '.5rem',
+                     }}
+                   >
                       Recommended
                    </div>
                 )}
 
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="w-8 h-8 rounded bg-bg-subtle border border-border flex items-center justify-center flex-shrink-0 text-text-primary">
-                      <Icon size={16} />
+                <div className="flex flex-col items-center gap-4 mb-10 text-center">
+                   <div className="w-20 h-20 rounded-[1.75rem] bg-[#1a1a1a] border border-white/10 flex items-center justify-center flex-shrink-0 text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                      <Icon size={30} className={plan.highlight ? 'text-neon-magenta' : 'text-white/80'} />
                    </div>
-                   <h3 className="text-base font-bold text-text-primary">{plan.name}</h3>
+                   <h3 className="text-3xl md:text-4xl font-bold text-white tracking-wide">{plan.name}</h3>
                 </div>
 
-                <div className="mb-4">
-                   <div className="flex items-baseline gap-1 mb-1">
-                      <span className="text-3xl font-bold text-text-primary tracking-tight">{price}</span>
-                      <span className="text-text-secondary text-xs">/event</span>
+                <div className="mb-8 flex flex-col items-center text-center px-4 md:px-0">
+                   <div className="flex items-baseline gap-2 mb-4 justify-center">
+                      <span className="text-6xl md:text-7xl font-black text-white tracking-tighter">{price}</span>
+                      <span className="text-white/50 text-xl md:text-2xl font-medium">/event</span>
                    </div>
-                   <p className="text-text-secondary text-xs">{plan.description}</p>
+                   <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-xl mx-auto">{plan.description}</p>
                 </div>
 
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-4">{plan.stats}</p>
+                <div className="flex justify-center mb-8 px-4">
+                   <p className="text-base font-bold uppercase tracking-widest text-neon-cyan bg-neon-cyan/10 inline-block px-6 py-3 rounded-full border border-neon-cyan/20">{plan.stats}</p>
+                </div>
 
-                <div className="flex-grow mb-6 space-y-3">
+                <div className="flex-grow mb-10 space-y-4">
                    {plan.features.map((f, i) => (
-                      <div key={i} className={`flex items-start gap-2 text-sm ${f.included ? 'text-text-primary' : 'text-text-muted'}`}>
-                         {f.included ? <Check size={16} className="text-primary flex-shrink-0 mt-0.5" /> : <X size={16} className="flex-shrink-0 mt-0.5" />}
-                         <span>{f.label}</span>
+                      <div key={i} className={`flex items-start gap-3 text-sm ${f.included ? 'text-white/90' : 'text-white/30'}`}>
+                         {f.included ? <Check size={20} className="text-neon-cyan flex-shrink-0 mt-0.5" /> : <X size={20} className="flex-shrink-0 mt-0.5" />}
+                         <span className="leading-snug text-[15px]">{f.label}</span>
                       </div>
                    ))}
                 </div>
 
                  <a 
                    href={`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`}
-                   className={`btn w-full btn-lg ${plan.highlight ? 'btn-primary' : 'btn-secondary'}`}
+                   className="rounded-full bg-gradient-neon text-white text-base font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit text-center block w-full px-8 py-4"
                 >
                    {plan.name === 'White Label' ? 'Get Started' : 'Select Plan'}
                 </a>
@@ -96,58 +105,36 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
         </div>
  
         {/* Feature Breakdown Section */}
-        <div className="flex flex-col gap-8 max-w-6xl mx-auto relative z-10">
-           <h3 className="h3-text text-center text-text-primary">Feature Breakdown</h3>
-           <div className="card overflow-x-auto p-0 border-border/50 bg-surface/60 backdrop-blur-xl">
-              <table className="w-full text-left min-w-[720px] border-collapse">
-                 <thead>
-                    <tr className="border-b border-border bg-bg">
-                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-muted w-1/3">Capability</th>
-                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-success text-center">Starter</th>
-                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-primary text-center">Standard</th>
-                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-accent text-center">Premium</th>
-                       <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider text-text-primary text-center">White Label</th>
-                    </tr>
-                 </thead>
-                 <tbody>
-                    <ComparisonRow label="Photo Uploads" values={['25/guest', '50/guest', 'Unlimited', 'Unlimited']} />
-                    <ComparisonRow label="Live Wall Access" values={[true, true, true, true]} />
-                    <ComparisonRow label="Zip Download" values={[true, true, true, true]} />
-                    <ComparisonRow label="AI Face Discovery" values={[false, true, true, true]} />
-                    <ComparisonRow label="Slideshow Designer" values={[false, true, true, true]} />
-                    <ComparisonRow label="Real-time Reactions" values={[false, true, true, true]} />
-                    <ComparisonRow label="Cinematic Soundtrack" values={[false, false, true, true]} />
-                    <ComparisonRow label="Branding Removal" values={[false, false, false, true]} />
-                    <ComparisonRow label="Storage Duration" values={['1 Month', '3 Months', '6 Months', '6 Months']} />
-                 </tbody>
-              </table>
+        <div className="flex flex-col gap-10 relative z-10 mb-36 w-full max-w-[2200px] mx-auto px-4 md:px-10">
+           <h3 className="text-3xl md:text-4xl font-bold text-center text-white mb-6">Feature Breakdown</h3>
+           <div className="glass-panel border border-white/10 rounded-[40px] w-full" style={{ padding: '2rem 3rem' }}>
+              <div className="w-full overflow-x-auto pb-6">
+                 <table className="w-full text-left min-w-[1200px] border-collapse">
+                    <thead>
+                       <tr className="border-b border-white/10 bg-[#1a1a1a]/50">
+                          <th className="py-8 text-sm font-bold uppercase tracking-widest text-white/50 w-1/5 rounded-tl-2xl" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>Capability</th>
+                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-white/80 text-center w-1/5">Starter</th>
+                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-neon-magenta text-center w-1/5">Standard</th>
+                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-neon-cyan text-center w-1/5">Premium</th>
+                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-white text-center rounded-tr-2xl w-1/5">White Label</th>
+                       </tr>
+                    </thead>
+                    <tbody>
+                       <ComparisonRow label="Photo Uploads" values={['25/guest', '50/guest', 'Unlimited', 'Unlimited']} />
+                       <ComparisonRow label="Live Wall Access" values={[true, true, true, true]} />
+                       <ComparisonRow label="Zip Download" values={[true, true, true, true]} />
+                       <ComparisonRow label="AI Face Discovery" values={[false, true, true, true]} />
+                       <ComparisonRow label="Slideshow Designer" values={[false, true, true, true]} />
+                       <ComparisonRow label="Real-time Reactions" values={[false, true, true, true]} />
+                       <ComparisonRow label="Cinematic Soundtrack" values={[false, false, true, true]} />
+                       <ComparisonRow label="Branding Removal" values={[false, false, false, true]} />
+                       <ComparisonRow label="Storage Duration" values={['1 Month', '3 Months', '6 Months', '6 Months']} />
+                    </tbody>
+                 </table>
+              </div>
            </div>
         </div>
  
-        <div className="mt-20 max-w-4xl mx-auto relative z-10">
-           <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="card text-center py-16 px-6 bg-surface/60 backdrop-blur-xl border-border/50"
-           >
-              <h3 className="text-3xl md:text-4xl font-bold tracking-tight text-text-primary mb-4">
-                 Ready to preserve every heartbeat?
-              </h3>
-              <p className="text-text-secondary text-base mb-8 max-w-xl mx-auto">
-                 Trusted by 2,000+ planners worldwide. No contracts, no subscriptions. Just magic.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                 <a href="/create" className="btn btn-primary btn-lg min-w-[200px]">
-                    Create My Wall
-                 </a>
-                 <a href="https://wa.me/96896095692" target="_blank" className="btn btn-ghost btn-lg">
-                    Questions? Chat with us
-                 </a>
-              </div>
-           </motion.div>
-        </div>
       </div>
     </section>
   );
@@ -155,19 +142,21 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
  
 function ComparisonRow({ label, values }: { label: string, values: any[] }) {
   return (
-    <tr className="border-b border-border hover:bg-bg-subtle transition-colors">
-       <td className="py-4 px-6 font-medium text-text-primary text-sm">{label}</td>
+    <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+       <td className="py-6 font-bold text-white/90 text-base" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>{label}</td>
        {values.map((v, i) => (
-          <td key={i} className="py-4 px-6 text-center align-middle">
-             {typeof v === 'boolean' ? (
-                v ? (
-                   <Check size={16} className="text-text-primary mx-auto" />
+          <td key={i} className="py-10 px-4 align-middle w-1/5">
+             <div className="flex justify-center items-center w-full">
+                {typeof v === 'boolean' ? (
+                   v ? (
+                      <Check size={22} className="text-neon-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
+                   ) : (
+                      <X size={22} className="text-white/20" />
+                   )
                 ) : (
-                   <X size={16} className="text-text-muted mx-auto" />
-                )
-             ) : (
-                 <span className="text-xs font-semibold uppercase tracking-wider text-text-primary">{v}</span>
-              )}
+                    <span className="text-base font-bold uppercase tracking-wider text-white/80 text-center">{v}</span>
+                 )}
+             </div>
           </td>
        ))}
     </tr>

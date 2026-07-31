@@ -24,10 +24,10 @@
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-  background: rgba(20, 20, 25, 0.4);
+  background: rgba(15, 15, 20, 0.95);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
   padding: 3rem 2.5rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
@@ -211,8 +211,8 @@
   gap: 8px;
   padding: 0 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.6);
   transition: border-color 0.15s ease;
 }
 .auth-input-wrap:focus-within {

@@ -11,6 +11,11 @@ export async function validateCSRF(): Promise<boolean> {
     return true;
   }
 
+  // Require at least one identifying header to be present
+  if (!origin && !referer) {
+    return false;
+  }
+
   const expectedDomain = process.env.NEXT_PUBLIC_SITE_URL || `https://${host}`;
 
   if (origin && !origin.startsWith(expectedDomain)) {

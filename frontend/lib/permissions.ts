@@ -47,8 +47,9 @@ const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
 
 /**
  * Super admin email — has access to everything.
+ * Configured via SUPER_ADMIN_EMAIL environment variable.
  */
-const SUPER_ADMIN_EMAIL = 'sagarfalcon@gmail.com';
+const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || '';
 
 /**
  * Check if a plan tier has access to a specific feature.
@@ -57,7 +58,7 @@ const SUPER_ADMIN_EMAIL = 'sagarfalcon@gmail.com';
  */
 export function hasFeature(currentPlan: string | null | undefined, feature: Feature, userEmail?: string | null): boolean {
   // Super admin bypass
-  if (userEmail === SUPER_ADMIN_EMAIL) return true;
+  if (SUPER_ADMIN_EMAIL && userEmail?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) return true;
   
   if (!currentPlan) return false;
   

@@ -1,45 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+import { validateCSRF } from '@/lib/csrf';
+
+const VALID_PLANS = ['STARTER', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'];
+
+function isValidPlan(plan: string): boolean {
+  return VALID_PLANS.includes(plan?.toUpperCase?.());
+}
 
 async function upgradeEvent(eventId: string, plan: string) {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey || !eventId) {
-    console.error('[verify] Missing serviceKey or eventId:', { eventId, hasServiceKey: !!serviceKey });
-    return;
-  }
+  if (!serviceKey || !eventId) return;
+  
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     serviceKey,
   );
   
-  console.log('[verify] Upgrading event:', eventId, 'to plan:', plan);
-  const { data, error } = await admin
+  const { error } = await admin
     .from('events')
     .update({ plan_type: plan })
     .eq('id', eventId)
     .select();
     
   if (error) {
-    console.error('[verify] Error updating event:', error);
-  } else {
-    console.log('[verify] Event upgraded successfully:', data);
+    console.error('[verify] Error updating event:', error.message);
   }
 }
 
 async function upgradeProfile(userId: string, plan: string) {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey || !userId) {
-    console.error('[verify] Missing serviceKey or userId:', { userId, hasServiceKey: !!serviceKey });
-    return;
-  }
+  if (!serviceKey || !userId) return;
+
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     serviceKey,
   );
   
-  console.log('[verify] Upgrading user profile:', userId, 'to plan:', plan);
-  const { data, error } = await admin
+  const { error } = await admin
     .from('profiles')
     .update({ 
       plan: plan.toLowerCase().replace(' ', '_'), 
@@ -49,22 +48,28 @@ async function upgradeProfile(userId: string, plan: string) {
     .select();
     
   if (error) {
-    console.error('[verify] Error updating profile:', error);
-  } else {
-    console.log('[verify] Profile upgraded successfully:', data);
+    console.error('[verify] Error updating profile:', error.message);
   }
 }
 
 export async function POST(req: NextRequest) {
+  // CSRF Protection
+  if (!await validateCSRF()) {
+    return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+  }
+
   const { paymentId, orderId, signature, plan, userId, eventId, mock } = await req.json();
 
-  // If mock mode is explicitly requested or keys are missing, we skip signature verification
+  // Validate plan input
+  if (plan && !isValidPlan(plan)) {
+    return NextResponse.json({ error: 'Invalid plan specified' }, { status: 400 });
+  }
+
+  // Block mock payments in production
   if (mock) {
     if (process.env.NODE_ENV !== 'development') {
-      console.warn('[verify] Blocked mock payment attempt in production for user:', userId);
       return NextResponse.json({ error: 'Mock payments disabled in production' }, { status: 403 });
     }
-    console.log('[verify] Mock payment successful for user:', userId, 'event:', eventId, 'plan:', plan);
     if (userId) await upgradeProfile(userId, plan);
     if (eventId) await upgradeEvent(eventId, plan);
     return NextResponse.json({ success: true, mock: true });
@@ -74,7 +79,6 @@ export async function POST(req: NextRequest) {
   if (!keySecret || keySecret.startsWith('your_')) {
     // Treat as success in development if mock is allowed
     if (process.env.NODE_ENV === 'development') {
-      console.log('[verify] Dev mode: treating as mock success');
       if (userId) await upgradeProfile(userId, plan);
       if (eventId) await upgradeEvent(eventId, plan);
       return NextResponse.json({ success: true, dev: true });
@@ -83,6 +87,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Verify Razorpay signature
+  if (!paymentId || !orderId || !signature) {
+    return NextResponse.json({ error: 'Missing payment verification data' }, { status: 400 });
+  }
+
   const expected = crypto
     .createHmac('sha256', keySecret)
     .update(`${orderId}|${paymentId}`)

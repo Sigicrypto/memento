@@ -22,14 +22,7 @@ export default function SystemAdminPage() {
     setError('');
 
     try {
-      // Check against environment variable admin code
-      const adminCode = process.env.NEXT_PUBLIC_ADMIN_ACCESS_CODE || 'memento-admin-2024';
-      
-      if (password !== adminCode) {
-        throw new Error('Invalid access code');
-      }
-
-      // If user is already logged in (e.g. Google), ensure profile exists with admin role
+      // If user is already logged in (e.g. Google), send code to server for validation
       if (user) {
         const response = await fetch('/api/admin/elevate', {
           method: 'POST',
@@ -40,15 +33,16 @@ export default function SystemAdminPage() {
         if (!response.ok) throw new Error(data.error || 'Elevation failed');
       } else {
         // Traditional Email/Password flow (Fallback)
+        // First try to sign in, then sign up if needed
         const { data: authData, error: signInError } = await supabase.auth.signInWithPassword({
           email,
-          password: adminCode,
+          password,
         });
 
         if (signInError) {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
-            password: adminCode,
+            password,
             options: {
               emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/system/callback`
             }
@@ -56,11 +50,12 @@ export default function SystemAdminPage() {
 
           if (signUpError) throw signUpError;
 
+          // After signup, elevate using the access code (sent to server for validation)
           if (signUpData.user) {
             const response = await fetch('/api/admin/elevate', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId: signUpData.user.id, accessCode: adminCode }),
+              body: JSON.stringify({ userId: signUpData.user.id, accessCode: password }),
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Elevation failed');
@@ -69,7 +64,7 @@ export default function SystemAdminPage() {
           const response = await fetch('/api/admin/elevate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: authData.user.id, accessCode: adminCode }),
+            body: JSON.stringify({ userId: authData.user.id, accessCode: password }),
           });
           const data = await response.json();
           if (!response.ok) throw new Error(data.error || 'Elevation failed');

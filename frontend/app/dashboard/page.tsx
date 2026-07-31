@@ -113,7 +113,7 @@ export default function DashboardPage() {
   };
 
   const copyUrl = (slug: string) => {
-    navigator.clipboard.writeText(`${window.location.origin}/upload/${slug}`);
+    navigator.clipboard.writeText(`${window.location.origin}/mobile/${slug}`);
     setCopied(slug);
     setTimeout(() => setCopied(''), 2000);
   };

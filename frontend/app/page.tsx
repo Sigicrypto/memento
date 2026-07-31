@@ -210,7 +210,7 @@ export default function LandingPage() {
       </div>
       <FloatingParticles className="opacity-60" />
       
-      <div className="flex flex-col gap-16 relative z-10">
+      <div className="flex flex-col relative z-10 w-full items-stretch">
         <Hero setIsDemoOpen={setIsDemoOpen} />
         <Stats />
         <WhyChoose />
