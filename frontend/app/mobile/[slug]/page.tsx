@@ -248,15 +248,20 @@ export default function MobilePage() {
   const isLimited = localUploadCount >= limit;
  
   return (
-    <div className="min-h-screen flex flex-col relative pb-20 overflow-x-hidden bg-bg-animated-gradient bg-[linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab)] dark:bg-[linear-gradient(-45deg,#8a2387,#e94057,#f27121)]">
-      <div className="absolute inset-0 bg-bg/80 backdrop-blur-[100px] z-0 pointer-events-none" />
+    <div className="min-h-screen flex flex-col relative pb-20 overflow-x-hidden bg-bg">
+      <div className="grain pointer-events-none" />
+      <div className="orbs pointer-events-none"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
+      <div className="absolute inset-0 bg-bg/50 backdrop-blur-[80px] z-0 pointer-events-none" />
+      
       {/* ── Dynamic Island Header ── */}
-      <nav className="fixed top-4 left-4 right-4 z-50 h-[52px] rounded-full bg-bg/90 backdrop-blur-md shadow-sm border border-border px-4 flex items-center justify-between">
-         {(hasFeature(event?.plan_type, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
-            <img src={brandLogoUrl} alt="Event Logo" className="h-6 object-contain" />
-         ) : (
-            <Link href="/" className="text-sm font-bold tracking-tight text-text-primary">memento</Link>
-         )}
+      <nav className="fixed top-4 left-4 right-4 z-50 h-[52px] rounded-full bg-surface/80 backdrop-blur-xl shadow-lg border border-border px-4 flex items-center justify-between">
+         <div className="flex items-center">
+            {hasFeature(event?.plan_type, 'BRANDING_REMOVAL') ? (
+               event?.brand_logo_url ? <img src={event.brand_logo_url} alt="Event Logo" className="h-6 object-contain drop-shadow-sm" /> : <div className="w-0 invisible" />
+            ) : (
+               <Link href="/" className="text-sm font-bold tracking-tight text-text-primary">memento</Link>
+            )}
+         </div>
          <div className="flex items-center gap-3">
            <ThemeToggle />
            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bg-subtle border border-border text-[10px] font-semibold text-text-primary">

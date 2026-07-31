@@ -447,9 +447,9 @@ export default function WallPage() {
  
       {/* Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-24 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 backdrop-blur-xl px-8 flex items-center justify-between">
-         <div className="flex items-center gap-6">
-            {(hasFeature(planTier, 'BRANDING_REMOVAL') && brandLogoUrl) ? (
-               <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" />
+          <div className="flex items-center gap-6">
+            {hasFeature(planTier, 'BRANDING_REMOVAL') ? (
+               brandLogoUrl ? <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" /> : <div className="text-2xl font-bold tracking-tighter invisible">memento</div>
             ) : (
                <Link href="/" className="text-2xl font-bold tracking-tighter">memento</Link>
             )}
@@ -570,7 +570,8 @@ export default function WallPage() {
                           {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <Image src={getPublicUrl(p.storage_path)} className="object-cover" fill alt="" loading="lazy" />}
                        </div>
                        <div className="absolute inset-x-0 bottom-0 p-4 text-center">
-                          <p className="text-[10px] font-black text-slate-600 dark:text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">MEMENTO BY <span className="text-primary">{p.uploader_name}</span>
+                          <p className="text-[10px] font-black text-slate-600 dark:text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1 flex items-center justify-center gap-2">
+                            {hasFeature(planTier, 'BRANDING_REMOVAL') ? '' : 'MEMENTO BY'} <span className="text-primary">{p.uploader_name}</span>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
                                 <button onClick={() => handleReaction(p.id)} className="text-slate-600 dark:text-slate-600 dark:text-slate-400 hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-1">
                                    <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
@@ -675,6 +676,13 @@ export default function WallPage() {
             </div>
          </Link>
       </div>
+      {/* Mobile Upload Floating CTA (Fallback since they can't scan QR) */}
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm">
+         <Link href={uploadUrl} className="btn-premium w-full py-4 shadow-2xl flex items-center justify-center gap-3 text-sm">
+            <Upload size={18} /> Upload Photos
+         </Link>
+      </div>
+
       {/* Mobile QR Modal */}
       <AnimatePresence>
          {showMobileQR && (
