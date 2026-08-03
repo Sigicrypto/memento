@@ -388,6 +388,7 @@ export default function WallPage() {
               bend={3}
               textColor="#ffffff"
               borderRadius={0.05}
+              fontUrl=""
               items={displayedPhotos.map(p => ({ 
                 image: getPublicUrl(p.storage_path), 
                 text: p.uploader_name || '' 
