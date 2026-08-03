@@ -334,31 +334,32 @@ export default function MobilePage() {
                      )}
                   </div>
                ) : (
-                  <div className="w-full aspect-video rounded-lg border-2 border-dashed border-border bg-bg-subtle flex flex-col items-center justify-center gap-3 hover:border-primary/50 transition-colors relative">
-                     <input type="file" multiple accept="image/*,video/*,.heic,.heif" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                     <div className="w-12 h-12 rounded-full bg-bg border border-border flex items-center justify-center text-text-primary pointer-events-none">
+                  <div className="w-full rounded-lg border border-border bg-bg-subtle p-6 flex flex-col items-center justify-center gap-4 hover:border-primary/50 transition-colors relative">
+                     <div className="w-12 h-12 rounded-full bg-bg border border-border flex items-center justify-center text-text-primary">
                         <Camera size={24} />
                      </div>
-                     <div className="text-center pointer-events-none">
-                        <div className="mt-1 mb-2 px-6 py-2 bg-black text-white dark:bg-white dark:text-black rounded-full text-xs font-bold uppercase tracking-widest shadow-md">
-                           Select Files
-                        </div>
-                        <p className="text-xs text-text-muted mt-0.5">Up to {MAX_IMAGES} files</p>
+                     <div className="w-full relative">
+                        <input type="file" multiple accept="image/*,video/*,.heic,.heif" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                        <button type="button" className="btn btn-secondary w-full pointer-events-none">
+                           Select Files to Upload
+                        </button>
                      </div>
+                     <p className="text-xs text-text-muted mt-1 text-center">Up to {MAX_IMAGES} files (Photos or Video)</p>
                   </div>
                )}
  
-               <button 
-                 onClick={handleUpload} 
-                 disabled={uploading || files.length === 0 || processingFiles || isLimited}
-                 className="btn btn-primary w-full btn-lg relative overflow-hidden"
-               >
-                  {uploading && <div className="absolute inset-0 bg-white/20 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
-                  <span className="relative z-10 flex items-center gap-2">
-                     {uploading ? statusText : processingFiles ? 'Processing...' : `Share to Wall (${files.length})`}
-                     {!uploading && !processingFiles && <Sparkles size={14} />}
-                  </span>
-               </button>
+               <div className="sticky bottom-4 z-50 mt-8">
+                 <button 
+                   onClick={handleUpload} 
+                   disabled={uploading || files.length === 0 || processingFiles || isLimited}
+                   className="btn btn-primary w-full btn-lg relative overflow-hidden shadow-2xl shadow-primary/20 ring-4 ring-bg/50"
+                 >
+                    {uploading && <div className="absolute inset-0 bg-white/20 origin-left scale-x-0" style={{ transform: `scaleX(${uploadProgress / 100})`, transition: 'transform 0.3s ease-out' }} />}
+                    <span className="relative z-10 flex items-center gap-2">
+                       {uploading ? statusText : processingFiles ? 'Processing...' : `🚀 Upload to Wall (${files.length})`}
+                    </span>
+                 </button>
+               </div>
             </div>
             )}
          </div>

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import FloatingParticles from '@/components/FloatingParticles';
+import { Upload } from 'lucide-react';
 
 const MAX_IMAGES = 5;
 const MAX_VIDEOS = 1;
@@ -60,8 +62,8 @@ async function broadcastUpload(demoId: string, payload: DemoMedia) {
       event: 'NEW_UPLOAD',
       payload,
     });
-  } catch (err) {
-    console.error('Broadcast failed:', err);
+  } catch (err: any) {
+    console.warn('Broadcast failed:', err.message || err);
   }
 }
 
@@ -69,20 +71,33 @@ async function broadcastUpload(demoId: string, payload: DemoMedia) {
 function getQuotaKey(demoId: string) {
   return `demo-quota-${demoId}`;
 }
-function loadQuota(demoId: string): { photos: number; videos: number } {
+function loadQuota(demoId: string): { photos: number; videos: number; timestamp: number } {
   try {
     const raw = localStorage.getItem(getQuotaKey(demoId));
-    if (!raw) return { photos: 0, videos: 0 };
+    if (!raw) return { photos: 0, videos: 0, timestamp: Date.now() };
     const parsed = JSON.parse(raw);
+    
+    // If there's no timestamp, it's legacy data from before this feature, so it's safely expired.
+    if (!parsed.timestamp) {
+      return { photos: 0, videos: 0, timestamp: Date.now() };
+    }
+    
+    // Auto-reset quota after 5 minutes (matching the demo wall duration)
+    if (Date.now() - parsed.timestamp > 5 * 60 * 1000) {
+      return { photos: 0, videos: 0, timestamp: Date.now() };
+    }
+    
     return {
       photos: typeof parsed.photos === 'number' ? parsed.photos : 0,
       videos: typeof parsed.videos === 'number' ? parsed.videos : 0,
+      timestamp: parsed.timestamp
     };
-  } catch { return { photos: 0, videos: 0 }; }
+  } catch { return { photos: 0, videos: 0, timestamp: Date.now() }; }
 }
-function saveQuota(demoId: string, photos: number, videos: number) {
+function saveQuota(demoId: string, photos: number, videos: number, existingTimestamp?: number) {
   try {
-    localStorage.setItem(getQuotaKey(demoId), JSON.stringify({ photos, videos }));
+    const timestamp = existingTimestamp || Date.now();
+    localStorage.setItem(getQuotaKey(demoId), JSON.stringify({ photos, videos, timestamp }));
   } catch { /* storage unavailable */ }
 }
 
@@ -105,15 +120,24 @@ function DemoUploadContent() {
   // Lifetime quota — persisted in localStorage per device per demoId
   const [lifetimePhotos, setLifetimePhotos] = useState(0);
   const [lifetimeVideos, setLifetimeVideos] = useState(0);
+  const [quotaTimestamp, setQuotaTimestamp] = useState<number>(Date.now());
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
   // Load lifetime quota from localStorage once demoId is known
   useEffect(() => {
     if (!demoId) return;
-    const quota = loadQuota(demoId);
-    setLifetimePhotos(quota.photos);
-    setLifetimeVideos(quota.videos);
+    
+    const refreshQuota = () => {
+      const quota = loadQuota(demoId);
+      setLifetimePhotos(quota.photos);
+      setLifetimeVideos(quota.videos);
+      setQuotaTimestamp(quota.timestamp);
+    };
+    
+    refreshQuota();
+    const interval = setInterval(refreshQuota, 5000);
+    return () => clearInterval(interval);
   }, [demoId]);
 
   useEffect(() => {
@@ -202,7 +226,7 @@ function DemoUploadContent() {
   const removeVideo = () => setUploadVideos([]);
 
   const uploadFile = async (file: File): Promise<string> => {
-    const fileName = `${demoId}/${Date.now()}-${file.name}`;
+    const fileName = `demo/${demoId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
     const { error: uploadError } = await supabase.storage.from('photos').upload(fileName, file);
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
     const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(fileName);
@@ -264,7 +288,7 @@ function DemoUploadContent() {
       const newLifetimeVideos = lifetimeVideos + uploadVideos.length;
       setLifetimePhotos(newLifetimePhotos);
       setLifetimeVideos(newLifetimeVideos);
-      saveQuota(demoId, newLifetimePhotos, newLifetimeVideos);
+      saveQuota(demoId, newLifetimePhotos, newLifetimeVideos, quotaTimestamp);
 
       setTotalUploaded(prev => prev + urls.length);
       setUploadPhotos([]);
@@ -321,9 +345,36 @@ function DemoUploadContent() {
           align-items: center;
           padding: 7rem 1rem 7rem;
           width: 100%;
-          max-width: 520px;
+          max-width: 1000px;
           margin: 0 auto;
           gap: 1.25rem;
+        }
+
+        .upload-layout-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.25rem;
+          width: 100%;
+          max-width: 520px;
+        }
+
+        .upload-col-left, .upload-col-right {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        .upload-col-right {
+           position: relative; /* For sticky submit button */
+        }
+
+        @media (min-width: 860px) {
+          .upload-layout-grid {
+            grid-template-columns: 1fr 1fr;
+            max-width: 1000px;
+            align-items: start;
+            gap: 2rem;
+          }
         }
 
         /* ── Page header ── */
@@ -402,7 +453,7 @@ function DemoUploadContent() {
           gap: 8px;
           font-size: 0.875rem;
           font-weight: 700;
-          color: var(--text1, #0f172a);
+          color: var(--text-primary, #ffffff);
         }
         .upload-section-title .emoji {
           font-size: 1rem;
@@ -416,7 +467,7 @@ function DemoUploadContent() {
         }
         .upload-count-pill.empty {
           background: rgba(100,116,139,0.1);
-          color: var(--text3, #94a3b8);
+          color: var(--text-muted, #94a3b8);
         }
         .upload-count-pill.filled {
           background: rgba(34,197,94,0.14);
@@ -437,10 +488,10 @@ function DemoUploadContent() {
           transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
           background: var(--input-bg);
           border: 1.5px solid var(--input-border);
-          color: var(--text1, #0f172a);
+          color: var(--text-primary, #ffffff);
           -webkit-appearance: none;
         }
-        .upload-input::placeholder { color: var(--text3, #94a3b8); }
+        .upload-input::placeholder { color: var(--text-muted, #94a3b8); }
         .upload-input:focus {
           border-color: var(--input-focus-border);
           background: rgba(255,255,255,0.7);
@@ -457,13 +508,13 @@ function DemoUploadContent() {
           font-weight: 800;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: var(--text3, #94a3b8);
+          color: var(--text-muted, #94a3b8);
           margin-bottom: 8px;
         }
         .char-count {
           text-align: right;
           font-size: 0.7rem;
-          color: var(--text3, #94a3b8);
+          color: var(--text-muted, #94a3b8);
           margin-top: 5px;
         }
 
@@ -508,11 +559,11 @@ function DemoUploadContent() {
         .drop-zone-text {
           font-size: 0.85rem;
           font-weight: 600;
-          color: var(--text2, #334155);
+          color: var(--text-secondary, #cbd5e1);
         }
         .drop-zone-hint {
           font-size: 0.72rem;
-          color: var(--text3, #94a3b8);
+          color: var(--text-muted, #94a3b8);
         }
 
         /* ── Photo preview grid ── */
@@ -613,7 +664,7 @@ function DemoUploadContent() {
           justify-content: space-between;
           align-items: center;
           font-size: 0.78rem;
-          color: var(--text3, #94a3b8);
+          color: var(--text-muted, #94a3b8);
           margin-bottom: 8px;
           font-weight: 500;
         }
@@ -658,7 +709,7 @@ function DemoUploadContent() {
           color: #16a34a;
           margin-bottom: 3px;
         }
-        .success-sub { font-size: 0.8rem; color: var(--text3, #94a3b8); }
+        .success-sub { font-size: 0.8rem; color: var(--text-muted, #94a3b8); }
 
         /* ── Error banner ── */
         .upload-error {
@@ -692,7 +743,7 @@ function DemoUploadContent() {
           display: flex;
           align-items: center;
           gap: 12px;
-          color: var(--text3, #94a3b8);
+          color: var(--text-muted, #94a3b8);
           font-size: 0.72rem;
           font-weight: 600;
           letter-spacing: 0.08em;
@@ -725,9 +776,14 @@ function DemoUploadContent() {
         }
       `}</style>
 
-      <div className="lp upload-page bg-bg-animated-gradient bg-[linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab)] dark:bg-[linear-gradient(-45deg,#8a2387,#e94057,#f27121)]">
-        {/* Background elements */}
-        <div className="absolute inset-0 bg-bg/80 backdrop-blur-[100px] z-0 pointer-events-none" />
+      <div className="min-h-screen bg-bg relative lp overflow-hidden upload-page">
+        {/* Background elements to match landing page */}
+        <div className="grain" />
+        <div className="orbs">
+          <div className="orb orb-primary" />
+          <div className="orb orb-secondary" />
+        </div>
+        <FloatingParticles className="opacity-60" />
 
         {/* ── NAV ── */}
         <nav className="lp-nav scrolled" style={{ background: 'rgba(24, 24, 27, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
@@ -752,7 +808,10 @@ function DemoUploadContent() {
 
           {/* Header */}
           <div className="upload-header reveal visible">
-            <span className="kicker">Demo Wall</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+              <span className="kicker">Demo Wall</span>
+              <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Session: {demoId}</span>
+            </div>
             <h1 className="hero-h1">
               Share the <span className="gradient-text">Moment</span>
             </h1>
@@ -775,7 +834,10 @@ function DemoUploadContent() {
             </div>
           )}
 
-          {/* ── Name & Caption card ── */}
+          <div className="upload-layout-grid">
+            <div className="upload-col-left">
+
+              {/* ── Name & Caption card ── */}
           <div className="upload-section gcard reveal visible">
             <div className="gcard-border" />
             <div className="gcard-inner" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
@@ -847,7 +909,8 @@ function DemoUploadContent() {
               {(() => {
                 const totalUsed = lifetimePhotos + uploadPhotos.length;
                 const slotsLeft = MAX_IMAGES - totalUsed;
-                if (totalUsed >= MAX_IMAGES) {
+                
+                if (lifetimePhotos >= MAX_IMAGES && uploadPhotos.length === 0) {
                   return (
                     <div style={{
                       width: '100%', padding: '0.85rem 1rem', borderRadius: 14,
@@ -862,32 +925,47 @@ function DemoUploadContent() {
                 return (
                   <div
                     className={`upload-drop-zone relative ${photoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
-                    onDragOver={e => { e.preventDefault(); setPhotoDragOver(true); }}
+                    onDragOver={e => { e.preventDefault(); if (totalUsed < MAX_IMAGES) setPhotoDragOver(true); }}
                     onDragLeave={() => setPhotoDragOver(false)}
-                    onDrop={handlePhotoDrop}
+                    onDrop={totalUsed < MAX_IMAGES ? handlePhotoDrop : (e => { e.preventDefault(); setPhotoDragOver(false); })}
                   >
-                    {!uploading && (
-                      <input
-                        type="file"
-                        accept="image/*,image/heic,image/heif"
-                        multiple
-                        onChange={handlePhotoSelect}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        title="Choose photos"
-                      />
-                    )}
                     <div className="drop-zone-icon">{uploadPhotos.length === 0 && lifetimePhotos === 0 ? '🖼️' : '➕'}</div>
                     <p className="drop-zone-text">
                       {totalUsed === 0
-                        ? 'Tap to select photos'
-                        : `Add more — ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left`}
+                        ? 'Select photos below'
+                        : totalUsed >= MAX_IMAGES
+                          ? 'Ready to upload (Limit reached)'
+                          : `Add more — ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left`}
                     </p>
-                    <div className="mt-2 px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg pointer-events-none">
-                      {totalUsed === 0 ? 'Select Photos' : 'Add Photos'}
+                    <div className="w-full relative mt-4 flex gap-2 z-30">
+                      <label className={`btn btn-secondary flex-1 m-0 flex items-center justify-center ${totalUsed >= MAX_IMAGES ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                        {!uploading && totalUsed < MAX_IMAGES && (
+                          <input
+                            type="file"
+                            accept="image/*,image/heic,image/heif"
+                            multiple
+                            onChange={handlePhotoSelect}
+                            className="hidden"
+                            title="Choose photos"
+                          />
+                        )}
+                        {totalUsed === 0 ? 'Select Photos' : totalUsed >= MAX_IMAGES ? 'Limit Reached' : 'Add Photos'}
+                      </label>
+                      {uploadPhotos.length > 0 && (
+                        <button 
+                          type="button" 
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUpload(); }} 
+                          disabled={uploading}
+                          className="btn-glow flex items-center justify-center w-12 h-12 flex-shrink-0 rounded-xl pointer-events-auto"
+                          title="Upload Photos"
+                        >
+                          <Upload size={20} />
+                        </button>
+                      )}
                     </div>
                     <p className="drop-zone-hint mt-2">
                       {lifetimePhotos > 0
-                        ? `${lifetimePhotos} already uploaded · ${slotsLeft} remaining`
+                        ? `${lifetimePhotos} already uploaded · ${totalUsed >= MAX_IMAGES ? '0 remaining' : slotsLeft + ' remaining'}`
                         : `JPG, PNG, HEIC — up to ${MAX_IMAGES} total`}
                     </p>
                   </div>
@@ -925,45 +1003,69 @@ function DemoUploadContent() {
                 </div>
               )}
 
-              {lifetimeVideos + uploadVideos.length >= MAX_VIDEOS ? (
-                <div style={{
-                  width: '100%', padding: '0.85rem 1rem', borderRadius: 14,
-                  background: uploadVideos.length > 0 ? 'transparent' : 'rgba(34,197,94,0.08)',
-                  border: uploadVideos.length > 0 ? 'none' : '1.5px solid rgba(34,197,94,0.25)',
-                  display: uploadVideos.length > 0 ? 'none' : 'flex',
-                  alignItems: 'center', justifyContent: 'center',
-                  gap: 8, fontSize: '0.82rem', fontWeight: 600, color: '#16a34a',
-                }}>
-                  ✓ Video limit reached (1/1 used)
-                </div>
-              ) : (
-                <div
-                  className={`upload-drop-zone relative ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
-                  onDragOver={e => { e.preventDefault(); setVideoDragOver(true); }}
-                  onDragLeave={() => setVideoDragOver(false)}
-                  onDrop={handleVideoDrop}
-                >
-                  {!uploading && (
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoSelect}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                      title="Choose video"
-                    />
-                  )}
-                  <div className="drop-zone-icon">🎬</div>
-                  <p className="drop-zone-text">Tap to select a video</p>
-                  <div className="mt-2 px-6 py-2.5 bg-black text-white dark:bg-white dark:text-black rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg pointer-events-none">
-                    Select Video
+              {(() => {
+                const totalUsed = lifetimeVideos + uploadVideos.length;
+                
+                if (lifetimeVideos >= MAX_VIDEOS && uploadVideos.length === 0) {
+                  return (
+                    <div style={{
+                      width: '100%', padding: '0.85rem 1rem', borderRadius: 14,
+                      background: 'rgba(34,197,94,0.08)',
+                      border: '1.5px solid rgba(34,197,94,0.25)',
+                      display: 'flex',
+                      alignItems: 'center', justifyContent: 'center',
+                      gap: 8, fontSize: '0.82rem', fontWeight: 600, color: '#16a34a',
+                    }}>
+                      ✓ Video limit reached ({MAX_VIDEOS}/{MAX_VIDEOS} used)
+                    </div>
+                  );
+                }
+                
+                return (
+                  <div
+                    className={`upload-drop-zone relative ${videoDragOver ? 'drag-over' : ''} ${uploading ? 'disabled' : ''}`}
+                    onDragOver={e => { e.preventDefault(); if (totalUsed < MAX_VIDEOS) setVideoDragOver(true); }}
+                    onDragLeave={() => setVideoDragOver(false)}
+                    onDrop={totalUsed < MAX_VIDEOS ? handleVideoDrop : (e => { e.preventDefault(); setVideoDragOver(false); })}
+                  >
+                    {!uploading && totalUsed < MAX_VIDEOS && (
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={handleVideoSelect}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        title="Choose video"
+                      />
+                    )}
+                    <div className="drop-zone-icon">🎬</div>
+                    <p className="drop-zone-text">{totalUsed >= MAX_VIDEOS ? 'Ready to upload' : 'Tap to select a video'}</p>
+                    <div className="w-full relative mt-4 flex gap-2 z-30 pointer-events-none">
+                      <button type="button" className={`btn btn-secondary flex-1 ${totalUsed >= MAX_VIDEOS ? 'opacity-50' : ''}`}>
+                        {totalUsed >= MAX_VIDEOS ? 'Limit Reached' : 'Select Video'}
+                      </button>
+                      {uploadVideos.length > 0 && (
+                        <button 
+                          type="button" 
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUpload(); }} 
+                          disabled={uploading}
+                          className="btn-glow flex items-center justify-center w-12 h-12 flex-shrink-0 rounded-xl pointer-events-auto"
+                          title="Upload Video"
+                        >
+                          <Upload size={20} />
+                        </button>
+                      )}
+                    </div>
+                    <p className="drop-zone-hint mt-2">MP4, MOV, WEBM — 1 video maximum</p>
                   </div>
-                  <p className="drop-zone-hint mt-2">MP4, MOV, WEBM — 1 video maximum</p>
-                </div>
-              )}
+                );
+              })()}
+            </div>
             </div>
           </div>
 
-          {/* ── Live preview card — shows name + caption as they'll appear on the wall ── */}
+          <div className="upload-col-right">
+
+            {/* ── Live preview card — shows name + caption as they'll appear on the wall ── */}
           {(uploaderName.trim() || comment.trim() || totalFiles > 0) && !uploading && (
             <div className="upload-section gcard reveal visible" style={{ animationDelay: '0.05s' }}>
               <div className="gcard-border" />
@@ -996,20 +1098,20 @@ function DemoUploadContent() {
                     <p style={{
                       fontSize: '0.9rem',
                       fontWeight: 700,
-                      color: 'var(--text1, #0f172a)',
+                      color: 'var(--text-primary, #ffffff)',
                       marginBottom: '2px',
                       lineHeight: 1.3,
                     }}>
-                      {uploaderName.trim() || <span style={{ color: 'var(--text3)', fontStyle: 'italic', fontWeight: 400 }}>Your name</span>}
+                      {uploaderName.trim() || <span style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontWeight: 400 }}>Your name</span>}
                     </p>
                     <p style={{
                       fontSize: '0.82rem',
-                      color: 'var(--text2, #334155)',
+                      color: 'var(--text-secondary, #cbd5e1)',
                       lineHeight: 1.45,
                       wordBreak: 'break-word',
                     }}>
                       {comment.trim() || (
-                        <span style={{ color: 'var(--text3)', fontStyle: 'italic' }}>
+                        <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
                           {totalFiles > 0 ? (uploadVideos.length > 0 ? '🎥 Live Video!' : '📸 Live Photo!') : 'No caption'}
                         </span>
                       )}
@@ -1017,7 +1119,7 @@ function DemoUploadContent() {
                     {(totalFiles > 0 || lifetimePhotos > 0 || lifetimeVideos > 0) && (
                       <p style={{
                         fontSize: '0.7rem',
-                        color: 'var(--text3)',
+                        color: 'var(--text-muted)',
                         marginTop: '5px',
                         fontWeight: 600,
                       }}>
@@ -1051,7 +1153,7 @@ function DemoUploadContent() {
             <div className="upload-progress-wrap">
               <div className="upload-progress-header">
                 <span>{status}</span>
-                <span style={{ fontWeight: 700, color: 'var(--text2, #334155)' }}>{progress}%</span>
+                <span style={{ fontWeight: 700, color: 'var(--text-secondary, #cbd5e1)' }}>{progress}%</span>
               </div>
               <div className="upload-progress-track">
                 <div className="upload-progress-fill" style={{ width: `${progress}%` }} />
@@ -1059,21 +1161,11 @@ function DemoUploadContent() {
             </div>
           )}
 
-          {/* ── Submit ── */}
-          <button
-            className="btn-glow upload-submit-btn"
-            onClick={handleUpload}
-            disabled={uploading || totalFiles === 0}
-            style={{ opacity: uploading || totalFiles === 0 ? 0.45 : 1 }}
-          >
-            {uploading
-              ? `Uploading… ${progress}%`
-              : totalFiles > 0
-                ? `Share to Wall (${totalFiles} file${totalFiles !== 1 ? 's' : ''})`
-                : 'Select files above to share'}
-          </button>
 
+          
+          </div>
         </div>
+      </div>
 
         {/* ── Footer Nav for Live Demo Wall ── */}
         <footer style={{
@@ -1100,7 +1192,7 @@ export default function DemoUploadPage() {
   return (
     <Suspense fallback={
       <div className="lp min-h-screen flex items-center justify-center">
-        <span style={{ color: 'var(--text2)' }}>Loading…</span>
+        <span style={{ color: 'var(--text-secondary)' }}>Loading…</span>
       </div>
     }>
       <DemoUploadContent />

@@ -14,6 +14,7 @@ import { extractFaceDescriptorRobust, MATCH_THRESHOLD } from '@/lib/faceEngine';
 import { useAuth } from '@/hooks/useAuth';
 import { hasFeature } from '@/lib/permissions';
 import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music, QrCode, Upload } from 'lucide-react';
+import CircularGallery from '@/components/CircularGallery';
  
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
  
@@ -359,84 +360,49 @@ export default function WallPage() {
   );
  
   if (viewMode === 'slideshow') {
-    const current = displayedPhotos[slideIndex];
     return (
-      <div className="fixed inset-0 z-[1000] overflow-hidden flex flex-col">
-        <div className="grain" />
-        <div className="orbs"><div className="orb orb-primary opacity-20" /><div className="orb orb-secondary opacity-20" /></div>
+      <div className="fixed inset-0 z-[1000] overflow-hidden flex flex-col bg-[#050505]">
+        <div className="grain opacity-50" />
         
         {/* Slideshow Header */}
-        <div className="absolute top-0 left-0 right-0 p-10 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent">
+        <div className="absolute top-0 left-0 right-0 p-8 md:p-10 flex justify-between items-center z-50 pointer-events-none">
           <div className="flex items-center gap-4">
-             <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+             <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white pointer-events-auto">
                 <Layout size={24} />
              </div>
              <div>
-                <p className="text-[10px] font-black uppercase tracking-[.3em] text-primary">LIVE EXPERIENCE</p>
-                <h1 className="text-2xl font-bold">{eventName}</h1>
+                <p className="text-[10px] font-black uppercase tracking-[.3em] text-white/70">LIVE EXPERIENCE</p>
+                <h1 className="text-2xl font-bold text-white">{eventName}</h1>
              </div>
           </div>
           {hasFeature(planTier, 'SLIDESHOW_MODE') && (
-             <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-bg-subtle border border-border hover:bg-border transition-all font-bold text-xs">
+             <button onClick={() => setViewMode(prevViewMode)} className="px-6 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-bold text-xs text-white pointer-events-auto">
                EXIT SLIDESHOW
              </button>
           )}
         </div>
  
-        <div className="flex-grow relative flex items-center justify-center p-20">
-          <AnimatePresence mode="wait">
-            {current && (
-              <motion.div key={current.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 1 }} className="relative z-10 w-full h-full flex items-center justify-center">
-                <div className="absolute inset-0 bg-primary/10 blur-[150px] rounded-full opacity-30" />
-                
-                <div className="flex flex-col lg:flex-row gap-16 items-center w-full max-w-7xl">
-                   {/* QR Section */}
-                   <div className="hidden lg:flex flex-col items-center gap-6 glass-panel p-8 /40 border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 order-2 lg:order-1">
-                      <div className="p-4 bg-white rounded-2xl shadow-2xl">
-                         <QRCodeSVG value={uploadUrl} size={160} />
-                      </div>
-                      <div className="text-center">
-                         <p className="text-[10px] font-black uppercase tracking-[.2em] mb-1">SCAN TO UPLOAD</p>
-                         <p className="text-xs text-text-secondary italic">Join the Memory Wall</p>
-                      </div>
-                   </div>
- 
-                   {/* Media Content */}
-                   <div className="flex-grow relative order-1 lg:order-2">
-                     <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-border">
-                        {current.media_type === 'video'
-                          ? <video src={getPublicUrl(current.storage_path)} className="max-h-[70vh] w-full block object-contain" autoPlay muted onEnded={() => setSlideIndex(p => (p + 1) % displayedPhotos.length)} />
-                          : <div className="relative w-full aspect-video max-h-[70vh]"><Image src={getPublicUrl(current.storage_path)} fill className="object-contain" alt="" /></div>
-                        }
-                     </div>
- 
-                     {/* Info Overlay */}
-                     <div className="mt-8 lg:mt-12 space-y-4">
-                        <div className="flex items-center justify-between">
-                           <div>
-                              <p className="text-[10px] font-black uppercase tracking-[.2em] text-primary mb-1">MEMORABLE MOMENT BY</p>
-                              <h2 className="text-5xl font-bold tracking-tight">{current.uploader_name}</h2>
-                           </div>
-                           <div className="flex gap-4">
-                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                                 <div className="px-5 py-3 rounded-2xl bg-bg-subtle border border-border flex items-center gap-2 text-sm font-bold">
-                                    <Heart size={16} className="text-pink-500 fill-pink-500" /> {current.reaction_count || 0}
-                                 </div>
-                              )}
-                              <div className="px-5 py-3 rounded-2xl bg-bg-subtle border border-border flex items-center gap-2 text-sm font-bold">
-                                 <Clock size={16} className="text-text-muted" /> {new Date(current.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </div>
-                           </div>
-                        </div>
-                        {current.caption && (
-                          <p className="text-2xl text-text-secondary italic leading-relaxed">&quot;{current.caption}&quot;</p>
-                        )}
-                     </div>
-                   </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Gallery */}
+        <div className="flex-grow relative w-full h-full">
+           <CircularGallery 
+              bend={3}
+              textColor="#ffffff"
+              borderRadius={0.05}
+              items={displayedPhotos.map(p => ({ 
+                image: getPublicUrl(p.storage_path), 
+                text: p.uploader_name || '' 
+              }))}
+           />
+        </div>
+
+        {/* Floating QR Code */}
+        <div className="absolute bottom-10 right-10 z-50 pointer-events-auto hidden md:block">
+            <div className="p-5 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 flex flex-col items-center gap-4 shadow-2xl">
+               <div className="p-3 bg-white rounded-2xl">
+                  <QRCodeSVG value={uploadUrl} size={120} />
+               </div>
+               <p className="text-[11px] font-black text-white tracking-widest uppercase">Scan to Upload</p>
+            </div>
         </div>
       </div>
     );

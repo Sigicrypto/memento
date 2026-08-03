@@ -107,6 +107,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                 src="/landing-hero/photo10.jpg"
                 alt="Concert Event"
                 fill
+                priority
                 className="object-cover opacity-80 mix-blend-screen"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
@@ -138,6 +139,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
                 src="/landing-hero/photo5.jpg"
                 alt="Party Event"
                 fill
+                priority
                 className="object-cover opacity-80 mix-blend-screen"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />

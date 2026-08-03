@@ -74,8 +74,11 @@ export const useAuth = () => {
     // Real-time profile subscription
     let profileChannel: any;
     if (user?.id) {
+      // Append a random string to the channel name to prevent "already subscribed" errors 
+      // in React Strict Mode or when multiple components call useAuth concurrently.
+      const uniqueChannelId = `profile-${user.id}-${Math.random().toString(36).substring(2, 9)}`;
       profileChannel = supabase
-        .channel(`profile-${user.id}`)
+        .channel(uniqueChannelId)
         .on(
           'postgres_changes',
           { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },

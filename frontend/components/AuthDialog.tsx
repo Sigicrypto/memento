@@ -111,8 +111,8 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
     setLoading(true);
     try {
       const baseUrl = typeof window !== 'undefined'
-        ? window.location.origin
-        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+        ? window.location.origin.includes('localhost') ? window.location.origin : 'https://memento-sigicryptos-projects.vercel.app'
+        : process.env.NEXT_PUBLIC_SITE_URL || 'https://memento-sigicryptos-projects.vercel.app';
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
@@ -227,8 +227,9 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
     setFieldErrors({});
     setLoading(true);
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://memento-sigicryptos-projects.vercel.app';
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: `${baseUrl}/auth/reset-password`,
       });
       if (resetError) throw resetError;
       setMessage('Password reset link sent to your email!');

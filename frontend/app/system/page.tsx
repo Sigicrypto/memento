@@ -14,6 +14,7 @@ export default function SystemAdminPage() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showFallback, setShowFallback] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -93,7 +94,7 @@ export default function SystemAdminPage() {
       <div className="aurora-bg fixed inset-0 z-0" />
       <div className="grain fixed inset-0 z-1 opacity-[0.03] pointer-events-none" />
 
-      <div className="relative z-10 max-w-md w-full">
+      <div className="relative z-10 max-w-xl w-full">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6 justify-center group transform hover:scale-105 transition-all">
             <AnimatedLogo width={220} height={70} />
@@ -108,72 +109,85 @@ export default function SystemAdminPage() {
 
         <div className="gcard cinematic-glow shadow-2xl">
           <div className="gcard-border" />
-          <div className="gcard-inner p-8">
+          <div className="gcard-inner px-8 py-16 md:px-20 md:py-24">
             {user ? (
-              <form onSubmit={handleLogin} className="space-y-6">
-                {error && (
-                  <div className="p-3 text-sm rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
-                    {error}
+              <div className="flex flex-col items-center w-full">
+                <form onSubmit={handleLogin} className="space-y-6 w-full max-w-sm">
+                  {error && (
+                    <div className="p-3 text-sm rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400">
+                      {error}
+                    </div>
+                  )}
+                  {message && (
+                    <div className="p-3 text-sm rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                      {message}
+                    </div>
+                  )}
+                  
+                  <div>
+                    <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-text-secondary">Authenticated As</label>
+                    <div className="px-4 py-3 rounded-xl bg-bg-subtle border border-border text-text-primary font-medium">
+                      {user.email}
+                    </div>
                   </div>
-                )}
-                {message && (
-                  <div className="p-3 text-sm rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                    {message}
-                  </div>
-                )}
-                
-                <div>
-                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-text-secondary">Authenticated As</label>
-                  <div className="px-4 py-3 rounded-xl bg-bg-subtle border border-border text-text-primary font-medium">
-                    {user.email}
-                  </div>
-                </div>
 
-                <div>
-                  <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-amber-500/80">Access Code</label>
-                  <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-6 py-4 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
-                    placeholder="Enter system access code" required />
-                </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-amber-500/80">Access Code</label>
+                    <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-6 py-5 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all font-medium" 
+                      placeholder="Enter system access code" required />
+                  </div>
 
-                <button type="submit" disabled={loading} className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
-                  {loading
-                    ? <div className="w-5 h-5 border-2 rounded-full animate-spin border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white" />
-                    : <>🔐 Elevate to Admin</>}
-                </button>
-              </form>
+                  <button type="submit" disabled={loading} className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                    {loading
+                      ? <div className="w-5 h-5 border-2 rounded-full animate-spin border-black/20 dark:border-black/20 dark:border-black/10 dark:border-white/20 border-t-white" />
+                      : <>🔐 Elevate to Admin</>}
+                  </button>
+                </form>
+              </div>
             ) : (
-              <div className="space-y-6 text-center">
-                <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400 leading-relaxed">
-                  You must be <span className="font-bold">logged in to your main account</span> before you can elevate to Administrator status using the system code.
-                </div>
-                
-                <Link href="/auth" className="btn-hero-primary w-full !py-3 shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2">
-                  🔑 Login with your Account
-                </Link>
+              <div className="flex flex-col items-center w-full">
+                <div className="flex flex-col gap-6 text-center w-full max-w-sm">
+                  <div className="p-6 rounded-xl bg-amber-500/5 border border-amber-500/10 text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400 leading-relaxed">
+                    You must be <span className="font-bold">logged in to your main account</span> before you can elevate to Administrator status using the system code.
+                  </div>
+                  
+                  <Link href="/auth" className="btn-hero-primary w-full !py-4 shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 text-base">
+                    🔑 Login with your Account
+                  </Link>
 
-                <div className="pt-4">
-                  <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary mb-4">Or use emergency fallback</p>
-                  <form onSubmit={handleLogin} className="space-y-6 text-left">
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-6 py-4 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none text-sm" 
-                      placeholder="Admin Email" required />
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-6 py-4 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none text-sm" 
-                      placeholder="Access Code" required />
-                    <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-bg-subtle border border-border font-bold hover:bg-border transition-all text-sm">
-                      Access System
-                    </button>
-                    {error && <p className="text-[10px] text-rose-400 text-center">{error}</p>}
-                  </form>
+                  <div className="pt-8 mt-2 border-t border-white/5 flex flex-col items-center w-full">
+                    {!showFallback ? (
+                      <button type="button" onClick={() => setShowFallback(true)} className="text-xs uppercase font-black tracking-widest text-text-secondary hover:text-white transition-colors">
+                        Use emergency fallback instead?
+                      </button>
+                    ) : (
+                      <>
+                        <p className="text-xs uppercase font-black tracking-widest text-text-secondary mb-6 text-center">Emergency fallback</p>
+                        <form onSubmit={handleLogin} className="flex flex-col gap-5 text-left w-full">
+                          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-6 py-5 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all text-sm font-medium" 
+                            placeholder="Admin Email" required />
+                          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-6 py-5 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all text-sm font-medium" 
+                            placeholder="Access Code" required />
+                          <button type="submit" disabled={loading} className="w-full py-4 mt-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold transition-all text-sm shadow-lg shadow-amber-500/20">
+                            {loading ? 'Authenticating...' : 'Access System'}
+                          </button>
+                          {error && <p className="text-xs font-medium text-rose-400 text-center mt-2 bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">{error}</p>}
+                        </form>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="mt-8 pt-6 text-center">
-              <div className="w-full h-px bg-border mb-6" />
-              <p className="text-xs mb-4 text-text-secondary font-medium uppercase tracking-widest">Return to main site?</p>
-              <Link href="/" className="px-6 py-2 rounded-xl bg-bg-subtle border border-border text-text-primary hover:text-black dark:hover:text-text-primary hover:bg-border transition-all inline-block font-semibold shadow-sm">🏠 Back Home</Link>
+            <div className="mt-10 pt-8 text-center border-t border-white/5">
+              <p className="text-xs mb-5 text-text-secondary font-medium uppercase tracking-widest">Return to main site?</p>
+              <Link href="/" className="px-8 py-3 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all inline-flex items-center gap-2 font-semibold shadow-sm">
+                🏠 Back Home
+              </Link>
             </div>
           </div>
         </div>
