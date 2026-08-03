@@ -9,7 +9,7 @@ import { Mail, Lock, User, Phone, ArrowRight, Loader2, Check, ShieldCheck, Spark
 import { AuroraBackground } from '@/components/ui/aurora-background';
 
 function AuthPageContent() {
-  const { user, profile, isLoading, signIn, signUp } = useAuth();
+  const { user, profile, isLoading, signIn, signUp, signInWithGoogle } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(searchParams.get('mode') === 'signup');
