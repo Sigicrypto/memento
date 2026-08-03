@@ -69,7 +69,7 @@ export default function DashboardPage() {
   const [emptyLottieData, setEmptyLottieData] = useState<any>(null);
 
   useEffect(() => {
-    fetch('https://assets4.lottiefiles.com/packages/lf20_t2xm9bsw.json')
+    fetch('https://assets9.lottiefiles.com/packages/lf20_swnrn2oy.json')
       .then(res => res.json())
       .then(setEmptyLottieData)
       .catch(() => {});
