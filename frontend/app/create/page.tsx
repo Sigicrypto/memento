@@ -175,36 +175,47 @@ export default function CreateEventPage() {
         </motion.div>
       </div>
     );
-  }
- 
   // ── Create Form ──
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-6 bg-bg relative">
+    <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-bg relative overflow-hidden">
+      {/* Background Orbs & Grain */}
+      <div className="grain" />
+      <div className="orbs">
+        <div className="orb orb-primary opacity-40" />
+        <div className="orb orb-secondary opacity-40" />
+      </div>
+
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-bg/90 backdrop-blur-md border-b border-border flex items-center px-4">
-        <Link href="/dashboard" className="text-text-muted hover:text-text-primary transition-colors">
-          <ArrowRight size={20} className="rotate-180" />
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[64px] bg-surface/60 backdrop-blur-xl border-b border-white/10 flex items-center px-6">
+        <Link href="/dashboard" className="text-text-muted hover:text-white transition-colors flex items-center gap-2 text-xs font-semibold">
+          <ArrowRight size={18} className="rotate-180" />
+          <span className="hidden sm:inline">Back to Dashboard</span>
         </Link>
         <div className="flex-1 flex justify-center">
-          <AnimatedLogo width={100} height={28} />
+          <AnimatedLogo width={110} height={28} />
         </div>
-        <div className="w-5" />
+        <div className="w-16" />
       </nav>
 
-      <main className="w-full max-w-2xl">
+      <main className="w-full max-w-md mx-auto relative z-10 pt-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl bg-surface/70 backdrop-blur-xl border border-border p-8 hover:bg-surface hover:border-border-hover transition-all duration-500 shadow-xl"
+          className="rounded-3xl bg-gradient-to-b from-surface/80 via-surface/60 to-bg-subtle/70 backdrop-blur-2xl border border-white/10 p-6 sm:p-8 shadow-2xl relative overflow-hidden"
         >
-          <div className="mb-10 text-center">
-            <h1 className="h2-text mb-2 text-text-primary">Create a Photo Wall</h1>
-            <p className="text-text-secondary text-sm">Set up your event space in seconds.</p>
+          {/* Subtle Ambient Radial Glow inside Card */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -mt-16 w-48 h-48 bg-accent-cyan/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="mb-8 text-center relative z-10">
+            <h1 className="text-2xl sm:text-3xl font-extrabold mb-2 tracking-tight bg-gradient-to-r from-white via-slate-100 to-accent-cyan bg-clip-text text-transparent">
+              Create a Photo Wall
+            </h1>
+            <p className="text-text-secondary text-xs sm:text-sm">Set up your event space in seconds.</p>
           </div>
- 
-          <form onSubmit={handleCreate} className="space-y-6">
+
+          <form onSubmit={handleCreate} className="space-y-5 relative z-10">
             <div className="input-group">
-              <label className="label">Event Name</label>
+              <label className="label text-xs font-bold text-text-secondary uppercase tracking-wider">Event Name</label>
               <input 
                 type="text" 
                 value={name} 
@@ -212,19 +223,19 @@ export default function CreateEventPage() {
                 placeholder="The Midnight Gala" 
                 required 
                 autoFocus 
-                className="input"
+                className="input bg-white/5 border-white/10 rounded-xl py-3 px-4 focus:border-accent-cyan text-sm"
               />
             </div>
 
             <div className="input-group">
-              <div className="flex items-center justify-between">
-                <label className="label">Personalized Link</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="label text-xs font-bold text-text-secondary uppercase tracking-wider mb-0">Personalized Link</label>
                 {plan === 'starter' && (
-                  <Link href="/#pricing" className="text-[10px] text-accent font-medium hover:underline">Upgrade for Custom</Link>
+                  <Link href="/#pricing" className="text-[10px] text-accent-cyan font-bold hover:underline">Upgrade for Custom</Link>
                 )}
               </div>
               <div className="flex">
-                <span className="inline-flex items-center px-3 border border-r-0 border-border bg-bg-subtle text-text-muted text-sm rounded-l-md font-mono">
+                <span className="inline-flex items-center px-3 border border-r-0 border-white/10 bg-white/5 text-text-muted text-xs rounded-l-xl font-mono shrink-0">
                   memento.live/
                 </span>
                 <input 
@@ -233,39 +244,39 @@ export default function CreateEventPage() {
                   disabled={plan === 'starter'}
                   onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   placeholder={plan === 'starter' ? 'Standard Plan' : 'my-event'} 
-                  className="input rounded-l-none"
+                  className="input rounded-l-none rounded-r-xl bg-white/5 border-white/10 py-3 text-sm"
                 />
               </div>
             </div>
 
             <div className="input-group">
-              <label className="label">Privacy Password (Optional)</label>
+              <label className="label text-xs font-bold text-text-secondary uppercase tracking-wider">Privacy Password (Optional)</label>
               <div className="relative">
-                <Shield size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                <Shield size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
                 <input 
                   type="password" 
                   value={password} 
                   onChange={(e) => setPassword(e.target.value)} 
                   placeholder="Set a guest password" 
-                  className="input pl-9"
+                  className="input pl-10 bg-white/5 border-white/10 rounded-xl py-3 text-sm"
                 />
               </div>
             </div>
- 
+
             {error && (
-              <div className="p-3 rounded-md bg-error/10 border border-error/20 flex items-center gap-2 text-error text-sm font-medium">
-                <AlertTriangle size={16} />
+              <div className="p-3.5 rounded-xl bg-error/10 border border-error/20 flex items-center gap-2.5 text-error text-xs font-semibold">
+                <AlertTriangle size={16} className="shrink-0" />
                 <span>{error}</span>
               </div>
             )}
- 
+
             <div className="pt-2">
               <button 
                 type="submit" 
                 disabled={loading || !user} 
-                className="btn btn-primary w-full !py-4 flex items-center justify-center gap-2 group"
+                className="btn btn-primary w-full !py-3.5 flex items-center justify-center gap-2 group shadow-lg shadow-purple-500/25 rounded-xl font-bold"
               >
-                 {loading ? <div className="w-5 h-5 border-2 border-border border-t-accent-cyan rounded-full animate-spin" /> : (
+                 {loading ? <div className="w-5 h-5 border-2 border-white/20 border-t-accent-cyan rounded-full animate-spin" /> : (
                    <>
                      <span>Create Wall</span>
                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
