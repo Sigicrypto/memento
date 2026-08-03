@@ -22,8 +22,7 @@ export default function DashboardNavigation() {
 
   const navLinks = [
     { name: 'Events', href: '/dashboard', icon: Layout },
-    { name: 'Analytics', href: '#', icon: BarChart2 },
-    { name: 'Settings', href: '#', icon: Settings },
+    // Analytics and Settings pages to be implemented in a future update
   ];
 
   return (
