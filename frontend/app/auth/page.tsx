@@ -147,7 +147,7 @@ function AuthPageContent() {
                 <button 
                   type="button" 
                   onClick={() => signInWithGoogle()} 
-                  className="btn w-full !py-4 flex items-center justify-center gap-3 bg-surface border border-border hover:bg-bg-subtle hover:border-border-hover transition-all text-sm font-bold shadow-sm"
+                  className="btn w-full !py-5 flex items-center justify-center gap-3 bg-surface border border-border hover:bg-bg-subtle hover:border-border-hover transition-all text-sm font-bold shadow-sm rounded-xl"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.56 12.25C22.56 11.47 22.49 10.73 22.37 10H12V14.26H17.92C17.67 15.63 16.89 16.81 15.74 17.58V20.34H19.3C21.38 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>

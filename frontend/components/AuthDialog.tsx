@@ -410,7 +410,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
               <button 
                 type="button" 
                 onClick={() => signInWithGoogle()} 
-                className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-bold text-white rounded-[12px] py-4"
+                className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-bold text-white rounded-xl py-5"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M22.56 12.25C22.56 11.47 22.49 10.73 22.37 10H12V14.26H17.92C17.67 15.63 16.89 16.81 15.74 17.58V20.34H19.3C21.38 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>
