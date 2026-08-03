@@ -309,7 +309,10 @@ export default function WallPage() {
 
     setIsSearching(true);
     try {
-      const userDescriptor = await extractFaceDescriptorRobust(imageSrc);
+      const img = new window.Image();
+      img.src = imageSrc;
+      await new Promise(r => { img.onload = r; });
+      const userDescriptor = await extractFaceDescriptorRobust(img);
       if (!userDescriptor) {
         alert('Could not detect a clear face in the selfie. Please try again with better lighting!');
         setIsSearching(false);
