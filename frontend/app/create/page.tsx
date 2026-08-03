@@ -175,6 +175,8 @@ export default function CreateEventPage() {
         </motion.div>
       </div>
     );
+  }
+
   // ── Create Form ──
   return (
     <div className="min-h-screen flex items-center justify-center py-16 px-4 bg-bg relative overflow-hidden">
