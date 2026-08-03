@@ -81,7 +81,7 @@ function AuthPageContent() {
                     <label className="text-xs font-bold text-text-primary ml-1">Full Name</label>
                     <div className="relative group">
                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" className="w-full bg-bg-subtle border border-border rounded-xl pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                     </div>
                  </div>
               )}
@@ -90,7 +90,7 @@ function AuthPageContent() {
                  <label className="text-xs font-bold text-text-primary ml-1">Email Address</label>
                  <div className="relative group">
                     <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="sarah@example.com" className="w-full bg-bg-subtle border border-border rounded-xl pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="sarah@example.com" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                  </div>
               </div>
 
@@ -101,7 +101,7 @@ function AuthPageContent() {
                  </div>
                  <div className="relative group">
                     <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className="w-full bg-bg-subtle border border-border rounded-xl pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                  </div>
               </div>
 
@@ -110,7 +110,7 @@ function AuthPageContent() {
                     <label className="text-xs font-bold text-text-primary ml-1">Mobile Number (Optional)</label>
                     <div className="relative group">
                        <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                       <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 555 000 0000" className="w-full bg-bg-subtle border border-border rounded-xl pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                       <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 555 000 0000" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                     </div>
                  </div>
               )}
