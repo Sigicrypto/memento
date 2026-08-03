@@ -128,7 +128,7 @@ function AuthPageContent() {
                  )}
               </AnimatePresence>
 
-              <div className="pt-2">
+              <div className="pt-2 space-y-4">
                 <button type="submit" disabled={loading} className="btn btn-primary w-full !py-4 flex items-center justify-center gap-2 group">
                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
                      <>
@@ -136,6 +136,26 @@ function AuthPageContent() {
                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                      </>
                    )}
+                </button>
+
+                <div className="flex items-center gap-4 my-2">
+                  <div className="h-px bg-border flex-grow"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">OR</span>
+                  <div className="h-px bg-border flex-grow"></div>
+                </div>
+
+                <button 
+                  type="button" 
+                  onClick={() => signInWithGoogle()} 
+                  className="btn w-full !py-4 flex items-center justify-center gap-3 bg-surface border border-border hover:bg-bg-subtle hover:border-border-hover transition-all text-sm font-bold shadow-sm"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25C22.56 11.47 22.49 10.73 22.37 10H12V14.26H17.92C17.67 15.63 16.89 16.81 15.74 17.58V20.34H19.3C21.38 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>
+                    <path d="M12 23C14.97 23 17.46 22.02 19.3 20.34L15.74 17.58C14.74 18.25 13.48 18.66 12 18.66C9.13 18.66 6.7 16.73 5.82 14.13H2.15V16.98C4.01 20.67 7.7 23 12 23Z" fill="#34A853"/>
+                    <path d="M5.82 14.13C5.6 13.47 5.47 12.76 5.47 12C5.47 11.24 5.6 10.53 5.82 9.87V7.02H2.15C1.38 8.56 0.95 10.24 0.95 12C0.95 13.76 1.38 15.44 2.15 16.98L5.82 14.13Z" fill="#FBBC05"/>
+                    <path d="M12 5.34C13.62 5.34 15.06 5.89 16.2 6.99L19.39 3.8C17.45 2 14.97 0.95 12 0.95C7.7 0.95 4.01 3.33 2.15 7.02L5.82 9.87C6.7 7.27 9.13 5.34 12 5.34Z" fill="#EA4335"/>
+                  </svg>
+                  Continue with Google
                 </button>
               </div>
            </form>
