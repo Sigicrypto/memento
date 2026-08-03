@@ -607,7 +607,7 @@ export default function WallPage() {
                  <button 
                    onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }}
                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg transition-all ${
-                     viewMode === 'slideshow'
+                     (viewMode as string) === 'slideshow'
                        ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30 shadow-inner' 
                        : 'text-text-muted hover:text-white hover:bg-white/5'
                    }`}
