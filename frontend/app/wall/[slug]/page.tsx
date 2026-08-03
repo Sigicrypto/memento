@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { hasFeature } from '@/lib/permissions';
 import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music, QrCode, Upload } from 'lucide-react';
 import CircularGallery from '@/components/CircularGallery';
+import AnimatedLogo from '@/components/AnimatedLogo';
  
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
  
