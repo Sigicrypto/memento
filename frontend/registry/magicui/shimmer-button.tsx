@@ -43,7 +43,7 @@ export const ShimmerButton = React.forwardRef<
           } as CSSProperties
         }
         className={cn(
-          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-5 py-2 text-white [background:var(--bg)] [border-radius:var(--radius)] transform-gpu transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-[0.98] active:translate-y-px shadow-2xl disabled:pointer-events-none disabled:opacity-50 select-none",
+          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-6 py-3 text-white [background:var(--bg)] [border-radius:var(--radius)] transform-gpu transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-[0.98] active:translate-y-px shadow-2xl disabled:pointer-events-none disabled:opacity-50 select-none",
           className
         )}
         ref={ref}
@@ -64,9 +64,10 @@ export const ShimmerButton = React.forwardRef<
         </div>
 
         {/* Children content wrapper */}
-        <span className="relative z-10 flex items-center justify-center gap-2 font-medium">
+        <span className="relative z-10 flex items-center justify-center gap-2.5 font-semibold tracking-wide px-1">
           {children}
         </span>
+
 
         {/* Highlight inner glow */}
         <div
