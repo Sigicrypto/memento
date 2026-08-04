@@ -654,23 +654,50 @@ export default function WallPage() {
             ) : viewMode === 'polaroid' ? (
                <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-10 md:gap-14 justify-center pt-14 md:pt-18 pb-20 px-4 md:px-8">
                   {displayedPhotos.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }} transition={{ duration: 0.4 }} className="bg-surface/70 backdrop-blur-2xl p-4 border border-white/10 shadow-2xl rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col mx-2 my-3">
-                        {/* Tape */}
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-7 bg-white/10 backdrop-blur-xl rotate-[-3deg] border border-white/10 shadow-sm z-20" style={{ clipPath: 'polygon(2% 15%, 98% 5%, 95% 95%, 5% 90%)' }} />
+                    <motion.div 
+                      key={p.id} 
+                      initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2.5 }} 
+                      whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 1 }} 
+                      viewport={{ once: true }} 
+                      whileHover={{ scale: 1.06, rotate: 0, zIndex: 50 }} 
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }} 
+                      className="bg-[#fafafa] text-slate-900 p-4 border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-2xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col mx-3 my-4"
+                    >
+                        {/* Authentic Masking Tape */}
+                        <div 
+                          className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-28 h-8 bg-amber-100/70 border border-amber-200/50 backdrop-blur-sm rotate-[-2deg] shadow-sm z-20 opacity-90" 
+                          style={{ clipPath: 'polygon(2% 15%, 98% 5%, 95% 95%, 5% 90%)' }} 
+                        />
                         
-                        <div className="aspect-[4/5] w-full shrink-0 overflow-hidden bg-black/40 rounded-2xl relative border border-white/5">
-                           {p.media_type === 'video' ? <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline /> : <Image src={getPublicUrl(p.storage_path)} className="object-cover" fill alt="" loading="lazy" />}
-                           {/* Gloss overlay */}
+                        {/* Photo Container */}
+                        <div className="aspect-[4/5] w-full shrink-0 overflow-hidden bg-slate-900 rounded-xl relative border border-slate-200/60 shadow-inner">
+                           {p.media_type === 'video' ? (
+                             <video src={getPublicUrl(p.storage_path)} className="w-full h-full object-cover" muted playsInline />
+                           ) : (
+                             <Image src={getPublicUrl(p.storage_path)} className="object-cover" fill alt="" loading="lazy" />
+                           )}
+                           {/* Subtle Gloss Overlay */}
                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         </div>
                         
-                        <div className="pt-4 pb-2 px-2 flex flex-col flex-grow justify-center">
-                           {p.caption && <p className="text-white font-semibold text-sm text-center leading-tight mb-2 whitespace-pre-wrap">&quot;{p.caption}&quot;</p>}
-                           <div className="flex justify-between items-center text-[9px] font-black text-text-muted uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-                             <span>{hasFeature(planTier, 'BRANDING_REMOVAL') ? '' : 'BY '} {p.uploader_name}</span>
+                        {/* Polaroid Bottom Paper Caption Area */}
+                        <div className="pt-4 pb-2 px-1 flex flex-col flex-grow justify-center text-center">
+                           {p.caption ? (
+                             <p className="text-slate-800 font-medium text-sm leading-tight mb-2 whitespace-pre-wrap font-sans">
+                               &quot;{p.caption}&quot;
+                             </p>
+                           ) : (
+                             <p className="text-slate-400 italic text-xs mb-2">Memory #{i + 1}</p>
+                           )}
+                           <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+                             <span>BY {p.uploader_name}</span>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                               <button onClick={() => handleReaction(p.id)} className="hover:text-pink-500 transition-colors flex items-center gap-1 px-2 py-0.5 bg-white/5 rounded-full text-white">
-                                 <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
+                               <button 
+                                 onClick={(e) => { e.stopPropagation(); handleReaction(p.id); }} 
+                                 className="hover:text-pink-600 transition-colors flex items-center gap-1 px-2 py-0.5 bg-slate-200/70 hover:bg-slate-200 rounded-full text-slate-700"
+                               >
+                                 <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> 
+                                 <span>{p.reaction_count || 0}</span>
                                </button>
                              )}
                            </div>
