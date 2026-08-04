@@ -567,10 +567,16 @@ export default function WallPage() {
       <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/10 bg-surface/60 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
           <div className="flex items-center gap-6">
             {hasFeature(planTier, 'BRANDING_REMOVAL') ? (
-               brandLogoUrl ? <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" /> : <div className="text-xl font-black tracking-tighter text-white">memento</div>
+               brandLogoUrl ? (
+                 <img src={brandLogoUrl} alt="Event Logo" className="h-8 md:h-10 object-contain" />
+               ) : (
+                 <Link href="/" className="flex items-center gap-2">
+                   <img src="/CC logo.png" alt="Memento Logo" className="h-8 md:h-10 object-contain" />
+                 </Link>
+               )
             ) : (
                <Link href="/" className="flex items-center gap-2">
-                 <AnimatedLogo width={110} height={28} />
+                 <img src="/CC logo.png" alt="Memento Logo" className="h-8 md:h-10 object-contain" />
                </Link>
             )}
             <div className="hidden sm:flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-success/10 border border-success/20 text-xs font-bold uppercase tracking-widest text-success">
@@ -579,66 +585,66 @@ export default function WallPage() {
             </div>
          </div>
 
-         <div className="flex items-center gap-3.5">
+         <div className="flex items-center gap-3.5 md:gap-4 overflow-x-auto no-scrollbar">
             {hasFeature(planTier, 'SELFIE_MATCH') && (
               <ShimmerButton 
                 shimmerColor="#5EE6FF"
                 onClick={() => setShowSelfieCam(true)} 
-                className="hidden md:flex items-center gap-2.5 px-6 py-2.5 text-xs font-bold text-white shadow-2xl rounded-full"
+                className="hidden md:flex items-center gap-3 px-8 md:px-10 py-3.5 text-xs md:text-sm font-bold text-white shadow-2xl rounded-full"
               >
-                <Search size={15} className="text-accent-cyan" />
+                <Search size={16} className="text-accent-cyan" />
                 <span className="tracking-wide">Find My Photos</span>
               </ShimmerButton>
             )}
 
-            {isAdmin && (
-               <>
-                 <Link href={`/moderate/${slug}`}>
-                   <ShimmerButton 
-                     shimmerColor="#FF5470" 
-                     background="rgba(239, 68, 68, 0.15)"
-                     className="hidden lg:flex items-center gap-2.5 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-red-400 border-red-500/20 shadow-2xl rounded-full"
-                   >
-                     <Shield size={14} /> <span>Moderate</span>
-                   </ShimmerButton>
-                 </Link>
-                 <ShimmerButton 
-                   shimmerColor="#4ADE80" 
-                   background="rgba(16, 185, 129, 0.15)"
-                   onClick={handleDownloadZip} 
-                   className="hidden lg:flex items-center gap-2.5 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-emerald-400 border-emerald-500/20 shadow-2xl rounded-full"
-                 >
-                    <Download size={14} /> <span>Export ZIP</span>
-                 </ShimmerButton>
-                 <Link href="/dashboard">
-                   <ShimmerButton 
-                     shimmerColor="#ffffff" 
-                     className="hidden sm:flex items-center gap-2.5 px-6 py-2.5 text-xs font-bold text-white shadow-2xl rounded-full"
-                   >
-                      <Settings size={14} /> <span>Dashboard</span>
-                   </ShimmerButton>
-                 </Link>
-               </>
-            )}
+            <Link href={`/moderate/${slug}`}>
+              <ShimmerButton 
+                shimmerColor="#FF5470" 
+                background="rgba(239, 68, 68, 0.15)"
+                className="hidden lg:flex items-center gap-3 px-8 md:px-10 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider text-red-400 border-red-500/20 shadow-2xl rounded-full"
+              >
+                <Shield size={16} /> <span>Moderate</span>
+              </ShimmerButton>
+            </Link>
+
+            <ShimmerButton 
+              shimmerColor="#4ADE80" 
+              background="rgba(16, 185, 129, 0.15)"
+              onClick={handleDownloadZip} 
+              className="hidden lg:flex items-center gap-3 px-8 md:px-10 py-3.5 text-xs md:text-sm font-bold uppercase tracking-wider text-emerald-400 border-emerald-500/20 shadow-2xl rounded-full"
+            >
+               <Download size={16} /> <span>Export ZIP</span>
+            </ShimmerButton>
+
+            <Link href="/dashboard">
+              <ShimmerButton 
+                shimmerColor="#ffffff" 
+                className="hidden sm:flex items-center gap-3 px-8 md:px-10 py-3.5 text-xs md:text-sm font-bold text-white shadow-2xl rounded-full"
+              >
+                 <Settings size={16} /> <span>Dashboard</span>
+              </ShimmerButton>
+            </Link>
 
             <ShimmerButton 
               shimmerColor="#ffffff" 
               onClick={() => setShowMobileQR(true)} 
-              className="md:hidden flex items-center justify-center !w-11 !h-11 !p-0 rounded-full text-white shadow-2xl"
+              className="md:hidden flex items-center justify-center !w-12 !h-12 !p-0 rounded-full text-white shadow-2xl"
             >
-               <QrCode size={18} />
+               <QrCode size={20} />
             </ShimmerButton>
 
             <Link href={uploadUrl} target="_blank">
               <ShimmerButton 
                 shimmerColor="#ffffff" 
                 background="rgba(255, 255, 255, 0.95)"
-                className="px-8 py-3 text-xs font-extrabold text-black tracking-widest uppercase shadow-2xl rounded-full hover:bg-white transition-all"
+                className="px-10 md:px-12 py-3.5 text-xs md:text-sm font-black text-black tracking-widest uppercase shadow-2xl rounded-full hover:bg-white transition-all"
               >
-                <span className="text-black font-extrabold text-xs tracking-widest uppercase">JOIN WALL</span>
+                <span className="text-black font-black text-xs md:text-sm tracking-widest uppercase">JOIN WALL</span>
               </ShimmerButton>
             </Link>
          </div>
+
+
 
 
 

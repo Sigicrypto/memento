@@ -43,7 +43,7 @@ export const ShimmerButton = React.forwardRef<
           } as CSSProperties
         }
         className={cn(
-          "group relative z-0 flex cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-6 py-3 text-white [background:var(--bg)] [border-radius:var(--radius)] transform-gpu transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-[0.98] active:translate-y-px shadow-2xl disabled:pointer-events-none disabled:opacity-50 select-none",
+          "group relative z-0 inline-flex min-h-[46px] min-w-max cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-8 py-3.5 text-white [background:var(--bg)] [border-radius:var(--radius)] transform-gpu transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-[0.98] active:translate-y-px shadow-2xl disabled:pointer-events-none disabled:opacity-50 select-none",
           className
         )}
         ref={ref}
@@ -64,7 +64,7 @@ export const ShimmerButton = React.forwardRef<
         </div>
 
         {/* Children content wrapper */}
-        <span className="relative z-10 flex items-center justify-center gap-2.5 font-semibold tracking-wide px-1">
+        <span className="relative z-10 flex items-center justify-center gap-3.5 px-3 py-1.5 font-semibold text-xs md:text-sm tracking-wide leading-none">
           {children}
         </span>
 
@@ -73,12 +73,13 @@ export const ShimmerButton = React.forwardRef<
         <div
           className={cn(
             "absolute inset-0 size-full pointer-events-none",
-            "rounded-[inherit] px-4 py-1.5 text-sm font-medium shadow-[inset_0_-8px_10px_#ffffff1f]",
+            "rounded-[inherit] shadow-[inset_0_-8px_10px_#ffffff1f]",
             "transform-gpu transition-all duration-300 ease-in-out",
             "group-hover:shadow-[inset_0_-6px_10px_#ffffff3f]",
             "group-active:shadow-[inset_0_-10px_10px_#ffffff3f]"
           )}
         />
+
 
         {/* backdrop */}
         <div
