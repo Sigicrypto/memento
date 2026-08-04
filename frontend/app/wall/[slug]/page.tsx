@@ -544,7 +544,7 @@ export default function WallPage() {
       {revealPhoto && <NewPhotoReveal photo={revealPhoto} getPublicUrl={getPublicUrl} onDone={() => setRevealPhoto(null)} />}
  
       {/* Top Header */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/10 bg-surface/60 backdrop-blur-2xl px-6 md:px-10 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/10 bg-surface/60 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
           <div className="flex items-center gap-6">
             {hasFeature(planTier, 'BRANDING_REMOVAL') ? (
                brandLogoUrl ? <img src={brandLogoUrl} alt="Event Logo" className="h-8 object-contain" /> : <div className="text-xl font-black tracking-tighter text-white">memento</div>
@@ -553,42 +553,42 @@ export default function WallPage() {
                  <AnimatedLogo width={110} height={28} />
                </Link>
             )}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 border border-success/20 text-[10px] font-bold uppercase tracking-widest text-success">
-               <div className={`w-1.5 h-1.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-success shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse' : 'bg-amber-400'}`} />
+            <div className="hidden sm:flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-success/10 border border-success/20 text-xs font-bold uppercase tracking-widest text-success">
+               <div className={`w-2 h-2 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-success shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse' : 'bg-amber-400'}`} />
                {realtimeStatus === 'SUBSCRIBED' ? 'Live Stream Active' : 'Polling Updates'}
             </div>
          </div>
 
-         <div className="flex items-center gap-3">
+         <div className="flex items-center gap-3.5">
             {hasFeature(planTier, 'SELFIE_MATCH') && (
               <button 
                 onClick={() => setShowSelfieCam(true)} 
-                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold text-white transition-all"
+                className="hidden md:flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold text-white transition-all shadow-sm"
               >
-                <Search size={14} className="text-accent-cyan" />
+                <Search size={15} className="text-accent-cyan" />
                 <span>Find My Photos</span>
               </button>
             )}
 
             {isAdmin && (
                <>
-                 <Link href={`/moderate/${slug}`} className="hidden lg:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all">
-                    <Shield size={13} /> Moderate
+                 <Link href={`/moderate/${slug}`} className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all">
+                    <Shield size={14} /> Moderate
                  </Link>
-                 <button onClick={handleDownloadZip} className="hidden lg:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-all">
-                    <Download size={13} /> Export ZIP
+                 <button onClick={handleDownloadZip} className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-all">
+                    <Download size={14} /> Export ZIP
                  </button>
-                 <Link href="/dashboard" className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-all">
-                    <Settings size={13} /> Dashboard
+                 <Link href="/dashboard" className="hidden sm:flex items-center gap-2 px-4.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-all">
+                    <Settings size={14} /> Dashboard
                  </Link>
                </>
             )}
 
-            <button onClick={() => setShowMobileQR(true)} className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-white">
-               <QrCode size={18} />
+            <button onClick={() => setShowMobileQR(true)} className="md:hidden flex items-center justify-center w-11 h-11 rounded-2xl bg-white/5 border border-white/10 text-white">
+               <QrCode size={20} />
             </button>
 
-            <Link href={uploadUrl} target="_blank" className="btn btn-primary !py-2 !px-4 text-xs font-bold shadow-lg shadow-purple-500/20">Join Wall</Link>
+            <Link href={uploadUrl} target="_blank" className="btn btn-primary !py-2.5 !px-6 text-xs font-extrabold rounded-2xl shadow-xl shadow-purple-500/25 tracking-wider uppercase">Join Wall</Link>
          </div>
       </nav>
 
@@ -596,20 +596,20 @@ export default function WallPage() {
          {/* Wall Hero */}
          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
-               <p className="text-accent-cyan text-[10px] font-black uppercase tracking-[.4em] mb-2">OFFICIAL PHOTO COLLECTION</p>
+               <p className="text-accent-cyan text-xs font-black uppercase tracking-[.4em] mb-2">OFFICIAL PHOTO COLLECTION</p>
                <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">{eventName}</h1>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3.5">
                <button 
                  onClick={() => setShowBestShots(!showBestShots)} 
-                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-xs font-bold ${
+                 className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl border transition-all text-xs font-bold ${
                    showBestShots 
                      ? 'bg-purple-500/20 border-purple-500/30 text-purple-300 shadow-lg shadow-purple-500/10' 
                      : 'bg-white/5 border-white/10 text-text-muted hover:text-white hover:bg-white/10'
                  }`}
                >
-                  <Sparkles size={14} className={showBestShots ? 'text-purple-300' : ''} /> 
+                  <Sparkles size={15} className={showBestShots ? 'text-purple-300' : ''} /> 
                   <span>{showBestShots ? 'Curated Only' : 'Show Best Shots'}</span>
                </button>
 
