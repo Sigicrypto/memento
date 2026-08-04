@@ -16,6 +16,7 @@ import { hasFeature } from '@/lib/permissions';
 import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music, QrCode, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import CircularGallery from '@/components/CircularGallery';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import { RippleButton } from '@/registry/magicui/ripple-button';
  
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
  
@@ -104,15 +105,21 @@ const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) =>
         )}
       </motion.div>
  
-      <motion.button
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
-        className="absolute top-10 right-10 w-12 h-12 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-text-muted hover:text-black dark:hover:text-text-primary transition-all hover:scale-110 active:scale-95"
+        className="absolute top-10 right-10"
       >
-        <X size={20} />
-      </motion.button>
+        <RippleButton
+          rippleColor="#ADD8E6"
+          onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
+          className="!w-12 !h-12 !p-0 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-text-muted hover:text-black dark:hover:text-text-primary transition-all hover:scale-110 active:scale-95"
+        >
+          <X size={20} />
+        </RippleButton>
+      </motion.div>
+
     </motion.div>
   );
 };
@@ -382,7 +389,12 @@ export default function WallPage() {
         <div className="text-6xl mb-4">{notFound ? '✨' : '📅'}</div>
         <h1 className="text-2xl font-bold mb-2 text-white">{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
         <p className="text-text-secondary mb-6 text-sm">{notFound ? "This memory lane hasn't been created yet." : "This photo wall has reached its destination."}</p>
-        <Link href="/" className="btn btn-primary !py-3 !px-8 text-sm font-bold">Go Home</Link>
+        <Link href="/">
+          <RippleButton rippleColor="#ADD8E6" className="btn btn-primary !py-3 !px-8 text-sm font-bold">
+            Go Home
+          </RippleButton>
+        </Link>
+
       </div>
     </div>
   );
@@ -411,7 +423,8 @@ export default function WallPage() {
           </div>
 
           <div className="flex items-center gap-3 pointer-events-auto">
-             <button 
+             <RippleButton 
+               rippleColor="#ADD8E6"
                onClick={() => setIsSlideshowAuto(!isSlideshowAuto)}
                className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
                  isSlideshowAuto ? 'bg-accent-cyan/20 text-accent-cyan border-accent-cyan/30' : 'bg-white/5 text-text-muted border-white/10'
@@ -419,16 +432,18 @@ export default function WallPage() {
              >
                {isSlideshowAuto ? <Pause size={14} /> : <Play size={14} />}
                <span>{isSlideshowAuto ? 'Auto Playing' : 'Paused'}</span>
-             </button>
+             </RippleButton>
 
-             <button 
+             <RippleButton 
+               rippleColor="#ADD8E6"
                onClick={() => setViewMode(prevViewMode)} 
                className="px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-bold text-xs text-white flex items-center gap-2"
              >
                <X size={14} />
                <span>Exit Slideshow</span>
-             </button>
+             </RippleButton>
           </div>
+
         </div>
 
         {/* Main Photo Display */}
@@ -490,22 +505,25 @@ export default function WallPage() {
         {/* Floating Manual Controls (Next/Prev) */}
         {displayedPhotos.length > 1 && (
           <>
-            <button 
+            <RippleButton 
+              rippleColor="#ADD8E6"
               onClick={() => setSlideIndex(prev => (prev - 1 + displayedPhotos.length) % displayedPhotos.length)}
-              className="absolute left-6 top-1/2 -translate-y-1/2 p-3.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/10 text-white backdrop-blur-xl transition-all hover:scale-110 active:scale-95 z-50"
+              className="!p-3.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/10 text-white backdrop-blur-xl transition-all hover:scale-110 active:scale-95 z-50 absolute left-6 top-1/2 -translate-y-1/2"
               title="Previous Photo"
             >
               <ChevronLeft size={24} />
-            </button>
-            <button 
+            </RippleButton>
+            <RippleButton 
+              rippleColor="#ADD8E6"
               onClick={() => setSlideIndex(prev => (prev + 1) % displayedPhotos.length)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 p-3.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/10 text-white backdrop-blur-xl transition-all hover:scale-110 active:scale-95 z-50"
+              className="!p-3.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/10 text-white backdrop-blur-xl transition-all hover:scale-110 active:scale-95 z-50 absolute right-6 top-1/2 -translate-y-1/2"
               title="Next Photo"
             >
               <ChevronRight size={24} />
-            </button>
+            </RippleButton>
           </>
         )}
+
 
         {/* Bottom Left Join Barcode (TV Modern Dot Matrix) */}
         <div className="absolute bottom-8 left-8 z-50 hidden md:block">
@@ -561,35 +579,45 @@ export default function WallPage() {
 
          <div className="flex items-center gap-3.5">
             {hasFeature(planTier, 'SELFIE_MATCH') && (
-              <button 
+              <RippleButton 
+                rippleColor="#ADD8E6"
                 onClick={() => setShowSelfieCam(true)} 
                 className="hidden md:flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold text-white transition-all shadow-sm"
               >
                 <Search size={15} className="text-accent-cyan" />
                 <span>Find My Photos</span>
-              </button>
+              </RippleButton>
             )}
 
             {isAdmin && (
                <>
-                 <Link href={`/moderate/${slug}`} className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all">
-                    <Shield size={14} /> Moderate
+                 <Link href={`/moderate/${slug}`}>
+                   <RippleButton rippleColor="#FF5470" className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all">
+                     <Shield size={14} /> Moderate
+                   </RippleButton>
                  </Link>
-                 <button onClick={handleDownloadZip} className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-all">
+                 <RippleButton rippleColor="#4ADE80" onClick={handleDownloadZip} className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-all">
                     <Download size={14} /> Export ZIP
-                 </button>
-                 <Link href="/dashboard" className="hidden sm:flex items-center gap-2 px-4.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-all">
-                    <Settings size={14} /> Dashboard
+                 </RippleButton>
+                 <Link href="/dashboard">
+                   <RippleButton rippleColor="#ADD8E6" className="hidden sm:flex items-center gap-2 px-4.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-all">
+                      <Settings size={14} /> Dashboard
+                   </RippleButton>
                  </Link>
                </>
             )}
 
-            <button onClick={() => setShowMobileQR(true)} className="md:hidden flex items-center justify-center w-11 h-11 rounded-2xl bg-white/5 border border-white/10 text-white">
+            <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(true)} className="md:hidden flex items-center justify-center !w-11 !h-11 !p-0 rounded-2xl bg-white/5 border border-white/10 text-white">
                <QrCode size={20} />
-            </button>
+            </RippleButton>
 
-            <Link href={uploadUrl} target="_blank" className="btn btn-primary !py-2.5 !px-6 text-xs font-extrabold rounded-2xl shadow-xl shadow-purple-500/25 tracking-wider uppercase">Join Wall</Link>
+            <Link href={uploadUrl} target="_blank">
+              <RippleButton rippleColor="#ADD8E6" className="btn btn-primary !py-2.5 !px-6 text-xs font-extrabold rounded-2xl shadow-xl shadow-purple-500/25 tracking-wider uppercase">
+                Join Wall
+              </RippleButton>
+            </Link>
          </div>
+
       </nav>
 
       <main className="relative z-10 pt-32 px-6 sm:px-12 md:px-24 lg:px-40 xl:px-48 pb-64 md:pb-80 max-w-[1800px] mx-auto w-full flex-grow">
@@ -601,7 +629,8 @@ export default function WallPage() {
             </div>
             
             <div className="flex items-center gap-3.5">
-               <button 
+               <RippleButton 
+                 rippleColor="#ADD8E6"
                  onClick={() => setShowBestShots(!showBestShots)} 
                  className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl border transition-all text-xs font-bold ${
                    showBestShots 
@@ -611,13 +640,13 @@ export default function WallPage() {
                >
                   <Sparkles size={15} className={showBestShots ? 'text-purple-300' : ''} /> 
                   <span>{showBestShots ? 'Curated Only' : 'Show Best Shots'}</span>
-               </button>
+               </RippleButton>
 
                <AnimatePresence>
                   {matchedPhotoIds && (
                     <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="flex items-center gap-3">
                        <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan">Matched {matchedPhotoIds.length}</span>
-                       <button onClick={() => setMatchedPhotoIds(null)} className="text-xs font-bold text-text-muted hover:text-white transition-colors">Clear ×</button>
+                       <RippleButton rippleColor="#ADD8E6" onClick={() => setMatchedPhotoIds(null)} className="text-xs font-bold text-text-muted hover:text-white transition-colors bg-transparent border-0 !p-1">Clear ×</RippleButton>
                     </motion.div>
                   )}
                </AnimatePresence>
@@ -631,8 +660,13 @@ export default function WallPage() {
                   <div className="text-6xl mb-6 opacity-30">📸</div>
                   <h2 className="text-2xl font-bold mb-2 text-white">No Memories shared yet</h2>
                   <p className="text-text-secondary mb-8 text-sm max-w-md mx-auto">Be the first to share a moment. Join the wall and upload your favorite shots!</p>
-                  <Link href={uploadUrl} target="_blank" className="btn btn-primary !py-3 !px-8 text-sm font-bold">Share First Memory</Link>
+                  <Link href={uploadUrl} target="_blank">
+                    <RippleButton rippleColor="#ADD8E6" className="btn btn-primary !py-3 !px-8 text-sm font-bold">
+                      Share First Memory
+                    </RippleButton>
+                  </Link>
                </motion.div>
+
             ) : viewMode === 'grid' ? (
                <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
                   {displayedPhotos.map((p, i) => (
@@ -642,9 +676,9 @@ export default function WallPage() {
                           <div className="flex justify-between items-start">
                              <p className="text-[10px] font-black text-accent-cyan uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                                <button onClick={() => handleReaction(p.id)} className="hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/40 text-xs font-bold text-white backdrop-blur-md">
+                                <RippleButton rippleColor="#FF69B4" onClick={() => handleReaction(p.id)} className="hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 !px-2.5 !py-1 rounded-full bg-black/40 text-xs font-bold text-white backdrop-blur-md border-0">
                                    <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
-                                </button>
+                                </RippleButton>
                              )}
                           </div>
                           {p.caption && <p className="text-xs text-slate-200 italic line-clamp-2">&quot;{p.caption}&quot;</p>}
@@ -693,13 +727,14 @@ export default function WallPage() {
                            <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em]">
                              <span>BY {p.uploader_name}</span>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                               <button 
+                               <RippleButton 
+                                 rippleColor="#FF69B4"
                                  onClick={(e) => { e.stopPropagation(); handleReaction(p.id); }} 
-                                 className="hover:text-pink-600 transition-colors flex items-center gap-1 px-2 py-0.5 bg-slate-200/70 hover:bg-slate-200 rounded-full text-slate-700"
+                                 className="hover:text-pink-600 transition-colors flex items-center gap-1 !px-2 !py-0.5 bg-slate-200/70 hover:bg-slate-200 rounded-full text-slate-700 border-0"
                                >
                                  <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> 
                                  <span>{p.reaction_count || 0}</span>
-                               </button>
+                               </RippleButton>
                              )}
                            </div>
                         </div>
@@ -742,30 +777,32 @@ export default function WallPage() {
             {/* View Mode Switches */}
             <div className="flex items-center gap-1.5 bg-white/5 p-1.5 rounded-xl">
                {(['polaroid', 'grid', 'album'] as ViewMode[]).map(m => (
-                 <button 
+                 <RippleButton 
                    key={m} 
+                   rippleColor="#ADD8E6"
                    onClick={() => setViewMode(m)} 
-                   className={`px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all ${
+                   className={`!px-5 !py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all border-0 ${
                      viewMode === m 
                        ? 'bg-accent-cyan/25 text-accent-cyan border border-accent-cyan/40 shadow-inner' 
-                       : 'text-text-muted hover:text-white hover:bg-white/5'
+                       : 'bg-transparent text-text-muted hover:text-white hover:bg-white/5'
                    }`}
                  >
                     {m}
-                 </button>
+                 </RippleButton>
                ))}
                {hasFeature(planTier, 'SLIDESHOW_MODE') && (
-                 <button 
+                 <RippleButton 
+                   rippleColor="#ADD8E6"
                    onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }}
-                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all ${
+                   className={`flex items-center gap-2 !px-5 !py-2.5 rounded-xl transition-all border-0 ${
                      (viewMode as string) === 'slideshow'
                        ? 'bg-accent-cyan/25 text-accent-cyan border border-accent-cyan/40 shadow-inner' 
-                       : 'text-text-muted hover:text-white hover:bg-white/5'
+                       : 'bg-transparent text-text-muted hover:text-white hover:bg-white/5'
                    }`}
                  >
                     <Maximize2 size={15} />
                     <span className="text-xs font-extrabold uppercase tracking-wider hidden sm:inline">Slideshow</span>
-                 </button>
+                 </RippleButton>
                )}
             </div>
 
@@ -774,7 +811,8 @@ export default function WallPage() {
               <div className="relative">
                 <div className="flex items-center gap-1">
                   <div className="w-px h-7 bg-white/10 mx-1" />
-                  <button 
+                  <RippleButton 
+                    rippleColor="#ADD8E6"
                     onClick={() => {
                       if (!musicTrack || musicTrack === 'none') {
                         setMusicTrack('upbeat');
@@ -787,10 +825,10 @@ export default function WallPage() {
                         }
                       }
                     }}
-                    className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl transition-all text-xs font-bold ${
+                    className={`flex items-center gap-2 !px-3.5 !py-2.5 rounded-xl transition-all text-xs font-bold border-0 ${
                       isAudioPlaying && musicTrack && musicTrack !== 'none'
                         ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30 shadow-inner' 
-                        : 'text-text-muted hover:text-white hover:bg-white/5'
+                        : 'bg-transparent text-text-muted hover:text-white hover:bg-white/5'
                     }`}
                     title={isAudioPlaying ? 'Pause Music' : 'Play Music'}
                   >
@@ -799,15 +837,16 @@ export default function WallPage() {
                     ) : (
                       <Music size={15} />
                     )}
-                  </button>
+                  </RippleButton>
 
-                  <button 
+                  <RippleButton 
+                    rippleColor="#ADD8E6"
                     onClick={() => setShowMusicMenu(!showMusicMenu)}
-                    className="p-2 rounded-xl text-text-muted hover:text-white hover:bg-white/5 transition-all text-xs"
+                    className="!p-2 rounded-xl text-text-muted hover:text-white hover:bg-white/5 transition-all text-xs bg-transparent border-0"
                     title="Select Background Music Track"
                   >
                     <Settings size={14} />
-                  </button>
+                  </RippleButton>
                 </div>
 
                 {/* Music Track Selection Popover */}
@@ -824,9 +863,9 @@ export default function WallPage() {
                         <p className="text-[10px] font-black uppercase tracking-widest text-accent-cyan flex items-center gap-1.5">
                           <Music size={12} /> Choose Sound Track
                         </p>
-                        <button onClick={() => setShowMusicMenu(false)} className="text-text-muted hover:text-white text-xs">
+                        <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMusicMenu(false)} className="text-text-muted hover:text-white text-xs bg-transparent border-0 !p-1">
                           <X size={14} />
-                        </button>
+                        </RippleButton>
                       </div>
 
                       <div className="space-y-1 pt-1">
@@ -837,8 +876,9 @@ export default function WallPage() {
                           { id: 'pleasant', name: 'Pleasant Ambient', emoji: '✨' },
                           { id: 'none', name: 'Mute Sound', emoji: '🔇' },
                         ].map((track) => (
-                          <button
+                          <RippleButton
                             key={track.id}
+                            rippleColor="#ADD8E6"
                             onClick={async () => {
                               if (track.id === 'none') {
                                 setIsAudioPlaying(false);
@@ -857,10 +897,10 @@ export default function WallPage() {
                                 await supabase.from('events').update({ music_track: track.id }).eq('id', eventId);
                               }
                             }}
-                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                            className={`w-full flex items-center justify-between !px-3 !py-2 rounded-xl text-xs font-bold transition-all border-0 ${
                               musicTrack === track.id
                                 ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30'
-                                : 'text-text-muted hover:text-white hover:bg-white/5'
+                                : 'bg-transparent text-text-muted hover:text-white hover:bg-white/5'
                             }`}
                           >
                             <span className="flex items-center gap-2">
@@ -868,7 +908,7 @@ export default function WallPage() {
                               <span>{track.name}</span>
                             </span>
                             {musicTrack === track.id && <span className="text-[10px] uppercase font-mono tracking-widest text-accent-cyan">Active</span>}
-                          </button>
+                          </RippleButton>
                         ))}
                       </div>
                     </motion.div>
@@ -880,17 +920,19 @@ export default function WallPage() {
             <div className="w-px h-7 bg-white/10 mx-1" />
 
             {/* Best Shots Toggle */}
-            <button 
+            <RippleButton 
+              rippleColor="#ADD8E6"
               onClick={() => setShowBestShots(!showBestShots)} 
-              className={`p-3 rounded-xl transition-all ${
+              className={`!p-3 rounded-xl transition-all border-0 ${
                 showBestShots 
                   ? 'bg-purple-500/25 text-purple-300 border border-purple-500/40' 
-                  : 'text-text-muted hover:text-white hover:bg-white/5'
+                  : 'bg-transparent text-text-muted hover:text-white hover:bg-white/5'
               }`}
               title="Show Only Best Shots"
             >
               <Sparkles size={18} />
-            </button>
+            </RippleButton>
+
          </div>
       </div>
 
@@ -925,7 +967,9 @@ export default function WallPage() {
          {showSelfieCam && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[1000] bg-black/90 backdrop-blur-3xl flex items-center justify-center p-6">
                <div className="p-8 rounded-3xl border border-white/10 bg-surface/90 backdrop-blur-2xl max-w-xl w-full text-center relative shadow-2xl">
-                  <button onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-white transition-colors"><X size={24} /></button>
+                  <RippleButton rippleColor="#ADD8E6" onClick={() => setShowSelfieCam(false)} className="absolute top-6 right-6 text-text-muted hover:text-white transition-colors bg-transparent border-0 !p-1">
+                    <X size={24} />
+                  </RippleButton>
                   <div className="w-16 h-16 rounded-2xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan mx-auto mb-6"><User size={32} /></div>
                   <h2 className="text-3xl font-bold mb-2 text-white">Find My Photos</h2>
                   <p className="text-text-secondary mb-8 text-sm">Our AI will scan the entire wall and find every moment you&apos;re in. Private and instant.</p>
@@ -935,10 +979,15 @@ export default function WallPage() {
                      <div className="absolute inset-0 border-8 border-transparent border-t-accent-cyan animate-spin" style={{ animationDuration: '3s' }} />
                   </div>
                   
-                  <button onClick={captureSelfieAndSearch} disabled={isSearching} className="btn btn-primary w-full py-4 flex items-center justify-center gap-3 text-sm font-bold">
+                  <RippleButton 
+                    rippleColor="#ADD8E6"
+                    onClick={captureSelfieAndSearch} 
+                    disabled={isSearching} 
+                    className="btn btn-primary w-full !py-4 flex items-center justify-center gap-3 text-sm font-bold"
+                  >
                      {isSearching ? <div className="w-5 h-5 border-2 border-white/20 border-t-accent-cyan rounded-full animate-spin" /> : <Camera size={20} />}
                      {isSearching ? 'Scanning Memories...' : 'Start Facial Match'}
-                  </button>
+                  </RippleButton>
                </div>
             </motion.div>
          )}
@@ -948,11 +997,13 @@ export default function WallPage() {
 
       {/* Mobile Upload & QR Floating CTA */}
       <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm flex gap-3">
-         <button onClick={() => setShowMobileQR(true)} className="flex-shrink-0 w-14 h-14 bg-surface/80 border border-white/10 shadow-xl rounded-2xl flex items-center justify-center text-white">
+         <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(true)} className="flex-shrink-0 !w-14 !h-14 bg-surface/80 border border-white/10 shadow-xl rounded-2xl flex items-center justify-center text-white !p-0">
             <QrCode size={24} />
-         </button>
-         <Link href={uploadUrl} target="_blank" className="btn btn-primary flex-grow h-14 shadow-2xl flex items-center justify-center gap-3 text-sm rounded-2xl font-bold">
-            <Upload size={18} /> Upload Photos
+         </RippleButton>
+         <Link href={uploadUrl} target="_blank" className="flex-grow">
+            <RippleButton rippleColor="#ADD8E6" className="btn btn-primary w-full !h-14 shadow-2xl flex items-center justify-center gap-3 text-sm rounded-2xl font-bold">
+               <Upload size={18} /> Upload Photos
+            </RippleButton>
          </Link>
       </div>
 
@@ -961,7 +1012,9 @@ export default function WallPage() {
          {showMobileQR && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[2000] bg-black/90 backdrop-blur-3xl flex items-center justify-center p-6">
                <div className="p-8 rounded-3xl border border-white/10 bg-surface/90 backdrop-blur-2xl w-full max-w-sm text-center relative flex flex-col items-center shadow-2xl">
-                  <button onClick={() => setShowMobileQR(false)} className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors"><X size={24} /></button>
+                  <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(false)} className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors bg-transparent border-0 !p-1">
+                     <X size={24} />
+                  </RippleButton>
                   <div className="p-4 bg-white/10 rounded-2xl shadow-2xl mb-6 border border-white/10">
                      <QRCode value={uploadUrl} size={180} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
                   </div>
@@ -971,6 +1024,7 @@ export default function WallPage() {
             </motion.div>
          )}
       </AnimatePresence>
+
     </div>
   );
 }
