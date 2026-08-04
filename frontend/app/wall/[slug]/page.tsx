@@ -181,6 +181,7 @@ export default function WallPage() {
   const [showSelfieCam, setShowSelfieCam] = useState(false);
   const [musicTrack, setMusicTrack] = useState<string | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [showMusicMenu, setShowMusicMenu] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
   const [isSlideshowAuto, setIsSlideshowAuto] = useState(true);
   const [showMobileQR, setShowMobileQR] = useState(false);
@@ -768,28 +769,112 @@ export default function WallPage() {
                )}
             </div>
 
-            {/* Music Controls */}
-            {musicTrack && hasFeature(planTier, 'SLIDESHOW_MUSIC') && (
-              <>
-                <div className="w-px h-7 bg-white/10 mx-1" />
-                <button 
-                  onClick={() => {
-                     setIsAudioPlaying(!isAudioPlaying);
-                     if (audioRef.current) {
-                        if (isAudioPlaying) audioRef.current.pause();
-                        else audioRef.current.play();
-                     }
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all text-xs font-bold ${
-                    isAudioPlaying 
-                      ? 'bg-white/10 text-white border border-white/20' 
-                      : 'text-text-muted hover:text-white hover:bg-white/5'
-                  }`}
-                  title={isAudioPlaying ? 'Pause Music' : 'Play Music'}
-                >
-                  {isAudioPlaying ? <Pause size={16} /> : <Music size={16} />}
-                </button>
-              </>
+            {/* Music Controls & Track Selector */}
+            {hasFeature(planTier, 'SLIDESHOW_MUSIC') && (
+              <div className="relative">
+                <div className="flex items-center gap-1">
+                  <div className="w-px h-7 bg-white/10 mx-1" />
+                  <button 
+                    onClick={() => {
+                      if (!musicTrack || musicTrack === 'none') {
+                        setMusicTrack('upbeat');
+                        setIsAudioPlaying(true);
+                      } else {
+                        setIsAudioPlaying(!isAudioPlaying);
+                        if (audioRef.current) {
+                          if (isAudioPlaying) audioRef.current.pause();
+                          else audioRef.current.play();
+                        }
+                      }
+                    }}
+                    className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl transition-all text-xs font-bold ${
+                      isAudioPlaying && musicTrack && musicTrack !== 'none'
+                        ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30 shadow-inner' 
+                        : 'text-text-muted hover:text-white hover:bg-white/5'
+                    }`}
+                    title={isAudioPlaying ? 'Pause Music' : 'Play Music'}
+                  >
+                    {isAudioPlaying && musicTrack && musicTrack !== 'none' ? (
+                      <Pause size={15} className="animate-pulse" />
+                    ) : (
+                      <Music size={15} />
+                    )}
+                  </button>
+
+                  <button 
+                    onClick={() => setShowMusicMenu(!showMusicMenu)}
+                    className="p-2 rounded-xl text-text-muted hover:text-white hover:bg-white/5 transition-all text-xs"
+                    title="Select Background Music Track"
+                  >
+                    <Settings size={14} />
+                  </button>
+                </div>
+
+                {/* Music Track Selection Popover */}
+                <AnimatePresence>
+                  {showMusicMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 p-3 bg-black/90 backdrop-blur-3xl border border-white/15 rounded-2xl w-64 shadow-[0_20px_50px_rgba(0,0,0,0.9)] z-[200] flex flex-col gap-2"
+                    >
+                      <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-white/10">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-accent-cyan flex items-center gap-1.5">
+                          <Music size={12} /> Choose Sound Track
+                        </p>
+                        <button onClick={() => setShowMusicMenu(false)} className="text-text-muted hover:text-white text-xs">
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <div className="space-y-1 pt-1">
+                        {[
+                          { id: 'upbeat', name: 'Upbeat Celebration', emoji: '🎉' },
+                          { id: 'acoustic', name: 'Acoustic Vibes', emoji: '🎸' },
+                          { id: 'piano', name: 'Gentle Piano', emoji: '🎹' },
+                          { id: 'pleasant', name: 'Pleasant Ambient', emoji: '✨' },
+                          { id: 'none', name: 'Mute Sound', emoji: '🔇' },
+                        ].map((track) => (
+                          <button
+                            key={track.id}
+                            onClick={async () => {
+                              if (track.id === 'none') {
+                                setIsAudioPlaying(false);
+                                setMusicTrack('none');
+                                if (audioRef.current) audioRef.current.pause();
+                              } else {
+                                setMusicTrack(track.id);
+                                setIsAudioPlaying(true);
+                                if (audioRef.current) {
+                                  audioRef.current.src = `/music/${track.id}.mp3`;
+                                  audioRef.current.play().catch(console.error);
+                                }
+                              }
+                              setShowMusicMenu(false);
+                              if (isAdmin && eventId) {
+                                await supabase.from('events').update({ music_track: track.id }).eq('id', eventId);
+                              }
+                            }}
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                              musicTrack === track.id
+                                ? 'bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30'
+                                : 'text-text-muted hover:text-white hover:bg-white/5'
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span>{track.emoji}</span>
+                              <span>{track.name}</span>
+                            </span>
+                            {musicTrack === track.id && <span className="text-[10px] uppercase font-mono tracking-widest text-accent-cyan">Active</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             )}
 
             <div className="w-px h-7 bg-white/10 mx-1" />
