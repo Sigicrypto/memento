@@ -17,6 +17,8 @@ import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart
 import CircularGallery from '@/components/CircularGallery';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import { RippleButton } from '@/registry/magicui/ripple-button';
+import { ShimmerButton } from '@/registry/magicui/shimmer-button';
+
  
 // ── NEW PHOTO REVEAL ────────────────────────────────────────
  
@@ -579,44 +581,65 @@ export default function WallPage() {
 
          <div className="flex items-center gap-3.5">
             {hasFeature(planTier, 'SELFIE_MATCH') && (
-              <RippleButton 
-                rippleColor="#ADD8E6"
+              <ShimmerButton 
+                shimmerColor="#5EE6FF"
                 onClick={() => setShowSelfieCam(true)} 
-                className="hidden md:flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-bold text-white transition-all shadow-sm"
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-xs font-bold text-white shadow-2xl rounded-full"
               >
                 <Search size={15} className="text-accent-cyan" />
                 <span>Find My Photos</span>
-              </RippleButton>
+              </ShimmerButton>
             )}
 
             {isAdmin && (
                <>
                  <Link href={`/moderate/${slug}`}>
-                   <RippleButton rippleColor="#FF5470" className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all">
-                     <Shield size={14} /> Moderate
-                   </RippleButton>
+                   <ShimmerButton 
+                     shimmerColor="#FF5470" 
+                     background="rgba(239, 68, 68, 0.15)"
+                     className="hidden lg:flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-400 border-red-500/20 shadow-2xl rounded-full"
+                   >
+                     <Shield size={14} /> <span>Moderate</span>
+                   </ShimmerButton>
                  </Link>
-                 <RippleButton rippleColor="#4ADE80" onClick={handleDownloadZip} className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/20 transition-all">
-                    <Download size={14} /> Export ZIP
-                 </RippleButton>
+                 <ShimmerButton 
+                   shimmerColor="#4ADE80" 
+                   background="rgba(16, 185, 129, 0.15)"
+                   onClick={handleDownloadZip} 
+                   className="hidden lg:flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider text-emerald-400 border-emerald-500/20 shadow-2xl rounded-full"
+                 >
+                    <Download size={14} /> <span>Export ZIP</span>
+                 </ShimmerButton>
                  <Link href="/dashboard">
-                   <RippleButton rippleColor="#ADD8E6" className="hidden sm:flex items-center gap-2 px-4.5 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-all">
-                      <Settings size={14} /> Dashboard
-                   </RippleButton>
+                   <ShimmerButton 
+                     shimmerColor="#ffffff" 
+                     className="hidden sm:flex items-center gap-2 px-4 py-2 text-xs font-bold text-white shadow-2xl rounded-full"
+                   >
+                      <Settings size={14} /> <span>Dashboard</span>
+                   </ShimmerButton>
                  </Link>
                </>
             )}
 
-            <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(true)} className="md:hidden flex items-center justify-center !w-11 !h-11 !p-0 rounded-2xl bg-white/5 border border-white/10 text-white">
-               <QrCode size={20} />
-            </RippleButton>
+            <ShimmerButton 
+              shimmerColor="#ffffff" 
+              onClick={() => setShowMobileQR(true)} 
+              className="md:hidden flex items-center justify-center !w-10 !h-10 !p-0 rounded-full text-white shadow-2xl"
+            >
+               <QrCode size={18} />
+            </ShimmerButton>
 
             <Link href={uploadUrl} target="_blank">
-              <RippleButton rippleColor="#ADD8E6" className="btn btn-primary !py-2.5 !px-6 text-xs font-extrabold rounded-2xl shadow-xl shadow-purple-500/25 tracking-wider uppercase">
-                Join Wall
-              </RippleButton>
+              <ShimmerButton 
+                shimmerColor="#ffffff" 
+                background="rgba(255, 255, 255, 0.95)"
+                className="px-6 py-2.5 text-xs font-extrabold text-black tracking-wider uppercase shadow-2xl rounded-full hover:bg-white transition-all"
+              >
+                <span className="text-black font-extrabold text-xs tracking-wider uppercase">JOIN WALL</span>
+              </ShimmerButton>
             </Link>
          </div>
+
 
       </nav>
 

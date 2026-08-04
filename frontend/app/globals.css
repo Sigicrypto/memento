@@ -691,3 +691,14 @@ h1, h2, h3, h4, h5, h6 {
   animation: rippling 600ms ease-out forwards;
 }
 
+@keyframes shimmer-slide {
+  to {
+    transform: translateX(calc(100cqw - 100%));
+  }
+}
+
+.animate-shimmer-slide {
+  animation: shimmer-slide var(--speed, 3s) ease-in-out infinite alternate;
+}
+
+
