@@ -591,7 +591,7 @@ export default function WallPage() {
          </div>
       </nav>
 
-      <main className="relative z-10 pt-32 px-6 md:px-10 pb-36 max-w-[1600px] mx-auto w-full flex-grow">
+      <main className="relative z-10 pt-32 px-6 sm:px-12 md:px-24 lg:px-40 xl:px-48 pb-64 md:pb-80 max-w-[1800px] mx-auto w-full flex-grow">
          {/* Wall Hero */}
          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
@@ -652,9 +652,9 @@ export default function WallPage() {
                   ))}
                </motion.div>
             ) : viewMode === 'polaroid' ? (
-               <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-10 justify-center pt-16 md:pt-20 pb-12">
+               <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-10 md:gap-14 justify-center pt-14 md:pt-18 pb-20 px-4 md:px-8">
                   {displayedPhotos.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }} transition={{ duration: 0.4 }} className="bg-surface/70 backdrop-blur-2xl p-4 border border-white/10 shadow-2xl rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col">
+                    <motion.div key={p.id} initial={{ opacity: 0, y: 40, rotate: (i % 6 - 3) * 2 }} whileInView={{ opacity: 1, y: 0, rotate: (i % 6 - 3) * 0.5 }} viewport={{ once: true }} whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }} transition={{ duration: 0.4 }} className="bg-surface/70 backdrop-blur-2xl p-4 border border-white/10 shadow-2xl rounded-3xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col mx-2 my-3">
                         {/* Tape */}
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-7 bg-white/10 backdrop-blur-xl rotate-[-3deg] border border-white/10 shadow-sm z-20" style={{ clipPath: 'polygon(2% 15%, 98% 5%, 95% 95%, 5% 90%)' }} />
                         
