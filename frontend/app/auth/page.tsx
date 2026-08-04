@@ -81,7 +81,7 @@ function AuthPageContent() {
                     <label className="text-xs font-bold text-text-primary ml-1">Full Name</label>
                     <div className="relative group">
                        <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                       <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" style={{ padding: '20px 16px 20px 48px' }} className="w-full bg-bg-subtle border border-border rounded-xl focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                     </div>
                  </div>
               )}
@@ -90,7 +90,7 @@ function AuthPageContent() {
                  <label className="text-xs font-bold text-text-primary ml-1">Email Address</label>
                  <div className="relative group">
                     <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="sarah@example.com" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="sarah@example.com" style={{ padding: '20px 16px 20px 48px' }} className="w-full bg-bg-subtle border border-border rounded-xl focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                  </div>
               </div>
 
@@ -101,7 +101,7 @@ function AuthPageContent() {
                  </div>
                  <div className="relative group">
                     <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" style={{ padding: '20px 16px 20px 48px' }} className="w-full bg-bg-subtle border border-border rounded-xl focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                  </div>
               </div>
 
@@ -110,7 +110,7 @@ function AuthPageContent() {
                     <label className="text-xs font-bold text-text-primary ml-1">Mobile Number (Optional)</label>
                     <div className="relative group">
                        <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-primary transition-colors" />
-                       <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 555 000 0000" className="w-full bg-bg-subtle border border-border rounded-xl !pl-12 pr-4 py-5 focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
+                       <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 555 000 0000" style={{ padding: '20px 16px 20px 48px' }} className="w-full bg-bg-subtle border border-border rounded-xl focus:outline-none focus:border-border-focus transition-all text-sm shadow-sm text-text-primary" />
                     </div>
                  </div>
               )}
@@ -129,7 +129,7 @@ function AuthPageContent() {
               </AnimatePresence>
 
               <div className="pt-2 space-y-4">
-                <button type="submit" disabled={loading} className="btn btn-primary w-full !py-4 flex items-center justify-center gap-2 group">
+                <button type="submit" disabled={loading} style={{ padding: '16px' }} className="btn btn-primary w-full flex items-center justify-center gap-2 group">
                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
                      <>
                        <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
@@ -147,7 +147,8 @@ function AuthPageContent() {
                 <button 
                   type="button" 
                   onClick={() => signInWithGoogle()} 
-                  className="btn w-full !py-5 flex items-center justify-center gap-3 bg-surface border border-border hover:bg-bg-subtle hover:border-border-hover transition-all text-sm font-bold shadow-sm rounded-xl"
+                  style={{ padding: '20px' }}
+                  className="btn w-full flex items-center justify-center gap-3 bg-surface border border-border hover:bg-bg-subtle hover:border-border-hover transition-all text-sm font-bold shadow-sm rounded-xl"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.56 12.25C22.56 11.47 22.49 10.73 22.37 10H12V14.26H17.92C17.67 15.63 16.89 16.81 15.74 17.58V20.34H19.3C21.38 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>

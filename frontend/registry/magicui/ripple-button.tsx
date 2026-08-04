@@ -9,6 +9,10 @@ export interface RippleButtonProps
   duration?: string;
   children?: React.ReactNode;
   className?: string;
+  /** Horizontal padding in pixels (default 20) */
+  paddingX?: number;
+  /** Vertical padding in pixels (default 10) */
+  paddingY?: number;
 }
 
 export const RippleButton = React.forwardRef<
@@ -21,6 +25,8 @@ export const RippleButton = React.forwardRef<
       children,
       rippleColor = "#ADD8E6",
       duration = "600ms",
+      paddingX = 20,
+      paddingY = 10,
       onClick,
       disabled,
       ...props
@@ -60,8 +66,15 @@ export const RippleButton = React.forwardRef<
       <button
         ref={ref}
         disabled={disabled}
+        style={{
+          paddingLeft: `${paddingX}px`,
+          paddingRight: `${paddingX}px`,
+          paddingTop: `${paddingY}px`,
+          paddingBottom: `${paddingY}px`,
+          ...(props.style || {})
+        }}
         className={cn(
-          "relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-surface px-5 py-2.5 text-center font-medium text-white shadow-md transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 select-none",
+          "relative inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-surface text-center font-medium text-white shadow-md transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 select-none",
           className
         )}
         onClick={handleClick}

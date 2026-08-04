@@ -85,7 +85,7 @@ const NewPhotoReveal = ({ photo, getPublicUrl, onDone }: NewPhotoRevealProps) =>
       >
         <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
         {photo.media_type === 'video'
-          ? <video src={getPublicUrl(photo.storage_path)} className="w-full relative z-10 block object-contain max-h-[60vh] mx-auto" autoPlay loop muted />
+          ? <video key={photo.id} src={getPublicUrl(photo.storage_path)} className="w-full relative z-10 block object-contain max-h-[60vh] mx-auto" autoPlay loop muted />
           : <div className="relative w-full aspect-video"><Image src={getPublicUrl(photo.storage_path)} fill className="relative z-10 object-contain" alt="" priority /></div>
         }
       </motion.div>
@@ -463,6 +463,7 @@ export default function WallPage() {
                 <div className="relative w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] bg-black/40 flex items-center justify-center">
                   {currentPhoto.media_type === 'video' ? (
                     <video 
+                      key={currentPhoto.id}
                       src={getPublicUrl(currentPhoto.storage_path)} 
                       className="w-full h-full object-contain max-h-[72vh]" 
                       autoPlay 
@@ -478,7 +479,7 @@ export default function WallPage() {
                   )}
 
                   {/* Caption & Uploader Banner */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent backdrop-blur-sm flex items-end justify-between gap-4">
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent backdrop-blur-sm flex items-end justify-between gap-4" style={{ padding: '24px' }}>
                     <div>
                       {currentPhoto.caption && (
                         <p className="text-lg md:text-xl font-medium text-white italic mb-1">
@@ -579,70 +580,92 @@ export default function WallPage() {
                  <img src="/CC logo.png" alt="Memento Logo" className="h-8 md:h-10 object-contain" />
                </Link>
             )}
-            <div className="hidden sm:flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-success/10 border border-success/20 text-xs font-bold uppercase tracking-widest text-success">
-               <div className={`w-2 h-2 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-success shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse' : 'bg-amber-400'}`} />
+            <div 
+               style={{ paddingLeft: '28px', paddingRight: '28px', paddingTop: '8px', paddingBottom: '8px' }}
+               className="hidden sm:flex items-center gap-3 rounded-full bg-success/10 border border-success/20 text-xs md:text-sm font-extrabold uppercase tracking-widest text-success shadow-sm"
+            >
+               <div className={`w-2.5 h-2.5 rounded-full ${realtimeStatus === 'SUBSCRIBED' ? 'bg-success shadow-[0_0_10px_rgba(34,197,94,0.9)] animate-pulse' : 'bg-amber-400'}`} />
                {realtimeStatus === 'SUBSCRIBED' ? 'Live Stream Active' : 'Polling Updates'}
             </div>
          </div>
 
-         <div className="flex items-center gap-2.5 md:gap-3 overflow-x-auto no-scrollbar">
+         <div className="flex items-center gap-2.5 md:gap-3">
             {hasFeature(planTier, 'SELFIE_MATCH') && (
               <ShimmerButton 
-                shimmerColor="#5EE6FF"
+                shimmerColor="#00E5FF"
+                background="#0f172a"
                 onClick={() => setShowSelfieCam(true)} 
-                className="hidden md:flex items-center gap-2 px-4 py-1.5 text-xs font-bold text-white shadow-2xl rounded-full"
+                paddingX={24}
+                paddingY={8}
+                className="hidden md:flex items-center gap-2 text-xs font-bold text-white border border-cyan-500/30 rounded-full shadow-lg shrink-0"
               >
-                <Search size={14} className="text-accent-cyan" />
-                <span className="tracking-wide">Find My Photos</span>
+                <Search size={14} className="text-accent-cyan shrink-0" />
+                <span className="tracking-wide whitespace-nowrap">Find My Photos</span>
               </ShimmerButton>
             )}
 
-            <Link href={`/moderate/${slug}`}>
+            <Link href={`/moderate/${slug}`} className="hidden lg:block shrink-0">
               <ShimmerButton 
                 shimmerColor="#FF5470" 
-                background="rgba(239, 68, 68, 0.15)"
-                className="hidden lg:flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-red-400 border-red-500/20 shadow-2xl rounded-full"
+                background="#1a0b0e"
+                paddingX={24}
+                paddingY={8}
+                className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-red-400 border border-red-500/30 shadow-lg rounded-full shrink-0"
               >
-                <Shield size={14} /> <span>Moderate</span>
+                <Shield size={14} className="shrink-0" /> <span className="whitespace-nowrap">Moderate</span>
               </ShimmerButton>
             </Link>
 
             <ShimmerButton 
               shimmerColor="#4ADE80" 
-              background="rgba(16, 185, 129, 0.15)"
+              background="#081c10"
               onClick={handleDownloadZip} 
-              className="hidden lg:flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-emerald-400 border-emerald-500/20 shadow-2xl rounded-full"
+              paddingX={24}
+              paddingY={8}
+              className="hidden lg:flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30 shadow-lg rounded-full shrink-0"
             >
-               <Download size={14} /> <span>Export ZIP</span>
+               <Download size={14} className="shrink-0" /> <span className="whitespace-nowrap">Export ZIP</span>
             </ShimmerButton>
 
-            <Link href="/dashboard">
+            <Link href="/dashboard" className="hidden sm:block shrink-0">
               <ShimmerButton 
                 shimmerColor="#ffffff" 
-                className="hidden sm:flex items-center gap-2 px-4 py-1.5 text-xs font-bold text-white shadow-2xl rounded-full"
+                background="#11131f"
+                paddingX={24}
+                paddingY={8}
+                className="flex items-center gap-2 text-xs font-bold text-white border border-white/20 shadow-lg rounded-full shrink-0"
               >
-                 <Settings size={14} /> <span>Dashboard</span>
+                 <Settings size={14} className="shrink-0" /> <span className="whitespace-nowrap">Dashboard</span>
               </ShimmerButton>
             </Link>
 
             <ShimmerButton 
               shimmerColor="#ffffff" 
               onClick={() => setShowMobileQR(true)} 
-              className="md:hidden flex items-center justify-center !w-9 !h-9 !p-0 rounded-full text-white shadow-2xl"
+              paddingX={0}
+              paddingY={0}
+              className="md:hidden flex items-center justify-center !w-10 !h-10 rounded-full text-white shadow-2xl shrink-0"
             >
-               <QrCode size={16} />
+               <QrCode size={18} />
             </ShimmerButton>
 
-            <Link href={uploadUrl} target="_blank">
+            <Link href={uploadUrl} target="_blank" className="shrink-0">
               <ShimmerButton 
                 shimmerColor="#ffffff" 
-                background="rgba(255, 255, 255, 0.95)"
-                className="px-5 py-2 text-xs font-extrabold text-black tracking-wider uppercase shadow-2xl rounded-full hover:bg-white transition-all"
+                background="#ffffff"
+                paddingX={28}
+                paddingY={10}
+                className="text-xs font-extrabold text-black tracking-wider uppercase shadow-xl rounded-full hover:bg-white transition-all shrink-0"
               >
-                <span className="text-black font-extrabold text-xs tracking-wider uppercase">JOIN WALL</span>
+                <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">JOIN WALL</span>
               </ShimmerButton>
             </Link>
          </div>
+
+
+
+
+
 
 
 
@@ -664,7 +687,9 @@ export default function WallPage() {
                <RippleButton 
                  rippleColor="#ADD8E6"
                  onClick={() => setShowBestShots(!showBestShots)} 
-                 className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl border transition-all text-xs font-bold ${
+                 paddingX={20}
+                 paddingY={12}
+                 className={`flex items-center gap-2.5 rounded-2xl border transition-all text-xs font-bold ${
                    showBestShots 
                      ? 'bg-purple-500/20 border-purple-500/30 text-purple-300 shadow-lg shadow-purple-500/10' 
                      : 'bg-white/5 border-white/10 text-text-muted hover:text-white hover:bg-white/10'
@@ -678,7 +703,7 @@ export default function WallPage() {
                   {matchedPhotoIds && (
                     <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="flex items-center gap-3">
                        <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan">Matched {matchedPhotoIds.length}</span>
-                       <RippleButton rippleColor="#ADD8E6" onClick={() => setMatchedPhotoIds(null)} className="text-xs font-bold text-text-muted hover:text-white transition-colors bg-transparent border-0 !p-1">Clear ×</RippleButton>
+                       <RippleButton rippleColor="#ADD8E6" onClick={() => setMatchedPhotoIds(null)} paddingX={4} paddingY={4} className="text-xs font-bold text-text-muted hover:text-white transition-colors bg-transparent border-0">Clear ×</RippleButton>
                     </motion.div>
                   )}
                </AnimatePresence>
@@ -693,7 +718,7 @@ export default function WallPage() {
                   <h2 className="text-2xl font-bold mb-2 text-white">No Memories shared yet</h2>
                   <p className="text-text-secondary mb-8 text-sm max-w-md mx-auto">Be the first to share a moment. Join the wall and upload your favorite shots!</p>
                   <Link href={uploadUrl} target="_blank">
-                    <RippleButton rippleColor="#ADD8E6" className="btn btn-primary !py-3 !px-8 text-sm font-bold">
+                    <RippleButton rippleColor="#ADD8E6" paddingX={32} paddingY={12} className="btn btn-primary text-sm font-bold">
                       Share First Memory
                     </RippleButton>
                   </Link>
@@ -708,7 +733,13 @@ export default function WallPage() {
                           <div className="flex justify-between items-start">
                              <p className="text-[10px] font-black text-accent-cyan uppercase tracking-widest mb-1">BY {p.uploader_name}</p>
                              {hasFeature(planTier, 'LIVE_REACTIONS') && (
-                                <RippleButton rippleColor="#FF69B4" onClick={() => handleReaction(p.id)} className="hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 !px-2.5 !py-1 rounded-full bg-black/40 text-xs font-bold text-white backdrop-blur-md border-0">
+                                <RippleButton 
+                                  rippleColor="#FF69B4" 
+                                  onClick={() => handleReaction(p.id)} 
+                                  paddingX={10}
+                                  paddingY={4}
+                                  className="hover:text-pink-500 hover:scale-110 transition-all flex items-center gap-1 rounded-full bg-black/40 text-xs font-bold text-white backdrop-blur-md border-0"
+                                >
                                    <Heart size={14} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> {p.reaction_count || 0}
                                 </RippleButton>
                              )}
@@ -719,7 +750,7 @@ export default function WallPage() {
                   ))}
                </motion.div>
             ) : viewMode === 'polaroid' ? (
-               <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-10 md:gap-14 justify-center pt-14 md:pt-18 pb-20 px-4 md:px-8">
+               <motion.div key="polaroid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ paddingTop: '96px' }} className="flex flex-wrap gap-10 md:gap-14 justify-center pb-20 px-4 md:px-8">
                   {displayedPhotos.map((p, i) => (
                     <motion.div 
                       key={p.id} 
@@ -728,7 +759,8 @@ export default function WallPage() {
                       viewport={{ once: true }} 
                       whileHover={{ scale: 1.06, rotate: 0, zIndex: 50 }} 
                       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }} 
-                      className="bg-[#fafafa] text-slate-900 p-4 border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-2xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col mx-3 my-4"
+                      className="bg-[#fafafa] text-slate-900 border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.4)] rounded-2xl w-72 flex-shrink-0 relative group cursor-pointer flex flex-col mx-3 my-4"
+                      style={{ padding: '16px' }}
                     >
                         {/* Authentic Masking Tape */}
                         <div 
@@ -748,7 +780,7 @@ export default function WallPage() {
                         </div>
                         
                         {/* Polaroid Bottom Paper Caption Area */}
-                        <div className="pt-4 pb-2 px-1 flex flex-col flex-grow justify-center text-center">
+                        <div className="flex flex-col flex-grow justify-center text-center" style={{ padding: '16px 4px 8px 4px' }}>
                            {p.caption ? (
                              <p className="text-slate-800 font-medium text-sm leading-tight mb-2 whitespace-pre-wrap font-sans">
                                &quot;{p.caption}&quot;
@@ -762,7 +794,9 @@ export default function WallPage() {
                                <RippleButton 
                                  rippleColor="#FF69B4"
                                  onClick={(e) => { e.stopPropagation(); handleReaction(p.id); }} 
-                                 className="hover:text-pink-600 transition-colors flex items-center gap-1 !px-2 !py-0.5 bg-slate-200/70 hover:bg-slate-200 rounded-full text-slate-700 border-0"
+                                 paddingX={8}
+                                 paddingY={2}
+                                 className="hover:text-pink-600 transition-colors flex items-center gap-1 bg-slate-200/70 hover:bg-slate-200 rounded-full text-slate-700 border-0"
                                >
                                  <Heart size={12} className={p.reaction_count ? 'fill-pink-500 text-pink-500' : ''} /> 
                                  <span>{p.reaction_count || 0}</span>

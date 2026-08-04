@@ -11,6 +11,10 @@ export interface ShimmerButtonProps extends ComponentPropsWithoutRef<"button"> {
   background?: string;
   className?: string;
   children?: React.ReactNode;
+  /** Horizontal padding in pixels (default 24) */
+  paddingX?: number;
+  /** Vertical padding in pixels (default 8) */
+  paddingY?: number;
 }
 
 export const ShimmerButton = React.forwardRef<
@@ -26,6 +30,8 @@ export const ShimmerButton = React.forwardRef<
       background = "rgba(0, 0, 0, 1)",
       className,
       children,
+      paddingX = 24,
+      paddingY = 8,
       ...props
     },
     ref
@@ -40,20 +46,24 @@ export const ShimmerButton = React.forwardRef<
             "--speed": shimmerDuration,
             "--cut": shimmerSize,
             "--bg": background,
+            paddingLeft: `${paddingX}px`,
+            paddingRight: `${paddingX}px`,
+            paddingTop: `${paddingY}px`,
+            paddingBottom: `${paddingY}px`,
           } as CSSProperties
         }
         className={cn(
-          "group relative z-0 inline-flex min-h-[34px] min-w-max cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/10 px-4 py-1.5 text-white [background:var(--bg)] [border-radius:var(--radius)] transform-gpu transition-all duration-300 ease-in-out hover:scale-[1.03] active:scale-[0.98] active:translate-y-px shadow-2xl disabled:pointer-events-none disabled:opacity-50 select-none",
+          "group relative z-0 inline-flex shrink-0 min-h-[38px] min-w-max cursor-pointer items-center justify-center overflow-hidden whitespace-nowrap border border-white/15 text-white [background:var(--bg)] [border-radius:var(--radius)] transform-gpu transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-xl disabled:pointer-events-none disabled:opacity-50 select-none",
           className
         )}
+
         ref={ref}
         {...props}
       >
-        {/* spark container */}
+        {/* spark container (outer perimeter glow) */}
         <div
           className={cn(
-            "-z-30 blur-[2px]",
-            "absolute inset-0 overflow-visible [container-type:size]"
+            "absolute inset-0 overflow-visible [container-type:size] pointer-events-none"
           )}
         >
           {/* spark */}
@@ -63,32 +73,28 @@ export const ShimmerButton = React.forwardRef<
           </div>
         </div>
 
+        {/* backdrop (masks center content so shimmer only glows on border) */}
+        <div
+          className={cn(
+            "absolute z-0 [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)] pointer-events-none"
+          )}
+        />
+
         {/* Children content wrapper */}
-        <span className="relative z-10 flex items-center justify-center gap-2 px-1 font-semibold text-xs tracking-wide leading-none">
+        <span className="relative z-10 flex items-center justify-center gap-2.5 py-0.5 font-bold text-xs tracking-wide leading-none">
           {children}
         </span>
 
-
-
-
-        {/* Highlight inner glow */}
+        {/* Inner shadow/highlight */}
         <div
           className={cn(
-            "absolute inset-0 size-full pointer-events-none",
-            "rounded-[inherit] shadow-[inset_0_-8px_10px_#ffffff1f]",
+            "absolute inset-0 z-10 size-full pointer-events-none rounded-[inherit]",
+            "shadow-[inset_0_-4px_8px_rgba(255,255,255,0.08)]",
             "transform-gpu transition-all duration-300 ease-in-out",
-            "group-hover:shadow-[inset_0_-6px_10px_#ffffff3f]",
-            "group-active:shadow-[inset_0_-10px_10px_#ffffff3f]"
+            "group-hover:shadow-[inset_0_-4px_12px_rgba(255,255,255,0.15)]"
           )}
         />
 
-
-        {/* backdrop */}
-        <div
-          className={cn(
-            "absolute -z-20 [background:var(--bg)] [border-radius:var(--radius)] [inset:var(--cut)] pointer-events-none"
-          )}
-        />
       </button>
     );
   }
@@ -97,3 +103,4 @@ export const ShimmerButton = React.forwardRef<
 ShimmerButton.displayName = "ShimmerButton";
 
 export default ShimmerButton;
+

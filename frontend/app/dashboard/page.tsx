@@ -138,14 +138,10 @@ export default function DashboardPage() {
   return (
     <div className="relative flex flex-col w-full min-h-screen">
       {/* ── MAIN CONTENT ── */}
-      <main className="flex-grow pt-8 pb-20 px-4 md:px-10 max-w-7xl mx-auto w-full relative z-10">
+      <main className="flex-grow max-w-7xl mx-auto w-full relative z-10">
         
-        {/* Welcome Glass Banner */}
-        <div className="relative mb-10 p-6 md:p-8 rounded-3xl border border-white/10 bg-gradient-to-r from-purple-950/40 via-surface/60 to-cyan-950/30 backdrop-blur-2xl shadow-2xl overflow-hidden">
-          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        {/* Welcome Banner */}
+        <div className="relative mb-12 p-8 md:p-12 rounded-[32px] border border-border bg-surface shadow-sm overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div className="flex items-center gap-5">
               <div className="relative">
                 <div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-purple-500 via-pink-500 to-accent-cyan shadow-lg shadow-purple-500/20 flex items-center justify-center">
@@ -157,8 +153,8 @@ export default function DashboardPage() {
               </div>
 
               <div>
-                <div className="flex items-center gap-3 mb-1">
-                  <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-accent-cyan bg-clip-text text-transparent">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-text-primary">
                     Welcome back, {firstName}
                   </h1>
                   <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan tracking-wider">
@@ -182,17 +178,16 @@ export default function DashboardPage() {
                 <span>Create New Wall</span>
               </Link>
             </div>
-          </div>
         </div>
 
         {/* KPI Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {/* Card 1: Active Events */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.4, delay: 0.1 }} 
-            className="p-6 rounded-2xl border border-white/10 bg-surface/40 backdrop-blur-xl hover:border-white/20 transition-all duration-300 flex flex-col justify-between group shadow-card"
+            className="p-8 rounded-[24px] border border-border bg-surface hover:border-border-hover transition-all duration-300 flex flex-col justify-between group shadow-sm"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">Active Photo Walls</span>
@@ -201,7 +196,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl font-black tracking-tight text-white">{events.length}</span>
+              <span className="text-5xl font-black tracking-tight text-text-primary">{events.length}</span>
               <span className="text-xs text-text-muted">walls active</span>
             </div>
             <div className="mt-4 h-10 w-full flex items-end gap-1 opacity-70">
@@ -216,7 +211,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.4, delay: 0.2 }} 
-            className="p-6 rounded-2xl border border-white/10 bg-surface/40 backdrop-blur-xl hover:border-white/20 transition-all duration-300 flex flex-col justify-between group shadow-card"
+            className="p-8 rounded-[24px] border border-border bg-surface hover:border-border-hover transition-all duration-300 flex flex-col justify-between group shadow-sm"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">Total Photos Collected</span>
@@ -225,7 +220,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-baseline gap-3 mb-2">
-              <span className="text-4xl font-black tracking-tight text-white">{totalPhotos}</span>
+              <span className="text-5xl font-black tracking-tight text-text-primary">{totalPhotos}</span>
               <span className="text-xs font-bold text-success bg-success/10 border border-success/20 px-2.5 py-1 rounded-full flex items-center gap-1">
                 <Sparkles size={10} /> Live Synced
               </span>
@@ -249,10 +244,10 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.4, delay: 0.3 }} 
-            className="p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-surface/60 to-bg-subtle/80 backdrop-blur-xl hover:border-white/20 transition-all duration-300 flex flex-col justify-between shadow-card"
+            className="p-8 rounded-[24px] border border-border bg-surface hover:border-border-hover transition-all duration-300 flex flex-col justify-between group shadow-sm"
           >
             <div className="flex justify-between items-start mb-3">
-              <div className="flex items-center gap-2.5 text-white">
+              <div className="flex items-center gap-3 text-text-primary">
                 <div className="p-2 rounded-lg bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan">
                   {planInfo.icon}
                 </div>
@@ -280,11 +275,11 @@ export default function DashboardPage() {
 
         {/* Events Section Header */}
         <section>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
             <div>
-              <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-white tracking-tight">Your Events</h2>
-                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-white border border-white/10">
+              <div className="flex items-center gap-3 mb-1">
+                <h2 className="text-2xl font-bold text-text-primary tracking-tight">Your Events</h2>
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-border text-text-primary border border-border-hover">
                   {filteredEvents.length}
                 </span>
               </div>
@@ -324,7 +319,7 @@ export default function DashboardPage() {
           </div>
 
           {events.length === 0 ? (
-            <div className="p-12 text-center flex flex-col items-center border border-dashed border-white/10 bg-surface/20 rounded-3xl backdrop-blur-xl">
+            <div className="p-16 text-center flex flex-col items-center border-2 border-dashed border-border bg-surface rounded-[32px] shadow-sm">
                <div className="w-48 h-48 mb-2 flex items-center justify-center opacity-90">
                  {emptyLottieData ? (
                    <Lottie 
@@ -336,19 +331,19 @@ export default function DashboardPage() {
                    <Camera size={48} className="text-text-muted opacity-50" />
                  )}
                </div>
-               <h3 className="text-lg font-bold mb-2 text-white">No active photo walls yet</h3>
-               <p className="text-text-secondary max-w-sm mb-6 text-sm">Create your first photo wall in seconds and start collecting guest memories instantly.</p>
-               <Link href="/create" className="btn btn-primary flex items-center gap-2 !py-3 !px-6">
+               <h3 className="text-xl font-bold mb-3 text-text-primary">No active photo walls yet</h3>
+               <p className="text-text-secondary max-w-sm mb-8 text-base">Create your first photo wall in seconds and start collecting guest memories instantly.</p>
+               <Link href="/create" className="btn btn-primary flex items-center gap-2 !py-4 !px-8">
                  <Plus size={18} /> <span>Launch your first wall</span>
                </Link>
             </div>
           ) : filteredEvents.length === 0 ? (
-             <div className="p-12 text-center text-text-muted text-sm border border-dashed border-white/10 rounded-2xl bg-surface/30">
+             <div className="p-16 text-center text-text-muted text-base border-2 border-dashed border-border rounded-[32px] bg-surface shadow-sm">
                No events found matching "{searchQuery}"
              </div>
           ) : viewMode === 'grid' ? (
             /* ── GRID VIEW ── */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <AnimatePresence mode="popLayout">
                 {filteredEvents.map((event, i) => (
                   <motion.div 
@@ -357,24 +352,24 @@ export default function DashboardPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: i * 0.05 }}
-                    className="p-6 rounded-2xl border border-white/10 bg-surface/40 backdrop-blur-xl hover:border-white/20 transition-all duration-300 flex flex-col justify-between group shadow-card"
+                    className="p-8 rounded-[24px] border border-border bg-surface hover:border-border-hover transition-all duration-300 flex flex-col justify-between group shadow-sm"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 text-accent-cyan">
                           {event.photo_count || 0} Photos Collected
                         </span>
-                        <span className="text-xs text-text-muted">
+                        <span className="text-xs text-text-muted" suppressHydrationWarning>
                           {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-white mb-2 group-hover:text-accent-cyan transition-colors">
+                      <h3 className="text-xl font-bold text-text-primary mb-2 group-hover:text-accent-cyan transition-colors">
                         <Link href={`/wall/${event.slug}`}>{event.name}</Link>
                       </h3>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10 mt-6 flex items-center justify-between gap-2">
+                    <div className="pt-6 border-t border-border mt-6 flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5">
                         <button 
                           onClick={() => copyUrl(event.slug)} 
@@ -419,18 +414,18 @@ export default function DashboardPage() {
             </div>
           ) : (
             /* ── TABLE VIEW ── */
-            <div className="rounded-2xl border border-white/10 bg-surface/30 backdrop-blur-xl overflow-hidden shadow-card">
+            <div className="rounded-[24px] border border-border bg-surface overflow-hidden shadow-sm">
               <div className="overflow-x-auto w-full">
                 <table className="data-table w-full">
                   <thead>
-                    <tr className="border-b border-white/10 bg-white/[0.02]">
+                    <tr className="border-b border-border bg-bg-subtle">
                       <th className="py-4 px-6 text-left text-xs font-bold uppercase text-text-muted">Event Name</th>
                       <th className="py-4 px-6 text-left text-xs font-bold uppercase text-text-muted">Created Date</th>
                       <th className="py-4 px-6 text-left text-xs font-bold uppercase text-text-muted">Photos</th>
                       <th className="py-4 px-6 text-right text-xs font-bold uppercase text-text-muted">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-border">
                     <AnimatePresence mode="popLayout">
                       {filteredEvents.map((event, i) => (
                         <motion.tr 
@@ -439,12 +434,12 @@ export default function DashboardPage() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, x: -10 }}
                           transition={{ delay: i * 0.05 }}
-                          className="hover:bg-white/[0.02] transition-colors group"
+                          className="hover:bg-bg-subtle transition-colors group"
                         >
-                          <td className="py-4 px-6 font-semibold text-sm">
-                            <Link href={`/wall/${event.slug}`} className="hover:text-accent-cyan transition-colors text-white">{event.name}</Link>
+                          <td className="py-5 px-6 font-semibold text-base">
+                            <Link href={`/wall/${event.slug}`} className="hover:text-accent-cyan transition-colors text-text-primary">{event.name}</Link>
                           </td>
-                          <td className="py-4 px-6 text-text-secondary text-sm">
+                          <td className="py-4 px-6 text-text-secondary text-sm" suppressHydrationWarning>
                             {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </td>
                           <td className="py-4 px-6">

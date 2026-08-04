@@ -51,7 +51,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className={`lp-card flex flex-col h-full relative group w-full max-w-none p-8 sm:p-10 md:p-12 lg:p-16 text-center ${plan.highlight ? 'border-neon-magenta shadow-[0_0_40px_rgba(255,0,255,0.25)]' : ''}`}
+                className={`@container lp-card flex flex-col h-full relative group w-full max-w-none p-8 sm:p-10 md:p-12 lg:p-16 text-center ${plan.highlight ? 'border-neon-magenta shadow-[0_0_40px_rgba(255,0,255,0.25)]' : ''}`}
               >
                 {/* Recommended badge */}
                 {plan.highlight && (
@@ -77,8 +77,8 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 
                 <div className="mb-8 flex flex-col items-center text-center px-4 md:px-0">
                    <div className="flex items-baseline gap-1 sm:gap-2 mb-4 justify-center whitespace-nowrap">
-                      <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter">{price}</span>
-                      <span className="text-white/50 text-base sm:text-xl md:text-2xl font-medium">/event</span>
+                      <span className="text-[clamp(2.25rem,14cqw,4.5rem)] font-black text-white tracking-tighter leading-none">{price}</span>
+                      <span className="text-white/50 text-[clamp(1rem,4cqw,1.5rem)] font-medium">/event</span>
                    </div>
                    <p className="text-white/60 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mx-auto">{plan.description}</p>
                 </div>

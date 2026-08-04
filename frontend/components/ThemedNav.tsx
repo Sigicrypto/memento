@@ -8,6 +8,7 @@ import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
 import { LogOut, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface ThemedNavProps {
   showAuthButtons?: boolean;
@@ -104,6 +105,8 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Right Section */}
           <div className="flex items-center gap-5">
+            <ThemeToggle />
+            
             {!mini && showAuthButtons && (
               <div className="hidden md:flex items-center gap-4">
                 {user ? (

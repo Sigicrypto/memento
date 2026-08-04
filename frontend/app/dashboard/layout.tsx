@@ -27,8 +27,8 @@ export default function DashboardLayout({
       <DashboardNavigation />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto relative z-10">
-        <div className="flex-1 flex flex-col h-full w-full">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto relative z-10 bg-bg">
+        <div className="flex-1 flex flex-col h-full w-full p-4 md:p-8 lg:p-10">
           {children}
         </div>
       </div>
