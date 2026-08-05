@@ -36,10 +36,10 @@ export default function TermsPage() {
       </nav>
 
       {/* Main Content Container */}
-      <main className="relative z-10 pt-28 px-4 sm:px-8 pb-32 max-w-4xl mx-auto w-full">
+      <main className="relative z-10 pt-32 px-4 sm:px-8 pb-36 max-w-3xl mx-auto w-full flex flex-col items-center justify-center">
         <div className="text-center mb-12">
           <span style={{
-            display: 'inline-flex', padding: '4px 14px', borderRadius: '999px',
+            display: 'inline-flex', padding: '4px 16px', borderRadius: '999px',
             fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em',
             background: 'color-mix(in srgb, var(--primary) 12%, transparent)',
             border: '1px solid color-mix(in srgb, var(--primary) 20%, transparent)',
@@ -59,12 +59,13 @@ export default function TermsPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
+            width: '100%',
             background: 'var(--surface)',
             border: '1px solid var(--border)',
-            borderRadius: '28px',
-            padding: '40px 32px',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-            display: 'flex', flexDirection: 'column', gap: '40px',
+            borderRadius: '32px',
+            padding: '52px 44px',
+            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.25)',
+            display: 'flex', flexDirection: 'column', gap: '44px',
           }}
         >
           {/* Section 1 */}
