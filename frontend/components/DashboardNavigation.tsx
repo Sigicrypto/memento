@@ -51,9 +51,9 @@ export default function DashboardNavigation() {
         )}
       </AnimatePresence>
 
-      {/* Sidebar (Desktop sticky, Mobile absolute) - Always rendered for SSR safety */}
+      {/* Sidebar (Fixed on all screens, md:pl-64 on layout pushes content) - Always rendered for SSR safety */}
       <aside
-        className={`flex-shrink-0 fixed md:sticky top-0 left-0 z-50 h-screen w-64 border-r border-border bg-surface flex flex-col transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        className={`fixed top-0 left-0 z-50 h-screen w-64 border-r border-border bg-surface flex flex-col transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         <div className="h-[70px] border-b border-border flex items-center justify-between px-6">
           <div className="flex items-center">

@@ -16,7 +16,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-bg flex relative overflow-hidden">
+    <div className="min-h-screen bg-bg relative overflow-hidden">
       {/* Landing page background elements */}
       <div className="grain" />
       <div className="orbs">
@@ -27,8 +27,8 @@ export default function DashboardLayout({
       <DashboardNavigation />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto relative z-10 bg-bg">
-        <div className="flex-1 flex flex-col h-full w-full p-4 md:p-8 lg:p-10">
+      <div className="md:pl-64 flex flex-col min-h-screen relative z-10">
+        <div className="flex-1 w-full p-6 md:p-10 lg:p-12">
           {children}
         </div>
       </div>
