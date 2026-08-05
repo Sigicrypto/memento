@@ -47,6 +47,12 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/system', request.url));
       }
 
+      // Super admin email bypass (always allowed)
+      const superAdminEmail = (process.env.SUPER_ADMIN_EMAIL || process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || 'sagarfalcon@gmail.com').toLowerCase();
+      if (user.email && user.email.toLowerCase() === superAdminEmail) {
+        return supabaseResponse;
+      }
+
       // Check if user has admin role in profiles table
       const { data: profile } = await supabase
         .from('profiles')
