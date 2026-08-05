@@ -2,7 +2,7 @@
  
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Check, X, Sparkles, Zap, Star, Shield, Layout, ArrowRight, Heart, Music, BarChart3, Globe, ArrowLeft } from 'lucide-react';
+import { Check, X, Zap, Star, Heart, Shield, ArrowLeft } from 'lucide-react';
  
 import { PLANS } from '@/lib/plans';
 import SectionHeader from '@/components/sections/SectionHeader';
@@ -15,7 +15,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
  
   return (
     <section id="pricing" className={`${isEmbedded ? 'lp-section' : 'pt-44 pb-40'} relative z-10 scroll-mt-32 w-full flex flex-col items-center justify-center`}>
-      <div className="section-container wide-section-container w-full px-4 md:px-8">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {!isEmbedded && (
           <div className="mb-10">
             <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors">
@@ -31,7 +31,8 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           description="One-time payment. No hidden subscriptions. Just lifetime access to your memories."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-14 xl:gap-20 mb-36 items-stretch w-full mx-auto" style={{ maxWidth: '1800px' }}>
+        {/* ─── Pricing Cards Grid ─── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-6 mb-24 items-stretch w-full">
           {PLANS.map((plan, idx) => {
             const price = plan.price;
             const Icon = plan.id === 'starter' ? Zap : plan.id === 'standard' ? Star : plan.id === 'premium' ? Heart : Shield;
@@ -42,83 +43,97 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
-                className={`@container lp-card flex flex-col h-full relative group w-full max-w-none p-8 sm:p-10 md:p-12 lg:p-16 text-center ${plan.highlight ? 'border-neon-magenta shadow-[0_0_40px_rgba(255,0,255,0.25)]' : ''}`}
+                transition={{ delay: idx * 0.08, duration: 0.5 }}
+                className={`relative flex flex-col h-full group rounded-2xl lg:rounded-3xl border bg-[var(--surface)] p-6 sm:p-7 lg:p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${
+                  plan.highlight 
+                    ? 'border-[#a855f7]/50 shadow-[0_0_30px_rgba(168,85,247,0.2)]' 
+                    : 'border-white/10 hover:border-white/20'
+                }`}
               >
                 {/* Recommended badge */}
                 {plan.highlight && (
-                   <div 
-                     className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-neon text-white text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit cursor-default"
-                     style={{
-                       paddingLeft: '1rem',
-                       paddingRight: '1rem',
-                       paddingTop: '.5rem',
-                       paddingBottom: '.5rem',
-                     }}
-                   >
-                      Recommended
+                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#a855f7] to-[#ec4899] text-white text-xs font-bold px-4 py-1.5 shadow-[0_0_15px_rgba(168,85,247,0.4)] whitespace-nowrap z-10">
+                      ⭐ Recommended
                    </div>
                 )}
 
-                <div className="flex flex-col items-center gap-4 mb-10 text-center">
-                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[1.75rem] bg-[#1a1a1a] border border-white/10 flex items-center justify-center flex-shrink-0 text-white group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <Icon size={28} className={`sm:w-[30px] sm:h-[30px] ${plan.highlight ? 'text-neon-magenta' : 'text-white/80'}`} />
+                {/* Icon + Plan Name */}
+                <div className="flex flex-col items-center gap-3 mb-6 text-center pt-2">
+                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 border transition-transform duration-300 group-hover:scale-110 ${
+                     plan.highlight 
+                       ? 'bg-[#a855f7]/10 border-[#a855f7]/20' 
+                       : 'bg-white/5 border-white/10'
+                   }`}>
+                      <Icon size={24} className={plan.highlight ? 'text-[#a855f7]' : 'text-white/70'} />
                    </div>
-                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wide">{plan.name}</h3>
+                   <h3 className="text-xl lg:text-2xl font-bold text-white">{plan.name}</h3>
                 </div>
 
-                <div className="mb-8 flex flex-col items-center text-center px-4 md:px-0">
-                   <div className="flex items-baseline gap-1 sm:gap-2 mb-4 justify-center whitespace-nowrap">
-                      <span className="text-[clamp(2.25rem,14cqw,4.5rem)] font-black text-white tracking-tighter leading-none">{price}</span>
-                      <span className="text-white/50 text-[clamp(1rem,4cqw,1.5rem)] font-medium">/event</span>
+                {/* Price */}
+                <div className="mb-5 text-center">
+                   <div className="flex items-baseline gap-1 justify-center">
+                      <span className="text-3xl lg:text-4xl font-black text-white tracking-tight">{price}</span>
+                      <span className="text-white/40 text-sm font-medium">/event</span>
                    </div>
-                   <p className="text-white/60 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mx-auto">{plan.description}</p>
+                   <p className="text-white/50 text-xs sm:text-sm mt-2 leading-relaxed">{plan.description}</p>
                 </div>
 
-                <div className="flex justify-center mb-8 px-2 sm:px-4">
-                   <p className="text-[11px] sm:text-sm md:text-base font-bold uppercase tracking-widest text-neon-cyan bg-neon-cyan/10 inline-block px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-neon-cyan/20 whitespace-nowrap">{plan.stats}</p>
+                {/* Stats Badge */}
+                <div className="flex justify-center mb-5">
+                   <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#00ffff] bg-[#00ffff]/8 px-4 py-1.5 rounded-full border border-[#00ffff]/15">{plan.stats}</span>
                 </div>
 
-                <div className="flex-grow mb-10 space-y-4">
+                {/* Features */}
+                <div className="flex-grow mb-6 space-y-2.5">
                    {plan.features.map((f, i) => (
-                       <div key={i} className={`flex items-start gap-2 sm:gap-3 text-sm ${f.included ? 'text-white/90' : 'text-white/30'}`}>
-                          {f.included ? <Check size={18} className="text-neon-cyan flex-shrink-0 mt-0.5 sm:w-[20px]" /> : <X size={18} className="flex-shrink-0 mt-0.5 sm:w-[20px]" />}
-                          <span className="leading-snug text-[13px] sm:text-[15px] text-left">{f.label}</span>
+                       <div key={i} className={`flex items-start gap-2 ${f.included ? 'text-white/85' : 'text-white/25'}`}>
+                          {f.included 
+                            ? <Check size={15} className="text-[#00ffff] flex-shrink-0 mt-0.5" /> 
+                            : <X size={15} className="flex-shrink-0 mt-0.5" />
+                          }
+                          <span className="leading-snug text-[12px] sm:text-[13px] text-left">{f.label}</span>
                        </div>
                    ))}
                 </div>
 
-                 <SpecularButton 
-                   onClick={() => router.push(`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`)}
-                   className="mt-auto w-full font-bold whitespace-nowrap"
-                   radius={999}
-                   textColor="#ffffff"
-                   lineColor={plan.highlight ? "#a855f7" : "#00ffff"}
-                   baseColor="#1a1a1a"
-                   intensity={1.5}
-                   size="lg"
-                   autoAnimate={plan.highlight}
-                 >
-                   {plan.name === 'White Label' ? 'Get Started' : 'Select Plan'}
-                 </SpecularButton>
+                {/* CTA Button */}
+                <SpecularButton 
+                  onClick={() => router.push(`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`)}
+                  className="mt-auto w-full font-bold whitespace-nowrap"
+                  radius={999}
+                  textColor="#ffffff"
+                  lineColor={plan.highlight ? "#a855f7" : "#00ffff"}
+                  baseColor="#1a1a1a"
+                  intensity={1.5}
+                  size="lg"
+                  autoAnimate={plan.highlight}
+                >
+                  {plan.name === 'White Label' ? 'Get Started' : 'Select Plan'}
+                </SpecularButton>
               </motion.div>
             );
           })}
         </div>
  
-        {/* Feature Breakdown Section */}
-        <div className="flex flex-col gap-10 relative z-10 mb-36 w-full max-w-[2200px] mx-auto px-4 md:px-10">
-           <h3 className="text-3xl md:text-4xl font-bold text-center text-white mb-6">Feature Breakdown</h3>
-           <div className="glass-panel border border-white/10 rounded-[40px] w-full" style={{ padding: '2rem 3rem' }}>
-              <div className="w-full overflow-x-auto pb-6">
-                 <table className="w-full text-left min-w-[1200px] border-collapse">
+        {/* ─── Feature Breakdown Table ─── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-20 w-full"
+        >
+           <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-8">Feature Breakdown</h3>
+           <div className="rounded-2xl lg:rounded-3xl border border-white/10 bg-[var(--surface)] overflow-hidden">
+              <div className="w-full overflow-x-auto">
+                 <table className="w-full text-left min-w-[700px] border-collapse">
                     <thead>
-                       <tr className="border-b border-white/10 bg-[#1a1a1a]/50">
-                          <th className="py-8 text-sm font-bold uppercase tracking-widest text-white/50 w-1/5 rounded-tl-2xl" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>Capability</th>
-                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-white/80 text-center w-1/5">Starter</th>
-                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-neon-magenta text-center w-1/5">Standard</th>
-                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-neon-cyan text-center w-1/5">Premium</th>
-                          <th className="py-8 px-4 text-sm font-bold uppercase tracking-widest text-white text-center rounded-tr-2xl w-1/5">White Label</th>
+                       <tr className="border-b border-white/10 bg-white/[0.03]">
+                          <th className="py-4 lg:py-5 px-4 lg:px-6 text-xs font-bold uppercase tracking-widest text-white/40 w-[28%]">Capability</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-white/70 text-center w-[18%]">Starter</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-[#a855f7] text-center w-[18%]">Standard</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-[#00ffff] text-center w-[18%]">Premium</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-white/90 text-center w-[18%]">White Label</th>
                        </tr>
                     </thead>
                     <tbody>
@@ -135,7 +150,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                  </table>
               </div>
            </div>
-        </div>
+        </motion.div>
  
       </div>
     </section>
@@ -144,21 +159,19 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
  
 function ComparisonRow({ label, values }: { label: string, values: any[] }) {
   return (
-    <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
-       <td className="py-6 font-bold text-white/90 text-base" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>{label}</td>
+    <tr className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
+       <td className="py-3.5 lg:py-4 px-4 lg:px-6 font-semibold text-white/80 text-sm">{label}</td>
        {values.map((v, i) => (
-          <td key={i} className="py-10 px-4 align-middle w-1/5">
-             <div className="flex justify-center items-center w-full">
-                {typeof v === 'boolean' ? (
-                   v ? (
-                      <Check size={22} className="text-neon-cyan drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
-                   ) : (
-                      <X size={22} className="text-white/20" />
-                   )
+          <td key={i} className="py-3.5 lg:py-4 px-3 lg:px-4 text-center">
+             {typeof v === 'boolean' ? (
+                v ? (
+                   <Check size={18} className="text-[#00ffff] drop-shadow-[0_0_6px_rgba(0,255,255,0.5)] mx-auto" />
                 ) : (
-                    <span className="text-base font-bold uppercase tracking-wider text-white/80 text-center">{v}</span>
-                 )}
-             </div>
+                   <X size={18} className="text-white/15 mx-auto" />
+                )
+             ) : (
+                 <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white/70">{v}</span>
+              )}
           </td>
        ))}
     </tr>
