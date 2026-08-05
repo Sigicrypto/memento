@@ -226,7 +226,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                         <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>
                           Custom Slug (URL)
                         </label>
-                        {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${eventId}`} label="Upgrade Plan" />}
+                        {!isStandardPlus && <UpgradeBadge href={`/#pricing?eventId=${eventId}`} label="Upgrade Plan" />}
                       </div>
                       <div style={{ display: 'flex' }}>
                         <span
@@ -363,7 +363,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                         <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>
                           Wall Theme
                         </label>
-                        {!isStandardPlus && <UpgradeBadge href={`/pricing?eventId=${eventId}`} label="Upgrade Plan" />}
+                        {!isStandardPlus && <UpgradeBadge href={`/#pricing?eventId=${eventId}`} label="Upgrade Plan" />}
                       </div>
                       <select
                         value={theme}
@@ -383,7 +383,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                         <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)' }}>
                           Soundtrack
                         </label>
-                        {!isPremiumPlus && <UpgradeBadge href={`/pricing?eventId=${eventId}`} label="Upgrade Plan" />}
+                        {!isPremiumPlus && <UpgradeBadge href={`/#pricing?eventId=${eventId}`} label="Upgrade Plan" />}
                       </div>
                       <select
                         value={musicTrack}
@@ -414,7 +414,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                         <Globe size={16} style={{ color: 'var(--accent-cyan)' }} />
                         <span>White Label & Branding</span>
                       </div>
-                      {!isWhiteLabel && <UpgradeBadge href={`/pricing?eventId=${eventId}`} label="Partner Plan" />}
+                      {!isWhiteLabel && <UpgradeBadge href={`/#pricing?eventId=${eventId}`} label="Partner Plan" />}
                     </div>
 
                     {/* Custom Domain */}
