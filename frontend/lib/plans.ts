@@ -1,4 +1,3 @@
-export type Region = 'IN' | 'GLOBAL';
 
 export interface PlanFeature {
   label: string;
@@ -8,8 +7,7 @@ export interface PlanFeature {
 export interface Plan {
   id: string;
   name: string;
-  priceIN: string;
-  priceGlobal: string;
+  price: string;
   highlight?: boolean;
   stats: string;
   description: string;
@@ -23,8 +21,7 @@ export const PLANS: Plan[] = [
   {
     id: 'starter',
     name: 'Starter',
-    priceIN: '₹2,500',
-    priceGlobal: '$30',
+    price: '₹2,499',
     iconColor: 'text-green-400',
     description: 'Perfect for small, basic events',
     tagline: 'Simple, fast photo sharing for your event.',
@@ -45,8 +42,7 @@ export const PLANS: Plan[] = [
   {
     id: 'standard',
     name: 'Standard',
-    priceIN: '₹5,000',
-    priceGlobal: '$60',
+    price: '₹4,999',
     highlight: true,
     badge: '⭐ Highly Recommended',
     iconColor: 'text-primary',
@@ -70,8 +66,7 @@ export const PLANS: Plan[] = [
   {
     id: 'premium',
     name: 'Premium',
-    priceIN: '₹7,500',
-    priceGlobal: '$90',
+    price: '₹7,499',
     badge: '🔥 Best Value',
     iconColor: 'text-secondary',
     description: 'For luxury weddings & VIP events',
@@ -94,8 +89,7 @@ export const PLANS: Plan[] = [
   {
     id: 'whitelabel',
     name: 'White Label',
-    priceIN: '₹10,000',
-    priceGlobal: '$120',
+    price: '₹9,999',
     iconColor: 'text-indigo-400',
     description: 'For agencies & photographers',
     tagline: 'Launch your own branded platform.',

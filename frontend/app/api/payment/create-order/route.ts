@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateCSRF } from '@/lib/csrf';
 
 const PRICES_INR: Record<string, number> = {
-  STARTER: 2500, STANDARD: 5000, PREMIUM: 7500, WHITE_LABEL: 10000,
-};
-const PRICES_USD: Record<string, number> = {
-  STARTER: 30, STANDARD: 60, PREMIUM: 90, WHITE_LABEL: 120,
+  STARTER: 2499, STANDARD: 4999, PREMIUM: 7499, WHITE_LABEL: 9999,
 };
 const PLAN_NAMES: Record<string, string> = {
   STARTER: 'Memento Starter', STANDARD: 'Memento Standard',
@@ -59,19 +56,19 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // ── Stripe (Global) ───────────────────────────────────────────
+  // ── Stripe (Global Fallback — INR) ──────────────────────────────
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
   if (!secretKey || secretKey.startsWith('your_')) {
     return NextResponse.json({ mock: true });
   }
 
-  const amount = (PRICES_USD[planKey] ?? 60) * 100; // cents
+  const amount = (PRICES_INR[planKey] ?? 4999) * 100; // paise
   const origin = req.headers.get('origin') || req.nextUrl.origin;
 
   const params = new URLSearchParams({
     'payment_method_types[0]': 'card',
-    'line_items[0][price_data][currency]': 'usd',
+    'line_items[0][price_data][currency]': 'inr',
     'line_items[0][price_data][product_data][name]': PLAN_NAMES[planKey] || planKey,
     'line_items[0][price_data][unit_amount]': String(amount),
     'line_items[0][quantity]': '1',

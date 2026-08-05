@@ -69,11 +69,7 @@ export default function LandingPage() {
 
   const [scrolled, setScrolled] = useState(false);
 
-  const [currency, setCurrency] = useState({ showINR: false, showOMR: false });
 
-  const [showingINR, setShowingINR] = useState(false);
-
-  const [showingOMR, setShowingOMR] = useState(false);
 
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
@@ -143,34 +139,8 @@ export default function LandingPage() {
 
 
 
-    (async () => {
-
-      let countryCode = 'GLOBAL';
-
-      try {
-
-        const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
-
-        countryCode = (await res.json()).country_code || 'GLOBAL';
-
-      } catch {
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-        if (tz.includes('Kolkata')) countryCode = 'IN';
-        else if (tz.includes('Muscat')) countryCode = 'OM';
-      }
-
-      const isIndia = countryCode === 'IN';
-      const isOman = countryCode === 'OM';
-
-      // Set region cookie for checkout page
-      document.cookie = `livewall_region=${isOman ? 'OM' : isIndia ? 'IN' : 'GLOBAL'}; path=/; max-age=86400`;
-
-      setCurrency({ showINR: isIndia, showOMR: isOman });
-
-      if (isIndia) setShowingINR(true);
-      if (isOman) setShowingOMR(true);
-
-    })();
+    // Set region cookie for checkout page
+    document.cookie = `livewall_region=IN; path=/; max-age=86400`;
 
 
 
@@ -182,21 +152,21 @@ export default function LandingPage() {
 
   const Free = "0";
 
-  const Starter = showingOMR ? "15" : showingINR ? "2,499" : "30";
+  const Starter = "2,499";
 
-  const Pro = showingOMR ? "29" : showingINR ? "4,999" : "60";
+  const Pro = "4,999";
 
-  const Premium = showingOMR ? "39" : showingINR ? "7,499" : "90";
+  const Premium = "7,499";
 
-  const WhiteLabel = showingOMR ? "59" : showingINR ? "9,999" : "120";
+  const WhiteLabel = "9,999";
 
-  const PhotoBookPrice = showingOMR ? "5" : showingINR ? "1,000" : "12";
+  const PhotoBookPrice = "1,000";
 
-  const ExtraStoragePrice = showingOMR ? "2" : showingINR ? "500" : "6";
+  const ExtraStoragePrice = "500";
 
-  const SocialFeedPrice = showingOMR ? "5" : showingINR ? "1,000" : "12";
+  const SocialFeedPrice = "1,000";
 
-  const Sym = showingOMR ? "ر.ع. " : showingINR ? "₹" : "$";
+  const Sym = "₹";
 
 
 

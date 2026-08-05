@@ -589,17 +589,17 @@ export default function AdminPage() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-black tracking-tight mb-1">Payment Management</h2>
-                <p className="text-sm text-text-secondary">Manual payment approvals for Oman bank transfers and pending Indian payments</p>
+                <p className="text-sm text-text-secondary">Manual payment approvals for WhatsApp-based purchases</p>
               </div>
 
               <div className={cardClass}>
                 <div className="gcard-border" />
                 <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">How It Works</h3>
-                  <div className="space-y-3 text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400">
-                    <p>1. Omani users register and are redirected to WhatsApp (+968 96095692) to confirm their bank transfer.</p>
-                    <p>2. Once you receive confirmation and verify the payment, come here and go to the <button onClick={() => setActiveTab('users')} className="text-amber-400 underline font-bold">Users tab</button>.</p>
-                    <p>3. Find the user, set their <strong className="">Plan</strong> to the tier they paid for, and click <strong className="text-emerald-400">✓ APPROVE</strong>.</p>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">How It Works</h3>
+                  <div className="space-y-3 text-sm text-slate-400">
+                    <p>1. Users select a plan on the landing page and are redirected to WhatsApp to confirm their purchase.</p>
+                    <p>2. Once you receive confirmation and verify the payment, go to the <button onClick={() => setActiveTab('users')} className="text-amber-400 underline font-bold">Users tab</button>.</p>
+                    <p>3. Find the user, set their <strong>Plan</strong> to the tier they paid for, and click <strong className="text-emerald-400">✓ APPROVE</strong>.</p>
                     <p>4. The user will automatically gain access to all features of their plan.</p>
                   </div>
                 </div>
@@ -608,42 +608,20 @@ export default function AdminPage() {
               <div className={cardClass}>
                 <div className="gcard-border" />
                 <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">Omani Payment Details (Your Account)</h3>
-                  <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                    <div className="p-4 rounded-xl bg-bg-subtle border border-border">
-                      <p className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">Bank Transfer (IBAN)</p>
-                      <p className="font-bold">Sagar Shaik Trade LLC</p>
-                      <p className="text-slate-600 dark:text-slate-600 dark:text-slate-400 font-mono text-xs mt-1">0364073422230017</p>
-                      <p className="text-text-secondary text-xs mt-1">Bank Muscat</p>
-                    </div>
-                    <div className="p-4 rounded-xl bg-bg-subtle border border-border">
-                      <p className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">Mobile Transfer</p>
-                      <p className="font-bold font-mono text-lg tracking-widest">9609 5692</p>
-                      <p className="text-text-secondary text-xs mt-1">Bank Muscat Mobile</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">Pricing Reference</h3>
+                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Pricing Reference</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="text-left text-text-secondary border-b border-black/10 dark:border-border">
                           <th className="pb-3 font-bold">Plan</th>
-                          <th className="pb-3 font-bold">🇴🇲 OMR</th>
-                          <th className="pb-3 font-bold">🇮🇳 INR</th>
-                          <th className="pb-3 font-bold">🌐 USD</th>
+                          <th className="pb-3 font-bold text-right">🇮🇳 Price (INR)</th>
                         </tr>
                       </thead>
                       <tbody className="text-text-primary">
-                        <tr className="border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5"><td className="py-2.5 font-bold">Starter</td><td>15</td><td>₹2,499</td><td>$30</td></tr>
-                        <tr className="border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5"><td className="py-2.5 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td>29</td><td>₹4,999</td><td>$60</td></tr>
-                        <tr className="border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5"><td className="py-2.5 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td>39</td><td>₹7,499</td><td>$90</td></tr>
-                        <tr><td className="py-2.5 font-bold">White Label</td><td>59</td><td>₹9,999</td><td>$120</td></tr>
+                        <tr className="border-b border-white/5"><td className="py-3 font-bold">Starter</td><td className="text-right font-mono font-bold">₹2,499</td></tr>
+                        <tr className="border-b border-white/5"><td className="py-3 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td className="text-right font-mono font-bold">₹4,999</td></tr>
+                        <tr className="border-b border-white/5"><td className="py-3 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td className="text-right font-mono font-bold">₹7,499</td></tr>
+                        <tr><td className="py-3 font-bold">White Label</td><td className="text-right font-mono font-bold">₹9,999</td></tr>
                       </tbody>
                     </table>
                   </div>

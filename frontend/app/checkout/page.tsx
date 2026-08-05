@@ -10,11 +10,11 @@ import { ArrowLeft, Check, Shield, Clock, Sparkles, MessageCircle, IndianRupee, 
 import AnimatedLogo from '@/components/AnimatedLogo';
 
 const PLAN_PRICES: Record<string, { IN: string; amount: string }> = {
-  STARTER:       { IN: '₹2,500',  amount: '2,500' },
-  STANDARD:      { IN: '₹5,000',  amount: '5,000' },
-  PREMIUM:       { IN: '₹7,500',  amount: '7,500' },
-  'WHITE LABEL': { IN: '₹10,000', amount: '10,000' },
-  'WHITE_LABEL':  { IN: '₹10,000', amount: '10,000' },
+  STARTER:       { IN: '₹2,499',  amount: '2,499' },
+  STANDARD:      { IN: '₹4,999',  amount: '4,999' },
+  PREMIUM:       { IN: '₹7,499',  amount: '7,499' },
+  'WHITE LABEL': { IN: '₹9,999', amount: '9,999' },
+  'WHITE_LABEL':  { IN: '₹9,999', amount: '9,999' },
 };
 
 const PLAN_DISPLAY_NAMES: Record<string, string> = {

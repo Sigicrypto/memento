@@ -1,7 +1,6 @@
 "use client";
  
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, X, Sparkles, Zap, Star, Shield, Layout, ArrowRight, Heart, Music, BarChart3, Globe, ArrowLeft } from 'lucide-react';
  
@@ -9,17 +8,10 @@ import { PLANS } from '@/lib/plans';
 import SectionHeader from '@/components/sections/SectionHeader';
 import SpecularButton from '@/components/SpecularButton';
 import { useRouter } from 'next/navigation';
-type Region = 'IN' | 'GLOBAL';
  
  
 export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: boolean, eventId?: string }) {
-  const [region, setRegion] = useState<Region>('IN');
   const router = useRouter();
-
-  useEffect(() => {
-    // Always display prices in INR
-    setRegion('IN');
-  }, []);
  
   return (
     <section id="pricing" className={`${isEmbedded ? 'lp-section' : 'pt-44 pb-40'} relative z-10 scroll-mt-32 w-full flex flex-col items-center justify-center`}>
@@ -41,7 +33,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-14 xl:gap-20 mb-36 items-stretch w-full mx-auto" style={{ maxWidth: '1800px' }}>
           {PLANS.map((plan, idx) => {
-            const price = region === 'IN' ? plan.priceIN : plan.priceGlobal;
+            const price = plan.price;
             const Icon = plan.id === 'starter' ? Zap : plan.id === 'standard' ? Star : plan.id === 'premium' ? Heart : Shield;
             
             return (
