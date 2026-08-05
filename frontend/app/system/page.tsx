@@ -26,9 +26,9 @@ export default function SystemAdminPage() {
   // Auto-redirect if already admin
   useEffect(() => {
     if (!isLoading && isUserAdmin) {
-      router.push('/admin');
+      window.location.href = '/admin';
     }
-  }, [isUserAdmin, isLoading, router]);
+  }, [isUserAdmin, isLoading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,8 +185,12 @@ export default function SystemAdminPage() {
                 </p>
               </div>
 
-              <button
-                onClick={() => router.push('/admin')}
+              <a
+                href="/admin"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = '/admin';
+                }}
                 className="btn btn-primary"
                 style={{
                   width: '100%',
@@ -199,11 +203,12 @@ export default function SystemAdminPage() {
                   justifyContent: 'center',
                   gap: '8px',
                   cursor: 'pointer',
+                  textDecoration: 'none',
                 }}
               >
                 <Key size={18} />
                 <span>Go to Admin Panel →</span>
-              </button>
+              </a>
             </div>
           ) : user ? (
             /* ── Case 2: Logged in non-admin user elevating with access code ── */
