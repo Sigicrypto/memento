@@ -529,14 +529,16 @@ export default function WallPage() {
 
 
         {/* Bottom Left Join Barcode (TV Modern Dot Matrix) */}
-        <div className="absolute bottom-8 left-8 z-50 hidden md:block">
-          <div className="p-4 bg-surface/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-2 text-center">
-            <div className="p-2.5 bg-white/10 rounded-xl border border-white/10">
-              <QRCode value={uploadUrl} size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+        {!isViewOnly && (
+          <div className="absolute bottom-8 left-8 z-50 hidden md:block">
+            <div className="p-4 bg-surface/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-2 text-center">
+              <div className="p-2.5 bg-white/10 rounded-xl border border-white/10">
+                <QRCode value={uploadUrl} size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Scan to Join Wall</p>
             </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Scan to Join Wall</p>
           </div>
-        </div>
+        )}
 
         {/* Bottom Right WhatsApp Barcode (TV Modern Dot Matrix) */}
         <div className="absolute bottom-8 right-8 z-50 hidden lg:block">
@@ -639,27 +641,31 @@ export default function WallPage() {
               </ShimmerButton>
             </Link>
 
-            <ShimmerButton 
-              shimmerColor="#ffffff" 
-              onClick={() => setShowMobileQR(true)} 
-              paddingX={0}
-              paddingY={0}
-              className="md:hidden flex items-center justify-center !w-10 !h-10 rounded-full text-white shadow-2xl shrink-0"
-            >
-               <QrCode size={18} />
-            </ShimmerButton>
+            {!isViewOnly && (
+              <>
+                <ShimmerButton 
+                  shimmerColor="#ffffff" 
+                  onClick={() => setShowMobileQR(true)} 
+                  paddingX={0}
+                  paddingY={0}
+                  className="md:hidden flex items-center justify-center !w-10 !h-10 rounded-full text-white shadow-2xl shrink-0"
+                >
+                   <QrCode size={18} />
+                </ShimmerButton>
 
-            <Link href={uploadUrl} target="_blank" className="shrink-0">
-              <ShimmerButton 
-                shimmerColor="#ffffff" 
-                background="#ffffff"
-                paddingX={28}
-                paddingY={10}
-                className="text-xs font-extrabold text-black tracking-wider uppercase shadow-xl rounded-full hover:bg-white transition-all shrink-0"
-              >
-                <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">JOIN WALL</span>
-              </ShimmerButton>
-            </Link>
+                <Link href={uploadUrl} target="_blank" className="shrink-0">
+                  <ShimmerButton 
+                    shimmerColor="#ffffff" 
+                    background="#ffffff"
+                    paddingX={28}
+                    paddingY={10}
+                    className="text-xs font-extrabold text-black tracking-wider uppercase shadow-xl rounded-full hover:bg-white transition-all shrink-0"
+                  >
+                    <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">JOIN WALL</span>
+                  </ShimmerButton>
+                </Link>
+              </>
+            )}
          </div>
 
 
@@ -1003,14 +1009,16 @@ export default function WallPage() {
       </div>
 
       {/* Bottom Left Floating Join Barcode (TV Modern Dot Matrix) */}
-      <div className="fixed bottom-8 left-8 z-[90] hidden md:block">
-        <div className="p-4 bg-surface/80 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-2.5 text-center group hover:bg-surface/95 transition-all">
-          <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-            <QRCode value={uploadUrl} size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+      {!isViewOnly && (
+        <div className="fixed bottom-8 left-8 z-[90] hidden md:block">
+          <div className="p-4 bg-surface/80 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-2.5 text-center group hover:bg-surface/95 transition-all">
+            <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+              <QRCode value={uploadUrl} size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Scan to Join</p>
           </div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Scan to Join</p>
         </div>
-      </div>
+      )}
 
       {/* Bottom Right WhatsApp Barcode (TV Modern Dot Matrix) */}
       <div className="fixed bottom-8 right-8 z-[90] hidden lg:block">
@@ -1062,16 +1070,18 @@ export default function WallPage() {
       <Confetti trigger={confettiTrigger} />
 
       {/* Mobile Upload & QR Floating CTA */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm flex gap-3">
-         <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(true)} className="flex-shrink-0 !w-14 !h-14 bg-surface/80 border border-white/10 shadow-xl rounded-2xl flex items-center justify-center text-white !p-0">
-            <QrCode size={24} />
-         </RippleButton>
-         <Link href={uploadUrl} target="_blank" className="flex-grow">
-            <RippleButton rippleColor="#ADD8E6" className="btn btn-primary w-full !h-14 shadow-2xl flex items-center justify-center gap-3 text-sm rounded-2xl font-bold">
-               <Upload size={18} /> Upload Photos
-            </RippleButton>
-         </Link>
-      </div>
+      {!isViewOnly && (
+        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm flex gap-3">
+           <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(true)} className="flex-shrink-0 !w-14 !h-14 bg-surface/80 border border-white/10 shadow-xl rounded-2xl flex items-center justify-center text-white !p-0">
+              <QrCode size={24} />
+           </RippleButton>
+           <Link href={uploadUrl} target="_blank" className="flex-grow">
+              <RippleButton rippleColor="#ADD8E6" className="btn btn-primary w-full !h-14 shadow-2xl flex items-center justify-center gap-3 text-sm rounded-2xl font-bold">
+                 <Upload size={18} /> Upload Photos
+              </RippleButton>
+           </Link>
+        </div>
+      )}
 
       {/* Mobile QR Modal */}
       <AnimatePresence>
