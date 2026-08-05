@@ -10,9 +10,11 @@ import {
   Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles,
   BarChart2, Image as ImageIcon, Settings, ArrowRight,
   Search, CheckCircle, Zap, Star, Heart, Grid, List,
-  ExternalLink, QrCode
+  ExternalLink, LogOut
 } from 'lucide-react';
 import Lottie from 'lottie-react';
+import AnimatedLogo from '@/components/AnimatedLogo';
+import ThemeToggle from '@/components/ThemeToggle';
 import EventSettingsDrawer from '@/components/EventSettingsDrawer';
 
 interface Profile {
@@ -107,6 +109,11 @@ export default function DashboardPage() {
 
   const confirmDelete = (event: Event) => { setDeleteEvent(event); setDeleteText(''); };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
   const executeDelete = async () => {
     if (!deleteEvent || deleteText !== deleteEvent.name) return;
     setIsDeleting(true);
@@ -139,6 +146,54 @@ export default function DashboardPage() {
 
   return (
     <>
+      {/* ── TOP NAV BAR ── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '40px',
+          paddingBottom: '20px',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <AnimatedLogo width={140} height={36} />
+        </Link>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <ThemeToggle />
+          <button
+            onClick={handleLogout}
+            title="Log Out"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '10px',
+              borderRadius: '12px',
+              border: '1px solid var(--border)',
+              background: 'var(--surface)',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = 'var(--error)';
+              e.currentTarget.style.borderColor = 'var(--error)';
+              e.currentTarget.style.background = 'color-mix(in srgb, var(--error) 8%, transparent)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.borderColor = 'var(--border)';
+              e.currentTarget.style.background = 'var(--surface)';
+            }}
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
+      </div>
+
       {/* ── WELCOME HEADER ── */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
