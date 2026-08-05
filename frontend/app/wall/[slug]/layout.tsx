@@ -35,7 +35,7 @@ export async function generateMetadata(
     openGraph: {
       title,
       description,
-      url: `https://memento-app.com/wall/${slug}`,
+      url: `https://mymementoapp.com/wall/${slug}`,
       siteName: 'Memento',
       images: [
         {

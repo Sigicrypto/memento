@@ -6,7 +6,7 @@ export const EmailTemplates = {
         <h2>Welcome to Memento, ${name}!</h2>
         <p>We're thrilled to have you on board. With Memento, you can collect every memory from your events instantly.</p>
         <p>Ready to get started?</p>
-        <a href="https://memento-app.com/create" style="display: inline-block; padding: 12px 24px; background-color: #f43f5e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Create Your First Wall</a>
+        <a href="https://mymementoapp.com/create" style="display: inline-block; padding: 12px 24px; background-color: #f43f5e; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Create Your First Wall</a>
       </div>
     `
   }),
