@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
@@ -11,13 +11,21 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Lock, AlertTriangle, ArrowLeft, Key, CheckCircle, Home } from 'lucide-react';
 
 export default function SystemAdminPage() {
-  const { user } = useAuth();
+  const { user, isAdmin, isLoading } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showFallback, setShowFallback] = useState(false);
+
+  // Auto-redirect if already admin
+  useEffect(() => {
+    if (!isLoading && user && isAdmin) {
+      router.push('/admin');
+    }
+  }, [user, isAdmin, isLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

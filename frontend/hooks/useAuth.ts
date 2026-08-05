@@ -122,7 +122,7 @@ export const useAuth = () => {
   };
 
   // ── Super Admin Override ──────────────────────────────────
-  const SUPER_ADMIN_EMAIL = process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || '';
+  const SUPER_ADMIN_EMAIL = process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || 'sagarfalcon@gmail.com';
   const isSuperAdmin = !!(SUPER_ADMIN_EMAIL && user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
 
   // The plan is now derived from the database profile
