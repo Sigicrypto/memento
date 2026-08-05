@@ -36,6 +36,7 @@ interface Event {
   custom_domain?: string;
   plan_type?: string;
   is_closed?: boolean;
+  expires_at?: string | null;
 }
 
 const PLAN_INFO: Record<string, { name: string; icon: React.ReactNode; features: string[] }> = {
@@ -144,11 +145,17 @@ export default function DashboardPage() {
     );
   }
 
+  const isEventClosedOrExpired = (e: Event) => {
+    if (e.is_closed) return true;
+    if (e.expires_at && new Date(e.expires_at) < new Date()) return true;
+    return false;
+  };
+
   const currentPlan = profile?.plan || 'starter';
   const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
   const totalPhotos = events.reduce((sum, e) => sum + (e.photo_count || 0), 0);
-  const activeEventsCount = events.filter(e => !e.is_closed).length;
-  const closedEventsCount = events.filter(e => e.is_closed).length;
+  const activeEventsCount = events.filter(e => !isEventClosedOrExpired(e)).length;
+  const closedEventsCount = events.filter(e => isEventClosedOrExpired(e)).length;
   const firstName = (profile?.full_name || 'there').split(' ')[0];
   const initial = (profile?.full_name || 'U').charAt(0).toUpperCase();
   const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -693,16 +700,16 @@ export default function DashboardPage() {
                             textTransform: 'uppercase',
                             padding: '4px 10px',
                             borderRadius: '999px',
-                            background: event.is_closed ? 'rgba(245, 158, 11, 0.15)' : 'color-mix(in srgb, var(--success) 12%, transparent)',
-                            border: event.is_closed ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
-                            color: event.is_closed ? '#f59e0b' : 'var(--success)',
+                            background: isEventClosedOrExpired(event) ? 'rgba(245, 158, 11, 0.15)' : 'color-mix(in srgb, var(--success) 12%, transparent)',
+                            border: isEventClosedOrExpired(event) ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
+                            color: isEventClosedOrExpired(event) ? '#f59e0b' : 'var(--success)',
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '4px',
                           }}
                         >
-                          {event.is_closed ? <Lock size={10} /> : <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
-                          {event.is_closed ? 'View-Only' : 'Active'}
+                          {isEventClosedOrExpired(event) ? <Lock size={10} /> : <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
+                          {isEventClosedOrExpired(event) ? 'View-Only' : 'Active'}
                         </span>
                       </div>
                       <span style={{ fontSize: '12px', color: 'var(--text-muted)' }} suppressHydrationWarning>
@@ -732,9 +739,9 @@ export default function DashboardPage() {
                       <button
                         onClick={() => toggleEventClosed(event)}
                         className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"
-                        title={event.is_closed ? "Reopen Uploads" : "Close Event (Make View-Only)"}
+                        title={isEventClosedOrExpired(event) ? "Reopen Uploads" : "Close Event (Make View-Only)"}
                       >
-                        {event.is_closed ? <Unlock size={16} className="text-amber-500" /> : <Lock size={16} />}
+                        {isEventClosedOrExpired(event) ? <Unlock size={16} className="text-amber-500" /> : <Lock size={16} />}
                       </button>
                       <button
                         onClick={() => copyUrl(event.slug)}
@@ -824,13 +831,13 @@ export default function DashboardPage() {
                               fontSize: '11px',
                               fontWeight: 800,
                               textTransform: 'uppercase',
-                              background: event.is_closed ? 'rgba(245, 158, 11, 0.15)' : 'color-mix(in srgb, var(--success) 12%, transparent)',
-                              border: event.is_closed ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
-                              color: event.is_closed ? '#f59e0b' : 'var(--success)',
+                              background: isEventClosedOrExpired(event) ? 'rgba(245, 158, 11, 0.15)' : 'color-mix(in srgb, var(--success) 12%, transparent)',
+                              border: isEventClosedOrExpired(event) ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
+                              color: isEventClosedOrExpired(event) ? '#f59e0b' : 'var(--success)',
                             }}
                           >
-                            {event.is_closed ? <Lock size={10} /> : <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
-                            {event.is_closed ? 'Closed (View-Only)' : 'Active'}
+                            {isEventClosedOrExpired(event) ? <Lock size={10} /> : <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
+                            {isEventClosedOrExpired(event) ? 'Closed (View-Only)' : 'Active'}
                           </span>
                         </td>
                         <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: '14px' }} suppressHydrationWarning>
@@ -859,9 +866,9 @@ export default function DashboardPage() {
                             <button
                               onClick={() => toggleEventClosed(event)}
                               className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-lg transition-colors"
-                              title={event.is_closed ? "Reopen Uploads" : "Close Event (Make View-Only)"}
+                              title={isEventClosedOrExpired(event) ? "Reopen Uploads" : "Close Event (Make View-Only)"}
                             >
-                              {event.is_closed ? <Unlock size={15} className="text-amber-500" /> : <Lock size={15} />}
+                              {isEventClosedOrExpired(event) ? <Unlock size={15} className="text-amber-500" /> : <Lock size={15} />}
                             </button>
                             <button onClick={() => copyUrl(event.slug)} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-lg transition-colors" title="Copy Link">
                               {copied === event.slug ? <CheckCircle size={15} className="text-success" /> : <Copy size={15} />}

@@ -294,7 +294,7 @@ export default function MobilePage() {
  
          {/* ── Upload Panel ── */}
          <div className="card mb-8">
-            {event?.is_closed ? (
+            {(event?.is_closed || (event?.expires_at && new Date(event.expires_at) < new Date())) ? (
                <div className="text-center py-6 px-2">
                   <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center mx-auto mb-3">
                      <Lock size={22} />

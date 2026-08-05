@@ -176,7 +176,7 @@ export default function WallPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [ownerId, setOwnerId] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
-  const [eventExpired, setEventExpired] = useState(false);
+  const [isViewOnly, setIsViewOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('polaroid');
@@ -235,12 +235,10 @@ export default function WallPage() {
         return;
       }
 
-      if (eventData.expires_at && new Date(eventData.expires_at) < new Date()) {
-        setEventExpired(true);
-        setLoading(false);
-        return;
-      }
- 
+      const isExpired = eventData.expires_at && new Date(eventData.expires_at) < new Date();
+      const isClosed = eventData.is_closed;
+      setIsViewOnly(!!isExpired || !!isClosed);
+
       setEventId(eventData.id);
       setEventName(eventData.name);
       setOwnerId(eventData.owner_id);
@@ -383,20 +381,19 @@ export default function WallPage() {
     </div>
   );
  
-  if (notFound || eventExpired) return (
+  if (notFound) return (
     <div className="min-h-screen flex items-center justify-center p-6 text-center bg-bg relative overflow-hidden">
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
       <div className="p-10 rounded-3xl border border-white/10 bg-surface/70 backdrop-blur-2xl max-w-md relative z-10 shadow-2xl">
-        <div className="text-6xl mb-4">{notFound ? '✨' : '📅'}</div>
-        <h1 className="text-2xl font-bold mb-2 text-white">{notFound ? 'Wall Not Found' : 'Event Concluded'}</h1>
-        <p className="text-text-secondary mb-6 text-sm">{notFound ? "This memory lane hasn't been created yet." : "This photo wall has reached its destination."}</p>
+        <div className="text-6xl mb-4">✨</div>
+        <h1 className="text-2xl font-bold mb-2 text-white">Wall Not Found</h1>
+        <p className="text-text-secondary mb-6 text-sm">This memory lane hasn&apos;t been created yet.</p>
         <Link href="/">
           <RippleButton rippleColor="#ADD8E6" className="btn btn-primary !py-3 !px-8 text-sm font-bold">
             Go Home
           </RippleButton>
         </Link>
-
       </div>
     </div>
   );
@@ -418,10 +415,13 @@ export default function WallPage() {
              <div className="w-10 h-10 rounded-xl bg-surface/60 backdrop-blur-2xl border border-white/10 flex items-center justify-center text-accent-cyan shadow-lg">
                 <Layout size={20} />
              </div>
-             <div>
-                <p className="text-[9px] font-black uppercase tracking-[.3em] text-accent-cyan">LIVE EXPERIENCE</p>
-                <h1 className="text-xl md:text-2xl font-black text-white">{eventName}</h1>
-             </div>
+              <div>
+                 <div className="flex items-center gap-2">
+                   <p className="text-[9px] font-black uppercase tracking-[.3em] text-accent-cyan">{isViewOnly ? 'MEMORY GALLERY' : 'LIVE EXPERIENCE'}</p>
+                   {isViewOnly && <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">View-Only Mode</span>}
+                 </div>
+                 <h1 className="text-xl md:text-2xl font-black text-white">{eventName}</h1>
+              </div>
           </div>
 
           <div className="flex items-center gap-3 pointer-events-auto">
