@@ -7,17 +7,21 @@ let tinyLoaded = false;
 let ssdLoaded = false;
 
 // ── Match Threshold (Cosine Similarity) ──
-// The Supabase RPC uses cosine similarity (1 - cosine_distance).
-// Higher = stricter match. Lower = more permissive.
-//   0.85+ = extremely strict (nearly identical photo)
-//   0.80  = very strict, minimal false positives (RECOMMENDED)
-//   0.60  = balanced (was previously used)
-//   0.45  = too loose (matches different people)
 export const MATCH_THRESHOLD = 0.80;
 
 // Minimum face box area as a fraction of image area.
-// Prevents false positives from tiny "ghost" detections.
-const MIN_FACE_AREA_RATIO = 0.015; // Raised slightly to 1.5%
+const MIN_FACE_AREA_RATIO = 0.015;
+
+/**
+ * Timeout wrapper for model fetching to prevent silent hangs on slow connections.
+ */
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 12000, errorMessage: string = 'Model loading timed out'): Promise<T> {
+  let timer: NodeJS.Timeout;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timer));
+}
 
 /**
  * Load models for the lightweight Tiny Face Detector (Best for mobile).
@@ -25,13 +29,22 @@ const MIN_FACE_AREA_RATIO = 0.015; // Raised slightly to 1.5%
 export async function loadTinyModels() {
   if (tinyLoaded) return;
   console.log("AI Vision: Loading Tiny models...");
-  await Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-  ]);
-  tinyLoaded = true;
-  console.log("AI Vision: Tiny models ready.");
+  try {
+    await withTimeout(
+      Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+      ]),
+      12000,
+      "AI Vision: Tiny models took too long to load."
+    );
+    tinyLoaded = true;
+    console.log("AI Vision: Tiny models ready.");
+  } catch (err: any) {
+    console.warn("AI Vision: Tiny models failed to load:", err?.message || err);
+    throw err;
+  }
 }
 
 /**
@@ -40,18 +53,26 @@ export async function loadTinyModels() {
 export async function loadSSDModels() {
   if (ssdLoaded) return;
   console.log("AI Vision: Loading SSD models...");
-  await Promise.all([
-    faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-  ]);
-  ssdLoaded = true;
-  console.log("AI Vision: SSD models ready.");
+  try {
+    await withTimeout(
+      Promise.all([
+        faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+      ]),
+      12000,
+      "AI Vision: SSD models took too long to load."
+    );
+    ssdLoaded = true;
+    console.log("AI Vision: SSD models ready.");
+  } catch (err: any) {
+    console.warn("AI Vision: SSD models failed to load:", err?.message || err);
+    throw err;
+  }
 }
 
 /**
  * Validate that a detected face is large enough to be a real face.
- * Rejects tiny ghost detections that produce garbage descriptors.
  */
 function isValidFaceDetection(
   detection: faceapi.WithFaceDescriptor<faceapi.WithFaceLandmarks<{ detection: faceapi.FaceDetection }>>,
@@ -63,7 +84,7 @@ function isValidFaceDetection(
   const imgHeight = 'videoHeight' in imageElement ? imageElement.videoHeight : imageElement.naturalHeight;
   const imageArea = (imgWidth || imageElement.width) * (imgHeight || imageElement.height);
 
-  if (imageArea === 0) return true; // Can't validate, allow it
+  if (imageArea === 0) return true;
 
   const ratio = faceArea / imageArea;
   const score = detection.detection.score;
@@ -80,49 +101,54 @@ function isValidFaceDetection(
 
 /**
  * Extract a 128-float face descriptor using the specified engine.
- * Includes face-size validation to reject false detections.
  */
 export async function extractFaceDescriptor(
   imageElement: HTMLImageElement | HTMLVideoElement, 
   mode: 'tiny' | 'ssd' = 'ssd'
 ): Promise<Float32Array | null> {
-  if (mode === 'tiny') {
-    await loadTinyModels();
-    const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }))
-      .withFaceLandmarks()
-      .withFaceDescriptor();
-    if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
-    return detection.descriptor;
-  } else {
-    await loadSSDModels();
-    const detection = await faceapi
-      .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.6 }))
-      .withFaceLandmarks()
-      .withFaceDescriptor();
-    if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
-    return detection.descriptor;
+  try {
+    if (mode === 'tiny') {
+      await loadTinyModels();
+      const detection = await faceapi
+        .detectSingleFace(imageElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+      if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
+      return detection.descriptor;
+    } else {
+      await loadSSDModels();
+      const detection = await faceapi
+        .detectSingleFace(imageElement, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.6 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+      if (!detection || !isValidFaceDetection(detection, imageElement)) return null;
+      return detection.descriptor;
+    }
+  } catch (err: any) {
+    console.error(`AI Vision: Failed to extract descriptor with ${mode} mode:`, err?.message || err);
+    return null;
   }
 }
 
-
 /**
  * Robust face descriptor extraction that tries SSD first, then Tiny as fallback.
- * Both models use reasonable confidence thresholds to avoid false detections.
  */
 export async function extractFaceDescriptorRobust(
   imageElement: HTMLImageElement | HTMLVideoElement,
   preferredMode: 'tiny' | 'ssd' = 'ssd'
 ): Promise<Float32Array | null> {
-  // Try preferred model first
-  let descriptor = await extractFaceDescriptor(imageElement, preferredMode);
-  if (descriptor) return descriptor;
+  try {
+    let descriptor = await extractFaceDescriptor(imageElement, preferredMode);
+    if (descriptor) return descriptor;
 
-  // Fallback to the other model
-  const fallback = preferredMode === 'ssd' ? 'tiny' : 'ssd';
-  console.log(`AI Vision: ${preferredMode} didn't find a face, trying ${fallback}...`);
-  descriptor = await extractFaceDescriptor(imageElement, fallback);
-  return descriptor;
+    const fallback = preferredMode === 'ssd' ? 'tiny' : 'ssd';
+    console.log(`AI Vision: ${preferredMode} didn't find a face, trying ${fallback}...`);
+    descriptor = await extractFaceDescriptor(imageElement, fallback);
+    return descriptor;
+  } catch (err: any) {
+    console.error("AI Vision: Robust face extraction failed:", err?.message || err);
+    return null;
+  }
 }
 
 /**

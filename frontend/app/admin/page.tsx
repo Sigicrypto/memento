@@ -522,6 +522,7 @@ export default function AdminPage() {
                             onClick={() => handleDeleteUser(u.id, u.email)}
                             className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition"
                             title="Delete user"
+                            aria-label={`Delete user ${u.email}`}
                           >
                             🗑️
                           </button>
@@ -564,6 +565,7 @@ export default function AdminPage() {
                             onClick={() => handleDeleteEvent(event.id, event.name)}
                             className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition shrink-0"
                             title="Delete event"
+                            aria-label={`Delete event ${event.name}`}
                           >
                             🗑️
                           </button>
