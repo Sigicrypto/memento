@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateCSRF } from '@/lib/csrf';
+import { rateLimit } from '@/lib/rateLimit';
 
 const PRICES_INR: Record<string, number> = {
   STARTER: 2499, STANDARD: 4999, PREMIUM: 7499, WHITE_LABEL: 9999,
@@ -12,6 +13,12 @@ const PLAN_NAMES: Record<string, string> = {
 export async function POST(req: NextRequest) {
   if (!await validateCSRF()) {
     return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+  }
+
+  const ip = req.headers.get('x-forwarded-for') || 'unknown';
+  const { allowed } = rateLimit(ip, { maxRequests: 10, windowMs: 60000 });
+  if (!allowed) {
+    return NextResponse.json({ error: 'Too many requests. Please try again in a minute.' }, { status: 429 });
   }
 
   const { plan, region, userId, userEmail, eventId } = await req.json();
