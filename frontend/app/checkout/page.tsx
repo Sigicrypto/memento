@@ -80,11 +80,27 @@ function CheckoutContent() {
         <div className="orb orb-secondary opacity-30" />
       </div>
 
+      {/* Top Nav Header */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        height: '64px', background: 'var(--surface)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid var(--border)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 24px',
+      }}>
+        <Link href="/#pricing" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}>
+          <ArrowLeft size={18} />
+          <span className="hidden sm:inline">Back to Pricing</span>
+        </Link>
+        <AnimatedLogo width={110} height={28} />
+        <div style={{ width: '100px' }} />
+      </nav>
+
       {/* Main Content */}
       <div style={{
         position: 'relative', zIndex: 10,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100vh', padding: '40px 20px',
+        minHeight: '100vh', padding: '96px 20px 40px',
       }}>
         {status === 'IDLE' && (
           <motion.div
