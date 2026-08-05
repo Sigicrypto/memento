@@ -45,6 +45,7 @@ export default function EditEventPage() {
   const [googleDriveSync, setGoogleDriveSync] = useState(false);
   const [customDomain, setCustomDomain] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [planType, setPlanType] = useState('STARTER');
 
   useEffect(() => {
     if (isLoading) return;
@@ -87,6 +88,7 @@ export default function EditEventPage() {
         setGoogleDriveSync(data.google_drive_sync_enabled || false);
         setCustomDomain(data.custom_domain || '');
         setLogoUrl(data.brand_logo_url || '');
+        setPlanType((data.plan_type || 'STARTER').toUpperCase());
       }
       setLoading(false);
     };
@@ -113,6 +115,7 @@ export default function EditEventPage() {
       .from('events')
       .update({
         name,
+        plan_type: planType,
         theme_primary_color: primaryColor,
         theme_secondary_color: secondaryColor,
         enable_safety_filter: enableSafetyFilter,
@@ -121,8 +124,8 @@ export default function EditEventPage() {
         enable_smart_privacy: enableSmartPrivacy,
         watermark_url: watermarkUrl,
         google_drive_sync_enabled: googleDriveSync,
-        custom_domain: event.plan_type === 'WHITE_LABEL' ? customDomain : null,
-        brand_logo_url: event.plan_type === 'WHITE_LABEL' ? logoUrl : null,
+        custom_domain: planType === 'WHITE_LABEL' || planType === 'WHITE LABEL' ? customDomain : null,
+        brand_logo_url: planType === 'WHITE_LABEL' || planType === 'WHITE LABEL' ? logoUrl : null,
       })
       .eq('id', event.id);
 
@@ -166,7 +169,21 @@ export default function EditEventPage() {
               <div>
                 <label className="block text-xs font-bold mb-3 uppercase tracking-widest text-text-secondary">Event Name</label>
                 <input type="text" value={name} onChange={e => setName(e.target.value)} 
-                  className="w-full px-5 py-3 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/40 transition-all" />
+                  className="w-full px-5 py-3 rounded-xl bg-bg-subtle border border-border placeholder-slate-500 focus:outline-none focus:border-amber-500/40 transition-all font-medium" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold mb-3 uppercase tracking-widest text-amber-500">💎 Event Subscription Tier (Admin Override)</label>
+                <select
+                  value={planType}
+                  onChange={e => setPlanType(e.target.value)}
+                  className="w-full px-5 py-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase outline-none cursor-pointer text-sm"
+                >
+                  <option value="STARTER" className="bg-slate-900 text-white">Starter Tier</option>
+                  <option value="STANDARD" className="bg-slate-900 text-white">Standard Tier (⭐ Recommended)</option>
+                  <option value="PREMIUM" className="bg-slate-900 text-white">Premium Tier (🔥 Best Value)</option>
+                  <option value="WHITE_LABEL" className="bg-slate-900 text-white">White Label Tier (Custom Domain & Branding)</option>
+                </select>
               </div>
               {/* Branding - White Label Only */}
               <div className={`p-6 rounded-2xl transition-all duration-300 ${event?.plan_type === 'WHITE_LABEL' ? 'bg-bg-subtle border border-border' : 'bg-white/[0.02] border border-dashed border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5 opacity-40 grayscale pointer-events-none'}`}>
