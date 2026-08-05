@@ -180,12 +180,8 @@ export default function SystemAdminPage() {
                 </p>
               </div>
 
-              <a
+              <Link
                 href="/admin"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = '/admin';
-                }}
                 className="btn btn-primary"
                 style={{
                   width: '100%',
@@ -203,7 +199,7 @@ export default function SystemAdminPage() {
               >
                 <Key size={18} />
                 <span>Go to Admin Panel →</span>
-              </a>
+              </Link>
             </div>
           ) : user ? (
             /* ── Case 2: Logged in non-admin user elevating with access code ── */

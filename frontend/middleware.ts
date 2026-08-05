@@ -37,38 +37,7 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // 3. Protect admin routes
-  if (pathname.startsWith('/admin')) {
-    try {
-      // getUser() securely validates the token with the Supabase Auth server
-      const { data: { user }, error } = await supabase.auth.getUser();
-      
-      if (error || !user) {
-        return NextResponse.redirect(new URL('/system', request.url));
-      }
 
-      // Super admin email bypass (always allowed)
-      const superAdminEmail = (process.env.SUPER_ADMIN_EMAIL || process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || 'sagarfalcon@gmail.com').toLowerCase();
-      if (user.email && user.email.toLowerCase() === superAdminEmail) {
-        return supabaseResponse;
-      }
-
-      // Check if user has admin role in profiles table
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (profile?.role !== 'admin') {
-        // Not an admin, redirect to system login
-        return NextResponse.redirect(new URL('/system', request.url));
-      }
-    } catch (err) {
-      console.error('Admin auth check failed:', err);
-      return NextResponse.redirect(new URL('/system', request.url));
-    }
-  }
 
   // If everything is fine, return the supabaseResponse to ensure cookies are updated
   return supabaseResponse;
