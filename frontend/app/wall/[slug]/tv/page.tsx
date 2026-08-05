@@ -127,27 +127,34 @@ export default function TVModePage() {
           <h1 className="text-4xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-rose-400">{eventName}</h1>
           <p className="text-white/70 text-lg uppercase tracking-widest font-bold animate-pulse">Waiting for guest photos...</p>
 
-          {/* QR Overlay in Waiting Screen */}
-          <div className="flex flex-wrap items-center justify-center gap-8 mt-12">
-            {!isViewOnly && uploadUrl && (
-              <div className="p-6 bg-black/60 backdrop-blur-2xl rounded-3xl border border-white/15 flex flex-col items-center gap-3 text-center shadow-2xl">
-                <div className="p-4 bg-white/10 rounded-2xl border border-white/10">
-                  <QRCode value={uploadUrl} size={150} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+          {/* Bottom Left — Mobile Upload QR Code */}
+          {!isViewOnly && uploadUrl && (
+            <div className="fixed bottom-8 left-8 z-50 hidden sm:flex flex-col items-center">
+              <div className="p-4 bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/15 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-black/90 transition-all">
+                <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                  <QRCode value={uploadUrl} size={110} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
                 </div>
-                <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                  <Upload size={16} />
-                  <span>Scan to Join & Upload</span>
+                <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-0.5">SCAN TO UPLOAD</p>
+                  <p className="text-xs font-extrabold text-amber-400 flex items-center justify-center gap-1">
+                    <Upload size={12} /> Share Photos
+                  </p>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            <a href="https://wa.me/96896095692" target="_blank" rel="noopener noreferrer" className="p-6 bg-black/60 backdrop-blur-2xl rounded-3xl border border-white/15 flex flex-col items-center gap-3 text-center shadow-2xl hover:border-emerald-500/40 transition-all">
-              <div className="p-4 bg-white/10 rounded-2xl border border-white/10">
-                <QRCode value="https://wa.me/96896095692" size={150} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+          {/* Bottom Right — WhatsApp Support & Queries QR Code */}
+          <div className="fixed bottom-8 right-8 z-50 hidden sm:flex flex-col items-center">
+            <a href="https://wa.me/96896095692" target="_blank" rel="noopener noreferrer" className="p-4 bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/15 hover:border-emerald-500/40 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-black/90 transition-all">
+              <div className="p-3 bg-white/10 rounded-xl border border-white/10">
+                <QRCode value="https://wa.me/96896095692" size={110} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
               </div>
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                <MessageCircle size={16} />
-                <span>WhatsApp Support & Queries</span>
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-0.5">NEED HELP / QUERIES?</p>
+                <p className="text-xs font-extrabold text-emerald-400 flex items-center justify-center gap-1">
+                  <MessageCircle size={12} /> WhatsApp Support
+                </p>
               </div>
             </a>
           </div>
