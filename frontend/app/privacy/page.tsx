@@ -36,8 +36,8 @@ export default function PrivacyPage() {
       </nav>
 
       {/* Main Content Container */}
-      <main className="relative z-10 pt-32 px-4 sm:px-8 pb-36 max-w-3xl mx-auto w-full flex flex-col items-center justify-center">
-        <div className="text-center mb-12">
+      <div className="relative z-10 pt-24 px-4 sm:px-8 pb-32 max-w-3xl mx-auto w-full flex flex-col items-center justify-center">
+        <div className="text-center mb-10 pt-4">
           <span style={{
             display: 'inline-flex', padding: '4px 16px', borderRadius: '999px',
             fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em',
@@ -164,7 +164,7 @@ export default function PrivacyPage() {
             </div>
           </section>
         </motion.div>
-      </main>
+      </div>
     </div>
   );
 }

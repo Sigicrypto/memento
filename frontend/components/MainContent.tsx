@@ -16,6 +16,10 @@ export default function MainContent({ children }: { children: React.ReactNode })
     pathname === '/' ||
     pathname?.startsWith('/dashboard') ||
     pathname?.startsWith('/create') ||
+    pathname?.startsWith('/checkout') ||
+    pathname?.startsWith('/system') ||
+    pathname?.startsWith('/privacy') ||
+    pathname?.startsWith('/terms') ||
     pathname?.startsWith('/wall/') ||
     pathname?.startsWith('/mobile/') ||
     pathname?.startsWith('/moderate/');
