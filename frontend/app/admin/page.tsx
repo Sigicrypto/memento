@@ -175,15 +175,21 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, updates }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        // Fallback: direct supabase client update if service role API unavailable
-        const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
-        if (error) throw new Error(data.error || error.message);
+      
+      if (res.ok) {
+        return null;
       }
-      return null;
+
+      // Fallback: direct supabase client update
+      const { error: clientError } = await supabase.from('profiles').update(updates).eq('id', userId);
+      if (!clientError) {
+        return null;
+      }
+
+      const data = await res.json().catch(() => ({}));
+      return clientError.message || data.error || 'Failed to update user profile';
     } catch (err: any) {
-      return err.message;
+      return err.message || 'Network error updating user';
     }
   };
 
