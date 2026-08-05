@@ -21,6 +21,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
   const [planType, setPlanType] = useState('STARTER');
   const [customDomain, setCustomDomain] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [isClosed, setIsClosed] = useState(false);
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -41,6 +42,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
       setPlanType((data.plan_type || 'STARTER').toUpperCase());
       setCustomDomain(data.custom_domain || '');
       setLogoUrl(data.brand_logo_url || '');
+      setIsClosed(!!data.is_closed);
       setLoading(false);
     };
     fetchEvent();
@@ -59,6 +61,7 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
       music_track: musicTrack !== 'none' ? musicTrack : null,
       custom_domain: planType === 'WHITE_LABEL' ? customDomain : null,
       brand_logo_url: planType === 'WHITE_LABEL' ? logoUrl : null,
+      is_closed: isClosed,
     }).eq('id', eventId);
 
     if (updateError) {
@@ -141,6 +144,28 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                       <div className="relative">
                         <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
                         <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Leave blank for public access" className="input pl-9" />
+                      </div>
+                    </div>
+
+                    <div className="input-group">
+                      <label className="label">Event Status (Upload Mode)</label>
+                      <div className="grid grid-cols-2 gap-2 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => setIsClosed(false)}
+                          className={`p-3 rounded-xl text-xs font-bold border transition-all text-left flex flex-col gap-1 ${!isClosed ? 'bg-success/10 border-success/30 text-success' : 'bg-bg-subtle border-border text-text-muted hover:text-text-primary'}`}
+                        >
+                          <span>🟢 Active Wall</span>
+                          <span className="font-normal opacity-80">Guest uploads open</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsClosed(true)}
+                          className={`p-3 rounded-xl text-xs font-bold border transition-all text-left flex flex-col gap-1 ${isClosed ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' : 'bg-bg-subtle border-border text-text-muted hover:text-text-primary'}`}
+                        >
+                          <span>🔒 Closed (View-Only)</span>
+                          <span className="font-normal opacity-80">Uploads stopped, gallery active</span>
+                        </button>
                       </div>
                     </div>
                   </div>

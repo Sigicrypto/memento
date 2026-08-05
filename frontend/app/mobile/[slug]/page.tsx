@@ -8,22 +8,22 @@ import Image from 'next/image';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download, Lock } from 'lucide-react';
 import { hasFeature, getGuestPhotoLimit } from '@/lib/permissions';
 import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
- 
+
 const MAX_IMAGES = 10;
 const MAX_VIDEO_MB = 50;
 const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'image/heif']);
 const ACCEPTED_VIDEO_TYPES = new Set(['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v']);
- 
+
 function isAcceptedVideo(file: File) {
   return file.type.startsWith('video/') || ACCEPTED_VIDEO_TYPES.has(file.type);
 }
- 
+
 const GUEST_NAME_KEY = 'memento_guest_name';
 const GUEST_ID_KEY = 'memento_guest_id';
- 
+
 interface Photo {
   id: string;
   storage_path: string;
@@ -34,7 +34,7 @@ interface Photo {
   media_type?: 'image' | 'video';
   reaction_count?: number;
 }
- 
+
 interface Event {
   id: string;
   name: string;
@@ -42,6 +42,7 @@ interface Event {
   enable_safety_filter?: boolean;
   expires_at?: string | null;
   brand_logo_url?: string | null;
+  is_closed?: boolean;
 }
  
 export default function MobilePage() {
@@ -96,7 +97,7 @@ export default function MobilePage() {
  
   useEffect(() => {
     const fetchEvent = async () => {
-      const { data, error } = await supabase.from('events').select('id, name, plan_type, enable_safety_filter, expires_at, brand_logo_url').eq('slug', slug).single();
+      const { data, error } = await supabase.from('events').select('id, name, plan_type, enable_safety_filter, expires_at, brand_logo_url, is_closed').eq('slug', slug).single();
       if (error || !data) { router.push('/'); return; }
       setEvent(data as Event);
       setBrandLogoUrl(data.brand_logo_url || null);
@@ -294,7 +295,20 @@ export default function MobilePage() {
  
          {/* ── Upload Panel ── */}
          <div className="card mb-8">
-            {isLimited ? (
+            {event?.is_closed ? (
+               <div className="text-center py-6 px-2">
+                  <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center mx-auto mb-3">
+                     <Lock size={22} />
+                  </div>
+                  <h3 className="text-lg font-bold mb-1 text-text-primary">Event Closed (View-Only)</h3>
+                  <p className="text-text-secondary text-sm max-w-xs mx-auto mb-4">
+                     This photo wall is closed for new uploads. You can still browse, react to, and download all memories below!
+                  </p>
+                  <Link href={`/wall/${slug}`} className="btn btn-secondary text-xs inline-flex items-center gap-1.5">
+                     <Layout size={14} /> Open Live Wall Screen
+                  </Link>
+               </div>
+            ) : isLimited ? (
                <div className="text-center py-6">
                   <AlertTriangle className="w-10 h-10 text-error mx-auto mb-3" />
                   <h3 className="text-lg font-bold mb-1 text-text-primary">Upload Limit Reached</h3>

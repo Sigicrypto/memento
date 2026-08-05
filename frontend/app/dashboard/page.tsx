@@ -10,7 +10,7 @@ import {
   Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles,
   BarChart2, Image as ImageIcon, Settings, ArrowRight,
   Search, CheckCircle, Zap, Star, Heart, Grid, List,
-  ExternalLink, LogOut
+  ExternalLink, LogOut, Lock, Unlock
 } from 'lucide-react';
 import Lottie from 'lottie-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
@@ -35,6 +35,7 @@ interface Event {
   photo_count?: number;
   custom_domain?: string;
   plan_type?: string;
+  is_closed?: boolean;
 }
 
 const PLAN_INFO: Record<string, { name: string; icon: React.ReactNode; features: string[] }> = {
@@ -129,6 +130,12 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(''), 2000);
   };
 
+  const toggleEventClosed = async (targetEvent: Event) => {
+    const nextClosed = !targetEvent.is_closed;
+    setEvents(prev => prev.map(e => e.id === targetEvent.id ? { ...e, is_closed: nextClosed } : e));
+    await supabase.from('events').update({ is_closed: nextClosed }).eq('id', targetEvent.id);
+  };
+
   if (isLoading || loading) {
     return (
       <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -140,6 +147,8 @@ export default function DashboardPage() {
   const currentPlan = profile?.plan || 'starter';
   const planInfo = PLAN_INFO[currentPlan] || PLAN_INFO.starter;
   const totalPhotos = events.reduce((sum, e) => sum + (e.photo_count || 0), 0);
+  const activeEventsCount = events.filter(e => !e.is_closed).length;
+  const closedEventsCount = events.filter(e => e.is_closed).length;
   const firstName = (profile?.full_name || 'there').split(' ')[0];
   const initial = (profile?.full_name || 'U').charAt(0).toUpperCase();
   const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -353,9 +362,11 @@ export default function DashboardPage() {
               <Layout size={18} />
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '40px', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>{events.length}</span>
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>walls active</span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '40px', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>{activeEventsCount}</span>
+            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+              active ({closedEventsCount} closed)
+            </span>
           </div>
           <div style={{ marginTop: '16px', height: '40px', display: 'flex', alignItems: 'flex-end', gap: '4px', opacity: 0.7 }}>
             {[35, 45, 30, 65, 80, 55, 90, 75, 100].map((h, i) => (
@@ -659,21 +670,41 @@ export default function DashboardPage() {
                 >
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '16px' }}>
-                      <span
-                        style={{
-                          fontSize: '10px',
-                          fontWeight: 900,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.06em',
-                          padding: '4px 12px',
-                          borderRadius: '999px',
-                          background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)',
-                          border: '1px solid color-mix(in srgb, var(--accent-cyan) 25%, transparent)',
-                          color: 'var(--accent-cyan)',
-                        }}
-                      >
-                        {event.photo_count || 0} Photos
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: 900,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.06em',
+                            padding: '4px 12px',
+                            borderRadius: '999px',
+                            background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)',
+                            border: '1px solid color-mix(in srgb, var(--accent-cyan) 25%, transparent)',
+                            color: 'var(--accent-cyan)',
+                          }}
+                        >
+                          {event.photo_count || 0} Photos
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: 800,
+                            textTransform: 'uppercase',
+                            padding: '4px 10px',
+                            borderRadius: '999px',
+                            background: event.is_closed ? 'rgba(245, 158, 11, 0.15)' : 'color-mix(in srgb, var(--success) 12%, transparent)',
+                            border: event.is_closed ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
+                            color: event.is_closed ? '#f59e0b' : 'var(--success)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          {event.is_closed ? <Lock size={10} /> : <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
+                          {event.is_closed ? 'View-Only' : 'Active'}
+                        </span>
+                      </div>
                       <span style={{ fontSize: '12px', color: 'var(--text-muted)' }} suppressHydrationWarning>
                         {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
@@ -698,6 +729,13 @@ export default function DashboardPage() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <button
+                        onClick={() => toggleEventClosed(event)}
+                        className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"
+                        title={event.is_closed ? "Reopen Uploads" : "Close Event (Make View-Only)"}
+                      >
+                        {event.is_closed ? <Unlock size={16} className="text-amber-500" /> : <Lock size={16} />}
+                      </button>
                       <button
                         onClick={() => copyUrl(event.slug)}
                         className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"
@@ -755,6 +793,7 @@ export default function DashboardPage() {
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-subtle)' }}>
                     <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Event Name</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Status</th>
                     <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Created</th>
                     <th style={{ padding: '16px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Photos</th>
                     <th style={{ padding: '16px 24px', textAlign: 'right', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Actions</th>
@@ -773,6 +812,26 @@ export default function DashboardPage() {
                       >
                         <td style={{ padding: '20px 24px', fontWeight: 600, fontSize: '15px' }}>
                           <Link href={`/wall/${event.slug}`} style={{ textDecoration: 'none', color: 'var(--text-primary)' }}>{event.name}</Link>
+                        </td>
+                        <td style={{ padding: '16px 24px' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '3px 10px',
+                              borderRadius: '999px',
+                              fontSize: '11px',
+                              fontWeight: 800,
+                              textTransform: 'uppercase',
+                              background: event.is_closed ? 'rgba(245, 158, 11, 0.15)' : 'color-mix(in srgb, var(--success) 12%, transparent)',
+                              border: event.is_closed ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
+                              color: event.is_closed ? '#f59e0b' : 'var(--success)',
+                            }}
+                          >
+                            {event.is_closed ? <Lock size={10} /> : <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
+                            {event.is_closed ? 'Closed (View-Only)' : 'Active'}
+                          </span>
                         </td>
                         <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: '14px' }} suppressHydrationWarning>
                           {new Date(event.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -797,6 +856,13 @@ export default function DashboardPage() {
                         </td>
                         <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+                            <button
+                              onClick={() => toggleEventClosed(event)}
+                              className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-lg transition-colors"
+                              title={event.is_closed ? "Reopen Uploads" : "Close Event (Make View-Only)"}
+                            >
+                              {event.is_closed ? <Unlock size={15} className="text-amber-500" /> : <Lock size={15} />}
+                            </button>
                             <button onClick={() => copyUrl(event.slug)} className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-subtle rounded-lg transition-colors" title="Copy Link">
                               {copied === event.slug ? <CheckCircle size={15} className="text-success" /> : <Copy size={15} />}
                             </button>
