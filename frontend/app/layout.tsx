@@ -44,14 +44,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://memento.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: "Memento — Capture Every Moment",
     description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
-    url: 'https://memento.app',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com',
     siteName: 'Memento',
     images: [
       {
