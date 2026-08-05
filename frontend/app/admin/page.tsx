@@ -168,24 +168,43 @@ export default function AdminPage() {
   }, [isAdmin, activeTab]);
 
   // ── Actions ──
+  const updateUserProfile = async (userId: string, updates: Record<string, any>) => {
+    try {
+      const res = await fetch('/api/admin/update-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, updates }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        // Fallback: direct supabase client update if service role API unavailable
+        const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
+        if (error) throw new Error(data.error || error.message);
+      }
+      return null;
+    } catch (err: any) {
+      return err.message;
+    }
+  };
+
   const handleToggleApproval = async (userId: string, current: boolean) => {
-    const { error } = await supabase.from('profiles').update({ is_approved: !current }).eq('id', userId);
-    if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+    const err = await updateUserProfile(userId, { is_approved: !current });
+    if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_approved: !current } : u));
     showToast(!current ? 'User approved ✅' : 'User unapproved');
     fetchStats();
   };
 
   const handleUpdatePlan = async (userId: string, newPlan: string) => {
-    const { error } = await supabase.from('profiles').update({ plan: newPlan.toLowerCase(), payment_status: 'paid' }).eq('id', userId);
-    if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+    const err = await updateUserProfile(userId, { plan: newPlan.toLowerCase(), payment_status: 'paid' });
+    if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase(), payment_status: 'paid' } : u));
     showToast(`Plan upgraded to ${newPlan} ✅`);
   };
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
-    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
-    if (error) { showToast('Failed: ' + error.message, 'error'); return; }
+    const err = await updateUserProfile(userId, { role: newRole });
+    if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
     showToast(`Role updated to ${newRole} ✅`);
   };

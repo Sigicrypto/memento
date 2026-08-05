@@ -1,6 +1,6 @@
 -- ═══════════════════════════════════════════════════════════════
--- SECURE PROFILES RLS
--- Run this in Supabase SQL Editor to patch the privilege escalation vulnerability
+-- SECURE PROFILES RLS (UPDATED FOR ADMIN PLAN OVERRIDES)
+-- Run this in Supabase SQL Editor to allow Admins to upgrade plans while restricting standard users
 -- ═══════════════════════════════════════════════════════════════
 
 -- Ensure the existing update policy is restrictive
@@ -8,15 +8,20 @@ DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
-  USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id);
+  USING (auth.uid() = id OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (auth.uid() = id OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
 
 -- Create a trigger function to prevent modification of sensitive columns by standard users
 CREATE OR REPLACE FUNCTION public.prevent_profile_escalation()
 RETURNS TRIGGER AS $$
+DECLARE
+  executor_role text;
 BEGIN
-  -- If the user executing this is NOT the postgres/service_role user, enforce restrictions
-  IF current_setting('request.jwt.claims', true)::jsonb->>'role' = 'authenticated' THEN
+  -- Fetch current executor's role
+  SELECT role INTO executor_role FROM public.profiles WHERE id = auth.uid();
+
+  -- If the user executing this is authenticated AND NOT an admin, enforce restrictions
+  IF current_setting('request.jwt.claims', true)::jsonb->>'role' = 'authenticated' AND executor_role IS DISTINCT FROM 'admin' THEN
     
     -- An authenticated standard user cannot change their own role, plan, payment_status, or approval status
     IF NEW.role IS DISTINCT FROM OLD.role THEN
