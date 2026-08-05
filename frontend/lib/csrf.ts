@@ -16,7 +16,7 @@ export async function validateCSRF(): Promise<boolean> {
     return false;
   }
 
-  const expectedDomain = process.env.NEXT_PUBLIC_SITE_URL || `https://${host}`;
+  const expectedDomain = process.env.NEXT_PUBLIC_SITE_URL || 'https://mymementoapp.com';
 
   if (origin && !origin.startsWith(expectedDomain)) {
     return false;
