@@ -11,6 +11,9 @@ Set these in your deployment platform:
 NEXT_PUBLIC_ADMIN_ACCESS_CODE=your-secret-admin-code-2024
 ADMIN_ACCESS_CODE=your-secret-admin-code-2024
 
+# Supabase Service Role Key (Required for Admin Plan & User Upgrades)
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+
 # Optional: IP Whitelisting
 ALLOWED_ADMIN_IPS=your-office-ip,your-home-ip
 
