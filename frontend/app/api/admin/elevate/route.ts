@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Access code is required' }, { status: 400 });
     }
 
-    // 4. Validate access code against server-only environment variable (with fallback)
-    const validAdminCode = process.env.ADMIN_ACCESS_CODE || 'MementoAdmin2026!';
+    // 4. Validate access code against server-only environment variable
+    const validAdminCode = process.env.ADMIN_ACCESS_CODE;
 
-    if (accessCode !== validAdminCode && accessCode !== 'MementoAdmin2026!' && accessCode !== 'admin') {
+    if (!validAdminCode || accessCode !== validAdminCode) {
       return NextResponse.json({ error: 'Invalid access code' }, { status: 403 });
     }
 

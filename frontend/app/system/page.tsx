@@ -31,17 +31,6 @@ export default function SystemAdminPage() {
     setError('');
 
     try {
-      if (password === 'MementoAdmin2026!' || password.toLowerCase() === 'admin') {
-        if (user) {
-          await supabase.from('profiles').update({ role: 'admin', is_approved: true }).eq('id', user.id);
-        }
-        setMessage('Access granted! Redirecting to admin panel...');
-        setTimeout(() => {
-          window.location.href = '/admin';
-        }, 800);
-        return;
-      }
-
       if (user) {
         const response = await fetch('/api/admin/elevate', {
           method: 'POST',

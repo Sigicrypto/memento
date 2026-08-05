@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { validateCSRF } from '@/lib/csrf';
+import { rateLimit } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
+  if (!await validateCSRF()) {
+    return NextResponse.json({ error: 'Invalid origin' }, { status: 403 });
+  }
+
+  const ip = request.headers.get('x-forwarded-for') || 'unknown';
+  const { allowed } = rateLimit(ip, { maxRequests: 20, windowMs: 60000 });
+  if (!allowed) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
+  }
+
   try {
     const { userId, updates } = await request.json();
 
@@ -12,13 +25,42 @@ export async function POST(request: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    console.log('[admin/update-user] URL exists:', !!supabaseUrl, 'ServiceKey exists:', !!supabaseServiceKey);
-    console.log('[admin/update-user] userId:', userId, 'updates:', JSON.stringify(updates));
-
     if (!supabaseUrl || !supabaseServiceKey) {
       return NextResponse.json({
         error: 'SUPABASE_SERVICE_ROLE_KEY environment variable is not configured.'
       }, { status: 503 });
+    }
+
+    // Verify session & admin role using SSR server client
+    let response = NextResponse.next();
+    const supabaseUserClient = createServerClient(
+      supabaseUrl,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll(); },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          },
+        },
+      }
+    );
+
+    const { data: { user } } = await supabaseUserClient.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized: Authentication required' }, { status: 401 });
+    }
+
+    // Check if authenticated user is admin or superadmin
+    const { data: requesterProfile } = await supabaseUserClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    const isRequesterAdmin = requesterProfile?.role === 'admin' || user.email?.toLowerCase() === 'sagarfalcon@gmail.com';
+    if (!isRequesterAdmin) {
+      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
