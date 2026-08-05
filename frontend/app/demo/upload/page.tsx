@@ -343,11 +343,11 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 7rem 1rem 7rem;
+          padding: 5rem 1rem 3rem;
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;
-          gap: 1.25rem;
+          gap: 1rem;
         }
 
         .upload-layout-grid {
@@ -760,8 +760,8 @@ function DemoUploadContent() {
         /* ── Mobile fine-tuning ── */
         @media (max-width: 480px) {
           .upload-content {
-            padding-top: 6rem;
-            gap: 1rem;
+            padding-top: 4.25rem;
+            gap: 0.75rem;
           }
           .upload-section .gcard-inner {
             padding: 1.25rem;
