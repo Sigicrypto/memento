@@ -11,6 +11,7 @@ export default function Navbar() {
     pathname?.startsWith('/demo/') ||
     pathname?.startsWith('/create') || 
     pathname?.startsWith('/checkout') ||
+    pathname?.startsWith('/system') ||
     pathname?.startsWith('/auth') ||
     pathname?.startsWith('/pending') ||
     pathname?.startsWith('/dashboard');
