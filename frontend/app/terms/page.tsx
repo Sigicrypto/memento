@@ -8,14 +8,23 @@ import ThemeToggle from '@/components/ThemeToggle';
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col bg-bg">
+    <div style={{
+      minHeight: '100vh',
+      position: 'relative',
+      overflowX: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      background: 'var(--bg)',
+    }}>
+      {/* Background Decor */}
       <div className="grain" />
       <div className="orbs">
         <div className="orb orb-primary opacity-30" />
         <div className="orb orb-secondary opacity-30" />
       </div>
 
-      {/* Top Header Bar */}
+      {/* Fixed Top Nav Bar */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         height: '64px', background: 'var(--surface)', backdropFilter: 'blur(20px)',
@@ -35,9 +44,23 @@ export default function TermsPage() {
         </div>
       </nav>
 
-      {/* Main Content Container */}
-      <div className="relative z-10 pt-28 px-4 sm:px-8 pb-32 max-w-3xl mx-auto w-full flex flex-col items-center">
-        <div className="text-center mb-10 pt-8">
+      {/* Main Centered Content Container */}
+      <div style={{
+        position: 'relative',
+        zIndex: 10,
+        width: '100%',
+        maxWidth: '800px',
+        margin: '0 auto',
+        paddingTop: '120px',
+        paddingBottom: '80px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        {/* Title Header */}
+        <div style={{ textAlign: 'center', marginBottom: '36px', width: '100%' }}>
           <span style={{
             display: 'inline-flex', padding: '4px 16px', borderRadius: '999px',
             fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em',
@@ -47,25 +70,29 @@ export default function TermsPage() {
           }}>
             Legal Documentation
           </span>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3 text-text-primary">
+          <h1 style={{ fontSize: '42px', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
             Terms of Service
           </h1>
-          <p className="text-text-secondary text-sm">
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0 }}>
             Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
 
+        {/* Main Card */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
             width: '100%',
+            boxSizing: 'border-box',
             background: 'var(--surface)',
             border: '1px solid var(--border)',
-            borderRadius: '32px',
-            padding: '52px 44px',
-            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.25)',
-            display: 'flex', flexDirection: 'column', gap: '44px',
+            borderRadius: '28px',
+            padding: '48px 40px',
+            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '40px',
           }}
         >
           {/* Section 1 */}
