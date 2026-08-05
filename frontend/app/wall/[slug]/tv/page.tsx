@@ -45,12 +45,12 @@ export default function TVModePage() {
     const fetchEventAndPhotos = async () => {
       const { data: dbEventData, error: eventError } = await supabase
         .from('events')
-        .select('id, name, music_track, plan_type, brand_logo_url, is_closed, expires_at')
+        .select('*')
         .eq('slug', slug)
         .single();
 
       if (eventError || !dbEventData) {
-        console.error('Event not found');
+        console.error('Event not found or fetch error:', eventError);
         return;
       }
 
