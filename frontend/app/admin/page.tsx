@@ -78,12 +78,15 @@ export default function AdminPage() {
   const showConfirm = (message: string, onConfirm: () => void) => setConfirmDialog({open: true, message, onConfirm});
   const closeConfirm = () => setConfirmDialog(prev => ({...prev, open: false}));
 
+  const isSuperUser = user?.email?.toLowerCase() === 'sagarfalcon@gmail.com';
+  const hasAdminAccess = isAdmin || isSuperAdmin || isSuperUser || profile?.role === 'admin';
+
   // ── Auth Gate ──
   useEffect(() => {
     if (isLoading) return;
     if (!user) { router.push('/auth'); return; }
-    if (profile && !isAdmin) { router.push('/'); }
-  }, [user, profile, isLoading, isAdmin, router]);
+    if (profile && !hasAdminAccess) { router.push('/'); }
+  }, [user, profile, isLoading, hasAdminAccess, router]);
 
   // ── Fetch Stats ──
   const fetchStats = useCallback(async () => {
@@ -241,7 +244,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (!hasAdminAccess) {
     return (
       <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-4">
         <div className="text-center max-w-sm">

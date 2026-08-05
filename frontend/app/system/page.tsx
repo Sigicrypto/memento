@@ -23,12 +23,7 @@ export default function SystemAdminPage() {
   const isUserSuperAdmin = isSuperAdmin || (user && user.email?.toLowerCase() === 'sagarfalcon@gmail.com');
   const isUserAdmin = isAdmin || isUserSuperAdmin;
 
-  // Auto-redirect if already admin
-  useEffect(() => {
-    if (!isLoading && isUserAdmin) {
-      window.location.href = '/admin';
-    }
-  }, [isUserAdmin, isLoading]);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
