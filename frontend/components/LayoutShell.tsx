@@ -19,8 +19,15 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith('/admin');
 
-  // ── Admin routes: bare shell, no site chrome ──
-  if (isAdminRoute) {
+  // Pages that render their own complete layout (nav, background, etc.)
+  const isStandaloneRoute =
+    pathname?.startsWith('/privacy') ||
+    pathname?.startsWith('/terms') ||
+    pathname?.startsWith('/checkout') ||
+    pathname?.startsWith('/system');
+
+  // ── Admin & standalone routes: bare shell, no site chrome ──
+  if (isAdminRoute || isStandaloneRoute) {
     return <>{children}</>;
   }
 
