@@ -115,8 +115,7 @@ export default function MobilePage() {
       }
       const { data } = await query;
       if (data) {
-        if (matchedPhotoIds) setPhotos(data);
-        else setPhotos(data.filter(p => sessionPhotoIds.includes(p.id)));
+        setPhotos(data);
       }
     };
     fetchPhotos();
@@ -124,10 +123,10 @@ export default function MobilePage() {
     const channel = supabase.channel(`event-photos-${event.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'photos', filter: `event_id=eq.${event.id}` }, (payload) => {
         const newPhoto = payload.new as Photo;
-        if (sessionPhotoIds.includes(newPhoto.id)) setPhotos(prev => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
+        setPhotos(prev => [newPhoto, ...prev.filter(p => p.id !== newPhoto.id)]);
       }).subscribe((status) => setRealtimeStatus(status));
     return () => { supabase.removeChannel(channel); };
-  }, [event, matchedPhotoIds, sessionPhotoIds]);
+  }, [event, matchedPhotoIds]);
  
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files || []);
