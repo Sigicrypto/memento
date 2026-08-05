@@ -1,110 +1,196 @@
 "use client";
- 
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shield, FileText, Lock, UserCheck, CreditCard, Scale, HelpCircle, Check } from 'lucide-react';
- 
+import { ArrowLeft, Shield, FileText, UserCheck, CreditCard, Scale, HelpCircle, Check, MessageCircle, Mail } from 'lucide-react';
+import AnimatedLogo from '@/components/AnimatedLogo';
+import ThemeToggle from '@/components/ThemeToggle';
+
 export default function TermsPage() {
   return (
-    <div className="min-h-screen relative overflow-x-hidden flex flex-col">
+    <div className="min-h-screen relative overflow-x-hidden flex flex-col bg-bg">
       <div className="grain" />
-      <div className="orbs"><div className="orb orb-primary" /><div className="orb orb-secondary" /></div>
- 
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-border backdrop-blur-xl px-8 flex items-center justify-between">
-         <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-all font-bold text-sm">
-               <ArrowLeft size={16} /> Back to Home
-            </Link>
-            <div className="h-6 w-px bg-border hidden md:block" />
-            <span className="text-xl font-bold tracking-tighter">memento</span>
-         </div>
+      <div className="orbs">
+        <div className="orb orb-primary opacity-30" />
+        <div className="orb orb-secondary opacity-30" />
+      </div>
+
+      {/* Top Header Bar */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        height: '64px', background: 'var(--surface)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid var(--border)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 24px',
+      }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}>
+          <ArrowLeft size={18} />
+          <span className="hidden sm:inline">Back to Home</span>
+        </Link>
+
+        <AnimatedLogo width={110} height={28} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <ThemeToggle />
+        </div>
       </nav>
- 
-      <main className="relative z-10 pt-32 px-8 pb-32 max-w-4xl mx-auto w-full">
-         <div className="text-center mb-16">
-            <p className="text-primary text-[10px] font-black uppercase tracking-[.3em] mb-4">LEGAL DOCUMENTATION</p>
-            <h1 className="text-5xl font-bold tracking-tight mb-4">Terms of Service</h1>
-            <p className="text-text-secondary">Last updated: {new Date().toLocaleDateString()}</p>
-         </div>
- 
-         <div className="glass-panel p-8 md:p-12 space-y-12">
-            <section className="space-y-4">
-               <div className="flex items-center gap-3 text-primary mb-6">
-                  <FileText size={24} />
-                  <h2 className="text-2xl font-bold">1. Acceptance of Terms</h2>
-               </div>
-               <p className="text-text-secondary leading-relaxed">By accessing and using Memento, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.</p>
-            </section>
- 
-            <section className="space-y-6">
-               <div className="flex items-center gap-3 text-secondary mb-6">
-                  <Shield size={24} />
-                  <h2 className="text-2xl font-bold">2. Service Description</h2>
-               </div>
-               <p className="text-text-secondary leading-relaxed">Memento is a premium SaaS platform offering real-time photo sharing and event wall experiences. Features include:</p>
-               <ul className="grid md:grid-cols-2 gap-4">
-                  <FeatureItem label="Instant Photo Collection" />
-                  <FeatureItem label="Live AI Reveal Walls" />
-                  <FeatureItem label="QR-Based Guest Access" />
-                  <FeatureItem label="Cinematic Slideshows" />
-                  <FeatureItem label="Full Content Moderation" />
-                  <FeatureItem label="Secure Data Retention" />
-               </ul>
-            </section>
- 
-            <section className="space-y-4">
-               <div className="flex items-center gap-3 text-accent-cyan mb-6">
-                  <UserCheck size={24} />
-                  <h2 className="text-2xl font-bold">3. User Accounts</h2>
-               </div>
-               <p className="text-text-secondary leading-relaxed">Organizers must create an account to host walls. You are responsible for account security and ensuring all information provided is accurate and legitimate. Minimum age for account creation is 13.</p>
-            </section>
- 
-            <section className="space-y-4">
-               <div className="flex items-center gap-3 text-accent-cyan mb-6">
-                  <CreditCard size={24} />
-                  <h2 className="text-2xl font-bold">4. Payments & Refunds</h2>
-               </div>
-               <p className="text-text-secondary leading-relaxed">Plans are charged as one-time payments per event. No recurring subscriptions. Due to the digital nature of the services, refunds are evaluated on a case-by-case basis before the event date.</p>
-            </section>
- 
-            <section className="space-y-6">
-               <div className="flex items-center gap-3 text-accent-warm mb-6">
-                  <Scale size={24} />
-                  <h2 className="text-2xl font-bold">5. Content & Conduct</h2>
-               </div>
-               <div className="p-6 rounded-2xl bg-error/5 border border-error/20">
-                  <p className="font-bold mb-4">Zero Tolerance Policy</p>
-                  <p className="text-text-secondary text-sm leading-relaxed mb-4">You are strictly responsible for all content uploaded to your walls. Memento prohibits explicit, illegal, or abusive imagery.</p>
-                  <p className="text-text-secondary text-sm leading-relaxed">We provide automated safety filters and manual moderation tools. Memento reserves the right to terminate any wall violating these terms without refund.</p>
-               </div>
-            </section>
- 
-            <section className="space-y-4">
-               <div className="flex items-center gap-3 text-accent-cyan mb-6">
-                  <HelpCircle size={24} />
-                  <h2 className="text-2xl font-bold">12. Contact</h2>
-               </div>
-               <p className="text-text-secondary leading-relaxed">Questions? Reach out to our legal team directly:</p>
-               <div className="flex flex-wrap gap-4 mt-4">
-                  <div className="px-5 py-3 rounded-xl bg-bg-subtle border border-border text-xs font-bold">support@memento.app</div>
-                  <div className="px-5 py-3 rounded-xl bg-success/10 border border-success/20 text-success text-xs font-bold">+968 96095692 (WhatsApp)</div>
-               </div>
-            </section>
-         </div>
+
+      {/* Main Content Container */}
+      <main className="relative z-10 pt-28 px-4 sm:px-8 pb-32 max-w-4xl mx-auto w-full">
+        <div className="text-center mb-12">
+          <span style={{
+            display: 'inline-flex', padding: '4px 14px', borderRadius: '999px',
+            fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em',
+            background: 'color-mix(in srgb, var(--primary) 12%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--primary) 20%, transparent)',
+            color: 'var(--primary)', marginBottom: '16px',
+          }}>
+            Legal Documentation
+          </span>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3 text-text-primary">
+            Terms of Service
+          </h1>
+          <p className="text-text-secondary text-sm">
+            Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: '28px',
+            padding: '40px 32px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
+            display: 'flex', flexDirection: 'column', gap: '40px',
+          }}
+        >
+          {/* Section 1 */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-text-primary pb-3 border-b border-border">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                <FileText size={20} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold">1. Acceptance of Terms</h2>
+            </div>
+            <p className="text-text-secondary leading-relaxed text-sm sm:text-base">
+              By accessing and using Memento, you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.
+            </p>
+          </section>
+
+          {/* Section 2 */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-text-primary pb-3 border-b border-border">
+              <div className="w-10 h-10 rounded-xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan shrink-0">
+                <Shield size={20} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold">2. Service Description</h2>
+            </div>
+            <p className="text-text-secondary leading-relaxed text-sm sm:text-base">
+              Memento is a premium live photo wall sharing platform for events, weddings, and parties. Features include:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <FeatureItem label="Instant Photo Collection via QR Code" />
+              <FeatureItem label="Live AI Reveal & Slideshow TV Mode" />
+              <FeatureItem label="Instant Facial Discovery Search" />
+              <FeatureItem label="Full Host Content Moderation Controls" />
+              <FeatureItem label="Real-Time Guest Reactions & Emoji Float" />
+              <FeatureItem label="Secure Encrypted Cloud Data Storage" />
+            </div>
+          </section>
+
+          {/* Section 3 */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-text-primary pb-3 border-b border-border">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                <UserCheck size={20} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold">3. User Accounts & Responsibilities</h2>
+            </div>
+            <p className="text-text-secondary leading-relaxed text-sm sm:text-base">
+              Organizers must create an account to host walls. You are responsible for account security and ensuring all information provided is accurate and legitimate. Minimum age for account creation is 13.
+            </p>
+          </section>
+
+          {/* Section 4 */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-text-primary pb-3 border-b border-border">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                <CreditCard size={20} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold">4. Payments & Event Pricing</h2>
+            </div>
+            <p className="text-text-secondary leading-relaxed text-sm sm:text-base">
+              Plans are charged as one-time payments per event. There are no recurring subscriptions or surprise charges. Due to the digital nature of the services, refunds are evaluated on a case-by-case basis before the event date.
+            </p>
+          </section>
+
+          {/* Section 5 */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-text-primary pb-3 border-b border-border">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
+                <Scale size={20} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold">5. Content Policy & Acceptable Use</h2>
+            </div>
+            <div style={{
+              padding: '20px 24px',
+              borderRadius: '16px',
+              background: 'color-mix(in srgb, var(--error) 10%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--error) 25%, transparent)',
+            }}>
+              <p className="font-bold text-rose-400 text-sm mb-2">Zero Tolerance Policy</p>
+              <p className="text-text-secondary text-xs sm:text-sm leading-relaxed mb-3">
+                Event hosts and guests are strictly responsible for all content uploaded to walls. Memento prohibits explicit, illegal, hateful, or abusive imagery.
+              </p>
+              <p className="text-text-secondary text-xs sm:text-sm leading-relaxed">
+                We provide automated safety filters and host moderation tools. Memento reserves the right to terminate any wall violating these terms without refund.
+              </p>
+            </div>
+          </section>
+
+          {/* Section 6 */}
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 text-text-primary pb-3 border-b border-border">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                <HelpCircle size={20} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold">6. Contact & Legal Enquiries</h2>
+            </div>
+            <p className="text-text-secondary leading-relaxed text-sm sm:text-base">
+              Questions regarding these Terms of Service? Reach out to our team directly:
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <div className="px-5 py-3 rounded-xl bg-bg-subtle border border-border text-xs font-bold text-text-primary flex items-center gap-2">
+                <Mail size={14} className="text-accent-cyan" />
+                <span>support@memento.app</span>
+              </div>
+              <a
+                href="https://wa.me/96896095692"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-2 hover:bg-emerald-500/20 transition-colors no-underline"
+              >
+                <MessageCircle size={14} />
+                <span>+968 96095692 (WhatsApp Support)</span>
+              </a>
+            </div>
+          </section>
+        </motion.div>
       </main>
     </div>
   );
 }
- 
+
 function FeatureItem({ label }: { label: string }) {
   return (
-    <li className="flex items-center gap-3 text-sm text-text-secondary">
-       <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-          <Check size={12} />
-       </div>
-       {label}
-    </li>
+    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-subtle border border-border text-xs font-semibold text-text-primary">
+      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+        <Check size={10} />
+      </div>
+      <span>{label}</span>
+    </div>
   );
 }
