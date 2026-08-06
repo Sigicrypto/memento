@@ -28,7 +28,7 @@ export default function DashboardNavigation() {
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden h-[64px] border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4">
+      <header className="md:hidden h-[64px] border-b border-border bg-[#0b0f19] backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-4">
         <Link href="/">
           <AnimatedLogo width={100} height={24} />
         </Link>
@@ -53,9 +53,9 @@ export default function DashboardNavigation() {
 
       {/* Sidebar (Fixed on all screens, md:pl-64 on layout pushes content) - Always rendered for SSR safety */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 border-r border-border bg-surface flex flex-col transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        className={`fixed top-0 left-0 z-50 h-screen w-64 border-r border-border bg-[var(--surface)] flex flex-col transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
-        <div className="h-[70px] border-b border-border flex items-center justify-between px-6">
+        <div className="h-[70px] border-b border-border bg-[#0b0f19] flex items-center justify-between px-6">
           <div className="flex items-center">
             <Link href="/" onClick={() => setIsOpen(false)}>
               <AnimatedLogo width={120} height={32} />

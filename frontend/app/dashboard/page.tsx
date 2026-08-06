@@ -168,9 +168,13 @@ export default function DashboardPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '40px',
-          paddingBottom: '20px',
-          borderBottom: '1px solid var(--border)',
+          marginBottom: '32px',
+          padding: '14px 24px',
+          borderRadius: '20px',
+          background: '#0b0f19',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
+          color: '#ffffff',
         }}
       >
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>

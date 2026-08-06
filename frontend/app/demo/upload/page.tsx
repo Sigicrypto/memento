@@ -343,17 +343,17 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 5rem 1rem 3rem;
+          padding: 4.25rem 1rem 2rem;
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;
-          gap: 1rem;
+          gap: 0.75rem;
         }
 
         .upload-layout-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 1.25rem;
+          gap: 1rem;
           width: 100%;
           max-width: 520px;
         }
@@ -361,7 +361,7 @@ function DemoUploadContent() {
         .upload-col-left, .upload-col-right {
           display: flex;
           flex-direction: column;
-          gap: 1.25rem;
+          gap: 1rem;
         }
 
         .upload-col-right {
@@ -373,7 +373,7 @@ function DemoUploadContent() {
             grid-template-columns: 1fr 1fr;
             max-width: 1000px;
             align-items: start;
-            gap: 2rem;
+            gap: 1.5rem;
           }
         }
 
@@ -381,15 +381,16 @@ function DemoUploadContent() {
         .upload-header {
           text-align: center;
           width: 100%;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.25rem;
         }
         .upload-header .hero-h1 {
-          font-size: clamp(1.75rem,5.5vw,2.6rem);
+          font-size: clamp(1.5rem, 4.5vw, 2.2rem);
           line-height: 1.15;
-          margin-bottom: 0.5rem;
+          margin-top: 0.25rem;
+          margin-bottom: 0.25rem;
         }
         .upload-header .hero-sub {
-          font-size: 0.975rem;
+          font-size: 0.875rem;
           margin-bottom: 0;
         }
 
