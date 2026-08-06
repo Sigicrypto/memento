@@ -2,34 +2,65 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Send, CheckCircle, RefreshCw, Sparkles, Layers, Image as ImageIcon, ExternalLink, Globe } from 'lucide-react';
+import {
+  Send,
+  CheckCircle2,
+  RefreshCw,
+  Sparkles,
+  Layers,
+  Image as ImageIcon,
+  ExternalLink,
+  Globe,
+  Share2,
+  Sliders,
+  Check,
+  Flame,
+  CheckCircle,
+  HelpCircle
+} from 'lucide-react';
+
+const FacebookIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const InstagramIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+  </svg>
+);
 
 const PRESETS = [
   {
     id: 'wedding',
-    title: '💍 Wedding Memory Wall',
-    desc: 'Target wedding couples & planners with instant guest photo sharing.',
+    badge: '💍 Luxury Weddings',
+    title: 'Wedding Memory Wall',
+    desc: 'Target engaged couples & luxury wedding planners with instant live guest photo sharing.',
     imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
-    caption: `💍 Stop waiting 4 weeks for wedding photos! With Memento, guests scan a QR code at their table, snap photos on their phones, and watch them appear live on the big screen!\n\n✨ Custom branding\n✨ Zero app downloads required\n✨ Instant guest photo sharing\n\nBook your live QR wall today at www.mymementoapp.com 🥂❤️\n\n#WeddingInspiration #LivePhotoWall #WeddingTech #Memento #EventPlanner #WeddingPlanning #InteractiveWeddings`,
+    caption: `💍 Stop waiting 4 weeks for wedding photos! With Memento, guests scan a QR code at their table, snap photos on their phones, and watch them appear live on the venue screen!\n\n✨ Custom wedding branding\n✨ Zero app downloads required\n✨ Instant guest photo sharing\n\nBook your live QR wall today at www.mymementoapp.com 🥂❤️\n\n#WeddingInspiration #LivePhotoWall #WeddingTech #Memento #EventPlanner #WeddingPlanning #InteractiveWeddings`,
   },
   {
     id: 'corporate',
-    title: '🚀 Corporate Gala & Brand Activation',
-    desc: 'Target HR teams, event directors, and luxury brand managers.',
+    badge: '🚀 B2B & Galas',
+    title: 'Corporate Gala & Brand Activation',
+    desc: 'Target HR teams, event directors, and enterprise brand managers.',
     imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
     caption: `🚀 Transform corporate event engagement in 1 scan! Memento turns every attendee's smartphone into a live camera feed for your main stage screen.\n\n📈 3x higher guest participation\n🎨 Custom corporate branding & logo overlay\n🛡️ Real-time photo moderation\n\nElevate your brand experience at www.mymementoapp.com 🌟\n\n#CorporateEvents #EventMarketing #BrandActivation #EventPlanner #Memento #EventTech #LiveEngagement`,
   },
   {
     id: 'birthday',
-    title: '🎉 Birthday & Private Celebrations',
-    desc: 'Target birthday hosts, anniversaries, and VIP parties.',
+    badge: '🎉 Parties & VIP',
+    title: 'Birthday & Private Celebrations',
+    desc: 'Target birthday hosts, milestone anniversaries, and VIP parties.',
     imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop',
     caption: `🎉 Make your party unforgettable! Capture every angle of your celebration with Memento's live QR photo wall.\n\n📱 Guests just scan & upload\n✨ Live wall slideshow with animations\n💖 Download the full photo album after the party!\n\nSetup your wall in 2 minutes at www.mymementoapp.com 🥳\n\n#PartyIdeas #BirthdayCelebration #PhotoWall #MementoApp #LivePartyFeed #EventTech`,
   },
   {
     id: 'product',
-    title: '⚡ Product Spotlight (Zero App Download)',
-    desc: 'Focus on frictionless guest experience and tech simplicity.',
+    badge: '⚡ Tech Feature',
+    title: 'Product Spotlight (Zero App Download)',
+    desc: 'Focus on frictionless guest experience and zero setup friction.',
     imageUrl: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop',
     caption: `⚡ Why event hosts love Memento: No app downloads, no complicated setup, and instant live photo sharing for any venue screen or TV.\n\nCreate your memory wall for your next event at www.mymementoapp.com!\n\n#EventTech #DigitalPhotoWall #Memento #LiveEvents #EventOrganizers`,
   },
@@ -82,75 +113,95 @@ export default function SocialCampaignStudio() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 md:p-12 font-sans">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#07090E] text-slate-100 font-sans py-8 px-4 sm:px-6 lg:px-12 selection:bg-purple-500/30">
+      {/* Container - Extended to max-w-7xl with spacious grid */}
+      <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Header */}
-        <div className="border-b border-slate-800 pb-6 flex items-center justify-between">
-          <div>
+        {/* Header Bar */}
+        <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
+          <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-gradient-to-tr from-pink-500 via-purple-600 to-blue-600 text-white shadow-lg">
-                <Sparkles className="w-6 h-6 inline-block" />
+              <div className="p-3 rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-600 to-blue-600 text-white shadow-xl shadow-purple-500/20">
+                <Sparkles className="w-7 h-7" />
               </div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">1-Click Social Media Studio</h1>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                  Social Media Studio <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-medium">1-Click Auto-Post</span>
+                </h1>
+                <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
+                  Create and auto-publish targeted marketing campaigns for <span className="text-blue-400 font-semibold underline decoration-blue-400/40">www.mymementoapp.com</span> across Facebook & Instagram simultaneously.
+                </p>
+              </div>
             </div>
-            <p className="text-slate-400 text-sm mt-1">
-              Create and auto-publish social media campaigns for <span className="text-blue-400 font-semibold">www.mymementoapp.com</span> across Facebook & Instagram instantly!
-            </p>
           </div>
-          <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-mono rounded-full flex items-center gap-1.5">
-            <CheckCircle className="w-3.5 h-3.5" /> Meta API Connected
-          </span>
+
+          <div className="flex items-center gap-3 self-start md:self-center shrink-0">
+            <div className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold rounded-xl flex items-center gap-2 shadow-inner">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>Meta Graph API Connected</span>
+            </div>
+            <a
+              href="/admin/meta-setup"
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5"
+            >
+              <Sliders className="w-3.5 h-3.5" /> Key Manager
+            </a>
+          </div>
         </div>
 
-        {/* Error Alert */}
-        {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 text-sm flex items-start gap-3">
-            <span className="font-semibold text-red-200">Publishing Failed:</span> {error}
-          </div>
-        )}
-
-        {/* Success Result */}
+        {/* Success Banner */}
         {result && (
-          <div className="p-6 bg-slate-900 border border-emerald-500/40 rounded-2xl space-y-4 shadow-xl">
-            <div className="flex items-center gap-3 text-emerald-400">
-              <CheckCircle className="w-6 h-6 shrink-0" />
-              <h2 className="text-lg font-bold text-white">Campaign Published Successfully All Over! 🎉</h2>
+          <div className="p-6 bg-emerald-950/40 border border-emerald-500/40 rounded-2xl space-y-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 text-emerald-400">
+                <CheckCircle2 className="w-7 h-7 shrink-0" />
+                <div>
+                  <h2 className="text-lg font-bold text-white">Campaign Published Live All Over! 🎉</h2>
+                  <p className="text-xs text-emerald-300/80">Your content has been broadcasted via Meta Business Graph API.</p>
+                </div>
+              </div>
+              <span className="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-300 font-mono rounded-full border border-emerald-500/30">
+                200 OK Status
+              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               {result.results?.facebook && (
-                <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                <div className="p-4 bg-slate-950/80 border border-blue-500/30 rounded-xl space-y-2 hover:border-blue-500/60 transition-colors">
                   <div className="flex items-center justify-between text-blue-400 text-sm font-semibold">
-                    <span>Facebook Page Post</span>
+                    <span className="flex items-center gap-2">
+                      <FacebookIcon className="w-4 h-4 text-blue-400" /> Facebook Page Post
+                    </span>
                     <ExternalLink className="w-4 h-4" />
                   </div>
                   <p className="text-xs text-slate-400 font-mono">Post ID: {result.results.facebook.id || result.results.facebook.post_id || 'Published'}</p>
                   <a
-                    href="https://facebook.com"
+                    href="https://facebook.com/1270689629459999"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-block text-xs text-blue-400 hover:underline pt-1"
+                    className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-medium pt-1 transition-colors"
                   >
-                    View on Facebook Page ➔
+                    View Post on Memento Facebook Page ➔
                   </a>
                 </div>
               )}
 
               {result.results?.instagram && (
-                <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                <div className="p-4 bg-slate-950/80 border border-pink-500/30 rounded-xl space-y-2 hover:border-pink-500/60 transition-colors">
                   <div className="flex items-center justify-between text-pink-400 text-sm font-semibold">
-                    <span>Instagram Business Post</span>
+                    <span className="flex items-center gap-2">
+                      <InstagramIcon className="w-4 h-4 text-pink-400" /> Instagram Business Post
+                    </span>
                     <ExternalLink className="w-4 h-4" />
                   </div>
                   <p className="text-xs text-slate-400 font-mono">Media ID: {result.results.instagram.id || 'Published'}</p>
                   <a
-                    href="https://instagram.com"
+                    href="https://instagram.com/my_memento_app"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-block text-xs text-pink-400 hover:underline pt-1"
+                    className="inline-flex items-center gap-1 text-xs text-pink-400 hover:text-pink-300 font-medium pt-1 transition-colors"
                   >
-                    View on Instagram Profile ➔
+                    View Post on @my_memento_app Instagram ➔
                   </a>
                 </div>
               )}
@@ -158,116 +209,189 @@ export default function SocialCampaignStudio() {
           </div>
         )}
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Error Banner */}
+        {error && (
+          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-300 text-sm flex items-start gap-3">
+            <span className="font-semibold text-red-200">Publishing Failure:</span> {error}
+          </div>
+        )}
 
-          {/* Left Column: Presets */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
-              <Layers className="w-4 h-4 text-purple-400" /> 1. Select Campaign Preset
-            </h3>
-            <div className="space-y-2.5">
-              {PRESETS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => handleSelectPreset(p)}
-                  className={`w-full p-4 rounded-xl text-left border transition-all ${
-                    selectedPreset.id === p.id
-                      ? 'bg-slate-900 border-blue-500 shadow-lg shadow-blue-500/10'
-                      : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/40'
-                  }`}
-                >
-                  <p className="text-sm font-semibold text-white">{p.title}</p>
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{p.desc}</p>
-                </button>
-              ))}
+        {/* Main Grid Section: 2 Balanced Columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+          {/* Left Panel: Presets & Channel Selection (5 Columns) */}
+          <div className="lg:col-span-5 space-y-6">
+            
+            {/* Step 1 Card */}
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2 tracking-wide uppercase">
+                  <Layers className="w-4 h-4 text-purple-400" /> Step 1: Select Target Preset
+                </h3>
+                <span className="text-[11px] text-slate-400 font-mono">4 Presets</span>
+              </div>
+
+              <div className="space-y-3">
+                {PRESETS.map((p) => {
+                  const isSelected = selectedPreset.id === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => handleSelectPreset(p)}
+                      className={`w-full p-4 rounded-xl text-left border transition-all duration-200 group relative ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-slate-900 to-purple-950/40 border-purple-500 shadow-lg shadow-purple-500/10 ring-1 ring-purple-500/30'
+                          : 'bg-slate-950/80 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-purple-300 border border-slate-700">
+                          {p.badge}
+                        </span>
+                        {isSelected && (
+                          <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                        )}
+                      </div>
+                      <p className={`text-sm font-bold transition-colors ${isSelected ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                        {p.title}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                        {p.desc}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Target Selector */}
-            <div className="pt-4 border-t border-slate-800 space-y-2">
-              <label className="text-xs font-semibold text-slate-300 block">Publish Channels:</label>
-              <div className="grid grid-cols-3 gap-2">
+            {/* Step 2 Card: Channel Target */}
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+              <div className="border-b border-slate-800 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2 tracking-wide uppercase">
+                  <Share2 className="w-4 h-4 text-blue-400" /> Step 2: Target Channels
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => setTarget('both')}
-                  className={`py-2 px-3 rounded-lg text-xs font-medium border transition-colors ${
-                    target === 'both' ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-950 text-slate-400 border-slate-800'
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
+                    target === 'both'
+                      ? 'bg-gradient-to-tr from-blue-600 to-pink-600 text-white border-blue-400 shadow-lg shadow-blue-500/20'
+                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  Both
+                  <span className="flex items-center gap-1">
+                    <FacebookIcon className="w-3.5 h-3.5" /> + <InstagramIcon className="w-3.5 h-3.5" />
+                  </span>
+                  <span>Both (FB + IG)</span>
                 </button>
+
                 <button
                   onClick={() => setTarget('facebook')}
-                  className={`py-2 px-3 rounded-lg text-xs font-medium border transition-colors ${
-                    target === 'facebook' ? 'bg-blue-600 text-white border-blue-500' : 'bg-slate-950 text-slate-400 border-slate-800'
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
+                    target === 'facebook'
+                      ? 'bg-blue-600 text-white border-blue-400 shadow-lg shadow-blue-500/20'
+                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  FB Only
+                  <FacebookIcon className="w-4 h-4" />
+                  <span>FB Page Only</span>
                 </button>
+
                 <button
                   onClick={() => setTarget('instagram')}
-                  className={`py-2 px-3 rounded-lg text-xs font-medium border transition-colors ${
-                    target === 'instagram' ? 'bg-pink-600 text-white border-pink-500' : 'bg-slate-950 text-slate-400 border-slate-800'
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
+                    target === 'instagram'
+                      ? 'bg-pink-600 text-white border-pink-400 shadow-lg shadow-pink-500/20'
+                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
                   }`}
                 >
-                  IG Only
+                  <InstagramIcon className="w-4 h-4" />
+                  <span>Instagram Only</span>
                 </button>
               </div>
             </div>
+
           </div>
 
-          {/* Right Column: Customization & Preview */}
-          <div className="md:col-span-2 space-y-6 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-400" /> 2. Review & Customise Content
-            </h3>
+          {/* Right Panel: Content Customizer & Live Social Preview (7 Columns) */}
+          <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+            
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-blue-400" /> Content Editor & Live Social Mockup
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Customize your text & image before broadcasting.</p>
+              </div>
+              <span className="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 font-mono">
+                {target.toUpperCase()}
+              </span>
+            </div>
 
-            {/* Image Preview */}
+            {/* Campaign Visual URL */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-300 flex items-center gap-2">
-                <ImageIcon className="w-3.5 h-3.5 text-blue-400" /> Campaign Visual URL:
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-purple-400" /> Campaign Marketing Image URL
+                </label>
+                <span className="text-[11px] text-slate-500">Supports JPG / PNG (Min 1080x1080)</span>
+              </div>
               <input
                 type="text"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-purple-500 transition-colors shadow-inner"
               />
-              {imageUrl && (
-                <div className="relative h-44 w-full rounded-xl overflow-hidden border border-slate-800 mt-2">
-                  <img src={imageUrl} alt="Campaign Visual" className="object-cover w-full h-full" />
-                </div>
-              )}
             </div>
 
-            {/* Caption Textarea */}
+            {/* Live Visual Card */}
+            {imageUrl && (
+              <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 aspect-[16/9] shadow-lg group">
+                <img src={imageUrl} alt="Campaign Visual" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div className="absolute top-3 right-3 px-3 py-1 bg-slate-950/80 backdrop-blur-md rounded-full border border-slate-800 text-[11px] text-slate-300 font-semibold flex items-center gap-1.5 shadow-lg">
+                  <Globe className="w-3.5 h-3.5 text-blue-400" /> www.mymementoapp.com
+                </div>
+              </div>
+            )}
+
+            {/* Caption & Hashtags Editor */}
             <div className="space-y-2">
-              <label className="text-xs font-medium text-slate-300 block">Caption & Hashtags:</label>
+              <label className="text-xs font-bold text-slate-300 block">Caption & Hashtag Blueprint:</label>
               <textarea
-                rows={7}
+                rows={8}
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-sans text-slate-200 focus:outline-none focus:border-blue-500 leading-relaxed"
+                className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm font-sans text-slate-200 focus:outline-none focus:border-purple-500 leading-relaxed shadow-inner"
               />
             </div>
 
-            {/* Publish Button */}
-            <button
-              onClick={handlePublish}
-              disabled={loading}
-              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-bold text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-purple-500/20 transition-all hover:scale-[1.01] disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-5 h-5 animate-spin" />
-                  <span>Publishing to Facebook & Instagram...</span>
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5" />
-                  <span>PUBLISH CAMPAIGN ALL OVER NOW</span>
-                </>
-              )}
-            </button>
+            {/* Big Action Button */}
+            <div className="pt-4 border-t border-slate-800 space-y-3">
+              <button
+                onClick={handlePublish}
+                disabled={loading}
+                className="w-full py-4 px-8 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-purple-600/25 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>Broadcasting via Meta Graph API...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    <span>PUBLISH CAMPAIGN ALL OVER NOW</span>
+                  </>
+                )}
+              </button>
+              
+              <p className="text-center text-[11px] text-slate-500">
+                Posts directly to Facebook Page <strong className="text-slate-400">Memento - Live QR Photo Wall</strong> & Instagram <strong className="text-slate-400">@my_memento_app</strong>
+              </p>
+            </div>
+
           </div>
 
         </div>
