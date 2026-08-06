@@ -343,11 +343,11 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 76px 16px 24px;
+          padding: 68px 16px 20px;
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;
-          gap: 0.75rem;
+          gap: 0.5rem;
         }
 
         .upload-layout-grid {
