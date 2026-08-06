@@ -175,10 +175,16 @@ export async function publishToMeta({
   const instagramId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
   if (!pageToken) {
-    throw new Error('META_PAGE_ACCESS_TOKEN is missing in environment variables');
+    return {
+      error: 'META_PAGE_ACCESS_TOKEN is missing in Vercel environment variables',
+      hasToken: false,
+    };
   }
 
-  const results: any = {};
+  const results: any = {
+    hasToken: true,
+    hasInstagramId: !!instagramId,
+  };
 
   // 1. Post to Facebook Page
   if (target === 'facebook' || target === 'both') {
@@ -198,6 +204,8 @@ export async function publishToMeta({
       caption: caption,
       access_token: pageToken,
     });
+
+    results.instagramContainer = containerRes;
 
     if (containerRes && containerRes.id) {
       const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
