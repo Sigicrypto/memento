@@ -9,5 +9,5 @@ export function getSiteUrl(): string {
   if (typeof window !== 'undefined' && window.location.origin) {
     return window.location.origin.replace(/\/$/, '');
   }
-  return 'https://mymementoapp.com';
+  return 'https://www.mymementoapp.com';
 }

@@ -23,7 +23,10 @@ export async function middleware(request: NextRequest) {
   // 0. Force canonical domain redirect from vercel.app to mymementoapp.com in production
   const host = request.headers.get('host') || '';
   if (process.env.NODE_ENV === 'production' && host.includes('vercel.app')) {
-    const targetDomain = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com';
+    let targetDomain = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com';
+    if (targetDomain.includes('mymementoapp.com') && !targetDomain.includes('www.')) {
+      targetDomain = targetDomain.replace('mymementoapp.com', 'www.mymementoapp.com');
+    }
     const canonicalUrl = new URL(pathname + request.nextUrl.search, targetDomain);
     return NextResponse.redirect(canonicalUrl, 301);
   }
