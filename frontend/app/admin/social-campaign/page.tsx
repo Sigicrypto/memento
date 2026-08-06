@@ -432,7 +432,7 @@ export default function SocialCampaignStudio() {
               <p className="text-center text-[11px] text-slate-500 flex items-center justify-center gap-2">
                 <span>Posts directly to Facebook Page <strong className="text-slate-400">Memento - Live QR Photo Wall</strong> & Instagram <strong className="text-slate-400">@my_memento_app</strong></span>
                 <span className="text-slate-600">•</span>
-                <span className="text-purple-400 font-mono">Hands-Free Cron: Every Tue & Fri 10:00 AM</span>
+                <span className="text-purple-400 font-mono">Hands-Free Cron: Daily at 10:00 AM</span>
               </p>
             </div>
 
