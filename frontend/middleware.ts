@@ -20,6 +20,14 @@ function detectCountryCode(request: NextRequest): string | undefined {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 0. Force canonical domain redirect from vercel.app to mymementoapp.com in production
+  const host = request.headers.get('host') || '';
+  if (process.env.NODE_ENV === 'production' && host.includes('vercel.app')) {
+    const targetDomain = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com';
+    const canonicalUrl = new URL(pathname + request.nextUrl.search, targetDomain);
+    return NextResponse.redirect(canonicalUrl, 301);
+  }
+
   // 1. Initialize Supabase SSR client and get the response object
   // This automatically refreshes the session if needed and sets updated cookies on supabaseResponse
   const { supabase, supabaseResponse } = updateSession(request);
