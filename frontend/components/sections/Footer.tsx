@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
             <Link href="/terms" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
               Terms of Service
             </Link>
-            <a href="https://wa.me/96896095692" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
+            <a href="https://wa.me/919866161775" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
               Contact
             </a>
           </div>

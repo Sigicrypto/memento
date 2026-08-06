@@ -196,13 +196,13 @@ export default function TermsPage() {
                 <span>support@memento.app</span>
               </div>
               <a
-                href="https://wa.me/96896095692"
+                href="https://wa.me/919866161775"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold flex items-center gap-2 hover:bg-emerald-500/20 transition-colors no-underline"
               >
                 <MessageCircle size={14} />
-                <span>+968 96095692 (WhatsApp Support)</span>
+                <span>+91 9866161775 (WhatsApp Support)</span>
               </a>
             </div>
           </section>

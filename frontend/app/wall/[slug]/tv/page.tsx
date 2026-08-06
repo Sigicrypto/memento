@@ -146,9 +146,9 @@ export default function TVModePage() {
 
           {/* Bottom Right — WhatsApp Support & Queries QR Code */}
           <div className="fixed bottom-8 right-8 z-50 hidden sm:flex flex-col items-center">
-            <a href="https://wa.me/96896095692" target="_blank" rel="noopener noreferrer" className="p-4 bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/15 hover:border-emerald-500/40 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-black/90 transition-all">
+            <a href="https://wa.me/919866161775" target="_blank" rel="noopener noreferrer" className="p-4 bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/15 hover:border-emerald-500/40 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-black/90 transition-all">
               <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-                <QRCode value="https://wa.me/96896095692" size={110} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+                <QRCode value="https://wa.me/919866161775" size={110} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
               </div>
               <div>
                 <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-0.5">NEED HELP / QUERIES?</p>
@@ -242,9 +242,9 @@ export default function TVModePage() {
 
       {/* Bottom Right — WhatsApp Support & Queries QR Code */}
       <div className="fixed bottom-8 right-8 z-50 hidden sm:flex flex-col items-center">
-        <a href="https://wa.me/96896095692" target="_blank" rel="noopener noreferrer" className="p-4 bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/15 hover:border-emerald-500/40 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-black/90 transition-all">
+        <a href="https://wa.me/919866161775" target="_blank" rel="noopener noreferrer" className="p-4 bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/15 hover:border-emerald-500/40 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-black/90 transition-all">
           <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-            <QRCode value="https://wa.me/96896095692" size={110} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+            <QRCode value="https://wa.me/919866161775" size={110} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
           </div>
           <div>
             <p className="text-[9px] font-black uppercase tracking-widest text-white/60 mb-0.5">NEED HELP / QUERIES?</p>

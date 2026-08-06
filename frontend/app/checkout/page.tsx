@@ -213,7 +213,7 @@ function CheckoutContent() {
 
                   <button
                     onClick={() => {
-                      window.open(`https://wa.me/96896095692?text=${whatsappMessage}`, '_blank');
+                      window.open(`https://wa.me/919866161775?text=${whatsappMessage}`, '_blank');
                       setStatus('PENDING_MANUAL');
                     }}
                     style={{
@@ -373,7 +373,7 @@ function CheckoutContent() {
 
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button
-                  onClick={() => window.open(`https://wa.me/96896095692?text=${whatsappMessage}`, '_blank')}
+                  onClick={() => window.open(`https://wa.me/919866161775?text=${whatsappMessage}`, '_blank')}
                   style={{
                     flex: 1, padding: '14px', borderRadius: '14px', border: 'none',
                     background: 'linear-gradient(135deg, #25D366, #128C7E)', color: '#fff',

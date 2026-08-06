@@ -19,7 +19,7 @@ function getRegion(): Region {
   return 'GLOBAL';
 }
 
-const WA_NUMBER = '96896095692'; // +968 96095692
+const WA_NUMBER = '919866161775'; // +91 9866161775
 
 function buildWhatsAppUrl(name: string, plan: PlanType): string {
   const planLabel = plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'a plan';

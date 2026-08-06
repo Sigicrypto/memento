@@ -686,7 +686,7 @@ export default function AdminPage() {
                       { label: 'Supabase Dashboard', url: process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('.supabase.co', '.supabase.co') || '#', icon: '🗄️' },
                       { label: 'Vercel Dashboard', url: 'https://vercel.com', icon: '▲' },
                       { label: 'Razorpay Dashboard', url: 'https://dashboard.razorpay.com', icon: '💳' },
-                      { label: 'WhatsApp Business', url: 'https://wa.me/96896095692', icon: '💬' },
+                      { label: 'WhatsApp Business', url: 'https://wa.me/919866161775', icon: '💬' },
                     ].map(link => (
                       <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-bg-subtle border border-border hover:bg-border transition text-sm text-text-primary font-medium">
                         <span className="text-lg">{link.icon}</span>

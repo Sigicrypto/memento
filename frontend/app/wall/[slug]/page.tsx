@@ -542,9 +542,9 @@ export default function WallPage() {
 
         {/* Bottom Right WhatsApp Barcode (TV Modern Dot Matrix) */}
         <div className="absolute bottom-8 right-8 z-50 hidden lg:block">
-          <Link href="https://wa.me/96896095692" target="_blank" className="p-4 bg-surface/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-surface/90 transition-all">
+          <Link href="https://wa.me/919866161775" target="_blank" className="p-4 bg-surface/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col items-center gap-2 text-center group hover:bg-surface/90 transition-all">
             <div className="p-2.5 bg-white/10 rounded-xl border border-white/10">
-              <QRCode value="https://wa.me/96896095692" size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+              <QRCode value="https://wa.me/919866161775" size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
             </div>
             <p className="text-[10px] font-black uppercase tracking-widest text-success flex items-center gap-1">
               <span>WhatsApp Help</span>
@@ -1022,15 +1022,15 @@ export default function WallPage() {
 
       {/* Bottom Right WhatsApp Barcode (TV Modern Dot Matrix) */}
       <div className="fixed bottom-8 right-8 z-[90] hidden lg:block">
-        <Link href="https://wa.me/96896095692" target="_blank" className="p-4 bg-surface/80 backdrop-blur-2xl rounded-2xl border border-white/10 hover:border-success/30 shadow-2xl flex flex-col items-center gap-2.5 text-center group hover:bg-surface/95 transition-all">
+        <Link href="https://wa.me/919866161775" target="_blank" className="p-4 bg-surface/80 backdrop-blur-2xl rounded-2xl border border-white/10 hover:border-success/30 shadow-2xl flex flex-col items-center gap-2.5 text-center group hover:bg-surface/95 transition-all">
           <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-            <QRCode value="https://wa.me/96896095692" size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
+            <QRCode value="https://wa.me/919866161775" size={120} bgColor="transparent" fgColor="#ffffff" qrStyle="dots" eyeRadius={10} />
           </div>
           <div className="flex flex-col items-center">
             <p className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-0.5">NEED HELP?</p>
             <p className="text-xs font-extrabold text-white flex items-center gap-1.5">
               <span className="text-success">WhatsApp</span>
-              <span className="text-text-muted">• +968 9609 5692</span>
+              <span className="text-text-muted">• +91 9866161775</span>
             </p>
           </div>
         </Link>
