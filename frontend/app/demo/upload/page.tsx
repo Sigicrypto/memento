@@ -343,7 +343,7 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 4.25rem 1rem 2rem;
+          padding: 76px 16px 24px;
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;
@@ -787,9 +787,26 @@ function DemoUploadContent() {
         <FloatingParticles className="opacity-60" />
 
         {/* ── NAV ── */}
-        <nav className="lp-nav scrolled" style={{ background: 'rgba(24, 24, 27, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <Link href="/">
-            <AnimatedLogo width={150} height={50} />
+        <nav
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '64px',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 24px',
+            background: 'rgba(11, 15, 25, 0.95)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <AnimatedLogo width={140} height={32} />
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span className={`upload-status-pill ${isConnected ? 'live' : 'offline'}`}>
