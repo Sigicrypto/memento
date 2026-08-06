@@ -343,7 +343,7 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 64px 16px 16px;
+          padding: 72px 16px 16px;
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;

@@ -24,7 +24,12 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     pathname?.startsWith('/privacy') ||
     pathname?.startsWith('/terms') ||
     pathname?.startsWith('/checkout') ||
-    pathname?.startsWith('/system');
+    pathname?.startsWith('/system') ||
+    pathname?.startsWith('/demo') ||
+    pathname?.startsWith('/wall') ||
+    pathname?.startsWith('/mobile') ||
+    pathname?.startsWith('/create') ||
+    pathname?.startsWith('/dashboard');
 
   // ── Admin & standalone routes: bare shell, no site chrome ──
   if (isAdminRoute || isStandaloneRoute) {
