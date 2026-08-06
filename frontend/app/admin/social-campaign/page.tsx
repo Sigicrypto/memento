@@ -66,6 +66,8 @@ const PRESETS = [
   },
 ];
 
+import { generateRandomCampaign } from '@/lib/metaSocial';
+
 export default function SocialCampaignStudio() {
   const [selectedPreset, setSelectedPreset] = useState(PRESETS[0]);
   const [caption, setCaption] = useState(PRESETS[0].caption);
@@ -80,6 +82,31 @@ export default function SocialCampaignStudio() {
     setSelectedPreset(preset);
     setCaption(preset.caption);
     setImageUrl(preset.imageUrl);
+  };
+
+  const handleGenerateAIVariation = () => {
+    const variation = generateRandomCampaign(selectedPreset.id);
+    setCaption(variation.caption);
+    setImageUrl(variation.imageUrl);
+  };
+
+  const handleTriggerAutoPilot = async () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fetch('/api/cron/publish-social', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Auto-pilot trigger failed');
+      }
+      setResult(data);
+    } catch (err: any) {
+      setError(err.message || 'Auto-pilot failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePublish = async () => {
@@ -325,9 +352,12 @@ export default function SocialCampaignStudio() {
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">Customize your text & image before broadcasting.</p>
               </div>
-              <span className="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 font-mono">
-                {target.toUpperCase()}
-              </span>
+              <button
+                onClick={handleGenerateAIVariation}
+                className="px-3.5 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 text-xs font-semibold rounded-xl border border-purple-500/40 transition-all flex items-center gap-1.5 shadow-sm hover:scale-[1.02]"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-purple-400" /> Generate AI Variation
+              </button>
             </div>
 
             {/* Campaign Visual URL */}
@@ -367,28 +397,42 @@ export default function SocialCampaignStudio() {
               />
             </div>
 
-            {/* Big Action Button */}
+            {/* Big Action Buttons */}
             <div className="pt-4 border-t border-slate-800 space-y-3">
-              <button
-                onClick={handlePublish}
-                disabled={loading}
-                className="w-full py-4 px-8 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-purple-600/25 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              >
-                {loading ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                    <span>Broadcasting via Meta Graph API...</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    <span>PUBLISH CAMPAIGN ALL OVER NOW</span>
-                  </>
-                )}
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <button
+                  onClick={handlePublish}
+                  disabled={loading}
+                  className="sm:col-span-3 py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-purple-600/25 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>Broadcasting via Meta Graph API...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      <span>PUBLISH CAMPAIGN NOW</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={handleTriggerAutoPilot}
+                  disabled={loading}
+                  className="py-4 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center justify-center gap-2 transition-all hover:border-slate-600 disabled:opacity-50"
+                  title="Test the hands-free cron scheduler right now"
+                >
+                  <Flame className="w-4 h-4 text-amber-400" />
+                  <span>Test Auto-Pilot</span>
+                </button>
+              </div>
               
-              <p className="text-center text-[11px] text-slate-500">
-                Posts directly to Facebook Page <strong className="text-slate-400">Memento - Live QR Photo Wall</strong> & Instagram <strong className="text-slate-400">@my_memento_app</strong>
+              <p className="text-center text-[11px] text-slate-500 flex items-center justify-center gap-2">
+                <span>Posts directly to Facebook Page <strong className="text-slate-400">Memento - Live QR Photo Wall</strong> & Instagram <strong className="text-slate-400">@my_memento_app</strong></span>
+                <span className="text-slate-600">•</span>
+                <span className="text-purple-400 font-mono">Hands-Free Cron: Every Tue & Fri 10:00 AM</span>
               </p>
             </div>
 

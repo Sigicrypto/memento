@@ -1,101 +1,204 @@
-/**
- * Meta Social Media & Graph API Integration for Memento
- * Provides social sharing link generators and Meta Graph API auto-publishing helpers.
- */
+import https from 'https';
 
-export interface SocialShareParams {
-  title: string;
-  url: string;
-  hashtags?: string[];
-  imageUrl?: string;
+export interface CampaignVariation {
+  category: string;
+  hook: string;
+  body: string;
+  cta: string;
+  hashtags: string[];
+  caption: string;
+  imageUrl: string;
 }
 
-/**
- * Generate shareable URLs for direct guest social sharing
- */
-export function getSocialShareLinks(params: SocialShareParams) {
-  const encodedUrl = encodeURIComponent(params.url);
-  const encodedText = encodeURIComponent(`${params.title} - Shared via Memento QR Live Photo Wall! 📸✨`);
-  const hashtagString = params.hashtags ? encodeURIComponent(params.hashtags.join(',')) : 'MementoLiveWall,EventTech';
+const CATEGORY_IMAGES: Record<string, string[]> = {
+  wedding: [
+    'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1200&auto=format&fit=crop',
+  ],
+  corporate: [
+    'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop',
+  ],
+  birthday: [
+    'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop',
+  ],
+  product: [
+    'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
+  ],
+};
+
+const HOOKS: Record<string, string[]> = {
+  wedding: [
+    '💍 Stop waiting 4 weeks to see your wedding photos!',
+    '✨ The #1 wedding trend that couples are obsessed with in 2026:',
+    '🥂 How to turn every wedding guest into a live photographer in 10 seconds:',
+    '💖 Don’t let your guests’ photos stay hidden in their phone galleries!',
+  ],
+  corporate: [
+    '🚀 Transform your corporate gala engagement in just 1 scan!',
+    '📈 Want 3x higher guest participation at your next brand activation?',
+    '💼 The secret to interactive corporate events that attendees actually remember:',
+    '🌐 How top event directors display real-time attendee moments on main stage screens:',
+  ],
+  birthday: [
+    '🎉 Make your party unforgettable without hiring expensive photo booths!',
+    '🥳 Every guest gets to be part of your live party slideshow!',
+    '✨ Capture every candid angle of your celebration live on screen:',
+    '🎂 The ultimate interactive memory wall for your next party:',
+  ],
+  product: [
+    '⚡ Zero App Downloads. 100% Instant Live Engagement.',
+    '📱 Why event hosts choose Memento over traditional photo booths:',
+    '💡 Turn any TV or projector into a live interactive memory wall in 2 minutes:',
+  ],
+};
+
+const BODIES: Record<string, string[]> = {
+  wedding: [
+    'With Memento, guests simply scan a table QR code on their phones, snap photos, and watch them pop up live on the venue wall screen!\n\n✨ Custom wedding branding\n✨ Real-time moderation\n✨ Download the complete photo album afterwards!',
+    'Give your wedding guests an interactive experience they’ll rave about. Guests scan a QR code at their table and stream their photos directly to the main display screen!',
+  ],
+  corporate: [
+    'Memento turns every attendee’s smartphone into a live content stream for your event screens.\n\n✅ Custom corporate logo overlay\n✅ Real-time moderation panel\n✅ Instant audience engagement',
+    'Elevate your gala or product launch. Attendees scan a QR code to share event highlights live on your main venue screen!',
+  ],
+  birthday: [
+    'Guests scan a QR code, upload their favorite party photos, and see them featured live on the party display with dynamic animations!\n\n🥳 100% free for guests\n🎉 Full album download after the party',
+    'No app downloads required! Just scan, snap, and display live party memories on any screen or TV.',
+  ],
+  product: [
+    'Memento is the effortless live photo wall for events. Guests scan a QR code, upload photos from their phone browser, and watch them project live instantly.',
+  ],
+};
+
+const CTAS = [
+  '👉 Create your live QR wall today at www.mymementoapp.com 🥂',
+  '🔗 Book your event memory wall in 2 minutes at www.mymementoapp.com 🚀',
+  '✨ Start your free setup today at www.mymementoapp.com 🎉',
+];
+
+const HASHTAG_SETS = [
+  ['#MementoApp', '#LivePhotoWall', '#EventTech', '#InteractiveEvents', '#EventPlanning'],
+  ['#WeddingTech', '#CorporateEvents', '#EventMarketing', '#PartyIdeas', '#LiveEngagement'],
+  ['#DigitalPhotoWall', '#EventPlanner', '#WeddingInspiration', '#BrandActivation', '#Memento'],
+];
+
+export function generateRandomCampaign(categoryInput: string = 'wedding'): CampaignVariation {
+  const category = (categoryInput in HOOKS) ? categoryInput : 'wedding';
+
+  const hooks = HOOKS[category];
+  const bodies = BODIES[category];
+  const images = CATEGORY_IMAGES[category];
+
+  const hook = hooks[Math.floor(Math.random() * hooks.length)];
+  const body = bodies[Math.floor(Math.random() * bodies.length)];
+  const cta = CTAS[Math.floor(Math.random() * CTAS.length)];
+  const hashtags = HASHTAG_SETS[Math.floor(Math.random() * HASHTAG_SETS.length)];
+  const imageUrl = images[Math.floor(Math.random() * images.length)];
+
+  const caption = `${hook}\n\n${body}\n\n${cta}\n\n${hashtags.join(' ')}`;
 
   return {
-    whatsapp: `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}&hashtags=${hashtagString}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+    category,
+    hook,
+    body,
+    cta,
+    hashtags,
+    caption,
+    imageUrl,
   };
 }
 
-/**
- * Publish photo or event highlight to Facebook Business Page via Graph API
- */
-export async function publishToFacebookPage(params: {
-  pageId: string;
-  accessToken: string;
-  message: string;
-  imageUrl?: string;
-}) {
-  const endpoint = params.imageUrl
-    ? `https://graph.facebook.com/v19.0/${params.pageId}/photos`
-    : `https://graph.facebook.com/v19.0/${params.pageId}/feed`;
+export async function securePost(url: string, body: any) {
+  const agent = new https.Agent({ rejectUnauthorized: false });
+  const postData = JSON.stringify(body);
 
-  const payload = params.imageUrl
-    ? { url: params.imageUrl, caption: params.message, access_token: params.accessToken }
-    : { message: params.message, access_token: params.accessToken };
+  return new Promise<any>((resolve, reject) => {
+    const req = https.request(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData),
+        },
+        agent,
+      },
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error('Response parse error: ' + data));
+          }
+        });
+      }
+    );
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    req.on('error', (err) => reject(err));
+    req.write(postData);
+    req.end();
   });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(`Facebook API Error: ${err.error?.message || 'Publishing failed'}`);
-  }
-
-  return await res.json();
 }
 
-/**
- * Publish Container & Media to Instagram Business Account via Graph API
- */
-export async function publishToInstagramBusiness(params: {
-  igUserId: string;
-  accessToken: string;
+export async function publishToMeta({
+  caption,
+  imageUrl,
+  target = 'both',
+}: {
   caption: string;
   imageUrl: string;
+  target?: 'both' | 'facebook' | 'instagram';
 }) {
-  // Step 1: Create Container
-  const containerRes = await fetch(`https://graph.facebook.com/v19.0/${params.igUserId}/media`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      image_url: params.imageUrl,
-      caption: params.caption,
-      access_token: params.accessToken,
-    }),
-  });
+  const pageToken = process.env.META_PAGE_ACCESS_TOKEN;
+  const instagramId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
-  const containerData = await containerRes.json();
-  if (!containerRes.ok || !containerData.id) {
-    throw new Error(`Instagram Media Container Creation Failed: ${containerData.error?.message}`);
+  if (!pageToken) {
+    throw new Error('META_PAGE_ACCESS_TOKEN is missing in environment variables');
   }
 
-  // Step 2: Publish Container
-  const publishRes = await fetch(`https://graph.facebook.com/v19.0/${params.igUserId}/media_publish`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      creation_id: containerData.id,
-      access_token: params.accessToken,
-    }),
-  });
+  const results: any = {};
 
-  if (!publishRes.ok) {
-    const err = await publishRes.json();
-    throw new Error(`Instagram Publish Failed: ${err.error?.message}`);
+  // 1. Post to Facebook Page
+  if (target === 'facebook' || target === 'both') {
+    const fbUrl = `https://graph.facebook.com/v20.0/me/photos`;
+    results.facebook = await securePost(fbUrl, {
+      url: imageUrl,
+      caption: caption,
+      access_token: pageToken,
+    });
   }
 
-  return await publishRes.json();
+  // 2. Post to Instagram Business Account
+  if ((target === 'instagram' || target === 'both') && instagramId) {
+    const containerUrl = `https://graph.facebook.com/v20.0/${instagramId}/media`;
+    const containerRes = await securePost(containerUrl, {
+      image_url: imageUrl,
+      caption: caption,
+      access_token: pageToken,
+    });
+
+    if (containerRes.id) {
+      const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
+      results.instagram = await securePost(publishUrl, {
+        creation_id: containerRes.id,
+        access_token: pageToken,
+      });
+    } else {
+      results.instagram = containerRes;
+    }
+  }
+
+  return results;
 }
