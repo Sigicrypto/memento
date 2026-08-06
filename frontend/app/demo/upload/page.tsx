@@ -343,17 +343,17 @@ function DemoUploadContent() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 68px 16px 20px;
+          padding: 64px 16px 16px;
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;
-          gap: 0.5rem;
+          gap: 0.25rem;
         }
 
         .upload-layout-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 1rem;
+          gap: 0.75rem;
           width: 100%;
           max-width: 520px;
         }
@@ -361,7 +361,7 @@ function DemoUploadContent() {
         .upload-col-left, .upload-col-right {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: 0.75rem;
         }
 
         .upload-col-right {
@@ -373,7 +373,7 @@ function DemoUploadContent() {
             grid-template-columns: 1fr 1fr;
             max-width: 1000px;
             align-items: start;
-            gap: 1.5rem;
+            gap: 1.25rem;
           }
         }
 
@@ -381,17 +381,20 @@ function DemoUploadContent() {
         .upload-header {
           text-align: center;
           width: 100%;
-          margin-bottom: 0.25rem;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
+          padding-top: 0 !important;
         }
         .upload-header .hero-h1 {
-          font-size: clamp(1.5rem, 4.5vw, 2.2rem);
-          line-height: 1.15;
-          margin-top: 0.25rem;
-          margin-bottom: 0.25rem;
+          font-size: clamp(1.35rem, 3.8vw, 1.85rem);
+          line-height: 1.1;
+          margin-top: 0 !important;
+          margin-bottom: 0 !important;
         }
         .upload-header .hero-sub {
-          font-size: 0.875rem;
-          margin-bottom: 0;
+          font-size: 0.8rem;
+          margin-top: 2px !important;
+          margin-bottom: 0 !important;
         }
 
         /* ── Status badge (nav area) ── */
