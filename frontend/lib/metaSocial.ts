@@ -119,37 +119,47 @@ export function generateRandomCampaign(categoryInput: string = 'wedding'): Campa
 }
 
 export async function securePost(url: string, body: any) {
-  const agent = new https.Agent({ rejectUnauthorized: false });
-  const postData = JSON.stringify(body);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    return data;
+  } catch (fetchErr) {
+    const agent = new https.Agent({ rejectUnauthorized: false });
+    const postData = JSON.stringify(body);
 
-  return new Promise<any>((resolve, reject) => {
-    const req = https.request(
-      url,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData),
+    return new Promise<any>((resolve, reject) => {
+      const req = https.request(
+        url,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData),
+          },
+          agent,
         },
-        agent,
-      },
-      (res) => {
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(data));
-          } catch (e) {
-            reject(new Error('Response parse error: ' + data));
-          }
-        });
-      }
-    );
+        (res) => {
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('end', () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(new Error('Response parse error: ' + data));
+            }
+          });
+        }
+      );
 
-    req.on('error', (err) => reject(err));
-    req.write(postData);
-    req.end();
-  });
+      req.on('error', (err) => reject(err));
+      req.write(postData);
+      req.end();
+    });
+  }
 }
 
 export async function publishToMeta({
@@ -189,7 +199,7 @@ export async function publishToMeta({
       access_token: pageToken,
     });
 
-    if (containerRes.id) {
+    if (containerRes && containerRes.id) {
       const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
       results.instagram = await securePost(publishUrl, {
         creation_id: containerRes.id,
