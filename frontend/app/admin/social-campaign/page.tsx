@@ -94,6 +94,14 @@ export default function SocialCampaignStudio() {
     if (preset.videoUrl) setVideoUrl(preset.videoUrl);
   };
 
+  const handleSelectFormat = (format: 'IMAGE' | 'VIDEO') => {
+    setMediaType(format);
+    const variation = generateRandomCampaign(selectedPreset.id, format);
+    setCaption(variation.caption);
+    setImageUrl(variation.imageUrl);
+    if (variation.videoUrl) setVideoUrl(variation.videoUrl);
+  };
+
   const handleGenerateAIVariation = () => {
     const variation = generateRandomCampaign(selectedPreset.id, mediaType);
     setCaption(variation.caption);
@@ -373,7 +381,7 @@ export default function SocialCampaignStudio() {
 
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={() => setMediaType('IMAGE')}
+                  onClick={() => handleSelectFormat('IMAGE')}
                   className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
                     mediaType === 'IMAGE'
                       ? 'bg-purple-600 text-white border-purple-400 shadow-lg shadow-purple-500/20'
@@ -385,7 +393,7 @@ export default function SocialCampaignStudio() {
                 </button>
 
                 <button
-                  onClick={() => setMediaType('VIDEO')}
+                  onClick={() => handleSelectFormat('VIDEO')}
                   className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
                     mediaType === 'VIDEO'
                       ? 'bg-emerald-600 text-white border-emerald-400 shadow-lg shadow-emerald-500/20'
