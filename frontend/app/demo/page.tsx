@@ -55,7 +55,7 @@ import {
 const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
   {
     id: 'sample-1',
-    url: '/sample-photos/wedding.png',
+    url: '/sample-photos/wedding-day.jpg',
     type: 'image',
     caption: 'Pure magic under the golden lights ✨',
     uploader: 'Priya & Rohan',
@@ -63,7 +63,7 @@ const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
   },
   {
     id: 'sample-2',
-    url: '/sample-photos/tech-conf.png',
+    url: '/sample-photos/corporate-event.jpg',
     type: 'image',
     caption: 'Keynote opening at Tech Summit 2026 🚀',
     uploader: 'Alex M.',
@@ -71,7 +71,7 @@ const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
   },
   {
     id: 'sample-3',
-    url: '/sample-photos/birthday.png',
+    url: '/sample-photos/birthday-party.jpg',
     type: 'image',
     caption: '25th Birthday Bash! Unforgettable night 🎉',
     uploader: 'Sara & Crew',
@@ -79,7 +79,7 @@ const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
   },
   {
     id: 'sample-4',
-    url: '/sample-photos/gala.png',
+    url: '/sample-photos/family-reunion.jpg',
     type: 'image',
     caption: 'Annual Leadership Gala Excellence Award 🏆',
     uploader: 'Marcus Vance',
@@ -87,7 +87,7 @@ const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
   },
   {
     id: 'sample-5',
-    url: '/sample-photos/graduation.png',
+    url: '/sample-photos/graduation-day.jpg',
     type: 'image',
     caption: 'Class of 2026! We did it! 🎓',
     uploader: 'David & Friends',
@@ -95,7 +95,7 @@ const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
   },
   {
     id: 'sample-6',
-    url: '/sample-photos/festival.png',
+    url: '/sample-photos/music-festival.jpg',
     type: 'image',
     caption: 'Main stage laser show at Sunset Beats 🎶',
     uploader: 'Maya Lin',

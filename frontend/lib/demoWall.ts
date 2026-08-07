@@ -39,6 +39,15 @@ export function getOrCreateDemoId(preferredId?: string | null) {
   return demoId;
 }
 
+const SAMPLE_URL_MAP: Record<string, string> = {
+  '/sample-photos/wedding.png': '/sample-photos/wedding-day.jpg',
+  '/sample-photos/tech-conf.png': '/sample-photos/corporate-event.jpg',
+  '/sample-photos/birthday.png': '/sample-photos/birthday-party.jpg',
+  '/sample-photos/gala.png': '/sample-photos/family-reunion.jpg',
+  '/sample-photos/graduation.png': '/sample-photos/graduation-day.jpg',
+  '/sample-photos/festival.png': '/sample-photos/music-festival.jpg',
+};
+
 export function readDemoPhotos(demoId: string): DemoMedia[] {
   if (!isBrowser() || !demoId) return [];
 
@@ -51,6 +60,10 @@ export function readDemoPhotos(demoId: string): DemoMedia[] {
 
     return parsed
       .filter((item) => Boolean(item?.id && item?.url && item?.type))
+      .map((item) => ({
+        ...item,
+        url: SAMPLE_URL_MAP[item.url] || item.url,
+      }))
       .sort((a, b) => b.createdAt - a.createdAt);
   } catch {
     return [];
