@@ -290,6 +290,11 @@ export async function publishToMeta({
     results.instagramContainer = containerRes;
 
     if (containerRes && containerRes.id) {
+      if (mediaType === 'VIDEO') {
+        // Wait 5 seconds for Instagram video transcoding engine to process MP4 Reel
+        await new Promise((r) => setTimeout(r, 5000));
+      }
+
       const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
       results.instagram = await securePost(publishUrl, {
         creation_id: containerRes.id,
