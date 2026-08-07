@@ -16,6 +16,7 @@ import {
   Check,
   Flame,
   CheckCircle,
+  AlertCircle,
   HelpCircle
 } from 'lucide-react';
 
