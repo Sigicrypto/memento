@@ -7,25 +7,29 @@ export async function GET(request: Request) {
     const categories = ['wedding', 'corporate', 'birthday', 'product'];
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
 
-    // Generate fresh AI variation
-    const variation = generateRandomCampaign(randomCategory);
+    // Generate fresh AI variation (mix of Photo & MP4 Video Reel)
+    const variation = generateRandomCampaign(randomCategory, 'MIX');
 
     // Publish to Facebook & Instagram automatically
     const results = await publishToMeta({
       caption: variation.caption,
       imageUrl: variation.imageUrl,
+      videoUrl: variation.videoUrl,
+      mediaType: variation.mediaType,
       target: 'both',
     });
 
     console.log('Cron Auto-Pilot Post Published:', {
       category: randomCategory,
+      mediaType: variation.mediaType,
       results,
     });
 
     return NextResponse.json({
       success: true,
-      mode: 'Hands-Free Weekly Auto-Pilot',
+      mode: 'Hands-Free Daily Auto-Pilot (Photos & MP4 Reels)',
       category: randomCategory,
+      mediaType: variation.mediaType,
       variation,
       results,
     });

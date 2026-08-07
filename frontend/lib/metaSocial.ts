@@ -2,12 +2,14 @@ import https from 'https';
 
 export interface CampaignVariation {
   category: string;
+  mediaType: 'IMAGE' | 'VIDEO';
   hook: string;
   body: string;
   cta: string;
   hashtags: string[];
   caption: string;
   imageUrl: string;
+  videoUrl?: string;
 }
 
 const CATEGORY_IMAGES: Record<string, string[]> = {
@@ -33,6 +35,28 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
+  ],
+};
+
+const CATEGORY_VIDEOS: Record<string, string[]> = {
+  wedding: [
+    'https://assets.mixkit.co/videos/preview/mixkit-wedding-couple-dancing-under-lights-41312-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-bride-and-groom-cheering-at-their-wedding-41315-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-guests-throwing-confetti-at-a-wedding-41316-large.mp4',
+  ],
+  corporate: [
+    'https://assets.mixkit.co/videos/preview/mixkit-people-attending-a-business-conference-41527-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-crowd-applauding-at-a-presentation-41528-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-smartphones-at-an-event-41530-large.mp4',
+  ],
+  birthday: [
+    'https://assets.mixkit.co/videos/preview/mixkit-friends-celebrating-with-sparklers-at-a-party-41310-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-people-dancing-at-a-nightclub-party-41311-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-friends-blowing-out-candles-on-a-birthday-cake-41313-large.mp4',
+  ],
+  product: [
+    'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-smartphones-at-an-event-41530-large.mp4',
+    'https://assets.mixkit.co/videos/preview/mixkit-crowd-applauding-at-a-presentation-41528-large.mp4',
   ],
 };
 
@@ -92,29 +116,39 @@ const HASHTAG_SETS = [
   ['#DigitalPhotoWall', '#EventPlanner', '#WeddingInspiration', '#BrandActivation', '#Memento'],
 ];
 
-export function generateRandomCampaign(categoryInput: string = 'wedding'): CampaignVariation {
+export function generateRandomCampaign(
+  categoryInput: string = 'wedding',
+  requestedFormat?: 'IMAGE' | 'VIDEO' | 'MIX'
+): CampaignVariation {
   const category = (categoryInput in HOOKS) ? categoryInput : 'wedding';
+  const format = requestedFormat === 'IMAGE' || requestedFormat === 'VIDEO'
+    ? requestedFormat
+    : (Math.random() > 0.5 ? 'VIDEO' : 'IMAGE');
 
   const hooks = HOOKS[category];
   const bodies = BODIES[category];
   const images = CATEGORY_IMAGES[category];
+  const videos = CATEGORY_VIDEOS[category] || CATEGORY_VIDEOS.wedding;
 
   const hook = hooks[Math.floor(Math.random() * hooks.length)];
   const body = bodies[Math.floor(Math.random() * bodies.length)];
   const cta = CTAS[Math.floor(Math.random() * CTAS.length)];
   const hashtags = HASHTAG_SETS[Math.floor(Math.random() * HASHTAG_SETS.length)];
   const imageUrl = images[Math.floor(Math.random() * images.length)];
+  const videoUrl = videos[Math.floor(Math.random() * videos.length)];
 
   const caption = `${hook}\n\n${body}\n\n${cta}\n\n${hashtags.join(' ')}`;
 
   return {
     category,
+    mediaType: format,
     hook,
     body,
     cta,
     hashtags,
     caption,
     imageUrl,
+    videoUrl,
   };
 }
 
@@ -165,10 +199,14 @@ export async function securePost(url: string, body: any) {
 export async function publishToMeta({
   caption,
   imageUrl,
+  videoUrl,
+  mediaType = 'IMAGE',
   target = 'both',
 }: {
   caption: string;
   imageUrl: string;
+  videoUrl?: string;
+  mediaType?: 'IMAGE' | 'VIDEO';
   target?: 'both' | 'facebook' | 'instagram';
 }) {
   let pageToken = process.env.META_PAGE_ACCESS_TOKEN;
@@ -191,39 +229,56 @@ export async function publishToMeta({
   const results: any = {
     hasToken: true,
     hasInstagramId: !!instagramId,
+    mediaType,
   };
 
   // 1. Post to Facebook Page
   if (target === 'facebook' || target === 'both') {
-    const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
-    const fbRes = await securePost(fbFeedUrl, {
-      message: caption,
-      link: imageUrl,
-      access_token: pageToken,
-    });
-
-    if (fbRes.error) {
-      // Fallback to photo upload endpoint if feed link post returns an error
-      const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
-      results.facebook = await securePost(fbPhotoUrl, {
-        url: imageUrl,
-        caption: caption,
+    if (mediaType === 'VIDEO' && videoUrl) {
+      const fbVideoUrl = `https://graph.facebook.com/v20.0/me/videos`;
+      results.facebook = await securePost(fbVideoUrl, {
+        file_url: videoUrl,
+        description: caption,
         access_token: pageToken,
       });
     } else {
-      results.facebook = fbRes;
+      const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
+      const fbRes = await securePost(fbFeedUrl, {
+        message: caption,
+        link: imageUrl,
+        access_token: pageToken,
+      });
+
+      if (fbRes.error) {
+        const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
+        results.facebook = await securePost(fbPhotoUrl, {
+          url: imageUrl,
+          caption: caption,
+          access_token: pageToken,
+        });
+      } else {
+        results.facebook = fbRes;
+      }
     }
   }
 
   // 2. Post to Instagram Business Account
   if ((target === 'instagram' || target === 'both') && instagramId) {
     const containerUrl = `https://graph.facebook.com/v20.0/${instagramId}/media`;
-    const containerRes = await securePost(containerUrl, {
-      image_url: imageUrl,
-      caption: caption,
-      access_token: pageToken,
-    });
+    const payload = mediaType === 'VIDEO' && videoUrl
+      ? {
+          media_type: 'REELS',
+          video_url: videoUrl,
+          caption: caption,
+          access_token: pageToken,
+        }
+      : {
+          image_url: imageUrl,
+          caption: caption,
+          access_token: pageToken,
+        };
 
+    const containerRes = await securePost(containerUrl, payload);
     results.instagramContainer = containerRes;
 
     if (containerRes && containerRes.id) {

@@ -17,6 +17,8 @@ import {
   Flame,
   CheckCircle,
   AlertCircle,
+  Video,
+  Film,
   HelpCircle
 } from 'lucide-react';
 
@@ -39,7 +41,8 @@ const PRESETS = [
     title: 'Wedding Memory Wall',
     desc: 'Target engaged couples & luxury wedding planners with instant live guest photo sharing.',
     imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
-    caption: `💍 Stop waiting 4 weeks for wedding photos! With Memento, guests scan a QR code at their table, snap photos on their phones, and watch them appear live on the venue screen!\n\n✨ Custom wedding branding\n✨ Zero app downloads required\n✨ Instant guest photo sharing\n\nBook your live QR wall today at www.mymementoapp.com 🥂❤️\n\n#WeddingInspiration #LivePhotoWall #WeddingTech #Memento #EventPlanner #WeddingPlanning #InteractiveWeddings`,
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-wedding-couple-dancing-under-lights-41312-large.mp4',
+    caption: `💍 Stop waiting 4 weeks for wedding photos! With Memento, guests scan a QR code at their table, snap photos on their phones, and watch them appear live on the big screen! \n\n✨ Custom branding\n✨ Zero app downloads required\n✨ Instant guest photo sharing\n\nBook your live QR wall today at www.mymementoapp.com 🥂❤️\n\n#WeddingInspiration #LivePhotoWall #WeddingTech #Memento #EventPlanner #WeddingPlanning #InteractiveWeddings`,
   },
   {
     id: 'corporate',
@@ -47,6 +50,7 @@ const PRESETS = [
     title: 'Corporate Gala & Brand Activation',
     desc: 'Target HR teams, event directors, and enterprise brand managers.',
     imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-people-attending-a-business-conference-41527-large.mp4',
     caption: `🚀 Transform corporate event engagement in 1 scan! Memento turns every attendee's smartphone into a live camera feed for your main stage screen.\n\n📈 3x higher guest participation\n🎨 Custom corporate branding & logo overlay\n🛡️ Real-time photo moderation\n\nElevate your brand experience at www.mymementoapp.com 🌟\n\n#CorporateEvents #EventMarketing #BrandActivation #EventPlanner #Memento #EventTech #LiveEngagement`,
   },
   {
@@ -55,6 +59,7 @@ const PRESETS = [
     title: 'Birthday & Private Celebrations',
     desc: 'Target birthday hosts, milestone anniversaries, and VIP parties.',
     imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-friends-celebrating-with-sparklers-at-a-party-41310-large.mp4',
     caption: `🎉 Make your party unforgettable! Capture every angle of your celebration with Memento's live QR photo wall.\n\n📱 Guests just scan & upload\n✨ Live wall slideshow with animations\n💖 Download the full photo album after the party!\n\nSetup your wall in 2 minutes at www.mymementoapp.com 🥳\n\n#PartyIdeas #BirthdayCelebration #PhotoWall #MementoApp #LivePartyFeed #EventTech`,
   },
   {
@@ -63,6 +68,7 @@ const PRESETS = [
     title: 'Product Spotlight (Zero App Download)',
     desc: 'Focus on frictionless guest experience and zero setup friction.',
     imageUrl: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-smartphones-at-an-event-41530-large.mp4',
     caption: `⚡ Why event hosts love Memento: No app downloads, no complicated setup, and instant live photo sharing for any venue screen or TV.\n\nCreate your memory wall for your next event at www.mymementoapp.com!\n\n#EventTech #DigitalPhotoWall #Memento #LiveEvents #EventOrganizers`,
   },
 ];
@@ -73,6 +79,8 @@ export default function SocialCampaignStudio() {
   const [selectedPreset, setSelectedPreset] = useState(PRESETS[0]);
   const [caption, setCaption] = useState(PRESETS[0].caption);
   const [imageUrl, setImageUrl] = useState(PRESETS[0].imageUrl);
+  const [videoUrl, setVideoUrl] = useState(PRESETS[0].videoUrl);
+  const [mediaType, setMediaType] = useState<'IMAGE' | 'VIDEO'>('IMAGE');
   const [target, setTarget] = useState<'both' | 'facebook' | 'instagram'>('both');
 
   const [loading, setLoading] = useState(false);
@@ -83,12 +91,15 @@ export default function SocialCampaignStudio() {
     setSelectedPreset(preset);
     setCaption(preset.caption);
     setImageUrl(preset.imageUrl);
+    if (preset.videoUrl) setVideoUrl(preset.videoUrl);
   };
 
   const handleGenerateAIVariation = () => {
-    const variation = generateRandomCampaign(selectedPreset.id);
+    const variation = generateRandomCampaign(selectedPreset.id, mediaType);
     setCaption(variation.caption);
     setImageUrl(variation.imageUrl);
+    if (variation.videoUrl) setVideoUrl(variation.videoUrl);
+    setMediaType(variation.mediaType);
   };
 
   const handleTriggerAutoPilot = async () => {
@@ -123,6 +134,8 @@ export default function SocialCampaignStudio() {
           presetKey: selectedPreset.id,
           customCaption: caption,
           customImageUrl: imageUrl,
+          customVideoUrl: videoUrl,
+          mediaType,
           target,
         }),
       });
@@ -149,23 +162,26 @@ export default function SocialCampaignStudio() {
         <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-600 to-blue-600 text-white shadow-xl shadow-purple-500/20">
-                <Sparkles className="w-7 h-7" />
+              <div className="p-3 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 text-white shadow-lg shadow-purple-500/20">
+                <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                  Social Media Studio <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-medium">1-Click Auto-Post</span>
-                </h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
-                  Create and auto-publish targeted marketing campaigns for <span className="text-blue-400 font-semibold underline decoration-blue-400/40">www.mymementoapp.com</span> across Facebook & Instagram simultaneously.
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-black tracking-tight text-white">Social Media Studio</h1>
+                  <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[11px] font-semibold">
+                    1-Click Auto-Post
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Create and auto-publish targeted marketing campaigns for <span className="text-purple-400 font-medium">www.mymementoapp.com</span> across Facebook & Instagram simultaneously.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-start md:self-center shrink-0">
-            <div className="px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold rounded-xl flex items-center gap-2 shadow-inner">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <div className="flex items-center gap-3">
+            <div className="px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Meta Graph API Connected</span>
             </div>
             <a
@@ -347,11 +363,46 @@ export default function SocialCampaignStudio() {
               </div>
             </div>
 
-            {/* Step 2 Card: Channel Target */}
+            {/* Step 2 Card: Media Format Selector */}
             <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
               <div className="border-b border-slate-800 pb-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2 tracking-wide uppercase">
-                  <Share2 className="w-4 h-4 text-blue-400" /> Step 2: Target Channels
+                  <Film className="w-4 h-4 text-emerald-400" /> Step 2: Media Format (Photo / MP4 Reel)
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setMediaType('IMAGE')}
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
+                    mediaType === 'IMAGE'
+                      ? 'bg-purple-600 text-white border-purple-400 shadow-lg shadow-purple-500/20'
+                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span>📷 HD Photo Post</span>
+                </button>
+
+                <button
+                  onClick={() => setMediaType('VIDEO')}
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1.5 ${
+                    mediaType === 'VIDEO'
+                      ? 'bg-emerald-600 text-white border-emerald-400 shadow-lg shadow-emerald-500/20'
+                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <Video className="w-4 h-4" />
+                  <span>🎥 9:16 Video Reel</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Step 3 Card: Channel Target */}
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+              <div className="border-b border-slate-800 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2 tracking-wide uppercase">
+                  <Share2 className="w-4 h-4 text-blue-400" /> Step 3: Target Channels
                 </h3>
               </div>
 
@@ -406,7 +457,7 @@ export default function SocialCampaignStudio() {
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-400" /> Content Editor & Live Social Mockup
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Customize your text & image before broadcasting.</p>
+                <p className="text-xs text-slate-400 mt-0.5">Customize your text & media before broadcasting.</p>
               </div>
               <button
                 onClick={handleGenerateAIVariation}
@@ -420,27 +471,41 @@ export default function SocialCampaignStudio() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-300 flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-purple-400" /> Campaign Marketing Image URL
+                  {mediaType === 'VIDEO' ? <Video className="w-4 h-4 text-emerald-400" /> : <ImageIcon className="w-4 h-4 text-purple-400" />}
+                  {mediaType === 'VIDEO' ? 'Campaign MP4 Video Reel URL' : 'Campaign Marketing Image URL'}
                 </label>
-                <span className="text-[11px] text-slate-500">Supports JPG / PNG (Min 1080x1080)</span>
+                <span className="text-[11px] text-slate-500">
+                  {mediaType === 'VIDEO' ? 'Supports MP4 (9:16 Vertical Reel)' : 'Supports JPG / PNG (Min 1080x1080)'}
+                </span>
               </div>
-              <input
-                type="text"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-purple-500 transition-colors shadow-inner"
-              />
+              {mediaType === 'VIDEO' ? (
+                <input
+                  type="text"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-emerald-500 transition-colors shadow-inner"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-purple-500 transition-colors shadow-inner"
+                />
+              )}
             </div>
 
             {/* Live Visual Card */}
-            {imageUrl && (
-              <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 aspect-[16/9] shadow-lg group">
-                <img src={imageUrl} alt="Campaign Visual" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute top-3 right-3 px-3 py-1 bg-slate-950/80 backdrop-blur-md rounded-full border border-slate-800 text-[11px] text-slate-300 font-semibold flex items-center gap-1.5 shadow-lg">
-                  <Globe className="w-3.5 h-3.5 text-blue-400" /> www.mymementoapp.com
-                </div>
+            <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 aspect-[16/9] shadow-lg group flex items-center justify-center">
+              {mediaType === 'VIDEO' && videoUrl ? (
+                <video src={videoUrl} controls autoPlay loop muted className="w-full h-full object-cover" />
+              ) : (
+                imageUrl && <img src={imageUrl} alt="Campaign Visual" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              )}
+              <div className="absolute top-3 right-3 px-3 py-1 bg-slate-950/80 backdrop-blur-md rounded-full border border-slate-800 text-[11px] text-slate-300 font-semibold flex items-center gap-1.5 shadow-lg">
+                <Globe className="w-3.5 h-3.5 text-blue-400" /> www.mymementoapp.com
               </div>
-            )}
+            </div>
 
             {/* Caption & Hashtags Editor */}
             <div className="space-y-2">
@@ -449,27 +514,27 @@ export default function SocialCampaignStudio() {
                 rows={8}
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm font-sans text-slate-200 focus:outline-none focus:border-purple-500 leading-relaxed shadow-inner"
+                className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500 transition-colors leading-relaxed shadow-inner"
               />
             </div>
 
-            {/* Big Action Buttons */}
-            <div className="pt-4 border-t border-slate-800 space-y-3">
+            {/* Action Bar */}
+            <div className="pt-2 border-t border-slate-800 space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <button
                   onClick={handlePublish}
                   disabled={loading}
-                  className="sm:col-span-3 py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-3 shadow-xl shadow-purple-600/25 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                  className="sm:col-span-3 py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-blue-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
                 >
                   {loading ? (
                     <>
                       <RefreshCw className="w-5 h-5 animate-spin" />
-                      <span>Broadcasting via Meta Graph API...</span>
+                      <span>BROADCASTING TO META...</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5" />
-                      <span>PUBLISH CAMPAIGN NOW</span>
+                      <span>PUBLISH CAMPAIGN NOW ({mediaType === 'VIDEO' ? '🎥 MP4 Reel' : '📷 HD Photo'})</span>
                     </>
                   )}
                 </button>
