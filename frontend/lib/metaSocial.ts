@@ -2,14 +2,12 @@ import https from 'https';
 
 export interface CampaignVariation {
   category: string;
-  mediaType: 'IMAGE' | 'VIDEO';
   hook: string;
   body: string;
   cta: string;
   hashtags: string[];
   caption: string;
   imageUrl: string;
-  videoUrl?: string;
 }
 
 const CATEGORY_IMAGES: Record<string, string[]> = {
@@ -35,25 +33,6 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
-  ],
-};
-
-const CATEGORY_VIDEOS: Record<string, string[]> = {
-  wedding: [
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-  ],
-  corporate: [
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-  ],
-  birthday: [
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-  ],
-  product: [
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
   ],
 };
 
@@ -113,39 +92,29 @@ const HASHTAG_SETS = [
   ['#DigitalPhotoWall', '#EventPlanner', '#WeddingInspiration', '#BrandActivation', '#Memento'],
 ];
 
-export function generateRandomCampaign(
-  categoryInput: string = 'wedding',
-  requestedFormat?: 'IMAGE' | 'VIDEO' | 'MIX'
-): CampaignVariation {
+export function generateRandomCampaign(categoryInput: string = 'wedding'): CampaignVariation {
   const category = (categoryInput in HOOKS) ? categoryInput : 'wedding';
-  const format = requestedFormat === 'IMAGE' || requestedFormat === 'VIDEO'
-    ? requestedFormat
-    : (Math.random() > 0.5 ? 'VIDEO' : 'IMAGE');
 
   const hooks = HOOKS[category];
   const bodies = BODIES[category];
   const images = CATEGORY_IMAGES[category];
-  const videos = CATEGORY_VIDEOS[category] || CATEGORY_VIDEOS.wedding;
 
   const hook = hooks[Math.floor(Math.random() * hooks.length)];
   const body = bodies[Math.floor(Math.random() * bodies.length)];
   const cta = CTAS[Math.floor(Math.random() * CTAS.length)];
   const hashtags = HASHTAG_SETS[Math.floor(Math.random() * HASHTAG_SETS.length)];
   const imageUrl = images[Math.floor(Math.random() * images.length)];
-  const videoUrl = videos[Math.floor(Math.random() * videos.length)];
 
   const caption = `${hook}\n\n${body}\n\n${cta}\n\n${hashtags.join(' ')}`;
 
   return {
     category,
-    mediaType: format,
     hook,
     body,
     cta,
     hashtags,
     caption,
     imageUrl,
-    videoUrl,
   };
 }
 
@@ -196,14 +165,10 @@ export async function securePost(url: string, body: any) {
 export async function publishToMeta({
   caption,
   imageUrl,
-  videoUrl,
-  mediaType = 'IMAGE',
   target = 'both',
 }: {
   caption: string;
   imageUrl: string;
-  videoUrl?: string;
-  mediaType?: 'IMAGE' | 'VIDEO';
   target?: 'both' | 'facebook' | 'instagram';
 }) {
   let pageToken = process.env.META_PAGE_ACCESS_TOKEN;
@@ -226,86 +191,41 @@ export async function publishToMeta({
   const results: any = {
     hasToken: true,
     hasInstagramId: !!instagramId,
-    mediaType,
   };
 
   // 1. Post to Facebook Page
   if (target === 'facebook' || target === 'both') {
-    if (mediaType === 'VIDEO' && videoUrl) {
-      const fbVideoUrl = `https://graph.facebook.com/v20.0/me/videos`;
-      const videoRes = await securePost(fbVideoUrl, {
-        file_url: videoUrl,
-        description: caption,
+    const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
+    const fbRes = await securePost(fbFeedUrl, {
+      message: caption,
+      link: imageUrl,
+      access_token: pageToken,
+    });
+
+    if (fbRes.error) {
+      const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
+      results.facebook = await securePost(fbPhotoUrl, {
+        url: imageUrl,
+        caption: caption,
         access_token: pageToken,
       });
-
-      if (videoRes.error) {
-        const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
-        results.facebook = await securePost(fbFeedUrl, {
-          message: caption,
-          link: videoUrl,
-          access_token: pageToken,
-        });
-      } else {
-        results.facebook = videoRes;
-      }
     } else {
-      const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
-      const fbRes = await securePost(fbFeedUrl, {
-        message: caption,
-        link: imageUrl,
-        access_token: pageToken,
-      });
-
-      if (fbRes.error) {
-        const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
-        results.facebook = await securePost(fbPhotoUrl, {
-          url: imageUrl,
-          caption: caption,
-          access_token: pageToken,
-        });
-      } else {
-        results.facebook = fbRes;
-      }
+      results.facebook = fbRes;
     }
   }
 
   // 2. Post to Instagram Business Account
   if ((target === 'instagram' || target === 'both') && instagramId) {
     const containerUrl = `https://graph.facebook.com/v20.0/${instagramId}/media`;
-    const payload = mediaType === 'VIDEO' && videoUrl
-      ? {
-          media_type: 'REELS',
-          video_url: videoUrl,
-          caption: caption,
-          access_token: pageToken,
-        }
-      : {
-          image_url: imageUrl,
-          caption: caption,
-          access_token: pageToken,
-        };
+    const containerRes = await securePost(containerUrl, {
+      image_url: imageUrl,
+      caption: caption,
+      access_token: pageToken,
+    });
 
-    const containerRes = await securePost(containerUrl, payload);
     results.instagramContainer = containerRes;
 
     if (containerRes && containerRes.id) {
-      if (mediaType === 'VIDEO') {
-        // Poll Instagram Reel video status until FINISHED (Meta Graph API standard)
-        let isReady = false;
-        let attempts = 0;
-        const statusUrl = `https://graph.facebook.com/v20.0/${containerRes.id}?fields=status_code,status&access_token=${pageToken}`;
-
-        while (!isReady && attempts < 8) {
-          await new Promise((r) => setTimeout(r, 4000));
-          attempts++;
-          const statusRes = await securePost(statusUrl, {});
-          if (statusRes && (statusRes.status_code === 'FINISHED' || statusRes.status === 'FINISHED')) {
-            isReady = true;
-          }
-        }
-      }
-
       const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
       results.instagram = await securePost(publishUrl, {
         creation_id: containerRes.id,

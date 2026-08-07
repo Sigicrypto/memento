@@ -3,13 +3,11 @@ import { publishToMeta } from '@/lib/metaSocial';
 
 export async function POST(request: Request) {
   try {
-    const { caption, imageUrl, videoUrl, mediaType = 'IMAGE', target = 'both' } = await request.json();
+    const { caption, imageUrl, target = 'both' } = await request.json();
 
     const results = await publishToMeta({
       caption,
       imageUrl,
-      videoUrl,
-      mediaType,
       target,
     });
 
