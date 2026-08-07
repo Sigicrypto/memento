@@ -20,28 +20,6 @@ const Footer: React.FC = () => {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="flex flex-col gap-10"
           >
-            {/* Dedicated Partner Program Banner */}
-            <div className="p-6 md:p-8 rounded-3xl bg-slate-900/90 border border-emerald-500/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-              <div className="flex items-center gap-4 text-left">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-lg">
-                  <span className="text-xl">🤝</span>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-black text-white tracking-tight">Memento Event Partner Program</h4>
-                  <p className="text-xs sm:text-sm text-slate-300">Earn a 10% cash payout on every event booked using your unique partner ID.</p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setIsPartnerModalOpen(true)}
-                className="w-full md:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 shrink-0"
-              >
-                Earn 10% Commission ↗
-              </button>
-            </div>
-
             {/* Links and Copyright Row */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-3 opacity-80 hover:opacity-100 transition-opacity duration-300">
