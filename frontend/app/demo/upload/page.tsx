@@ -842,11 +842,31 @@ function DemoUploadContent() {
 
           {/* ── Success banner ── */}
           {uploadSuccess && (
-            <div className="space-y-4">
+            <div className="space-y-4 w-full">
               <div className="upload-success">
                 <span className="success-emoji">🎉</span>
                 <p className="success-title">Posted to the wall!</p>
-                <p className="success-sub">Your memories are now live for everyone to see.</p>
+                <p className="success-sub mb-4">Your memories are now live for everyone to see.</p>
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUploadSuccess(false);
+                      const inputCard = document.querySelector('.upload-col-left');
+                      if (inputCard) inputCard.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-md"
+                  >
+                    + Upload Another Photo
+                  </button>
+                  <Link
+                    href={`/demo?id=${demoId}`}
+                    target="_blank"
+                    className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs uppercase tracking-wider transition-all border border-white/20"
+                  >
+                    View Live Wall ↗
+                  </Link>
+                </div>
               </div>
               <WhatsAppViralBanner eventName="Memento Demo Wall" eventSlug={demoId || 'demo'} />
             </div>
@@ -1199,7 +1219,7 @@ function DemoUploadContent() {
            backdropFilter: 'blur(12px)', zIndex: 100, display: 'flex', alignItems: 'center',
            justifyContent: 'center', paddingBottom: '1rem'
         }}>
-           <Link href={`/?id=${demoId}&demo=true`} style={{
+           <Link href={`/demo?id=${demoId}`} style={{
               display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem',
               fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none'
            }}>

@@ -398,11 +398,14 @@ export default function WallPage() {
     </div>
   );
 
+  const audioNode = musicTrack && isAudioPlaying ? <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} /> : null;
+
   // ── AUTOMATIC SLIDESHOW MODE ──────────────────────────────────
   if (viewMode === 'slideshow') {
     const currentPhoto = displayedPhotos[slideIndex % (displayedPhotos.length || 1)];
     return (
       <div className="fixed inset-0 z-[1000] overflow-hidden flex flex-col bg-[#050505] select-none">
+        {audioNode}
         <div className="grain opacity-50" />
         <div className="orbs">
           <div className="orb orb-primary opacity-30" />
@@ -562,7 +565,7 @@ export default function WallPage() {
       <div className="grain" />
       <div className="orbs"><div className="orb orb-primary opacity-40" /><div className="orb orb-secondary opacity-40" /></div>
  
-      {musicTrack && isAudioPlaying && <audio ref={audioRef} autoPlay loop src={`/music/${musicTrack}.mp3`} />}
+      {audioNode}
  
       {revealPhoto && <NewPhotoReveal photo={revealPhoto} getPublicUrl={getPublicUrl} onDone={() => setRevealPhoto(null)} />}
  

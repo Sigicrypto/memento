@@ -37,8 +37,8 @@ export default function SectionHeader({
       <div className={`section-badge ${badgeStyles[badgeColor]}`}>
         {badge}
       </div>
-      <h2 className="section-title">{title}</h2>
-      <p className="section-desc">{description}</p>
+      <h2 className="section-title" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+      <p className="section-desc" style={{ color: 'var(--text-secondary)' }}>{description}</p>
     </motion.div>
   );
 }

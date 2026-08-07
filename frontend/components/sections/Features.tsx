@@ -82,8 +82,8 @@ const Features: React.FC = () => {
                 <div className={`w-16 h-16 rounded-2xl bg-bg-subtle flex items-center justify-center mb-10 border border-border group-hover:scale-110 transition-transform duration-500 shadow-xl ${colors.border}`}>
                   <Icon size={28} className={colors.icon} />
                 </div>
-                <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-text-primary tracking-tight">{feature.title}</h3>
-                <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-sm">{feature.desc}</p>
+                <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-text-primary tracking-tight" style={{ color: 'var(--text-primary)' }}>{feature.title}</h3>
+                <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-sm" style={{ color: 'var(--text-secondary)' }}>{feature.desc}</p>
               </motion.div>
             );
           })}

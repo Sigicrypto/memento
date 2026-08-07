@@ -107,10 +107,11 @@ const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
 // ── NEW PHOTO REVEAL OVERLAY ────────────────────────────────
 interface NewPhotoRevealProps {
   photo: DemoMedia | null;
+  uploadUrl: string;
   onDone: () => void;
 }
 
-const NewPhotoReveal = ({ photo, onDone }: NewPhotoRevealProps) => {
+const NewPhotoReveal = ({ photo, uploadUrl, onDone }: NewPhotoRevealProps) => {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
@@ -184,12 +185,20 @@ const NewPhotoReveal = ({ photo, onDone }: NewPhotoRevealProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="absolute top-10 right-10 z-20"
+        className="absolute top-8 right-8 z-20 flex items-center gap-3"
       >
+        {uploadUrl && (
+          <Link
+            href={uploadUrl}
+            className="px-5 py-2.5 rounded-full bg-accent-cyan text-black font-extrabold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-accent-cyan/90 transition-all shadow-lg"
+          >
+            <Camera size={14} /> + Upload Another Photo
+          </Link>
+        )}
         <RippleButton
           rippleColor="#ADD8E6"
           onClick={() => { setExiting(true); setTimeout(onDone, 800); }}
-          className="!w-12 !h-12 !p-0 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-110"
+          className="!w-10 !h-10 !p-0 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all hover:scale-110"
         >
           <X size={20} />
         </RippleButton>
@@ -454,11 +463,15 @@ function DemoWallInner() {
 
   const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/demo/upload?id=${demoId}` : '';
 
+  // Always render audio tag so music continues across view modes
+  const audioNode = <audio ref={audioRef} loop src={TRACKS[currentTrackIndex].file} />;
+
   // ── SLIDESHOW VIEW ──────────────────────────────────────────
   if (viewMode === 'slideshow') {
     const currentPhoto = displayedPhotos[slideIndex % (displayedPhotos.length || 1)];
     return (
       <div className="fixed inset-0 z-[1000] overflow-hidden flex flex-col bg-[#050505] select-none">
+        {audioNode}
         <div className="grain opacity-50" />
         <div className="orbs">
           <div className="orb orb-primary opacity-30" />
@@ -496,7 +509,31 @@ function DemoWallInner() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 md:gap-3">
+            {/* Music Toggle */}
+            <RippleButton
+              rippleColor="#ADD8E6"
+              onClick={() => setIsAudioPlaying(!isAudioPlaying)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+                isAudioPlaying ? 'bg-accent-cyan/20 text-accent-cyan border-accent-cyan/30' : 'bg-white/5 text-text-muted border-white/10'
+              }`}
+              title="Toggle Music"
+            >
+              <Music size={14} className={isAudioPlaying ? 'animate-spin text-accent-cyan' : ''} />
+              <span className="hidden sm:inline">{isAudioPlaying ? 'Music On' : 'Music Off'}</span>
+            </RippleButton>
+
+            {/* Direct Upload Button */}
+            {uploadUrl && (
+              <Link
+                href={uploadUrl}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-cyan text-black font-extrabold text-xs uppercase tracking-wider hover:bg-accent-cyan/90 transition-all shadow-lg shrink-0"
+              >
+                <Camera size={14} />
+                <span>+ Upload Photo</span>
+              </Link>
+            )}
+
             <div className="hidden sm:flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1">
               {[3000, 5000, 8000].map((speed) => (
                 <button
@@ -643,9 +680,9 @@ function DemoWallInner() {
         ))}
       </div>
 
-      {revealPhoto && <NewPhotoReveal photo={revealPhoto} onDone={() => setRevealPhoto(null)} />}
+      {revealPhoto && <NewPhotoReveal photo={revealPhoto} uploadUrl={uploadUrl} onDone={() => setRevealPhoto(null)} />}
 
-      <audio ref={audioRef} loop src={TRACKS[currentTrackIndex].file} />
+      {audioNode}
 
       {/* Top Header Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-20 border-b border-white/10 bg-[#0b0f19]/90 backdrop-blur-2xl px-6 md:px-12 flex items-center justify-between">
@@ -661,6 +698,17 @@ function DemoWallInner() {
         </div>
 
         <div className="flex items-center gap-2.5 md:gap-3">
+          {/* Direct Upload Button */}
+          {uploadUrl && (
+            <Link
+              href={uploadUrl}
+              className="flex items-center gap-2 text-xs font-extrabold text-black bg-accent-cyan rounded-full px-4 py-2 shadow-xl hover:bg-accent-cyan/90 transition-all shrink-0"
+            >
+              <Camera size={14} className="text-black" />
+              <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">+ UPLOAD PHOTO</span>
+            </Link>
+          )}
+
           {/* AI Selfie Match Button */}
           <ShimmerButton
             shimmerColor="#00E5FF"
@@ -722,10 +770,10 @@ function DemoWallInner() {
             onClick={() => setShowMobileQR(true)}
             paddingX={18}
             paddingY={8}
-            className="flex items-center gap-2 text-xs font-extrabold text-black bg-white rounded-full shadow-xl shrink-0"
+            className="hidden sm:flex items-center gap-2 text-xs font-extrabold text-black bg-white rounded-full shadow-xl shrink-0"
           >
             <QrCode size={14} className="text-black" />
-            <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">SCAN TO UPLOAD</span>
+            <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">SCAN QR</span>
           </ShimmerButton>
         </div>
       </nav>
@@ -953,6 +1001,19 @@ function DemoWallInner() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Sticky Upload FAB Button for 1-Tap Photo Upload */}
+      {uploadUrl && (
+        <div className="fixed bottom-6 left-6 z-[110]">
+          <Link
+            href={uploadUrl}
+            className="flex items-center gap-2.5 px-5 py-3.5 rounded-full bg-accent-cyan text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_10px_30px_rgba(0,229,255,0.4)] hover:scale-105 active:scale-95 transition-all border border-cyan-300/40"
+          >
+            <Camera size={18} />
+            <span>+ Upload Photo</span>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

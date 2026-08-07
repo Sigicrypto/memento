@@ -375,6 +375,16 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
                   </div>
               </div>
            </div>
+           {uploadUrl && (
+             <a 
+               href={uploadUrl} 
+               target="_blank" 
+               rel="noreferrer" 
+               className="pointer-events-auto inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-white rounded-full transition-all shadow-[0_15px_30px_rgba(245,158,11,0.4)] font-black uppercase tracking-widest text-[10px] whitespace-nowrap px-4 py-2 hover:scale-105"
+             >
+               + Upload Photo
+             </a>
+           )}
         </div>
         
         {/* BOTTOM LEFT QR - DOT MATRIX */}

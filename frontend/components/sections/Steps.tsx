@@ -42,10 +42,10 @@ const Steps: React.FC = () => {
                   <div className="w-16 h-16 rounded-2xl bg-bg-subtle flex items-center justify-center mb-8 border border-border group-hover:border-neon-cyan/50 group-hover:scale-110 transition-all duration-300">
                     <span className="text-3xl">{s.icon}</span>
                   </div>
-                  <h3 className="text-xl lg:text-2xl font-bold text-text-primary mb-4 tracking-tight group-hover:text-neon-cyan transition-colors duration-300">
+                  <h3 className="text-xl lg:text-2xl font-bold text-text-primary mb-4 tracking-tight group-hover:text-neon-cyan transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
                     {s.title}
                   </h3>
-                  <p className="text-text-secondary font-medium leading-relaxed text-base max-w-xs">{s.desc}</p>
+                  <p className="text-text-secondary font-medium leading-relaxed text-base max-w-xs" style={{ color: 'var(--text-secondary)' }}>{s.desc}</p>
                 </div>
               </motion.div>
             ))}
