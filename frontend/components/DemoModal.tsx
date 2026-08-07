@@ -29,6 +29,15 @@ function mergeDemoMedia(items: DemoMedia[], incoming: DemoMedia) {
   return [incoming, ...items.filter((item) => item.id !== incoming.id && item.url !== incoming.url)];
 }
 
+const INITIAL_SAMPLE_PHOTOS: DemoMedia[] = [
+  { id: 'sample-1', url: '/sample-photos/wedding.png', type: 'image', caption: 'Pure magic under the golden lights ✨', uploader: 'Priya & Rohan', createdAt: Date.now() - 60000 * 5 },
+  { id: 'sample-2', url: '/sample-photos/tech-conf.png', type: 'image', caption: 'Keynote opening at Tech Summit 2026 🚀', uploader: 'Alex M.', createdAt: Date.now() - 60000 * 12 },
+  { id: 'sample-3', url: '/sample-photos/birthday.png', type: 'image', caption: '25th Birthday Bash! Unforgettable night 🎉', uploader: 'Sara & Crew', createdAt: Date.now() - 60000 * 25 },
+  { id: 'sample-4', url: '/sample-photos/gala.png', type: 'image', caption: 'Annual Leadership Gala Excellence Award 🏆', uploader: 'Marcus Vance', createdAt: Date.now() - 60000 * 40 },
+  { id: 'sample-5', url: '/sample-photos/graduation.png', type: 'image', caption: 'Class of 2026! We did it! 🎓', uploader: 'David & Friends', createdAt: Date.now() - 60000 * 60 },
+  { id: 'sample-6', url: '/sample-photos/festival.png', type: 'image', caption: 'Main stage laser show at Sunset Beats 🎶', uploader: 'Maya Lin', createdAt: Date.now() - 60000 * 90 },
+];
+
 export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [viewMode, setViewMode] = useState<ViewMode>('slideshow');
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -67,7 +76,12 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
     };
 
     setDemoId(newDemoId);
-    setPhotos(readDemoPhotos(newDemoId));
+    let existing = readDemoPhotos(newDemoId);
+    if (existing.length === 0) {
+      writeDemoPhotos(newDemoId, INITIAL_SAMPLE_PHOTOS);
+      existing = INITIAL_SAMPLE_PHOTOS;
+    }
+    setPhotos(existing);
     setTimeLeft(Math.max(0, Math.ceil((expiryAt - Date.now()) / 1000)));
     syncCountdown();
     
