@@ -14,6 +14,7 @@ import {
   getOrCreateDemoId,
   readDemoPhotos,
   writeDemoPhotos,
+  resetDemoSession,
 } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import CircularGallery from '@/components/CircularGallery';
@@ -61,24 +62,28 @@ export default function DemoModal({ isOpen, onClose }: { isOpen: boolean; onClos
   useEffect(() => {
     if (!isOpen) return;
     
-    const newDemoId = getOrCreateDemoId(new URLSearchParams(window.location.search).get('id'));
-    const expiryAt = getOrCreateDemoExpiry(newDemoId);
+    let activeDemoId = getOrCreateDemoId(new URLSearchParams(window.location.search).get('id'));
+    const expiryAt = getOrCreateDemoExpiry(activeDemoId);
     
     const syncCountdown = () => {
-      const remainingSeconds = Math.ceil(getDemoTimeLeft(newDemoId) / 1000);
+      const remainingSeconds = Math.ceil(getDemoTimeLeft(activeDemoId) / 1000);
       setTimeLeft(remainingSeconds);
       if (remainingSeconds <= 0) {
-        clearDemoData(newDemoId);
+        const { newDemoId, newPhotos, newTimeLeft } = resetDemoSession(activeDemoId, INITIAL_SAMPLE_PHOTOS);
+        activeDemoId = newDemoId;
+        setDemoId(newDemoId);
+        setPhotos(newPhotos);
+        setTimeLeft(newTimeLeft);
         if (isOpen) {
            onClose();
         }
       }
     };
 
-    setDemoId(newDemoId);
-    let existing = readDemoPhotos(newDemoId);
+    setDemoId(activeDemoId);
+    let existing = readDemoPhotos(activeDemoId);
     if (existing.length === 0) {
-      writeDemoPhotos(newDemoId, INITIAL_SAMPLE_PHOTOS);
+      writeDemoPhotos(activeDemoId, INITIAL_SAMPLE_PHOTOS);
       existing = INITIAL_SAMPLE_PHOTOS;
     }
     setPhotos(existing);

@@ -48,7 +48,8 @@ import {
   getOrCreateDemoId,
   readDemoPhotos,
   writeDemoPhotos,
-  upsertDemoPhoto
+  upsertDemoPhoto,
+  resetDemoSession,
 } from '@/lib/demoWall';
 
 // ── SAMPLE SEED PHOTOS FOR DEMO WALL ────────────────────────
@@ -258,15 +259,18 @@ function DemoWallInner() {
   // 1. Initialize Demo Session & Seed Data
   useEffect(() => {
     const preferredId = searchParams.get('id');
-    const activeDemoId = getOrCreateDemoId(preferredId);
+    let activeDemoId = getOrCreateDemoId(preferredId);
     setDemoId(activeDemoId);
 
-    const expiryAt = getOrCreateDemoExpiry(activeDemoId);
     const syncCountdown = () => {
       const remaining = Math.ceil(getDemoTimeLeft(activeDemoId) / 1000);
       setTimeLeft(remaining);
       if (remaining <= 0) {
-        clearDemoData(activeDemoId);
+        const { newDemoId, newPhotos, newTimeLeft } = resetDemoSession(activeDemoId, INITIAL_SAMPLE_PHOTOS);
+        activeDemoId = newDemoId;
+        setDemoId(newDemoId);
+        setPhotos(newPhotos);
+        setTimeLeft(newTimeLeft);
       }
     };
     syncCountdown();

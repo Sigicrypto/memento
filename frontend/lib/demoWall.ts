@@ -1,3 +1,5 @@
+import { supabase } from '@/lib/supabase';
+
 export type DemoMediaType = 'image' | 'video';
 
 export interface DemoMedia {
@@ -107,4 +109,39 @@ export function clearDemoData(demoId: string) {
   if (!demoId) return;
   window.localStorage.removeItem(getDemoPhotosKey(demoId));
   window.localStorage.removeItem(getDemoExpiryKey(demoId));
+  window.localStorage.removeItem(`demo-quota-${demoId}`);
+
+  // Purge remote demo uploads from Supabase DB asynchronously
+  try {
+    supabase.from('demo_uploads').delete().eq('demo_id', demoId).then(() => {});
+  } catch {
+    /* ignore network errors */
+  }
+}
+
+/**
+ * Resets the demo wall when timer hits 0:
+ * 1. Purges uploaded photos from localStorage & Supabase DB for old demoId
+ * 2. Clears user upload quota
+ * 3. Generates a fresh demoId and seeds clean sample photos
+ * 4. Returns the fresh session details
+ */
+export function resetDemoSession(oldDemoId: string, initialSamples: DemoMedia[]) {
+  if (oldDemoId) {
+    clearDemoData(oldDemoId);
+  }
+
+  const newDemoId = generateDemoId();
+  if (isBrowser()) {
+    window.localStorage.setItem(DEMO_ID_KEY, newDemoId);
+    writeDemoPhotos(newDemoId, initialSamples);
+    const newExpiry = Date.now() + DEMO_DURATION_MS;
+    window.localStorage.setItem(getDemoExpiryKey(newDemoId), String(newExpiry));
+  }
+
+  return {
+    newDemoId,
+    newPhotos: initialSamples,
+    newTimeLeft: Math.ceil(DEMO_DURATION_MS / 1000),
+  };
 }

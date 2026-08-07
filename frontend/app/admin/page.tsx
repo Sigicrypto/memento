@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import ThemeToggle from '@/components/ThemeToggle';
+import SocialCampaignStudio from './social-campaign/page';
+import LeadOutreachStudio from './lead-outreach/page';
 
 // ── Types ─────────────────────────────────────────────────────
 interface UserRow {
@@ -34,18 +36,6 @@ interface EventRow {
   expires_at?: string;
 }
 
-interface PaymentRequest {
-  id: string;
-  user_id: string;
-  user_email: string;
-  plan: string;
-  amount: string;
-  currency: string;
-  status: 'pending' | 'approved' | 'rejected';
-  created_at: string;
-  notes?: string;
-}
-
 interface Stats {
   totalUsers: number;
   totalEvents: number;
@@ -55,7 +45,7 @@ interface Stats {
   paidUsers: number;
 }
 
-type Tab = 'overview' | 'users' | 'events' | 'payments' | 'settings';
+type Tab = 'overview' | 'events' | 'users' | 'social' | 'leads' | 'meta';
 
 // ── Component ─────────────────────────────────────────────────
 export default function AdminPage() {
@@ -70,6 +60,36 @@ export default function AdminPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmDialog, setConfirmDialog] = useState<{open: boolean; message: string; onConfirm: () => void}>({open: false, message: '', onConfirm: () => {}});
   const [toast, setToast] = useState<{show: boolean; message: string; type: 'success' | 'error'}>({show: false, message: '', type: 'success'});
+
+  // PWA Installation prompt state
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        showToast('Memento Command Center Installed! 🎉');
+      }
+      setDeferredPrompt(null);
+    } else {
+      alert(
+        '📲 To install Memento Command Center app:\n\n' +
+        '• iPhone (Safari): Tap Share icon ➔ "Add to Home Screen"\n' +
+        '• Android (Chrome): Tap 3 dots ➔ "Install App"\n' +
+        '• PC / Mac (Chrome): Click the Install icon in browser address bar'
+      );
+    }
+  };
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({show: true, message, type});
@@ -118,69 +138,116 @@ export default function AdminPage() {
         paidUsers,
       });
     } catch (err) {
-      console.error('Stats error:', err);
+      console.error('Error fetching stats:', err);
     }
   }, []);
 
-  useEffect(() => { if (isAdmin) fetchStats(); }, [isAdmin, fetchStats]);
-
   // ── Fetch Users ──
-  useEffect(() => {
-    if (!isAdmin || activeTab !== 'users') return;
-    const fetchUsers = async () => {
-      setLoading(true);
-      const { data: profiles } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-      const { data: eventCounts } = await supabase.from('events').select('owner_id');
-      const countsMap: Record<string, number> = {};
-      eventCounts?.forEach(e => { countsMap[e.owner_id] = (countsMap[e.owner_id] || 0) + 1; });
-      if (profiles) {
-        setUsers(profiles.map(p => ({ ...p, events_count: countsMap[p.id] || 0, plan: (p.plan || 'starter').toUpperCase() })));
-      }
-      setLoading(false);
-    };
-    fetchUsers();
-  }, [isAdmin, activeTab]);
+  const fetchUsers = useCallback(async () => {
+    try {
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const { data: eventsData } = await supabase
+        .from('events')
+        .select('owner_id');
+
+      const userEventCounts: Record<string, number> = {};
+      eventsData?.forEach(e => {
+        userEventCounts[e.owner_id] = (userEventCounts[e.owner_id] || 0) + 1;
+      });
+
+      const formatted: UserRow[] = (profiles || []).map(p => ({
+        id: p.id,
+        email: p.email || 'No email',
+        full_name: p.full_name || '',
+        created_at: p.created_at,
+        plan: (p.plan || 'STARTER').toUpperCase(),
+        payment_status: p.payment_status || 'unpaid',
+        is_approved: p.is_approved ?? false,
+        role: p.role || 'user',
+        events_count: userEventCounts[p.id] || 0,
+        phone: p.phone,
+      }));
+
+      setUsers(formatted);
+    } catch (err: any) {
+      console.error('Error fetching users:', err);
+      showToast('Error loading users', 'error');
+    }
+  }, []);
 
   // ── Fetch Events ──
-  useEffect(() => {
-    if (!isAdmin || activeTab !== 'events') return;
-    const fetchEvents = async () => {
-      setLoading(true);
-      const { data: eventsData } = await supabase.from('events').select('*').order('created_at', { ascending: false });
-      if (eventsData) {
-        // Fetch owner emails
-        const ownerIds = [...new Set(eventsData.map(e => e.owner_id))];
-        const { data: ownerProfiles } = await supabase.from('profiles').select('id, email').in('id', ownerIds);
-        const emailMap: Record<string, string> = {};
-        ownerProfiles?.forEach(p => { emailMap[p.id] = p.email; });
-
-        const eventsWithCounts = await Promise.all(
-          eventsData.map(async (event) => {
-            const { count } = await supabase.from('photos').select('*', { count: 'exact', head: true }).eq('event_id', event.id);
-            return { ...event, owner_email: emailMap[event.owner_id] || 'Unknown', photo_count: count || 0 };
-          })
-        );
-        setEvents(eventsWithCounts);
-      }
-      setLoading(false);
-    };
-    fetchEvents();
-  }, [isAdmin, activeTab]);
-
-  // ── Actions ──
-  const updateUserProfile = async (userId: string, updates: Record<string, any>) => {
+  const fetchEvents = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/update-user', {
+      const { data: eventsData, error } = await supabase
+        .from('events')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const { data: photosData } = await supabase
+        .from('photos')
+        .select('event_id');
+
+      const photoCounts: Record<string, number> = {};
+      photosData?.forEach(p => {
+        photoCounts[p.event_id] = (photoCounts[p.event_id] || 0) + 1;
+      });
+
+      const ownerIds = Array.from(new Set((eventsData || []).map(e => e.owner_id)));
+      const { data: owners } = await supabase
+        .from('profiles')
+        .select('id, email')
+        .in('id', ownerIds.length > 0 ? ownerIds : ['none']);
+
+      const ownerMap: Record<string, string> = {};
+      owners?.forEach(o => { ownerMap[o.id] = o.email; });
+
+      const formatted: EventRow[] = (eventsData || []).map(e => ({
+        id: e.id,
+        name: e.name || 'Unnamed Event',
+        slug: e.slug || '',
+        created_at: e.created_at,
+        owner_id: e.owner_id,
+        owner_email: ownerMap[e.owner_id] || 'Unknown',
+        photo_count: photoCounts[e.id] || 0,
+        plan_type: (e.plan_type || 'FREE').toUpperCase(),
+        expires_at: e.expires_at,
+      }));
+
+      setEvents(formatted);
+    } catch (err: any) {
+      console.error('Error fetching events:', err);
+      showToast('Error loading events', 'error');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (hasAdminAccess) {
+      setLoading(true);
+      Promise.all([fetchStats(), fetchUsers(), fetchEvents()]).finally(() => setLoading(false));
+    }
+  }, [hasAdminAccess, fetchStats, fetchUsers, fetchEvents]);
+
+  // ── User Management Actions ──
+  const updateUserProfile = async (userId: string, updates: Partial<UserRow>) => {
+    try {
+      const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, updates }),
       });
-      
+
       if (res.ok) {
         return null;
       }
 
-      // Fallback: direct supabase client update
       const { error: clientError } = await supabase.from('profiles').update(updates).eq('id', userId);
       if (!clientError) {
         return null;
@@ -259,144 +326,147 @@ export default function AdminPage() {
     (e.owner_email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // ── Render ──
+  const tabs: { id: Tab; label: string; icon: string; badge?: string }[] = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'events', label: 'Live Events', icon: '🎉' },
+    { id: 'users', label: 'Users & Access', icon: '👥' },
+    { id: 'social', label: 'Social Auto-Pilot', icon: '📣', badge: 'Meta' },
+    { id: 'leads', label: 'B2B Leads & WhatsApp', icon: '💬', badge: 'Google' },
+    { id: 'meta', label: 'Meta Key Setup', icon: '🔑' },
+  ];
 
-  if (isLoading) {
+  if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#07090E] flex items-center justify-center text-slate-300 font-sans">
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          <span>Authenticating Command Hub...</span>
+        </div>
       </div>
     );
   }
 
   if (!hasAdminAccess) {
-    return (
-      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center p-4">
-        <div className="text-center max-w-sm">
-          <div className="text-5xl mb-6 drop-shadow-[0_0_15px_rgba(244,63,94,0.3)]">🚫</div>
-          <h1 className="text-3xl font-black mb-3 tracking-tight">Access Denied</h1>
-          <p className="text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-            This workspace is for administrators only. Please sign in with an authorized account or return to the main site.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Link href="/auth" className="w-full px-6 py-3.5 bg-amber-500 text-black font-black rounded-xl hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20">
-              🔐 Login as Admin
-            </Link>
-            <Link href="/" className="w-full px-6 py-3.5 bg-bg-subtle border border-border text-text-primary font-bold rounded-xl hover:bg-border transition-all">
-              🏠 Back to Home
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
-  // ── Styles ──
-  const cardClass = "gcard cinematic-glow relative group overflow-hidden transition-all duration-300 hover:scale-[1.02]";
-  const statCard = (icon: string, label: string, value: number, accent: string) => (
+  const cardClass = "relative rounded-2xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl overflow-hidden shadow-xl";
+
+  const statCard = (icon: string, label: string, val: number, color: string) => (
     <div className={cardClass}>
-      <div className="gcard-border" />
-      <div className="gcard-inner p-6">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-2xl filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">{icon}</span>
-          <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" style={{color: accent, background: `${accent}15`, border: `1px solid ${accent}30`}}>Live</span>
+      <div className="p-5 flex items-center justify-between">
+        <div>
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
+          <p className="text-3xl font-black mt-1 text-white tracking-tight">{val}</p>
         </div>
-        <p className="text-3xl font-black tracking-tight">{value.toLocaleString()}</p>
-        <p className="text-xs text-text-secondary mt-1 font-medium">{label}</p>
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner" style={{ background: `${color}15`, border: `1px solid ${color}30` }}>
+          {icon}
+        </div>
       </div>
     </div>
   );
 
-  const tabs: {id: Tab; label: string; icon: string}[] = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'users', label: 'Users', icon: '👥' },
-    { id: 'events', label: 'Events', icon: '🎉' },
-    { id: 'payments', label: 'Payments', icon: '💳' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
-  ];
-
   return (
-    <div className="lp min-h-screen relative overflow-hidden">
-      <div className="aurora-bg fixed inset-0 z-0" />
-      <div className="grain fixed inset-0 z-1 opacity-[0.04] pointer-events-none" />
-
-      {/* ── Toast ── */}
+    <div className="min-h-screen bg-[#07090E] text-slate-100 font-sans selection:bg-amber-500/30">
+      
+      {/* Toast Notification */}
       {toast.show && (
-        <div className={`fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl text-sm font-bold shadow-2xl transition-all ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
-          {toast.message}
+        <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-xl text-xs font-bold shadow-2xl flex items-center gap-2 border animate-in fade-in slide-in-from-top-3 ${
+          toast.type === 'success' ? 'bg-emerald-950 border-emerald-500/40 text-emerald-300' : 'bg-red-950 border-red-500/40 text-red-300'
+        }`}>
+          <span>{toast.message}</span>
         </div>
       )}
 
-      {/* ── Confirm Dialog ── */}
+      {/* Confirm Dialog */}
       {confirmDialog.open && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4" style={{background:'rgba(0,0,0,0.7)', backdropFilter:'blur(8px)'}}>
-          <div className="gcard cinematic-glow p-8 max-w-md w-full text-center relative overflow-hidden">
-            <div className="gcard-border" />
-            <div className="gcard-inner relative z-10">
-              <div className="text-4xl mb-4">⚠️</div>
-              <p className="text-sm text-text-primary mb-6 leading-relaxed">{confirmDialog.message}</p>
-              <div className="flex gap-3">
-                <button onClick={closeConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">Cancel</button>
-                <button onClick={confirmDialog.onConfirm} className="flex-1 py-3 rounded-xl text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition">Confirm Delete</button>
-              </div>
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-white">Confirm Action</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">{confirmDialog.message}</p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button onClick={closeConfirm} className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300">Cancel</button>
+              <button onClick={confirmDialog.onConfirm} className="px-4 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-500 text-white">Confirm</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── Sidebar + Content Layout ── */}
-      <div className="flex min-h-screen relative z-10">
+      {/* Sidebar + Main Layout */}
+      <div className="flex min-h-screen relative z-10 pb-20 md:pb-0">
 
-        {/* ── Sidebar ── */}
-        <aside className="w-64 border-r border-black/20 dark:border-white/[0.08] bg-[#0d1117]/40 backdrop-blur-2xl flex flex-col shrink-0 sticky top-0 h-screen">
-          {/* Brand */}
-          <div className="p-6 border-b border-black/20 dark:border-white/[0.08] flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all">
-              <AnimatedLogo width={140} height={40} />
+        {/* Desktop Sidebar */}
+        <aside className="w-64 border-r border-slate-800/80 bg-slate-950/90 backdrop-blur-2xl flex-col shrink-0 sticky top-0 h-screen hidden md:flex">
+          <div className="p-6 border-b border-slate-800/80 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3">
+              <AnimatedLogo width={130} height={36} />
             </Link>
             <ThemeToggle />
           </div>
 
-          {/* Nav */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => { setActiveTab(tab.id); setSearchTerm(''); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all ${
                   activeTab === tab.id
-                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
+                    ? 'bg-gradient-to-r from-amber-500/20 to-purple-500/20 text-white border border-amber-500/40 shadow-lg shadow-amber-500/5'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900/60'
                 }`}
               >
-                <span className="text-lg">{tab.icon}</span>
-                {tab.label}
-                {tab.id === 'users' && stats.pendingApprovals > 0 && (
-                  <span className="ml-auto text-[10px] font-black bg-red-500 px-1.5 py-0.5 rounded-full">{stats.pendingApprovals}</span>
+                <span className="flex items-center gap-3">
+                  <span className="text-base">{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </span>
+                {tab.badge && (
+                  <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                    {tab.badge}
+                  </span>
                 )}
               </button>
             ))}
           </nav>
 
-          {/* Profile chip */}
-          <div className="p-4 border-t border-black/20 dark:border-white/[0.06]">
-            <div className="flex items-center gap-3 px-3 py-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-xs font-black ">S</div>
+          {/* PWA Install Button & Profile Chip */}
+          <div className="p-4 border-t border-slate-800/80 space-y-3">
+            <button
+              onClick={handleInstallPWA}
+              className="w-full py-2.5 px-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+            >
+              <span>📲 Install Command App</span>
+            </button>
+
+            <div className="flex items-center gap-3 px-3 py-2 bg-slate-900/80 border border-slate-800 rounded-xl">
+              <div className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-black">S</div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold truncate">{user?.email}</p>
-                <p className="text-[10px] text-amber-500 font-bold">{isSuperAdmin ? '⚡ Super Admin' : 'Admin'}</p>
+                <p className="text-xs font-bold truncate text-slate-200">{user?.email}</p>
+                <p className="text-[10px] text-amber-400 font-bold">⚡ Command Center Owner</p>
               </div>
             </div>
-            <Link href="/" className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs text-text-secondary hover:text-black dark:hover:text-text-primary hover:bg-bg-subtle transition">
-              ← Back to Site
-            </Link>
           </div>
         </aside>
 
-        {/* ── Main Content ── */}
-        <main className="flex-1 p-8 lg:p-12 overflow-y-auto">
+        {/* Main Content Body */}
+        <main className="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto">
 
-          {/* ── Search Bar (for users/events) ── */}
+          {/* Top Mobile Bar */}
+          <div className="md:hidden flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+            <Link href="/">
+              <AnimatedLogo width={120} height={32} />
+            </Link>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleInstallPWA}
+                className="px-3 py-1.5 bg-emerald-600 text-white text-[11px] font-bold rounded-lg"
+              >
+                📲 Install App
+              </button>
+              <ThemeToggle />
+            </div>
+          </div>
+
+          {/* Search Bar for Users/Events */}
           {(activeTab === 'users' || activeTab === 'events') && (
             <div className="mb-6">
               <input
@@ -404,129 +474,176 @@ export default function AdminPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={`Search ${activeTab}...`}
-                className="w-full max-w-md px-5 py-3 rounded-xl bg-bg-subtle border border-border text-sm placeholder-slate-500 outline-none focus:border-amber-500/40 transition"
+                className="w-full max-w-md px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 outline-none focus:border-amber-500/40 transition shadow-inner"
               />
             </div>
           )}
 
-          {/* ═══════════════════ OVERVIEW ═══════════════════ */}
+          {/* ═══════════════════ 1. OVERVIEW TAB ═══════════════════ */}
           {activeTab === 'overview' && (
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-black tracking-tight mb-1">Dashboard</h2>
-                <p className="text-sm text-text-secondary">Platform overview at a glance</p>
+                <h2 className="text-2xl font-black tracking-tight text-white mb-1">Master Command Center</h2>
+                <p className="text-xs text-slate-400">Live platform operations and stats at a glance.</p>
               </div>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {statCard('👤', 'Total Users', stats.totalUsers, '#3b82f6')}
                 {statCard('🎉', 'Total Events', stats.totalEvents, '#f59e0b')}
-                {statCard('📸', 'Total Photos', stats.totalPhotos, '#a855f7')}
-                {statCard('⚡', 'Active Today', stats.activeToday, '#22c55e')}
+                {statCard('📸', 'Total Photos Uploaded', stats.totalPhotos, '#a855f7')}
+                {statCard('⚡', 'Active Hosts Today', stats.activeToday, '#22c55e')}
                 {statCard('⏳', 'Pending Approvals', stats.pendingApprovals, '#ef4444')}
-                {statCard('💎', 'Paid Users', stats.paidUsers, '#06b6d4')}
+                {statCard('💎', 'Paid Subscribers', stats.paidUsers, '#06b6d4')}
               </div>
 
-              {/* Quick Actions */}
+              {/* Quick Hub Launchers */}
               <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">Quick Actions</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">👥 Manage Users</button>
-                    <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">🎉 Manage Events</button>
-                    <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">✅ Approve All Pending</button>
-                    <Link href="/admin/lead-outreach" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">📱 B2B Lead Discovery & WhatsApp</Link>
-                    <Link href="/admin/social-campaign" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition">📣 Social Media Studio</Link>
-                    <Link href="/create" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">✨ Create Event</Link>
-                    <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">🔄 Refresh Stats</button>
+                <div className="p-6 space-y-4">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Command Hub Launchers</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <button
+                      onClick={() => setActiveTab('social')}
+                      className="p-4 bg-purple-950/30 border border-purple-500/30 hover:border-purple-500/60 rounded-xl text-left transition-all group"
+                    >
+                      <span className="text-xl block mb-1">📣</span>
+                      <p className="text-xs font-bold text-white group-hover:text-purple-300">Social Auto-Pilot Studio</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Automated Facebook & Instagram marketing broadcasts.</p>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('leads')}
+                      className="p-4 bg-emerald-950/30 border border-emerald-500/30 hover:border-emerald-500/60 rounded-xl text-left transition-all group"
+                    >
+                      <span className="text-xl block mb-1">💬</span>
+                      <p className="text-xs font-bold text-white group-hover:text-emerald-300">B2B Leads & WhatsApp</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Google Places lead search & WhatsApp outreach launcher.</p>
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab('events')}
+                      className="p-4 bg-amber-950/30 border border-amber-500/30 hover:border-amber-500/60 rounded-xl text-left transition-all group"
+                    >
+                      <span className="text-xl block mb-1">🎉</span>
+                      <p className="text-xs font-bold text-white group-hover:text-amber-300">Live Photo Walls</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Manage live event streams, lock/unlock feeds.</p>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* ═══════════════════ USERS ═══════════════════ */}
+          {/* ═══════════════════ 2. EVENTS TAB ═══════════════════ */}
+          {activeTab === 'events' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight text-white mb-1">Live Events & Photo Walls</h2>
+                  <p className="text-xs text-slate-400">{filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}</p>
+                </div>
+                <Link href="/create" className="px-4 py-2.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition">
+                  ✨ Create Event
+                </Link>
+              </div>
+
+              {loading ? (
+                <div className="py-20 text-center text-slate-400 text-xs">Loading events...</div>
+              ) : filteredEvents.length === 0 ? (
+                <div className={`${cardClass} text-center py-16 text-slate-500 text-xs`}>No events found</div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredEvents.map(e => (
+                    <div key={e.id} className={cardClass}>
+                      <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-white">{e.name}</span>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-amber-300 border border-slate-700 rounded-full font-mono">
+                              /{e.slug}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-400">
+                            Owner: <span className="text-slate-200">{e.owner_email}</span> • 
+                            <span className="text-purple-400 font-bold ml-1">{e.photo_count} photos</span>
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/wall/${e.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="px-3 py-1.5 bg-blue-600/20 text-blue-300 text-xs font-semibold rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition"
+                          >
+                            Live Wall ➔
+                          </a>
+                          <button
+                            onClick={() => handleDeleteEvent(e.id, e.name)}
+                            className="px-3 py-1.5 bg-red-600/20 text-red-300 text-xs font-semibold rounded-lg border border-red-500/30 hover:bg-red-600/30 transition"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ═══════════════════ 3. USERS TAB ═══════════════════ */}
           {activeTab === 'users' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight mb-1">User Management</h2>
-                  <p className="text-sm text-text-secondary">{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</p>
+                  <h2 className="text-2xl font-black tracking-tight text-white mb-1">User & Access Control</h2>
+                  <p className="text-xs text-slate-400">{filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}</p>
                 </div>
                 {stats.pendingApprovals > 0 && (
-                  <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
-                    ✅ Approve All ({stats.pendingApprovals})
+                  <button onClick={handleBulkApproveAll} className="px-4 py-2.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 transition">
+                    ✅ Approve All Pending ({stats.pendingApprovals})
                   </button>
                 )}
               </div>
 
               {loading ? (
-                <div className="py-20 text-center text-text-secondary">Loading users...</div>
+                <div className="py-20 text-center text-slate-400 text-xs">Loading users...</div>
               ) : filteredUsers.length === 0 ? (
-                <div className={`${cardClass} text-center py-16 text-text-secondary`}>No users found</div>
+                <div className={`${cardClass} text-center py-16 text-slate-500 text-xs`}>No users found</div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {filteredUsers.map(u => (
                     <div key={u.id} className={cardClass}>
-                      <div className="gcard-border" />
-                      <div className="gcard-inner p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-rose-500/20 border border-amber-500/20 flex items-center justify-center text-sm font-black text-amber-400 shrink-0">
+                      <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 border border-amber-500/30 flex items-center justify-center text-xs font-black text-amber-300">
                             {u.email.charAt(0).toUpperCase()}
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-bold truncate">{u.email}</p>
-                            <p className="text-[11px] text-text-secondary">
-                              {u.full_name || 'No name'} • Joined {new Date(u.created_at).toLocaleDateString()} • 
-                              <span className="text-amber-400 ml-1">{u.events_count} event{u.events_count !== 1 ? 's' : ''}</span>
-                              {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
+                          <div>
+                            <p className="text-xs font-bold text-white">{u.email}</p>
+                            <p className="text-[11px] text-slate-400">
+                              {u.full_name || 'No name'} • <span className="text-amber-400">{u.events_count} events</span>
+                              {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid Subscriber</span>}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                          {/* Role Selector */}
-                          <select
-                            className="text-[11px] bg-bg-subtle border border-border rounded-lg px-2 py-1.5 text-text-primary outline-none font-bold cursor-pointer"
-                            value={u.role || 'user'}
-                            onChange={(e) => handleUpdateRole(u.id, e.target.value)}
-                          >
-                            <option value="user">👤 User</option>
-                            <option value="admin">🔐 Admin</option>
-                          </select>
-
-                          {/* Plan Selector */}
-                          <select
-                            className="text-[11px] bg-amber-500/10 border border-amber-500/20 rounded-lg px-2 py-1.5 text-amber-400 outline-none font-bold uppercase cursor-pointer"
-                            value={(u.plan || 'STARTER').toUpperCase()}
-                            onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
-                          >
-                            <option value="STARTER">Starter</option>
-                            <option value="STANDARD">Standard</option>
-                            <option value="PREMIUM">Premium</option>
-                            <option value="WHITELABEL">White Label</option>
-                          </select>
-
-                          {/* Approve/Unapprove */}
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleToggleApproval(u.id, u.is_approved)}
-                            className={`text-[10px] px-3 py-1.5 rounded-lg font-black transition ${
-                              u.is_approved
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                                : 'bg-red-500/10 text-red-400 border border-red-500/20 animate-pulse'
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
+                              u.is_approved ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
                             }`}
                           >
-                            {u.is_approved ? '✓ APPROVED' : '⚡ APPROVE'}
+                            {u.is_approved ? 'Approved ✅' : 'Approve User'}
                           </button>
 
-                          {/* Delete */}
                           <button
                             onClick={() => handleDeleteUser(u.id, u.email)}
-                            className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition"
-                            title="Delete user"
-                            aria-label={`Delete user ${u.email}`}
+                            className="px-3 py-1.5 bg-red-600/20 text-red-300 text-xs font-semibold rounded-lg border border-red-500/30 hover:bg-red-600/30 transition"
                           >
-                            🗑️
+                            Delete
                           </button>
                         </div>
                       </div>
@@ -537,206 +654,74 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* ═══════════════════ EVENTS ═══════════════════ */}
-          {activeTab === 'events' && (
+          {/* ═══════════════════ 4. SOCIAL AUTO-PILOT TAB ═══════════════════ */}
+          {activeTab === 'social' && (
             <div className="space-y-4">
-              <div>
-                <h2 className="text-2xl font-black tracking-tight mb-1">Event Management</h2>
-                <p className="text-sm text-text-secondary">{filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''}</p>
-              </div>
-
-              {loading ? (
-                <div className="py-20 text-center text-text-secondary">Loading events...</div>
-              ) : filteredEvents.length === 0 ? (
-                <div className={`${cardClass} text-center py-16 text-text-secondary`}>No events found</div>
-              ) : (
-                <div className="space-y-2">
-                  {filteredEvents.map(event => (
-                    <div key={event.id} className={cardClass}>
-                      <div className="gcard-border" />
-                      <div className="gcard-inner p-5">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-sm font-bold ">{event.name}</h3>
-                            <p className="text-[11px] text-text-secondary">
-                              By <span className="text-amber-400">{event.owner_email}</span> • {new Date(event.created_at).toLocaleDateString()}
-                              {event.plan_type && <span className="ml-2 text-slate-600 dark:text-slate-600 dark:text-slate-400">({event.plan_type})</span>}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => handleDeleteEvent(event.id, event.name)}
-                            className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-center hover:bg-red-500/20 transition shrink-0"
-                            title="Delete event"
-                            aria-label={`Delete event ${event.name}`}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold">📸 {event.photo_count} photos</span>
-                          <span className="text-[11px] px-2.5 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-mono">/{event.slug}</span>
-                          <Link href={`/wall/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold hover:bg-amber-500/20 transition">🖼️ Wall</Link>
-                          <Link href={`/mobile/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold hover:bg-border transition">📱 Upload</Link>
-                          <Link href={`/moderate/${event.slug}`} target="_blank" className="text-[11px] px-3 py-1 rounded-lg bg-bg-subtle border border-border text-slate-600 dark:text-slate-600 dark:text-slate-400 font-bold hover:bg-border transition">🛡️ Moderate</Link>
-                          <Link href={`/admin/edit-event/${event.slug}`} className="text-[11px] px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 font-bold hover:bg-indigo-500/20 transition">✏️ Edit</Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <SocialCampaignStudio />
             </div>
           )}
 
-          {/* ═══════════════════ PAYMENTS ═══════════════════ */}
-          {activeTab === 'payments' && (
+          {/* ═══════════════════ 5. B2B LEADS TAB ═══════════════════ */}
+          {activeTab === 'leads' && (
+            <div className="space-y-4">
+              <LeadOutreachStudio />
+            </div>
+          )}
+
+          {/* ═══════════════════ 6. META SETUP TAB ═══════════════════ */}
+          {activeTab === 'meta' && (
             <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-black tracking-tight mb-1">Payment Management</h2>
-                <p className="text-sm text-text-secondary">Manual payment approvals for WhatsApp-based purchases</p>
-              </div>
-
-              <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">How It Works</h3>
-                  <div className="space-y-3 text-sm text-slate-400">
-                    <p>1. Users select a plan on the landing page and are redirected to WhatsApp to confirm their purchase.</p>
-                    <p>2. Once you receive confirmation and verify the payment, go to the <button onClick={() => setActiveTab('users')} className="text-amber-400 underline font-bold">Users tab</button>.</p>
-                    <p>3. Find the user, set their <strong>Plan</strong> to the tier they paid for, and click <strong className="text-emerald-400">✓ APPROVE</strong>.</p>
-                    <p>4. The user will automatically gain access to all features of their plan.</p>
-                  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight text-white mb-1">Meta Credentials & System Setup</h2>
+                  <p className="text-xs text-slate-400">Configure Meta Graph API tokens and Instagram Business connections.</p>
                 </div>
+                <a
+                  href="/admin/meta-setup"
+                  className="px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-500 transition"
+                >
+                  Open Meta Setup Helper ➔
+                </a>
               </div>
 
               <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Pricing Reference</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-left text-text-secondary border-b border-black/10 dark:border-border">
-                          <th className="pb-3 font-bold">Plan</th>
-                          <th className="pb-3 font-bold text-right">🇮🇳 Price (INR)</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-text-primary">
-                        <tr className="border-b border-white/5"><td className="py-3 font-bold">Starter</td><td className="text-right font-mono font-bold">₹2,499</td></tr>
-                        <tr className="border-b border-white/5"><td className="py-3 font-bold">Standard <span className="text-amber-400 text-xs">⭐</span></td><td className="text-right font-mono font-bold">₹4,999</td></tr>
-                        <tr className="border-b border-white/5"><td className="py-3 font-bold">Premium <span className="text-red-400 text-xs">🔥</span></td><td className="text-right font-mono font-bold">₹7,499</td></tr>
-                        <tr><td className="py-3 font-bold">White Label</td><td className="text-right font-mono font-bold">₹9,999</td></tr>
-                      </tbody>
-                    </table>
+                <div className="p-6 space-y-4">
+                  <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Active System Status</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-1 font-mono text-xs">
+                      <span className="text-slate-400 block text-[10px]">META PAGE ACCESS TOKEN STATUS:</span>
+                      <span className="text-emerald-400 font-bold">Active System User Token</span>
+                    </div>
+
+                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-1 font-mono text-xs">
+                      <span className="text-slate-400 block text-[10px]">INSTAGRAM BUSINESS ACCOUNT ID:</span>
+                      <span className="text-pink-400 font-bold">17841473910587567 (@my_memento_app)</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* ═══════════════════ SETTINGS ═══════════════════ */}
-          {activeTab === 'settings' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-black tracking-tight mb-1">System Settings</h2>
-                <p className="text-sm text-text-secondary">Platform configuration and environment info</p>
-              </div>
-
-              {/* Super Admin Info */}
-              <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-amber-400 mb-4">⚡ Super Admin</h3>
-                  <div className="space-y-2 text-sm text-slate-600 dark:text-slate-600 dark:text-slate-400">
-                    <p><span className="text-text-secondary w-28 inline-block">Email:</span> <span className="font-bold">sagarfalcon@gmail.com</span></p>
-                    <p><span className="text-text-secondary w-28 inline-block">Plan Override:</span> <span className="text-amber-400 font-bold">White Label (All Features)</span></p>
-                    <p><span className="text-text-secondary w-28 inline-block">Walls:</span> <span className="text-emerald-400 font-bold">Unlimited</span></p>
-                    <p><span className="text-text-secondary w-28 inline-block">Status:</span> <span className="text-emerald-400 font-bold">Always Approved, Always Paid</span></p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Environment */}
-              <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">🔑 Environment</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Supabase URL</span>
-                      <span className="text-text-primary font-mono text-xs truncate max-w-[300px]">{process.env.NEXT_PUBLIC_SUPABASE_URL || '—'}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Supabase Anon Key</span>
-                      <span className="text-text-primary font-mono text-xs">{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '••••' + process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.slice(-8) : '—'}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Node Env</span>
-                      <span className="text-text-primary font-mono text-xs">{process.env.NODE_ENV}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Useful Links */}
-              <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">🔗 Quick Links</h3>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {[
-                      { label: 'Supabase Dashboard', url: process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('.supabase.co', '.supabase.co') || '#', icon: '🗄️' },
-                      { label: 'Vercel Dashboard', url: 'https://vercel.com', icon: '▲' },
-                      { label: 'Razorpay Dashboard', url: 'https://dashboard.razorpay.com', icon: '💳' },
-                      { label: 'WhatsApp Business', url: 'https://wa.me/919866161775', icon: '💬' },
-                    ].map(link => (
-                      <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-xl bg-bg-subtle border border-border hover:bg-border transition text-sm text-text-primary font-medium">
-                        <span className="text-lg">{link.icon}</span>
-                        {link.label}
-                        <span className="ml-auto text-text-secondary">↗</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Platform Info */}
-              <div className={cardClass}>
-                <div className="gcard-border" />
-                <div className="gcard-inner p-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-600 dark:text-slate-400 mb-4">ℹ️ Platform</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Framework</span>
-                      <span className="text-text-primary">Next.js 16 (Turbopack)</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Database</span>
-                      <span className="text-text-primary">Supabase (PostgreSQL)</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Storage</span>
-                      <span className="text-text-primary">Supabase Storage (S3)</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">Auth</span>
-                      <span className="text-text-primary">Supabase Auth + Google OAuth</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-black/5 dark:border-black/20 dark:border-black/10 dark:border-white/5">
-                      <span className="text-text-secondary">AI Engine</span>
-                      <span className="text-text-primary">face-api.js (TensorFlow)</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-text-secondary">Payments</span>
-                      <span className="text-text-primary">Razorpay (IN) / Manual (OM)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar for One-Thumb Switching */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 border-t border-slate-800 backdrop-blur-xl px-2 py-2 flex items-center justify-around">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex flex-col items-center gap-1 p-2 rounded-lg text-center transition-all ${
+              activeTab === tab.id ? 'text-amber-400 font-bold' : 'text-slate-400'
+            }`}
+          >
+            <span className="text-lg">{tab.icon}</span>
+            <span className="text-[10px] truncate max-w-[56px]">{tab.label.split(' ')[0]}</span>
+          </button>
+        ))}
+      </nav>
+
     </div>
   );
 }
