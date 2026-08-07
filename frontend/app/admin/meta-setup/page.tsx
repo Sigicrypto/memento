@@ -64,10 +64,10 @@ function MetaSetupContent() {
     setError(null);
     handleSaveCredentials();
 
-    const scope = 'public_profile,pages_show_list,business_management';
+    const scope = 'public_profile,pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management';
     const oauthUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${appId.trim()}&redirect_uri=${encodeURIComponent(
       redirectUri
-    )}&scope=${scope}&response_type=code`;
+    )}&scope=${encodeURIComponent(scope)}&response_type=code`;
 
     window.location.href = oauthUrl;
   };
