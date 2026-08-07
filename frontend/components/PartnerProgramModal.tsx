@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Gift, CheckCircle2, Copy, Check, ArrowRight, DollarSign, Award, MessageCircle } from 'lucide-react';
 
+import { usePartnerId } from '@/hooks/usePartnerId';
+
 interface PartnerProgramModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -15,23 +17,20 @@ const WHATSAPP_NUMBER = '919866161775';
 export default function PartnerProgramModal({
   isOpen,
   onClose,
-  refCode = 'MEM-PARTNER-2026',
+  refCode: overrideRefCode,
 }: PartnerProgramModalProps) {
-  const [copied, setCopied] = useState(false);
+  const { partnerId: autoPartnerId, copyPartnerId, copied } = usePartnerId();
+  const activePartnerId = overrideRefCode || autoPartnerId;
   const [eventValue, setEventValue] = useState<number>(7500);
 
   if (!isOpen) return null;
 
   const commissionAmount = Math.round(eventValue * 0.1);
 
-  const whatsappMessage = `Hi Memento Partner Desk! 👋 I want to register for the 10% Event Partner Program / submit a referral booking. (Partner ID: ${refCode})`;
+  const whatsappMessage = `Hi Memento Partner Desk! 👋 I want to register for the 10% Event Partner Program / submit a referral booking. (Partner ID: ${activePartnerId})`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(refCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
 
   return (
     <AnimatePresence>
@@ -84,10 +83,10 @@ export default function PartnerProgramModal({
           <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">YOUR UNIQUE PARTNER ID</p>
-              <p className="text-lg font-mono font-bold text-emerald-300 tracking-wider">{refCode}</p>
+              <p className="text-lg font-mono font-bold text-emerald-300 tracking-wider">{activePartnerId}</p>
             </div>
             <button
-              onClick={handleCopyCode}
+              onClick={copyPartnerId}
               className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0"
             >
               {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
