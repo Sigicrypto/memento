@@ -40,23 +40,20 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
 
 const CATEGORY_VIDEOS: Record<string, string[]> = {
   wedding: [
-    'https://assets.mixkit.co/videos/preview/mixkit-wedding-couple-dancing-under-lights-41312-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-bride-and-groom-cheering-at-their-wedding-41315-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-guests-throwing-confetti-at-a-wedding-41316-large.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
   ],
   corporate: [
-    'https://assets.mixkit.co/videos/preview/mixkit-people-attending-a-business-conference-41527-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-crowd-applauding-at-a-presentation-41528-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-smartphones-at-an-event-41530-large.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
   ],
   birthday: [
-    'https://assets.mixkit.co/videos/preview/mixkit-friends-celebrating-with-sparklers-at-a-party-41310-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-people-dancing-at-a-nightclub-party-41311-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-friends-blowing-out-candles-on-a-birthday-cake-41313-large.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
   ],
   product: [
-    'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-smartphones-at-an-event-41530-large.mp4',
-    'https://assets.mixkit.co/videos/preview/mixkit-crowd-applauding-at-a-presentation-41528-large.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
   ],
 };
 
@@ -236,11 +233,22 @@ export async function publishToMeta({
   if (target === 'facebook' || target === 'both') {
     if (mediaType === 'VIDEO' && videoUrl) {
       const fbVideoUrl = `https://graph.facebook.com/v20.0/me/videos`;
-      results.facebook = await securePost(fbVideoUrl, {
+      const videoRes = await securePost(fbVideoUrl, {
         file_url: videoUrl,
         description: caption,
         access_token: pageToken,
       });
+
+      if (videoRes.error) {
+        const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
+        results.facebook = await securePost(fbFeedUrl, {
+          message: caption,
+          link: videoUrl,
+          access_token: pageToken,
+        });
+      } else {
+        results.facebook = videoRes;
+      }
     } else {
       const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
       const fbRes = await securePost(fbFeedUrl, {
