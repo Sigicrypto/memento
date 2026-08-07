@@ -113,6 +113,8 @@ export default function LeadOutreachStudio() {
   const [template, setTemplate] = useState(TEMPLATES.wedding);
 
   const [searching, setSearching] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const [searchMeta, setSearchMeta] = useState<{ source?: string; message?: string } | null>(null);
   const [outreachLogs, setOutreachLogs] = useState<{ leadName: string; phone: string; status: string; url?: string }[]>([]);
@@ -155,25 +157,54 @@ export default function LeadOutreachStudio() {
     }
   };
 
-  const handleSearchLeads = async () => {
-    setSearching(true);
-    setSearchMeta(null);
+  const handleSearchLeads = async (isLoadMore = false) => {
+    if (isLoadMore) {
+      setLoadingMore(true);
+    } else {
+      setSearching(true);
+      setSearchMeta(null);
+      setNextPageToken(null);
+    }
+
     try {
       const res = await fetch('/api/admin/leads/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: selectedCategory, location }),
+        body: JSON.stringify({
+          category: selectedCategory,
+          location,
+          pageToken: isLoadMore ? nextPageToken : undefined,
+        }),
       });
       const data = await res.json();
-      if (data.leads) {
-        setLeads(data.leads);
-        setSelectedLeads(data.leads.map((l: B2BLead) => l.id));
-        setSearchMeta({ source: data.source, message: data.message });
+      if (data.leads && Array.isArray(data.leads)) {
+        if (isLoadMore) {
+          setLeads((prev) => {
+            const existingPhones = new Set(prev.map((l) => l.phone));
+            const existingNames = new Set(prev.map((l) => l.name.toLowerCase()));
+            const newUniqueLeads = data.leads.filter(
+              (l: B2BLead) => !existingPhones.has(l.phone) && !existingNames.has(l.name.toLowerCase())
+            );
+            const updated = [...prev, ...newUniqueLeads];
+            setSelectedLeads(updated.map((l) => l.id));
+            return updated;
+          });
+        } else {
+          setLeads(data.leads);
+          setSelectedLeads(data.leads.map((l: B2BLead) => l.id));
+        }
+
+        setNextPageToken(data.nextPageToken || null);
+        setSearchMeta({
+          source: data.source,
+          message: data.message || `Loaded leads for ${location}.`,
+        });
       }
     } catch (err) {
       console.error(err);
     } finally {
       setSearching(false);
+      setLoadingMore(false);
     }
   };
 
@@ -377,7 +408,7 @@ export default function LeadOutreachStudio() {
             {/* Search Action Button */}
             <div className="md:col-span-3">
               <button
-                onClick={handleSearchLeads}
+                onClick={() => handleSearchLeads(false)}
                 disabled={searching}
                 className="w-full py-3.5 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
               >
@@ -600,6 +631,33 @@ export default function LeadOutreachStudio() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {leads.length > 0 && (
+              <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-3 text-xs">
+                <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{leads.length} Unique Leads (Auto-Deduplicated)</span>
+                </span>
+
+                <button
+                  onClick={() => handleSearchLeads(true)}
+                  disabled={loadingMore || searching}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-emerald-300 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-2 transition-all shadow-md"
+                >
+                  {loadingMore ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-emerald-400" />
+                      <span>Loading Next Batch...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Load More Leads</span>
+                    </>
+                  )}
+                </button>
               </div>
             )}
           </div>

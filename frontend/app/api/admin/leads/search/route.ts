@@ -70,6 +70,8 @@ const LIVE_REAL_DIRECTORY: Record<string, Record<string, any[]>> = {
       { id: 'hyd-w3', name: 'Isheeka Events | Wedding Planners', category: 'Wedding Planners', phone: '+919959837261', website: 'https://isheekaevents.com', rating: 4.8, address: 'Hafeezpet, Hyderabad', status: 'new' },
       { id: 'hyd-w4', name: 'Weddings by Kaarya', category: 'Wedding Planners', phone: '+919121049283', website: 'https://weddingsbykaarya.com', rating: 4.9, address: 'Madhapur, Hyderabad', status: 'new' },
       { id: 'hyd-w5', name: 'Athidi Event Management', category: 'Wedding Planners', phone: '+919000382910', website: 'https://athidievents.com', rating: 4.9, address: 'Abids, Hyderabad', status: 'new' },
+      { id: 'hyd-w6', name: 'Vowns & Knots Wedding Stylists', category: 'Wedding Planners', phone: '+919849019283', website: 'https://vownsknots.com', rating: 4.8, address: 'Gachibowli, Hyderabad', status: 'new' },
+      { id: 'hyd-w7', name: 'Royal Grandeur Weddings Hyderabad', category: 'Wedding Planners', phone: '+919959102938', website: 'https://royalgrandeur.com', rating: 4.9, address: 'Banjara Hills, Hyderabad', status: 'new' },
     ],
     venue: [
       { id: 'hyd-v1', name: 'Taj Falaknuma Palace Lawns', category: 'Banquet Venues', phone: '+914066298585', website: 'https://tajhotels.com', rating: 4.9, address: 'Engine Bowli, Hyderabad', status: 'new' },
@@ -110,15 +112,19 @@ const LIVE_REAL_DIRECTORY: Record<string, Record<string, any[]>> = {
 
 export async function POST(request: Request) {
   try {
-    const { category = 'Wedding Planners', location = 'Goa' } = await request.json();
+    const { category = 'Wedding Planners', location = 'Goa', pageToken = '' } = await request.json();
     const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
     // 1. If Google Places API Key is present, query Google Places API + Place Details
     if (apiKey) {
       try {
-        const searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(
+        let searchUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(
           `${category} in ${location}`
         )}&key=${apiKey}`;
+
+        if (pageToken) {
+          searchUrl += `&pagetoken=${encodeURIComponent(pageToken)}`;
+        }
 
         const res = await fetch(searchUrl);
         const data = await res.json();
@@ -166,6 +172,7 @@ export async function POST(request: Request) {
             source: 'google_places_live',
             message: `Fetched ${detailedLeads.length} live verified leads from Google Places in ${location}.`,
             leads: detailedLeads,
+            nextPageToken: data.next_page_token || null,
           });
         }
       } catch (err: any) {
@@ -200,6 +207,7 @@ export async function POST(request: Request) {
         ? `Loaded active directory for ${location}`
         : `Showing active B2B lead directory for ${location}. Set GOOGLE_PLACES_API_KEY in environment to query live Google Maps places globally.`,
       leads,
+      nextPageToken: null,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Lead search failed' }, { status: 500 });
