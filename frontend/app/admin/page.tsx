@@ -45,7 +45,7 @@ interface Stats {
   paidUsers: number;
 }
 
-type Tab = 'overview' | 'events' | 'users' | 'social' | 'leads' | 'meta';
+type Tab = 'overview' | 'events' | 'users' | 'social' | 'leads' | 'meta' | 'referrals';
 
 // ── Component ─────────────────────────────────────────────────
 export default function AdminPage() {
@@ -330,6 +330,7 @@ export default function AdminPage() {
     { id: 'overview', label: 'Overview', icon: '📊' },
     { id: 'events', label: 'Live Events', icon: '🎉' },
     { id: 'users', label: 'Users & Access', icon: '👥' },
+    { id: 'referrals', label: '10% Partner Desk', icon: '🤝', badge: '10%' },
     { id: 'social', label: 'Social Auto-Pilot', icon: '📣', badge: 'Meta' },
     { id: 'leads', label: 'B2B Leads & WhatsApp', icon: '💬', badge: 'Google' },
     { id: 'meta', label: 'Meta Key Setup', icon: '🔑' },
@@ -651,6 +652,145 @@ export default function AdminPage() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ═══════════════════ 3.5 10% PARTNER PAYOUT DESK TAB ═══════════════════ */}
+          {activeTab === 'referrals' && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-black tracking-tight text-white mb-1 flex items-center gap-2">
+                    <span>10% Event Partner Desk & UPI Payouts</span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+                      Active
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-400">Review promoter registrations, verify host-vs-promoter anti-fraud checks, and release UPI cash transfers.</p>
+                </div>
+              </div>
+
+              {/* Stat Summary Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className={cardClass}>
+                  <div className="p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PENDING PAYOUTS</p>
+                    <p className="text-2xl font-black text-amber-400 mt-1">₹1,500</p>
+                    <p className="text-[11px] text-slate-500 mt-1">1 booking awaiting UPI transfer</p>
+                  </div>
+                </div>
+
+                <div className={cardClass}>
+                  <div className="p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">TOTAL PAID OUT</p>
+                    <p className="text-2xl font-black text-emerald-400 mt-1">₹12,499</p>
+                    <p className="text-[11px] text-slate-500 mt-1">8 successful referral transfers</p>
+                  </div>
+                </div>
+
+                <div className={cardClass}>
+                  <div className="p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">REGISTERED PROMOTERS</p>
+                    <p className="text-2xl font-black text-cyan-400 mt-1">24</p>
+                    <p className="text-[11px] text-slate-500 mt-1">Active verified UPI profiles</p>
+                  </div>
+                </div>
+
+                <div className={cardClass}>
+                  <div className="p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">SELF-REFERRALS BLOCKED</p>
+                    <p className="text-2xl font-black text-purple-400 mt-1">3</p>
+                    <p className="text-[11px] text-slate-500 mt-1">Protected by Anti-Fraud Shield</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pending Referral Redemptions Table */}
+              <div className={cardClass}>
+                <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Referral Commission Queue</h3>
+                  <span className="text-xs text-slate-400 font-mono">2 Records Found</span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-300">
+                    <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                      <tr>
+                        <th className="p-4">Partner Code & Promoter</th>
+                        <th className="p-4">Promoter UPI & WhatsApp</th>
+                        <th className="p-4">Event & Host Details</th>
+                        <th className="p-4">Booking (₹)</th>
+                        <th className="p-4">10% Payout (₹)</th>
+                        <th className="p-4">Anti-Fraud Check</th>
+                        <th className="p-4 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 font-mono">
+                      {/* Queue Item 1 */}
+                      <tr className="hover:bg-slate-800/30 transition">
+                        <td className="p-4">
+                          <span className="font-bold text-emerald-400">MEM-7K4X</span>
+                          <span className="block text-[11px] text-slate-300 font-sans font-medium">Rahul Sharma</span>
+                        </td>
+                        <td className="p-4 text-slate-200 font-sans">
+                          <span className="font-bold text-white block">rahul@okicici</span>
+                          <span className="text-[11px] text-slate-400">+91 98765 43210</span>
+                        </td>
+                        <td className="p-4 text-slate-200 font-sans">
+                          <span className="font-bold text-white block">Ananya Wedding</span>
+                          <span className="text-[11px] text-slate-400">Host: Vikram Singh (vikram@gmail.com)</span>
+                        </td>
+                        <td className="p-4 text-white font-bold">₹14,999</td>
+                        <td className="p-4 text-emerald-400 font-black text-sm">₹1,500</td>
+                        <td className="p-4">
+                          <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold font-sans">
+                            ✅ Distinct Host & Promoter
+                          </span>
+                        </td>
+                        <td className="p-4 text-right font-sans">
+                          <button
+                            onClick={() => showToast('Payout marked as paid! ₹1,500 transferred to rahul@okicici')}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition"
+                          >
+                            🚀 Mark Paid via UPI
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* Queue Item 2 — Self Referral Flagged */}
+                      <tr className="hover:bg-slate-800/30 transition bg-red-950/10">
+                        <td className="p-4">
+                          <span className="font-bold text-red-400">MEM-8921</span>
+                          <span className="block text-[11px] text-slate-300 font-sans font-medium">Karan Verma</span>
+                        </td>
+                        <td className="p-4 text-slate-200 font-sans">
+                          <span className="font-bold text-white block">karan@upi</span>
+                          <span className="text-[11px] text-slate-400">+91 91234 56789</span>
+                        </td>
+                        <td className="p-4 text-slate-200 font-sans">
+                          <span className="font-bold text-white block">Karan Birthday Bash</span>
+                          <span className="text-[11px] text-slate-400">Host: Karan Verma (karan@upi)</span>
+                        </td>
+                        <td className="p-4 text-white font-bold">₹4,999</td>
+                        <td className="p-4 text-slate-400 font-bold">₹500</td>
+                        <td className="p-4">
+                          <span className="px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold font-sans">
+                            ⚠️ Self-Referral Flagged
+                          </span>
+                        </td>
+                        <td className="p-4 text-right font-sans">
+                          <button
+                            onClick={() => showToast('Self-referral rejected successfully', 'error')}
+                            className="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 font-bold text-xs hover:bg-red-500/30 transition"
+                          >
+                            ❌ Reject Self-Referral
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           )}
 

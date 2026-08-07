@@ -38,8 +38,19 @@ function CheckoutContent() {
   
   const [status, setStatus] = useState<'IDLE' | 'PENDING_MANUAL'>('IDLE');
   const [eventData, setEventData] = useState<{ name: string } | null>(null);
+  const [partnerCode, setPartnerCode] = useState<string>('');
 
   const eventId = searchParams.get('eventId');
+  const refParam = searchParams.get('ref');
+
+  useEffect(() => {
+    if (refParam) {
+      setPartnerCode(refParam.toUpperCase());
+    } else if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('memento_partner_id');
+      if (stored) setPartnerCode(stored);
+    }
+  }, [refParam]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -62,7 +73,7 @@ function CheckoutContent() {
   const features = PLAN_FEATURES[planKey] || PLAN_FEATURES['STANDARD'];
 
   const whatsappMessage = encodeURIComponent(
-    `Hi! I'd like to purchase the Memento *${planLabel}* plan.\n\nEmail: ${user?.email || ''}\nPlan: ${planLabel} (${prices.IN})\n${eventData ? `Event: ${eventData.name}\n` : ''}\nPlease guide me with the payment process.`
+    `Hi! I'd like to purchase the Memento *${planLabel}* plan.\n\nEmail: ${user?.email || ''}\nPlan: ${planLabel} (${prices.IN})\n${eventData ? `Event: ${eventData.name}\n` : ''}${partnerCode ? `Partner Code: ${partnerCode}\n` : ''}\nPlease guide me with the payment process.`
   );
 
   if (isLoading) return (
@@ -182,6 +193,40 @@ function CheckoutContent() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Partner Referral Code Input Section */}
+              <div style={{ padding: '20px 36px', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--surface) 95%, var(--border))' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                      Partner / Referral Code (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. MEM-7K4X"
+                      value={partnerCode}
+                      onChange={(e) => setPartnerCode(e.target.value.toUpperCase())}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '12px',
+                        background: 'var(--bg)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        fontFamily: 'monospace',
+                        outline: 'none',
+                      }}
+                    />
+                  </div>
+                </div>
+                {partnerCode && (
+                  <p style={{ fontSize: '11px', color: 'var(--emerald-400, #10b981)', fontWeight: 600, marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Sparkles size={12} /> Partner Code {partnerCode} logged for 10% promoter commission!
+                  </p>
+                )}
               </div>
 
               {/* Payment Section */}

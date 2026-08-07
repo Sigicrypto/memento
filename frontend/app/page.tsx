@@ -52,6 +52,7 @@ import dynamic from 'next/dynamic';
 const Gallery = dynamic(() => import('@/components/sections/Gallery'), { ssr: false });
 const Testimonials = dynamic(() => import('@/components/sections/Testimonials'), { ssr: false });
 const PricingSection = dynamic(() => import('@/components/sections/PricingSection'), { ssr: false });
+const PartnerSection = dynamic(() => import('@/components/sections/PartnerSection'), { ssr: false });
 const Footer = dynamic(() => import('@/components/sections/Footer'), { ssr: false });
 
 
@@ -189,6 +190,7 @@ export default function LandingPage() {
         <Gallery />
         <Testimonials />
         <PricingSection />
+        <PartnerSection />
         <Footer />
       </div>
     </div>
