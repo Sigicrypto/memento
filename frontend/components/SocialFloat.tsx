@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 const socials = [
   {
     name: 'Facebook',
-    href: 'https://facebook.com/mementoapp',
+    href: 'https://www.facebook.com/1270689629459999',
     color: '#1877F2',
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -16,7 +16,7 @@ const socials = [
   },
   {
     name: 'Instagram',
-    href: 'https://instagram.com/mementoapp',
+    href: 'https://www.instagram.com/my_memento_app',
     color: '#E1306C',
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">

@@ -23,13 +23,19 @@ const Footer: React.FC = () => {
             <span className="text-2xl font-black text-white tracking-tight">Memento</span>
           </div>
 
-          <div className="flex gap-6 md:gap-8 flex-wrap justify-center">
+          <div className="flex gap-6 md:gap-8 flex-wrap justify-center items-center">
             <Link href="/privacy" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
               Privacy Policy
             </Link>
             <Link href="/terms" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
               Terms of Service
             </Link>
+            <a href="https://www.facebook.com/1270689629459999" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
+              Facebook
+            </a>
+            <a href="https://www.instagram.com/my_memento_app" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
+              Instagram
+            </a>
             <a href="https://wa.me/919866161775" target="_blank" rel="noopener noreferrer" className="text-sm text-white/50 hover:text-neon-cyan transition-colors duration-300">
               Contact
             </a>
