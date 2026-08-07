@@ -28,19 +28,19 @@ const features = [
 
 const colorMap = {
   'neon-cyan': {
-    glow: 'bg-neon-cyan/20 group-hover:bg-neon-cyan/40',
-    icon: 'text-neon-cyan',
-    border: 'group-hover:border-neon-cyan/50',
+    glow: 'bg-cyan-500/20 group-hover:bg-cyan-500/40',
+    icon: 'text-cyan-600 dark:text-neon-cyan',
+    border: 'group-hover:border-cyan-500/50',
   },
   'neon-magenta': {
-    glow: 'bg-neon-magenta/20 group-hover:bg-neon-magenta/40',
-    icon: 'text-neon-magenta',
-    border: 'group-hover:border-neon-magenta/50',
+    glow: 'bg-pink-500/20 group-hover:bg-pink-500/40',
+    icon: 'text-pink-600 dark:text-neon-magenta',
+    border: 'group-hover:border-pink-500/50',
   },
   'neon-purple': {
-    glow: 'bg-neon-purple/20 group-hover:bg-neon-purple/40',
-    icon: 'text-neon-purple',
-    border: 'group-hover:border-neon-purple/50',
+    glow: 'bg-purple-500/20 group-hover:bg-purple-500/40',
+    icon: 'text-purple-600 dark:text-neon-purple',
+    border: 'group-hover:border-purple-500/50',
   },
 };
 

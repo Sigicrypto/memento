@@ -80,7 +80,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
 
                 {/* Stats Badge */}
                 <div className="flex justify-center mb-7">
-                   <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#00ffff] bg-[#00ffff]/8 px-4 py-2 rounded-full border border-[#00ffff]/15">{plan.stats}</span>
+                   <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-[#00ffff] bg-cyan-500/10 dark:bg-[#00ffff]/8 px-4 py-2 rounded-full border border-cyan-500/30 dark:border-[#00ffff]/15">{plan.stats}</span>
                 </div>
 
                 {/* Divider */}
@@ -89,30 +89,28 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 {/* Features */}
                 <div className="flex-grow mb-8 space-y-3.5">
                    {plan.features.map((f, i) => (
-                       <div key={i} className={`flex items-start gap-2.5 ${f.included ? 'text-text-primary' : 'text-text-muted opacity-50'}`}>
+                       <div key={i} className={`flex items-start gap-2.5 ${f.included ? 'text-text-primary' : 'text-text-muted opacity-40'}`}>
                           {f.included 
-                            ? <Check size={16} className="text-[#00ffff] flex-shrink-0 mt-0.5" /> 
+                            ? <Check size={16} className="text-cyan-600 dark:text-[#00ffff] flex-shrink-0 mt-0.5" /> 
                             : <X size={16} className="flex-shrink-0 mt-0.5" />
                           }
-                          <span className="leading-relaxed text-[13px] sm:text-sm text-left">{f.label}</span>
+                          <span className="leading-relaxed text-[13px] sm:text-sm text-left font-medium">{f.label}</span>
                        </div>
                    ))}
                 </div>
 
                 {/* CTA Button */}
-                <SpecularButton 
+                <button
+                  type="button"
                   onClick={() => router.push(`/checkout?plan=${plan.name.toUpperCase().replace(' ', '_')}${eventId ? `&eventId=${eventId}` : ''}`)}
-                  className="mt-auto w-full font-bold whitespace-nowrap"
-                  radius={999}
-                  textColor="#ffffff"
-                  lineColor={plan.highlight ? "#a855f7" : "#00ffff"}
-                  baseColor="#1a1a1a"
-                  intensity={1.5}
-                  size="lg"
-                  autoAnimate={plan.highlight}
+                  className={`mt-auto w-full font-extrabold text-sm py-3.5 px-6 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] ${
+                    plan.highlight
+                      ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white shadow-purple-500/30 hover:shadow-purple-500/50'
+                      : 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 border border-slate-700/50 dark:border-white/20'
+                  }`}
                 >
-                  {plan.name === 'White Label' ? 'Get Started' : 'Select Plan'}
-                </SpecularButton>
+                  <span>{plan.name === 'White Label' ? 'Get Started' : 'Select Plan'}</span>
+                </button>
               </motion.div>
             );
           })}
@@ -126,17 +124,17 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           transition={{ duration: 0.6 }}
           className="mb-20 w-full"
         >
-           <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-8">Feature Breakdown</h3>
-           <div className="rounded-2xl lg:rounded-3xl border border-white/10 bg-[var(--surface)] overflow-hidden">
+           <h3 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-8" style={{ color: 'var(--text-primary)' }}>Feature Breakdown</h3>
+           <div className="rounded-2xl lg:rounded-3xl border border-border bg-[var(--surface)] overflow-hidden shadow-xl">
               <div className="w-full overflow-x-auto">
                  <table className="w-full text-left min-w-[700px] border-collapse">
                     <thead>
-                       <tr className="border-b border-white/10 bg-white/[0.03]">
-                          <th className="py-4 lg:py-5 px-4 lg:px-6 text-xs font-bold uppercase tracking-widest text-white/40 w-[28%]">Capability</th>
-                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-white/70 text-center w-[18%]">Starter</th>
-                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-[#a855f7] text-center w-[18%]">Standard</th>
-                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-[#00ffff] text-center w-[18%]">Premium</th>
-                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-white/90 text-center w-[18%]">White Label</th>
+                       <tr className="border-b border-border bg-bg-subtle">
+                          <th className="py-4 lg:py-5 px-4 lg:px-6 text-xs font-bold uppercase tracking-widest text-text-secondary w-[28%]">Capability</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-text-primary text-center w-[18%]">Starter</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-[#a855f7] text-center w-[18%]">Standard</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-[#00ffff] text-center w-[18%]">Premium</th>
+                          <th className="py-4 lg:py-5 px-3 lg:px-4 text-xs font-bold uppercase tracking-widest text-text-primary text-center w-[18%]">White Label</th>
                        </tr>
                     </thead>
                     <tbody>
@@ -162,18 +160,18 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
  
 function ComparisonRow({ label, values }: { label: string, values: any[] }) {
   return (
-    <tr className="border-b border-white/5 hover:bg-white/[0.03] transition-colors">
-       <td className="py-3.5 lg:py-4 px-4 lg:px-6 font-semibold text-white/80 text-sm">{label}</td>
+    <tr className="border-b border-border hover:bg-bg-subtle/50 transition-colors">
+       <td className="py-3.5 lg:py-4 px-4 lg:px-6 font-semibold text-text-primary text-sm">{label}</td>
        {values.map((v, i) => (
           <td key={i} className="py-3.5 lg:py-4 px-3 lg:px-4 text-center">
              {typeof v === 'boolean' ? (
                 v ? (
-                   <Check size={18} className="text-[#00ffff] drop-shadow-[0_0_6px_rgba(0,255,255,0.5)] mx-auto" />
+                   <Check size={18} className="text-cyan-600 dark:text-[#00ffff] mx-auto" />
                 ) : (
-                   <X size={18} className="text-white/15 mx-auto" />
+                   <X size={18} className="text-text-muted opacity-30 mx-auto" />
                 )
              ) : (
-                 <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white/70">{v}</span>
+                 <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-text-secondary">{v}</span>
               )}
           </td>
        ))}

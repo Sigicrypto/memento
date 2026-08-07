@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -92,7 +92,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex items-center gap-10">
               {navLinks.map((item) => (
                 <Link
                   key={item}
@@ -103,18 +103,21 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-neon transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
-              <button
-                type="button"
-                onClick={() => setIsPartnerModalOpen(true)}
-                className="group relative text-xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition-colors duration-200 flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full"
-              >
-                <span>Partner Program (10%)</span>
-              </button>
             </nav>
           )}
 
           {/* Right Section */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setIsPartnerModalOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 dark:text-emerald-300 text-xs font-extrabold tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
+              title="Earn 10% Commission on Event Referrals"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Earn 10%</span>
+            </button>
+
             <ThemeToggle />
             
             {!mini && showAuthButtons && (
@@ -206,6 +209,17 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   </motion.div>
                 ))}
               </nav>
+
+              <div className="mt-6 mb-4">
+                <button
+                  type="button"
+                  onClick={() => { setIsPartnerModalOpen(true); setIsMobileMenuOpen(false); }}
+                  className="w-full py-3.5 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-sm flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <span>Earn 10% Event Commission</span>
+                </button>
+              </div>
 
               <div className="mt-auto space-y-4">
                 {user ? (
