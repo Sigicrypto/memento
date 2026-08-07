@@ -10,6 +10,8 @@ import { LogOut, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 
+import PartnerProgramModal from '@/components/PartnerProgramModal';
+
 interface ThemedNavProps {
   showAuthButtons?: boolean;
   mini?: boolean;
@@ -23,6 +25,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -89,7 +92,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden md:flex items-center gap-10">
+            <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((item) => (
                 <Link
                   key={item}
@@ -100,6 +103,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-neon transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
+              <button
+                type="button"
+                onClick={() => setIsPartnerModalOpen(true)}
+                className="group relative text-xs font-extrabold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition-colors duration-200 flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-full"
+              >
+                <span>Partner Program (10%)</span>
+              </button>
             </nav>
           )}
 
@@ -229,6 +239,10 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           </motion.div>
         )}
       </AnimatePresence>
+      <PartnerProgramModal
+        isOpen={isPartnerModalOpen}
+        onClose={() => setIsPartnerModalOpen(false)}
+      />
     </>
   );
 }
