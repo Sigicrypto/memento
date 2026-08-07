@@ -176,67 +176,122 @@ export default function SocialCampaignStudio() {
           </div>
         </div>
 
-        {/* Success Banner */}
+        {/* Status Banner */}
         {result && (
-          <div className="p-6 bg-emerald-950/40 border border-emerald-500/40 rounded-2xl space-y-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 text-emerald-400">
-                <CheckCircle2 className="w-7 h-7 shrink-0" />
+          <div className="space-y-4">
+            {/* If Meta Token is Missing */}
+            {result.results?.hasToken === false && (
+              <div className="p-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-300 text-sm flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <h2 className="text-lg font-bold text-white">Campaign Published Live All Over! 🎉</h2>
-                  <p className="text-xs text-emerald-300/80">Your content has been broadcasted via Meta Business Graph API.</p>
+                  <p className="font-semibold text-amber-200">Meta Access Token Missing on Vercel</p>
+                  <p className="text-xs mt-1 text-amber-300/80">Please add META_PAGE_ACCESS_TOKEN into your Vercel Environment Variables.</p>
                 </div>
               </div>
-              <span className="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-300 font-mono rounded-full border border-emerald-500/30">
-                200 OK Status
-              </span>
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              {result.results?.facebook && (
-                <div className="p-4 bg-slate-950/80 border border-blue-500/30 rounded-xl space-y-2 hover:border-blue-500/60 transition-colors">
-                  <div className="flex items-center justify-between text-blue-400 text-sm font-semibold">
-                    <span className="flex items-center gap-2">
-                      <FacebookIcon className="w-4 h-4 text-blue-400" /> Facebook Page Post
-                    </span>
-                    <ExternalLink className="w-4 h-4" />
+            {/* Check for Meta API Errors */}
+            {(result.results?.facebook?.error || result.results?.instagram?.error) ? (
+              <div className="p-6 bg-red-950/40 border border-red-500/40 rounded-2xl space-y-4 shadow-2xl backdrop-blur-md">
+                <div className="flex items-center gap-3 text-red-400">
+                  <AlertCircle className="w-7 h-7 shrink-0" />
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Meta API Broadcast Error</h2>
+                    <p className="text-xs text-red-300/80">Meta Graph API rejected the request. Details below:</p>
                   </div>
-                  <p className="text-xs text-slate-400 font-mono">Post ID: {result.results.facebook.id || result.results.facebook.post_id || 'Published'}</p>
-                  <a
-                    href="https://facebook.com/1270689629459999"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-medium pt-1 transition-colors"
-                  >
-                    View Post on Memento Facebook Page ➔
-                  </a>
                 </div>
-              )}
 
-              {result.results?.instagram && (
-                <div className="p-4 bg-slate-950/80 border border-pink-500/30 rounded-xl space-y-2 hover:border-pink-500/60 transition-colors">
-                  <div className="flex items-center justify-between text-pink-400 text-sm font-semibold">
-                    <span className="flex items-center gap-2">
-                      <InstagramIcon className="w-4 h-4 text-pink-400" /> Instagram Business Post
-                    </span>
-                    <ExternalLink className="w-4 h-4" />
-                  </div>
-                  <p className="text-xs text-slate-400 font-mono">Media ID: {result.results.instagram.id || 'Published'}</p>
-                  <a
-                    href="https://instagram.com/my_memento_app"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-pink-400 hover:text-pink-300 font-medium pt-1 transition-colors"
-                  >
-                    View Post on @my_memento_app Instagram ➔
-                  </a>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  {result.results?.facebook?.error && (
+                    <div className="p-4 bg-slate-950/80 border border-red-500/30 rounded-xl space-y-2">
+                      <div className="flex items-center gap-2 text-red-400 text-sm font-semibold">
+                        <FacebookIcon className="w-4 h-4" /> Facebook Error
+                      </div>
+                      <p className="text-xs text-red-300 font-mono">{result.results.facebook.error.message}</p>
+                      {result.results.facebook.error.code === 190 && (
+                        <p className="text-[11px] text-amber-300 pt-1">👉 Token expired! Please re-connect on <a href="/admin/meta-setup" className="underline font-bold">Meta Setup Helper</a>.</p>
+                      )}
+                    </div>
+                  )}
+
+                  {result.results?.instagram?.error && (
+                    <div className="p-4 bg-slate-950/80 border border-red-500/30 rounded-xl space-y-2">
+                      <div className="flex items-center gap-2 text-pink-400 text-sm font-semibold">
+                        <InstagramIcon className="w-4 h-4" /> Instagram Error
+                      </div>
+                      <p className="text-xs text-red-300 font-mono">{result.results.instagram.error.message}</p>
+                      {result.results.instagram.error.code === 190 && (
+                        <p className="text-[11px] text-amber-300 pt-1">👉 Token expired! Please re-connect on <a href="/admin/meta-setup" className="underline font-bold">Meta Setup Helper</a>.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              /* Genuine Success Banner */
+              (result.results?.facebook?.id || result.results?.instagram?.id) && (
+                <div className="p-6 bg-emerald-950/40 border border-emerald-500/40 rounded-2xl space-y-4 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-emerald-400">
+                      <CheckCircle2 className="w-7 h-7 shrink-0" />
+                      <div>
+                        <h2 className="text-lg font-bold text-white">Campaign Published Live All Over! 🎉</h2>
+                        <p className="text-xs text-emerald-300/80">Your content has been broadcasted via Meta Business Graph API.</p>
+                      </div>
+                    </div>
+                    <span className="text-xs px-3 py-1 bg-emerald-500/20 text-emerald-300 font-mono rounded-full border border-emerald-500/30">
+                      200 OK Status
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    {result.results?.facebook?.id && (
+                      <div className="p-4 bg-slate-950/80 border border-blue-500/30 rounded-xl space-y-2 hover:border-blue-500/60 transition-colors">
+                        <div className="flex items-center justify-between text-blue-400 text-sm font-semibold">
+                          <span className="flex items-center gap-2">
+                            <FacebookIcon className="w-4 h-4 text-blue-400" /> Facebook Page Post
+                          </span>
+                          <ExternalLink className="w-4 h-4" />
+                        </div>
+                        <p className="text-xs text-emerald-400 font-mono">Post ID: {result.results.facebook.id}</p>
+                        <a
+                          href="https://facebook.com/1270689629459999"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-medium pt-1 transition-colors"
+                        >
+                          View Post on Memento Facebook Page ➔
+                        </a>
+                      </div>
+                    )}
+
+                    {result.results?.instagram?.id && (
+                      <div className="p-4 bg-slate-950/80 border border-pink-500/30 rounded-xl space-y-2 hover:border-pink-500/60 transition-colors">
+                        <div className="flex items-center justify-between text-pink-400 text-sm font-semibold">
+                          <span className="flex items-center gap-2">
+                            <InstagramIcon className="w-4 h-4 text-pink-400" /> Instagram Business Post
+                          </span>
+                          <ExternalLink className="w-4 h-4" />
+                        </div>
+                        <p className="text-xs text-emerald-400 font-mono">Media ID: {result.results.instagram.id}</p>
+                        <a
+                          href="https://instagram.com/my_memento_app"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-pink-400 hover:text-pink-300 font-medium pt-1 transition-colors"
+                        >
+                          View Post on @my_memento_app Instagram ➔
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            )}
           </div>
         )}
 
-        {/* Error Banner */}
+        {/* Local Error Banner */}
         {error && (
           <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-300 text-sm flex items-start gap-3">
             <span className="font-semibold text-red-200">Publishing Failure:</span> {error}
