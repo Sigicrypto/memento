@@ -171,8 +171,15 @@ export async function publishToMeta({
   imageUrl: string;
   target?: 'both' | 'facebook' | 'instagram';
 }) {
-  const pageToken = process.env.META_PAGE_ACCESS_TOKEN;
-  const instagramId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
+  let pageToken = process.env.META_PAGE_ACCESS_TOKEN;
+  let instagramId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
+
+  if (pageToken) {
+    pageToken = pageToken.replace(/^META_PAGE_ACCESS_TOKEN=/, '').replace(/^["']|["']$/g, '').trim();
+  }
+  if (instagramId) {
+    instagramId = instagramId.replace(/^INSTAGRAM_BUSINESS_ACCOUNT_ID=/, '').replace(/^["']|["']$/g, '').trim();
+  }
 
   if (!pageToken) {
     return {
