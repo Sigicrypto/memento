@@ -435,6 +435,8 @@ export default function AdminPage() {
                     <button onClick={() => setActiveTab('users')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">👥 Manage Users</button>
                     <button onClick={() => setActiveTab('events')} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">🎉 Manage Events</button>
                     <button onClick={handleBulkApproveAll} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">✅ Approve All Pending</button>
+                    <Link href="/admin/lead-outreach" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">📱 B2B Lead Discovery & WhatsApp</Link>
+                    <Link href="/admin/social-campaign" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition">📣 Social Media Studio</Link>
                     <Link href="/create" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition">✨ Create Event</Link>
                     <button onClick={() => { fetchStats(); showToast('Stats refreshed'); }} className="px-5 py-2.5 rounded-xl text-sm font-bold bg-bg-subtle border border-border hover:bg-border transition">🔄 Refresh Stats</button>
                   </div>
