@@ -291,8 +291,19 @@ export async function publishToMeta({
 
     if (containerRes && containerRes.id) {
       if (mediaType === 'VIDEO') {
-        // Wait 10 seconds for Meta serverless video transcoding engine to process 9:16 MP4 Reel
-        await new Promise((r) => setTimeout(r, 10000));
+        // Poll Instagram Reel video status until FINISHED (Meta Graph API standard)
+        let isReady = false;
+        let attempts = 0;
+        const statusUrl = `https://graph.facebook.com/v20.0/${containerRes.id}?fields=status_code,status&access_token=${pageToken}`;
+
+        while (!isReady && attempts < 8) {
+          await new Promise((r) => setTimeout(r, 4000));
+          attempts++;
+          const statusRes = await securePost(statusUrl, {});
+          if (statusRes && (statusRes.status_code === 'FINISHED' || statusRes.status === 'FINISHED')) {
+            isReady = true;
+          }
+        }
       }
 
       const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
