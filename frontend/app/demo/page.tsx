@@ -494,27 +494,28 @@ function DemoWallInner() {
           ))}
         </div>
 
-        {/* Header Bar */}
-        <div className="absolute top-0 left-0 right-0 p-6 md:p-8 flex justify-between items-center z-50">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-surface/80 backdrop-blur-2xl border border-white/10 flex items-center justify-center text-accent-cyan shadow-lg">
-              <Layout size={20} />
+        {/* Header Bar - Mobile First Responsive Redesign */}
+        <div className="absolute top-0 left-0 right-0 p-3 sm:p-6 md:p-8 flex justify-between items-center z-50 gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1 max-w-[55%] sm:max-w-none">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-surface/80 backdrop-blur-2xl border border-white/10 flex items-center justify-center text-accent-cyan shadow-lg shrink-0">
+              <Layout size={16} className="sm:hidden" />
+              <Layout size={20} className="hidden sm:block" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] font-black uppercase tracking-[.3em] text-accent-cyan">LIVE DEMO EXPERIENCE</span>
-                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Auto Sync Active</span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-accent-cyan truncate">LIVE DEMO</span>
+                <span className="hidden sm:inline-flex text-[8px] sm:text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">Auto Sync Active</span>
               </div>
-              <h1 className="text-xl md:text-2xl font-black text-white">Interactive Photo Wall</h1>
+              <h1 className="text-xs sm:text-lg md:text-2xl font-black text-white truncate max-w-[130px] sm:max-w-none">Interactive Photo Wall</h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 md:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 shrink-0">
             {/* Music Toggle */}
             <RippleButton
               rippleColor="#ADD8E6"
               onClick={() => setIsAudioPlaying(!isAudioPlaying)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+              className={`!p-2 sm:!p-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
                 isAudioPlaying ? 'bg-accent-cyan/20 text-accent-cyan border-accent-cyan/30' : 'bg-white/5 text-text-muted border-white/10'
               }`}
               title="Toggle Music"
@@ -527,14 +528,15 @@ function DemoWallInner() {
             {uploadUrl && (
               <Link
                 href={uploadUrl}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-cyan text-black font-extrabold text-xs uppercase tracking-wider hover:bg-accent-cyan/90 transition-all shadow-lg shrink-0"
+                className="px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-accent-cyan text-black font-extrabold text-[11px] sm:text-xs uppercase tracking-wider hover:bg-accent-cyan/90 transition-all shadow-lg flex items-center gap-1 shrink-0"
               >
-                <Camera size={14} />
-                <span>+ Upload Photo</span>
+                <Camera size={13} />
+                <span className="sm:hidden">+ Upload</span>
+                <span className="hidden sm:inline">+ Upload Photo</span>
               </Link>
             )}
 
-            <div className="hidden sm:flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1">
+            <div className="hidden md:flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1">
               {[3000, 5000, 8000].map((speed) => (
                 <button
                   key={speed}
@@ -551,27 +553,29 @@ function DemoWallInner() {
             <RippleButton
               rippleColor="#ADD8E6"
               onClick={() => setIsSlideshowAuto(!isSlideshowAuto)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
+              className={`!p-2 sm:!p-2.5 sm:px-4 sm:py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
                 isSlideshowAuto ? 'bg-accent-cyan/20 text-accent-cyan border-accent-cyan/30' : 'bg-white/5 text-text-muted border-white/10'
               }`}
+              title={isSlideshowAuto ? 'Pause Slideshow' : 'Play Slideshow'}
             >
               {isSlideshowAuto ? <Pause size={14} /> : <Play size={14} />}
-              <span>{isSlideshowAuto ? 'Auto Playing' : 'Paused'}</span>
+              <span className="hidden sm:inline">{isSlideshowAuto ? 'Auto Playing' : 'Paused'}</span>
             </RippleButton>
 
             <RippleButton
               rippleColor="#ADD8E6"
               onClick={() => setViewMode(prevViewMode)}
-              className="px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-bold text-xs text-white flex items-center gap-2"
+              className="!p-2 sm:!p-2.5 sm:px-4 sm:py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all font-bold text-xs text-white flex items-center gap-1.5"
+              title="Exit Slideshow"
             >
               <X size={14} />
-              <span>Exit Slideshow</span>
+              <span className="hidden sm:inline">Exit</span>
             </RippleButton>
           </div>
         </div>
 
         {/* Main Media Container */}
-        <div className="flex-grow relative w-full h-full flex items-center justify-center p-6 md:p-12">
+        <div className="flex-grow relative w-full h-full flex items-center justify-center p-3 pt-16 pb-16 sm:p-6 sm:pt-24 sm:pb-24 md:p-12">
           {displayedPhotos.length > 0 && currentPhoto ? (
             <AnimatePresence mode="wait">
               <motion.div
