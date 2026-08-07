@@ -188,12 +188,24 @@ export async function publishToMeta({
 
   // 1. Post to Facebook Page
   if (target === 'facebook' || target === 'both') {
-    const fbUrl = `https://graph.facebook.com/v20.0/me/photos`;
-    results.facebook = await securePost(fbUrl, {
-      url: imageUrl,
-      caption: caption,
+    const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
+    const fbRes = await securePost(fbFeedUrl, {
+      message: caption,
+      link: imageUrl,
       access_token: pageToken,
     });
+
+    if (fbRes.error) {
+      // Fallback to photo upload endpoint if feed link post returns an error
+      const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
+      results.facebook = await securePost(fbPhotoUrl, {
+        url: imageUrl,
+        caption: caption,
+        access_token: pageToken,
+      });
+    } else {
+      results.facebook = fbRes;
+    }
   }
 
   // 2. Post to Instagram Business Account
