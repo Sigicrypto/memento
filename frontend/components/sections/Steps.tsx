@@ -39,13 +39,13 @@ const Steps: React.FC = () => {
                   <span className="text-xs font-bold text-neon-cyan tracking-widest mb-6 uppercase font-mono bg-neon-cyan/10 px-4 py-1.5 rounded-full border border-neon-cyan/30">
                     Step {s.num}
                   </span>
-                  <div className="w-16 h-16 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-8 border border-white/10 group-hover:border-neon-cyan/50 group-hover:scale-110 transition-all duration-300">
+                  <div className="w-16 h-16 rounded-2xl bg-bg-subtle flex items-center justify-center mb-8 border border-border group-hover:border-neon-cyan/50 group-hover:scale-110 transition-all duration-300">
                     <span className="text-3xl">{s.icon}</span>
                   </div>
-                  <h3 className="text-xl lg:text-2xl font-bold text-white mb-4 tracking-tight group-hover:text-neon-cyan transition-colors duration-300">
+                  <h3 className="text-xl lg:text-2xl font-bold text-text-primary mb-4 tracking-tight group-hover:text-neon-cyan transition-colors duration-300">
                     {s.title}
                   </h3>
-                  <p className="text-white/60 font-medium leading-relaxed text-base max-w-xs">{s.desc}</p>
+                  <p className="text-text-secondary font-medium leading-relaxed text-base max-w-xs">{s.desc}</p>
                 </div>
               </motion.div>
             ))}

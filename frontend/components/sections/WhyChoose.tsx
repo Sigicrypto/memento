@@ -35,13 +35,13 @@ const WhyChoose: React.FC = () => {
             >
               <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-neon-cyan/20 blur-[70px] rounded-full group-hover:bg-neon-cyan/40 transition-all" />
               <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-2xl bg-[#1a1a1a] border border-white/10 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:border-neon-cyan/50 transition-all duration-500">
+                <div className="w-16 h-16 rounded-2xl bg-bg-subtle border border-border flex items-center justify-center text-3xl mb-8 group-hover:scale-110 group-hover:border-neon-cyan/50 transition-all duration-500">
                   {f.icon}
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-neon-cyan transition-colors duration-300 tracking-tight">
+                <h3 className="text-xl md:text-2xl font-bold text-text-primary mb-4 group-hover:text-neon-cyan transition-colors duration-300 tracking-tight">
                   {f.title}
                 </h3>
-                <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-lg">{f.desc}</p>
+                <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-lg">{f.desc}</p>
               </div>
             </motion.div>
           ))}

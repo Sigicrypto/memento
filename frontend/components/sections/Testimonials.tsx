@@ -38,18 +38,18 @@ const Testimonials: React.FC = () => {
                     <span key={j} className="text-neon-cyan text-base drop-shadow-[0_0_8px_rgba(0,255,255,0.4)]">★</span>
                   ))}
                 </div>
-                <p className="text-white/90 text-lg font-medium leading-relaxed mb-8 flex-grow italic">
+                <p className="text-text-primary text-lg font-medium leading-relaxed mb-8 flex-grow italic">
                   &quot;{item.quote}&quot;
                 </p>
-                <div className="flex flex-col items-center gap-3 pt-5 border-t border-white/10 w-full">
-                  <div className="w-11 h-11 rounded-full bg-[#1a1a1a] border border-neon-cyan/30 flex items-center justify-center text-neon-cyan font-bold text-sm">
+                <div className="flex flex-col items-center gap-3 pt-5 border-t border-border w-full">
+                  <div className="w-11 h-11 rounded-full bg-bg-subtle border border-neon-cyan/30 flex items-center justify-center text-neon-cyan font-bold text-sm">
                     {item.author.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div>
-                    <p className="text-white font-bold leading-none mb-1 group-hover:text-neon-cyan transition-colors duration-300">
+                    <p className="text-text-primary font-bold leading-none mb-1 group-hover:text-neon-cyan transition-colors duration-300">
                       {item.author}
                     </p>
-                    <p className="text-white/50 text-xs uppercase tracking-widest font-semibold">{item.role}</p>
+                    <p className="text-text-secondary text-xs uppercase tracking-widest font-semibold">{item.role}</p>
                   </div>
                 </div>
               </div>
@@ -73,8 +73,8 @@ const Testimonials: React.FC = () => {
             { val: '4.9★', label: 'Rating' },
           ].map((item, i) => (
             <div key={i} className="flex flex-col items-center">
-              <span className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">{item.val}</span>
-              <span className="text-white/50 text-xs uppercase tracking-widest font-bold">{item.label}</span>
+              <span className="text-3xl md:text-4xl font-black text-text-primary mb-2 tracking-tighter">{item.val}</span>
+              <span className="text-text-secondary text-xs uppercase tracking-widest font-bold">{item.label}</span>
             </div>
           ))}
         </motion.div>

@@ -42,7 +42,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-5xl md:text-7xl font-bold leading-[1.08] text-white tracking-tight max-w-4xl"
+          className="text-5xl md:text-7xl font-bold leading-[1.08] text-text-primary tracking-tight max-w-4xl"
         >
           The Pulse of <span className="text-gradient-neon">Your Event</span>
         </motion.h1>
@@ -51,7 +51,7 @@ const Hero: React.FC<HeroProps> = ({ setIsDemoOpen }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="text-white/60 max-w-2xl mx-auto text-lg md:text-xl font-medium mt-8"
+          className="text-text-secondary max-w-2xl mx-auto text-lg md:text-xl font-medium mt-8"
         >
           Transform guest photos into a real-time digital masterpiece. No apps,
           no hassle — just pure shared memories synced to the big screen.

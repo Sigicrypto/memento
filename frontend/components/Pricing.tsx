@@ -18,7 +18,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {!isEmbedded && (
           <div className="mb-10">
-            <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-white transition-colors">
+            <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors">
                <ArrowLeft size={16} /> Back to Homepage
             </a>
           </div>
@@ -44,10 +44,10 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.08, duration: 0.5 }}
-                className={`relative flex flex-col h-full group rounded-2xl lg:rounded-3xl border bg-[var(--surface)] p-7 sm:p-8 lg:p-10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)] ${
+                className={`relative flex flex-col h-full group rounded-2xl lg:rounded-3xl border bg-[var(--surface)] p-7 sm:p-8 lg:p-10 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] ${
                   plan.highlight 
                     ? 'border-[#a855f7]/50 shadow-[0_0_30px_rgba(168,85,247,0.2)]' 
-                    : 'border-white/10 hover:border-white/20'
+                    : 'border-border hover:border-border-hover'
                 }`}
               >
                 {/* Recommended badge */}
@@ -62,20 +62,20 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 border transition-transform duration-300 group-hover:scale-110 ${
                      plan.highlight 
                        ? 'bg-[#a855f7]/10 border-[#a855f7]/20' 
-                       : 'bg-white/5 border-white/10'
+                       : 'bg-bg-subtle border-border'
                    }`}>
-                      <Icon size={26} className={plan.highlight ? 'text-[#a855f7]' : 'text-white/70'} />
+                      <Icon size={26} className={plan.highlight ? 'text-[#a855f7]' : 'text-text-primary'} />
                    </div>
-                   <h3 className="text-xl lg:text-2xl font-bold text-white">{plan.name}</h3>
+                   <h3 className="text-xl lg:text-2xl font-bold text-text-primary">{plan.name}</h3>
                 </div>
 
                 {/* Price */}
                 <div className="mb-7 text-center">
                    <div className="flex items-baseline gap-1 justify-center">
-                      <span className="text-3xl lg:text-4xl font-black text-white tracking-tight">{price}</span>
-                      <span className="text-white/40 text-sm font-medium">/event</span>
+                      <span className="text-3xl lg:text-4xl font-black text-text-primary tracking-tight">{price}</span>
+                      <span className="text-text-muted text-sm font-medium">/event</span>
                    </div>
-                   <p className="text-white/50 text-xs sm:text-sm mt-3 leading-relaxed">{plan.description}</p>
+                   <p className="text-text-secondary text-xs sm:text-sm mt-3 leading-relaxed">{plan.description}</p>
                 </div>
 
                 {/* Stats Badge */}
@@ -84,12 +84,12 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 </div>
 
                 {/* Divider */}
-                <div className="w-full h-px bg-white/8 mb-7" />
+                <div className="w-full h-px bg-border mb-7" />
 
                 {/* Features */}
                 <div className="flex-grow mb-8 space-y-3.5">
                    {plan.features.map((f, i) => (
-                       <div key={i} className={`flex items-start gap-2.5 ${f.included ? 'text-white/85' : 'text-white/25'}`}>
+                       <div key={i} className={`flex items-start gap-2.5 ${f.included ? 'text-text-primary' : 'text-text-muted opacity-50'}`}>
                           {f.included 
                             ? <Check size={16} className="text-[#00ffff] flex-shrink-0 mt-0.5" /> 
                             : <X size={16} className="flex-shrink-0 mt-0.5" />

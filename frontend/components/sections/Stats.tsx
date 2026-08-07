@@ -25,7 +25,7 @@ const Stats: React.FC = () => {
                 className="text-center relative md:px-6"
               >
                 {i > 0 && (
-                  <div className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-px h-16 bg-white/10" />
+                  <div className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-px h-16 bg-border" />
                 )}
                 <p
                   className={`text-5xl md:text-6xl font-black ${stat.color} mb-2 tracking-tighter`}
@@ -33,7 +33,7 @@ const Stats: React.FC = () => {
                 >
                   {stat.value}
                 </p>
-                <p className="text-xs font-bold text-white/50 uppercase tracking-[0.2em]">{stat.label}</p>
+                <p className="text-xs font-bold text-text-secondary uppercase tracking-[0.2em]">{stat.label}</p>
               </motion.div>
             ))}
           </div>

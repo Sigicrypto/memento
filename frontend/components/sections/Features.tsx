@@ -79,11 +79,11 @@ const Features: React.FC = () => {
                 className="lp-card p-10 md:p-16 group relative overflow-hidden flex flex-col items-start text-left h-full"
               >
                 <div className={`absolute -right-12 -top-12 w-40 h-40 blur-[60px] rounded-full transition-all ${colors.glow}`} />
-                <div className={`w-16 h-16 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mb-10 border border-white/10 group-hover:scale-110 transition-transform duration-500 shadow-xl ${colors.border}`}>
+                <div className={`w-16 h-16 rounded-2xl bg-bg-subtle flex items-center justify-center mb-10 border border-border group-hover:scale-110 transition-transform duration-500 shadow-xl ${colors.border}`}>
                   <Icon size={28} className={colors.icon} />
                 </div>
-                <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-white tracking-tight">{feature.title}</h3>
-                <p className="text-white/60 text-base md:text-lg leading-relaxed max-w-sm">{feature.desc}</p>
+                <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-text-primary tracking-tight">{feature.title}</h3>
+                <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-sm">{feature.desc}</p>
               </motion.div>
             );
           })}

@@ -67,8 +67,8 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1480px] z-[9999] rounded-full transition-all duration-500 ${
           scrolled
-            ? 'bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.6)]'
-            : 'bg-[#0a0a0a]/50 backdrop-blur-md border border-white/[0.06]'
+            ? 'bg-slate-950/95 dark:bg-[#0a0a0a]/95 backdrop-blur-2xl border border-slate-800 dark:border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.4)]'
+            : 'bg-slate-950/80 dark:bg-[#0a0a0a]/50 backdrop-blur-md border border-slate-800/80 dark:border-white/[0.06]'
         }`}
       >
         {/* subtle top gradient accent line */}
@@ -94,7 +94,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 <Link
                   key={item}
                   href={`/#${item.toLowerCase().replace(/ /g, '')}`}
-                  className="group relative text-sm font-medium text-white/60 hover:text-white transition-colors duration-200"
+                  className="group relative text-sm font-medium text-slate-200 dark:text-white/70 hover:text-white transition-colors duration-200"
                 >
                   {item}
                   <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-neon transition-all duration-300 group-hover:w-full" />
