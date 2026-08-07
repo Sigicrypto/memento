@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import FloatingParticles from '@/components/FloatingParticles';
+import WhatsAppViralBanner from '@/components/WhatsAppViralBanner';
 import { Upload } from 'lucide-react';
 
 const MAX_IMAGES = 5;
@@ -841,10 +842,13 @@ function DemoUploadContent() {
 
           {/* ── Success banner ── */}
           {uploadSuccess && (
-            <div className="upload-success">
-              <span className="success-emoji">🎉</span>
-              <p className="success-title">Posted to the wall!</p>
-              <p className="success-sub">Your memories are now live for everyone to see.</p>
+            <div className="space-y-4">
+              <div className="upload-success">
+                <span className="success-emoji">🎉</span>
+                <p className="success-title">Posted to the wall!</p>
+                <p className="success-sub">Your memories are now live for everyone to see.</p>
+              </div>
+              <WhatsAppViralBanner eventName="Memento Demo Wall" eventSlug={demoId || 'demo'} />
             </div>
           )}
 

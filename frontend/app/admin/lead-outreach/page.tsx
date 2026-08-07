@@ -19,7 +19,10 @@ import {
   Users,
   Copy,
   Check,
-  AlertCircle
+  AlertCircle,
+  Download,
+  Gift,
+  Plus
 } from 'lucide-react';
 
 interface B2BLead {
@@ -52,29 +55,105 @@ const LOCATIONS = [
   'Dubai',
 ];
 
-const DEFAULT_TEMPLATE = `Hi {{business_name}} team! 👋
+const TEMPLATES: Record<string, string> = {
+  wedding: `Hi {{business_name}} team! 👋
 
-We noticed your amazing event work in {{location}}. 
+We loved your wedding work in {{location}}.
 
-Memento turns any venue display screen or TV into a live QR photo wall where guests stream their candid photos in real-time — zero app download required! 📱✨
+Memento turns any venue TV or LED display into a Live Photo Wall where guests stream candid photos in real-time — zero app download needed! 📱✨
 
-Here is a 1-minute demo wall you can view right on your phone:
+Here is a 1-minute live demo wall you can view right on your phone:
 👉 www.mymementoapp.com/demo
 
-Would you be open to a 5-minute virtual showcase for your upcoming events? 🚀`;
+Let's connect so we can discuss to proceed further! 🚀`,
+
+  corporate: `Hi {{business_name}} team! 👋
+
+Looking for a high-engagement centerpiece for your upcoming corporate galas and tech conferences in {{location}}?
+
+Memento lets attendees stream live photos/videos to venue screens, complete with:
+🏢 Custom Brand Logo Overlays
+🤖 AI Face Recognition ("Find My Photos")
+🛡️ Real-time Content Moderation
+
+Check out the live interactive demo:
+👉 www.mymementoapp.com/demo
+
+Let's connect so we can discuss to proceed further! 💼`,
+
+  venue: `Hi {{business_name}} team! 👋
+
+Upgrade your banquet hall TVs and LED walls into an interactive guest experience for every event hosted at your venue in {{location}}.
+
+Zero hardware required — works directly on smart TVs or browser screens. Plus, earn 10% venue commission on all hosted event upgrades! 🏰
+
+See it live:
+👉 www.mymementoapp.com/demo
+
+Let's connect so we can discuss to proceed further! 🚀`,
+
+  referral: `Hi {{business_name}} team! 👋
+
+We're launching Memento's Partner & Referral Program in {{location}}.
+
+Earn 10% cash commission (₹750 – ₹2,000 per booking) + give your clients 10% OFF when they add Memento's Live Photo Wall to their weddings and events! 🎁
+
+Check out how it works:
+👉 www.mymementoapp.com/demo
+
+Let's connect so we can discuss to proceed further! 🚀`
+};
 
 export default function LeadOutreachStudio() {
   const [location, setLocation] = useState('Mumbai');
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0].id);
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState<string>('wedding');
   const [leads, setLeads] = useState<B2BLead[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
-  const [template, setTemplate] = useState(DEFAULT_TEMPLATE);
+  const [template, setTemplate] = useState(TEMPLATES.wedding);
 
   const [searching, setSearching] = useState(false);
   const [sending, setSending] = useState(false);
   const [searchMeta, setSearchMeta] = useState<{ source?: string; message?: string } | null>(null);
   const [outreachLogs, setOutreachLogs] = useState<{ leadName: string; phone: string; status: string; url?: string }[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [copiedAll, setCopiedAll] = useState(false);
+
+  // Custom Lead Modal State
+  const [showAddLead, setShowAddLead] = useState(false);
+  const [newLeadName, setNewLeadName] = useState('');
+  const [newLeadPhone, setNewLeadPhone] = useState('');
+  const [newLeadAddress, setNewLeadAddress] = useState('');
+
+  const handleAddCustomLead = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLeadName.trim() || !newLeadPhone.trim()) return;
+
+    const customLead: B2BLead = {
+      id: `custom-${Date.now()}`,
+      name: newLeadName.trim(),
+      category: selectedCategory,
+      phone: newLeadPhone.trim(),
+      website: 'N/A',
+      rating: 5.0,
+      address: newLeadAddress.trim() || location,
+      status: 'new',
+    };
+
+    setLeads((prev) => [customLead, ...prev]);
+    setSelectedLeads((prev) => [customLead.id, ...prev]);
+    setNewLeadName('');
+    setNewLeadPhone('');
+    setNewLeadAddress('');
+    setShowAddLead(false);
+  };
+
+  const handleSelectTemplateKey = (key: string) => {
+    setSelectedTemplateKey(key);
+    if (TEMPLATES[key]) {
+      setTemplate(TEMPLATES[key]);
+    }
+  };
 
   const handleSearchLeads = async () => {
     setSearching(true);
@@ -116,6 +195,44 @@ export default function LeadOutreachStudio() {
     return template
       .replace(/{{business_name}}/g, lead.name)
       .replace(/{{location}}/g, location);
+  };
+
+  const exportLeadsToCSV = () => {
+    if (leads.length === 0) return;
+    const headers = ['Business Name', 'Category', 'Location', 'Phone', 'Rating', 'Address', 'Website', 'WhatsApp Outreach Link'];
+    const rows = leads.map((lead) => {
+      const message = getCustomizedMessage(lead);
+      const cleanPhone = lead.phone.replace(/[^0-9]/g, '');
+      const waLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+      return [
+        `"${lead.name.replace(/"/g, '""')}"`,
+        `"${selectedCategory}"`,
+        `"${location}"`,
+        `"${lead.phone}"`,
+        `"${lead.rating}"`,
+        `"${lead.address.replace(/"/g, '""')}"`,
+        `"${lead.website}"`,
+        `"${waLink}"`,
+      ];
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Memento_B2B_Leads_${selectedCategory.replace(/\s+/g, '_')}_${location}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const copyAllMessagesToClipboard = () => {
+    const selectedList = leads.filter((l) => selectedLeads.includes(l.id));
+    if (selectedList.length === 0) return;
+    const formatted = selectedList.map((l) => `--- ${l.name} (${l.phone}) ---\n${getCustomizedMessage(l)}\n\n`).join('');
+    navigator.clipboard.writeText(formatted);
+    setCopiedAll(true);
+    setTimeout(() => setCopiedAll(false), 2500);
   };
 
   const handleSendWhatsAppOutreach = async (lead: B2BLead) => {
@@ -206,11 +323,22 @@ export default function LeadOutreachStudio() {
 
         {/* Step 1: Lead Search Panel */}
         <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Search className="w-5 h-5 text-emerald-400" /> Step 1: Discover Target Audience Leads (Google Places)
-            </h2>
-            <span className="text-xs text-slate-400 font-mono">B2B Leads Engine</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <Search className="w-5 h-5 text-emerald-400" /> Step 1: Discover Target Audience Leads (Google Places)
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">Search verified Google Maps contacts or open live web search.</p>
+            </div>
+            <a
+              href={`https://www.google.com/maps/search/${encodeURIComponent(`${selectedCategory} in ${location}`)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Open Google Maps Search</span>
+            </a>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
@@ -269,19 +397,94 @@ export default function LeadOutreachStudio() {
           </div>
 
           {searchMeta?.message && (
-            <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-400 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>{searchMeta.message}</span>
+            <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-400 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{searchMeta.message}</span>
+              </div>
+              <button
+                onClick={() => setShowAddLead(true)}
+                className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] font-bold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1 shrink-0"
+              >
+                <Plus className="w-3 h-3" /> Add Custom Lead
+              </button>
             </div>
           )}
         </div>
+
+        {/* Custom Lead Modal */}
+        {showAddLead && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-emerald-400" /> Add Live Business Lead
+                </h3>
+                <button onClick={() => setShowAddLead(false)} className="text-xs text-slate-400 hover:text-white">✕</button>
+              </div>
+
+              <form onSubmit={handleAddCustomLead} className="space-y-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1">Business / Contact Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Goa Luxury Wedding Planners"
+                    value={newLeadName}
+                    onChange={(e) => setNewLeadName(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1">WhatsApp Phone Number *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. +919866161775"
+                    value={newLeadPhone}
+                    onChange={(e) => setNewLeadPhone(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-300 block mb-1">City / Address</label>
+                  <input
+                    type="text"
+                    placeholder={`e.g. Panaji, ${location}`}
+                    value={newLeadAddress}
+                    onChange={(e) => setNewLeadAddress(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddLead(false)}
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                  >
+                    Save & Start Outreach
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Step 2 & 3 Grid: Lead Table & Message Customizer */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* Left Panel: Leads Table (7 Columns) */}
           <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-teal-400" /> Discovered Leads ({leads.length})
@@ -289,14 +492,44 @@ export default function LeadOutreachStudio() {
                 <p className="text-[11px] text-slate-400">Select leads to send customized WhatsApp messages.</p>
               </div>
 
-              {leads.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  onClick={toggleSelectAll}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded-lg border border-slate-700 transition-colors"
+                  onClick={() => setShowAddLead(true)}
+                  className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] font-semibold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1"
                 >
-                  {selectedLeads.length === leads.length ? 'Deselect All' : 'Select All'}
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>+ Add Lead</span>
                 </button>
-              )}
+
+                {leads.length > 0 && (
+                  <>
+                    <button
+                      onClick={exportLeadsToCSV}
+                      className="px-3 py-1.5 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 text-[11px] font-semibold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1.5"
+                      title="Export all leads with WhatsApp links to CSV"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Export CSV</span>
+                    </button>
+
+                    <button
+                      onClick={copyAllMessagesToClipboard}
+                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5"
+                      title="Copy all formatted messages to clipboard"
+                    >
+                      {copiedAll ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedAll ? 'Copied!' : 'Copy All'}</span>
+                    </button>
+
+                    <button
+                      onClick={toggleSelectAll}
+                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded-lg border border-slate-700 transition-colors"
+                    >
+                      {selectedLeads.length === leads.length ? 'Deselect All' : 'Select All'}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
 
             {leads.length === 0 ? (
@@ -378,6 +611,21 @@ export default function LeadOutreachStudio() {
                 <MessageSquare className="w-4 h-4 text-emerald-400" /> Step 2: WhatsApp Outreach Blueprint
               </h3>
               <p className="text-[11px] text-slate-400 mt-0.5">Customize template variables for peak B2B conversion.</p>
+            </div>
+
+            {/* Template Preset Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-300 block">Select Preset Script Hook:</label>
+              <select
+                value={selectedTemplateKey}
+                onChange={(e) => handleSelectTemplateKey(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-emerald-400 font-semibold focus:outline-none focus:border-emerald-500 transition-colors"
+              >
+                <option value="wedding">💍 Wedding Planners (Live Demo Hook)</option>
+                <option value="corporate">🚀 Corporate Event Agencies (Engagement Pitch)</option>
+                <option value="venue">🏰 Banquet Venues & Resorts (Venue Partner Pitch)</option>
+                <option value="referral">🎁 10% Partner & Referral Program (Cashback Hook)</option>
+              </select>
             </div>
 
             {/* Template Editor */}

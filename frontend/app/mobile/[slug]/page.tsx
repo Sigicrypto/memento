@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
+import WhatsAppViralBanner from '@/components/WhatsAppViralBanner';
 import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download, Lock } from 'lucide-react';
 import { hasFeature, getGuestPhotoLimit } from '@/lib/permissions';
 import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
@@ -281,8 +282,11 @@ export default function MobilePage() {
          {/* Feedback */}
          <AnimatePresence>
            {successMessage && (
-             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-3 rounded-md bg-success/10 border border-success/20 text-success text-sm font-medium flex items-center gap-2 mb-6">
-                <CheckCircle size={16} /> {successMessage}
+             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4 mb-6">
+                <div className="p-3 rounded-md bg-success/10 border border-success/20 text-success text-sm font-medium flex items-center gap-2">
+                  <CheckCircle size={16} /> {successMessage}
+                </div>
+                <WhatsAppViralBanner eventName={event?.name} eventSlug={slug} />
              </motion.div>
            )}
            {error && (
