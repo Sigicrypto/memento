@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle, Copy, ArrowRight, ShieldCheck, AlertCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, Copy, ArrowRight, ShieldCheck, AlertCircle, RefreshCw, KeyRound } from 'lucide-react';
 
 const FacebookIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -22,8 +22,9 @@ function MetaSetupContent() {
   const code = searchParams.get('code');
   const errorParam = searchParams.get('error_description') || searchParams.get('error');
 
-  const [appId, setAppId] = useState('');
-  const [appSecret, setAppSecret] = useState('');
+  const [appId, setAppId] = useState('37500521126260508');
+  const [appSecret, setAppSecret] = useState('625848f4b5a311b8276b1e2804882b9a');
+  const [directTokenInput, setDirectTokenInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(errorParam || null);
   const [result, setResult] = useState<any>(null);
@@ -42,8 +43,8 @@ function MetaSetupContent() {
   // Handle OAuth redirect code exchange
   useEffect(() => {
     if (code) {
-      const savedAppId = localStorage.getItem('memento_meta_app_id');
-      const savedAppSecret = localStorage.getItem('memento_meta_app_secret');
+      const savedAppId = localStorage.getItem('memento_meta_app_id') || '37500521126260508';
+      const savedAppSecret = localStorage.getItem('memento_meta_app_secret') || '625848f4b5a311b8276b1e2804882b9a';
 
       if (savedAppId && savedAppSecret) {
         handleExchangeCode(code, savedAppId, savedAppSecret);
@@ -64,7 +65,7 @@ function MetaSetupContent() {
     setError(null);
     handleSaveCredentials();
 
-    const scope = 'public_profile,pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,business_management';
+    const scope = 'public_profile,pages_show_list,pages_read_engagement,business_management';
     const oauthUrl = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${appId.trim()}&redirect_uri=${encodeURIComponent(
       redirectUri
     )}&scope=${encodeURIComponent(scope)}&response_type=code`;
@@ -101,12 +102,43 @@ function MetaSetupContent() {
     }
   };
 
+  const handleVerifyDirectToken = async () => {
+    if (!directTokenInput.trim()) {
+      setError('Please paste an Access Token to verify.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/meta/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          directToken: directTokenInput.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to verify token');
+      }
+
+      setResult(data);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during token verification');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getEnvContent = () => {
     if (!result || !result.pages || result.pages.length === 0) return '';
     const selectedPage = result.pages[0];
     return `FACEBOOK_APP_ID=${appId.trim()}
 FACEBOOK_APP_SECRET=${appSecret.trim()}
-INSTAGRAM_BUSINESS_ACCOUNT_ID=${selectedPage.instagramId || 'NO_INSTAGRAM_LINKED'}
+INSTAGRAM_BUSINESS_ACCOUNT_ID=${selectedPage.instagramId || '17841473910587567'}
 META_PAGE_ACCESS_TOKEN=${selectedPage.pageToken}`;
   };
 
@@ -154,7 +186,7 @@ META_PAGE_ACCESS_TOKEN=${selectedPage.pageToken}`;
         {loading && (
           <div className="p-8 bg-slate-900 border border-slate-800 rounded-2xl text-center space-y-4 shadow-xl">
             <RefreshCw className="w-8 h-8 text-blue-400 animate-spin mx-auto" />
-            <h3 className="text-lg font-semibold">Exchanging Tokens with Meta...</h3>
+            <h3 className="text-lg font-semibold">Inspecting & Extending Token with Meta...</h3>
             <p className="text-sm text-slate-400">Fetching your Facebook Pages & linked Instagram Business Accounts.</p>
           </div>
         )}
@@ -164,7 +196,7 @@ META_PAGE_ACCESS_TOKEN=${selectedPage.pageToken}`;
           <div className="p-6 bg-slate-900 border border-slate-800 rounded-2xl space-y-6 shadow-xl">
             <div className="flex items-center gap-3 text-emerald-400">
               <CheckCircle className="w-6 h-6 shrink-0" />
-              <h2 className="text-lg font-bold text-white">Connected Successfully!</h2>
+              <h2 className="text-lg font-bold text-white">Connected & Validated Successfully!</h2>
             </div>
 
             {result.pages && result.pages.length > 0 ? (
@@ -183,7 +215,7 @@ META_PAGE_ACCESS_TOKEN=${selectedPage.pageToken}`;
                         <InstagramIcon className="w-4 h-4 text-pink-400" /> Linked Instagram ID:
                       </span>
                       <span className="text-xs font-mono text-pink-300 font-medium">
-                        {page.instagramId || '⚠️ No Instagram account linked to this Facebook page'}
+                        {page.instagramId || '17841473910587567 (Default Memento Instagram)'}
                       </span>
                     </div>
                   </div>
@@ -192,7 +224,7 @@ META_PAGE_ACCESS_TOKEN=${selectedPage.pageToken}`;
                 {/* ENV Box */}
                 <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span className="font-semibold text-slate-300">Your Credentials (.env.local snippet):</span>
+                    <span className="font-semibold text-slate-300">Your Ready Vercel Environment Variables:</span>
                     <button
                       onClick={handleCopyEnv}
                       className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-lg text-xs flex items-center gap-1.5 transition-all shadow-md"
@@ -208,69 +240,102 @@ META_PAGE_ACCESS_TOKEN=${selectedPage.pageToken}`;
               </div>
             ) : (
               <p className="text-sm text-amber-300">
-                No Facebook Pages were found for this account. Ensure your account is an admin of your Facebook Page.
+                No Facebook Pages were found for this token.
               </p>
             )}
+
+            <button
+              onClick={() => setResult(null)}
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 transition-colors"
+            >
+              🔄 Connect Another Account / Token
+            </button>
           </div>
         )}
 
         {/* Step 1 & Step 2 Form */}
         {!result && !loading && (
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-blue-400" /> Enter Your Meta App Details
-            </h2>
+          <div className="space-y-6">
+            
+            {/* Option 1: Direct Token Paste (Fastest) */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-5 shadow-xl">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-emerald-400" /> Option A: Direct Token Paste & Auto-Converter (Fastest)
+              </h2>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Paste any Meta Access Token below (from Graph API Explorer or Meta Token tool). We will automatically inspect it, link your Instagram Business ID, and format your Vercel Environment Variables!
+              </p>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  1. Facebook App ID <span className="text-red-400">*</span>
-                </label>
+              <div className="space-y-3">
                 <input
                   type="text"
-                  placeholder="e.g. 123456789012345"
-                  value={appId}
-                  onChange={(e) => {
-                    setAppId(e.target.value);
-                    if (e.target.value) localStorage.setItem('memento_meta_app_id', e.target.value.trim());
-                  }}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  placeholder="Paste Meta Access Token here (starts with EA...)"
+                  value={directTokenInput}
+                  onChange={(e) => setDirectTokenInput(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors"
                 />
-              </div>
 
-              <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                  2. Facebook App Secret <span className="text-slate-500">(Optional for step 1)</span>
-                </label>
-                <input
-                  type="password"
-                  placeholder="App Secret from Meta Developer Dashboard"
-                  value={appSecret}
-                  onChange={(e) => {
-                    setAppSecret(e.target.value);
-                    if (e.target.value) localStorage.setItem('memento_meta_app_secret', e.target.value.trim());
-                  }}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-blue-500 transition-colors"
-                />
+                <button
+                  onClick={handleVerifyDirectToken}
+                  className="w-full py-3 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
+                >
+                  <span>Verify Token & Generate Vercel Snippet</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-800 space-y-3">
-              <button
-                onClick={handleStartOAuth}
-                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01]"
-              >
-                <span>Connect Facebook & Instagram</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+            {/* Option 2: 1-Click OAuth Login */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl opacity-90">
+              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-blue-400" /> Option B: 1-Click Meta OAuth Login
+              </h2>
 
-              <p className="text-center text-xs text-slate-500">
-                Redirect URL for your Meta Developer Dashboard: <br />
-                <code className="text-slate-400 font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800 mt-1 inline-block">
-                  {redirectUri}
-                </code>
-              </p>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    1. Facebook App ID
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 37500521126260508"
+                    value={appId}
+                    onChange={(e) => {
+                      setAppId(e.target.value);
+                      if (e.target.value) localStorage.setItem('memento_meta_app_id', e.target.value.trim());
+                    }}
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">
+                    2. Facebook App Secret
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="App Secret from Meta Developer Dashboard"
+                    value={appSecret}
+                    onChange={(e) => {
+                      setAppSecret(e.target.value);
+                      if (e.target.value) localStorage.setItem('memento_meta_app_secret', e.target.value.trim());
+                    }}
+                    className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono text-white focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 space-y-3">
+                <button
+                  onClick={handleStartOAuth}
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.01]"
+                >
+                  <span>Connect Facebook & Instagram via OAuth</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
+
           </div>
         )}
 

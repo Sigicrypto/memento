@@ -24,9 +24,47 @@ async function secureMetaFetch(url: string) {
 
 export async function POST(request: Request) {
   try {
-    const { code, appId, appSecret, redirectUri } = await request.json();
+    const { code, appId, appSecret, redirectUri, directToken } = await request.json();
 
-    console.log('Exchanging Meta OAuth Code via Secure Agent...', { appId, hasSecret: !!appSecret, redirectUri });
+    // Direct Token Inspection Mode
+    if (directToken) {
+      const inspectUrl = `https://graph.facebook.com/v20.0/me?fields=id,name,instagram_business_account,connected_instagram_account&access_token=${encodeURIComponent(
+        directToken.trim()
+      )}`;
+      const data = await secureMetaFetch(inspectUrl);
+
+      if (data.error) {
+        // Try fetching accounts list if /me is a user token
+        const accountsUrl = `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,access_token,instagram_business_account,connected_instagram_account&access_token=${encodeURIComponent(
+          directToken.trim()
+        )}`;
+        const accountsData = await secureMetaFetch(accountsUrl);
+
+        if (accountsData.error) {
+          return NextResponse.json({ error: data.error.message || 'Token verification failed' }, { status: 400 });
+        }
+
+        const pages = (accountsData.data || []).map((page: any) => ({
+          pageId: page.id,
+          pageName: page.name,
+          pageToken: page.access_token || directToken.trim(),
+          instagramId: page.instagram_business_account?.id || page.connected_instagram_account?.id || null,
+        }));
+
+        return NextResponse.json({ success: true, pages });
+      }
+
+      const pages = [
+        {
+          pageId: data.id,
+          pageName: data.name,
+          pageToken: directToken.trim(),
+          instagramId: data.instagram_business_account?.id || data.connected_instagram_account?.id || null,
+        },
+      ];
+
+      return NextResponse.json({ success: true, pages });
+    }
 
     if (!code || !appId || !redirectUri) {
       return NextResponse.json({ error: 'Missing code, App ID, or redirect URI.' }, { status: 400 });
