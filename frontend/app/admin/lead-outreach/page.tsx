@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   MessageSquare,
@@ -22,7 +22,13 @@ import {
   AlertCircle,
   Download,
   Gift,
-  Plus
+  Plus,
+  Play,
+  Pause,
+  Square,
+  ShieldCheck,
+  Clock,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface B2BLead {
@@ -101,7 +107,7 @@ Earn 10% cash commission (₹750 – ₹2,000 per booking) + give your clients 1
 Check out how it works:
 👉 www.mymementoapp.com/demo
 
-Let's connect so we can discuss to proceed further! 🚀`
+Let's connect so we can discuss to proceed further! 🚀`,
 };
 
 export default function LeadOutreachStudio() {
@@ -121,11 +127,118 @@ export default function LeadOutreachStudio() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
 
+  // ── Anti-Ban Automated Dispatcher State ──
+  const [isAutoDispatching, setIsAutoDispatching] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [dispatchDelay, setDispatchDelay] = useState<number>(30); // 30s delay between messages
+  const [batchLimit, setBatchLimit] = useState<number>(15); // max 15 leads per run
+  const [dailyQuotaLimit, setDailyQuotaLimit] = useState<number>(30); // max 30 per 24 hours
+  const [dailySentCount, setDailySentCount] = useState<number>(0);
+  const [currentQueueIndex, setCurrentQueueIndex] = useState<number>(0);
+  const [timerSecondsLeft, setTimerSecondsLeft] = useState<number>(30);
+  const [activeQueue, setActiveQueue] = useState<B2BLead[]>([]);
+  const [leadStatuses, setLeadStatuses] = useState<Record<string, 'new' | 'queued' | 'sending' | 'sent' | 'skipped'>>({});
+
   // Custom Lead Modal State
   const [showAddLead, setShowAddLead] = useState(false);
   const [newLeadName, setNewLeadName] = useState('');
   const [newLeadPhone, setNewLeadPhone] = useState('');
   const [newLeadAddress, setNewLeadAddress] = useState('');
+
+  // Load Daily Quota from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('memento_wa_daily_quota');
+      if (stored) {
+        const { count, date } = JSON.parse(stored);
+        const today = new Date().toDateString();
+        if (date === today) {
+          setDailySentCount(count);
+        } else {
+          localStorage.setItem('memento_wa_daily_quota', JSON.stringify({ count: 0, date: today }));
+          setDailySentCount(0);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // Automated Queue Timer Loop
+  useEffect(() => {
+    if (!isAutoDispatching || isPaused || activeQueue.length === 0) return;
+
+    const timer = setInterval(() => {
+      setTimerSecondsLeft((prev) => {
+        if (prev <= 1) {
+          // Dispatch current lead
+          const currentLead = activeQueue[currentQueueIndex];
+          if (currentLead) {
+            handleSendWhatsAppOutreach(currentLead);
+            setLeadStatuses((prevStatus) => ({ ...prevStatus, [currentLead.id]: 'sent' }));
+
+            // Update daily count
+            setDailySentCount((prevCount) => {
+              const nextCount = prevCount + 1;
+              try {
+                localStorage.setItem(
+                  'memento_wa_daily_quota',
+                  JSON.stringify({ count: nextCount, date: new Date().toDateString() })
+                );
+              } catch {}
+              return nextCount;
+            });
+          }
+
+          // Move to next lead in queue
+          const nextIdx = currentQueueIndex + 1;
+          if (nextIdx < activeQueue.length) {
+            setCurrentQueueIndex(nextIdx);
+            const randomJitter = Math.floor(Math.random() * 5); // 0-4s random jitter
+            return dispatchDelay + randomJitter;
+          } else {
+            // Queue complete
+            setIsAutoDispatching(false);
+            setCurrentQueueIndex(0);
+            return 0;
+          }
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isAutoDispatching, isPaused, currentQueueIndex, activeQueue, dispatchDelay]);
+
+  const handleStartAutoDispatch = () => {
+    const selectedList = leads.filter((l) => selectedLeads.includes(l.id));
+    if (selectedList.length === 0) return;
+
+    if (dailySentCount >= dailyQuotaLimit) {
+      alert(`Daily safe marketing quota (${dailyQuotaLimit}/${dailyQuotaLimit}) reached for today to protect your account.`);
+      return;
+    }
+
+    const batch = selectedList.slice(0, batchLimit);
+    setActiveQueue(batch);
+    setCurrentQueueIndex(0);
+    setTimerSecondsLeft(3); // First dispatch in 3s
+    setIsAutoDispatching(true);
+    setIsPaused(false);
+
+    const newStatuses: Record<string, 'queued'> = {};
+    batch.forEach((l) => {
+      newStatuses[l.id] = 'queued';
+    });
+    setLeadStatuses((prev) => ({ ...prev, ...newStatuses }));
+  };
+
+  const handlePauseAutoDispatch = () => setIsPaused(true);
+  const handleResumeAutoDispatch = () => setIsPaused(false);
+  const handleStopAutoDispatch = () => {
+    setIsAutoDispatching(false);
+    setIsPaused(false);
+    setActiveQueue([]);
+    setCurrentQueueIndex(0);
+  };
 
   const handleAddCustomLead = (e: React.FormEvent) => {
     e.preventDefault();
@@ -282,39 +395,21 @@ export default function LeadOutreachStudio() {
 
       const data = await res.json();
       if (data.whatsappWebUrl) {
-        // Open direct WhatsApp chat link in new window
         window.open(data.whatsappWebUrl, '_blank');
         setOutreachLogs((prev) => [
           {
             leadName: lead.name,
             phone: lead.phone,
-            status: 'Chat Launched',
+            status: data.mode === 'cloud_api' ? 'Official Meta API Sent' : 'Chat Launched',
             url: data.whatsappWebUrl,
           },
           ...prev,
         ]);
+        setLeadStatuses((prev) => ({ ...prev, [lead.id]: 'sent' }));
       }
     } catch (err) {
       console.error(err);
     }
-  };
-
-  const handleBulkOutreach = async () => {
-    setSending(true);
-    const targetList = leads.filter((l) => selectedLeads.includes(l.id));
-
-    for (const lead of targetList) {
-      await handleSendWhatsAppOutreach(lead);
-      await new Promise((r) => setTimeout(r, 600));
-    }
-
-    setSending(false);
-  };
-
-  const copyToClipboard = (text: string, index: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
   };
 
   return (
@@ -332,11 +427,11 @@ export default function LeadOutreachStudio() {
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl font-black tracking-tight text-white">B2B Lead Discovery & WhatsApp Studio</h1>
                   <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
-                    Targeted B2B Growth
+                    Anti-Ban Automated Drip
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  Automate discovering wedding planners, event directors, and venues on Google and sending customized WhatsApp demos.
+                  Discover wedding planners, event agencies & venues on Google with automated WhatsApp outreach and human anti-ban pacing.
                 </p>
               </div>
             </div>
@@ -359,13 +454,17 @@ export default function LeadOutreachStudio() {
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Search className="w-5 h-5 text-emerald-400" /> Step 1: Discover Target Audience Leads (Google Places)
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">Search verified Google Maps contacts or open live web search.</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Query Google Places database for active B2B contacts across target market regions.
+              </p>
             </div>
+
             <a
               href={`https://www.google.com/maps/search/${encodeURIComponent(`${selectedCategory} in ${location}`)}`}
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl border border-slate-700 flex items-center gap-2 transition-all shrink-0"
+              title="Open Google Maps search in new tab"
             >
               <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
               <span>Open Google Maps Search</span>
@@ -427,82 +526,84 @@ export default function LeadOutreachStudio() {
             </div>
           </div>
 
-          {searchMeta?.message && (
-            <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-400 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{searchMeta.message}</span>
-              </div>
-              <button
-                onClick={() => setShowAddLead(true)}
-                className="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] font-bold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1 shrink-0"
-              >
-                <Plus className="w-3 h-3" /> Add Custom Lead
-              </button>
+          {searchMeta && (
+            <div className="p-3 bg-emerald-950/30 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-center justify-between font-mono">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                {searchMeta.message}
+              </span>
+              <span className="text-[11px] bg-emerald-500/20 px-2 py-0.5 rounded text-emerald-200">
+                Source: {searchMeta.source}
+              </span>
             </div>
           )}
         </div>
 
-        {/* Custom Lead Modal */}
+        {/* Modal: + Add Manual Custom Lead */}
         {showAddLead && (
           <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-5 shadow-2xl">
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Plus className="w-4 h-4 text-emerald-400" /> Add Live Business Lead
+                  <Plus className="w-4 h-4 text-emerald-400" /> Add Custom B2B Lead
                 </h3>
-                <button onClick={() => setShowAddLead(false)} className="text-xs text-slate-400 hover:text-white">✕</button>
+                <button
+                  onClick={() => setShowAddLead(false)}
+                  className="text-slate-400 hover:text-white text-xs font-bold px-2 py-1 bg-slate-800 rounded"
+                >
+                  ✕
+                </button>
               </div>
 
-              <form onSubmit={handleAddCustomLead} className="space-y-3">
-                <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Business / Contact Name *</label>
+              <form onSubmit={handleAddCustomLead} className="space-y-4 text-xs">
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">Business / Planner Name *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Goa Luxury Wedding Planners"
+                    placeholder="e.g. Royal Crown Weddings"
                     value={newLeadName}
                     onChange={(e) => setNewLeadName(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">WhatsApp Phone Number *</label>
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">WhatsApp Phone Number *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. +919866161775"
                     value={newLeadPhone}
                     onChange={(e) => setNewLeadPhone(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">City / Address</label>
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">Address / Locality</label>
                   <input
                     type="text"
-                    placeholder={`e.g. Panaji, ${location}`}
+                    placeholder="e.g. Jubilee Hills, Hyderabad"
                     value={newLeadAddress}
                     onChange={(e) => setNewLeadAddress(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                <div className="pt-2 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowAddLead(false)}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl"
+                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold"
                   >
-                    Save & Start Outreach
+                    Save & Add Lead
                   </button>
                 </div>
               </form>
@@ -510,33 +611,32 @@ export default function LeadOutreachStudio() {
           </div>
         )}
 
-        {/* Step 2 & 3 Grid: Lead Table & Message Customizer */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-          {/* Left Panel: Leads Table (7 Columns) */}
-          <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl">
+        {/* Grid: Discovered Leads vs Outreach Blueprint & Auto-Dispatcher */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Panel: Discovered Leads Table (7 Columns) */}
+          <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-teal-400" /> Discovered Leads ({leads.length})
+                  <Building2 className="w-4 h-4 text-emerald-400" /> Discovered Leads ({leads.length})
                 </h3>
-                <p className="text-[11px] text-slate-400">Select leads to send customized WhatsApp messages.</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">Select leads to target with customized WhatsApp pitches.</p>
               </div>
 
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => setShowAddLead(true)}
-                  className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] font-semibold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1"
+                  className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] font-bold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>+ Add Lead</span>
+                  <Plus className="w-3.5 h-3.5" /> + Add Lead
                 </button>
 
                 {leads.length > 0 && (
                   <>
                     <button
                       onClick={exportLeadsToCSV}
-                      className="px-3 py-1.5 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 text-[11px] font-semibold rounded-lg border border-emerald-500/30 transition-colors flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5"
                       title="Export all leads with WhatsApp links to CSV"
                     >
                       <Download className="w-3.5 h-3.5" />
@@ -570,13 +670,18 @@ export default function LeadOutreachStudio() {
               </div>
             ) : (
               <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
-                {leads.map((lead, idx) => {
+                {leads.map((lead) => {
                   const isChecked = selectedLeads.includes(lead.id);
+                  const leadStatus = leadStatuses[lead.id] || 'new';
+                  const isSendingNow = isAutoDispatching && activeQueue[currentQueueIndex]?.id === lead.id;
+
                   return (
                     <div
                       key={lead.id}
                       className={`p-4 rounded-xl border transition-all ${
-                        isChecked
+                        isSendingNow
+                          ? 'bg-amber-950/30 border-amber-500/60 shadow-lg shadow-amber-500/10'
+                          : isChecked
                           ? 'bg-slate-900 border-emerald-500/50 shadow-md shadow-emerald-500/5'
                           : 'bg-slate-950/60 border-slate-800 opacity-70'
                       }`}
@@ -590,11 +695,26 @@ export default function LeadOutreachStudio() {
                             className="mt-1 w-4 h-4 rounded accent-emerald-500 cursor-pointer"
                           />
                           <div className="space-y-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-bold text-white">{lead.name}</span>
                               <span className="text-[10px] font-semibold px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full flex items-center gap-1">
                                 <Star className="w-2.5 h-2.5 fill-amber-300" /> {lead.rating}
                               </span>
+
+                              {/* Live Auto-Dispatch Status Badge */}
+                              {isSendingNow ? (
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-amber-500/30 text-amber-200 border border-amber-500/50 rounded-full animate-pulse flex items-center gap-1">
+                                  <Clock className="w-3 h-3 text-amber-300" /> Sending in {timerSecondsLeft}s...
+                                </span>
+                              ) : leadStatus === 'sent' ? (
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-400" /> WhatsApp Sent
+                                </span>
+                              ) : leadStatus === 'queued' ? (
+                                <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-800 text-slate-400 border border-slate-700 rounded-full">
+                                  📋 Queued
+                                </span>
+                              ) : null}
                             </div>
 
                             <p className="text-xs text-slate-400 flex items-center gap-1.5">
@@ -662,8 +782,10 @@ export default function LeadOutreachStudio() {
             )}
           </div>
 
-          {/* Right Panel: Template Customizer & Dispatch (5 Columns) */}
+          {/* Right Panel: Template Customizer & Anti-Ban Automated Dispatcher (5 Columns) */}
           <div className="lg:col-span-5 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-2xl">
+            
+            {/* Step 2: Blueprint Header */}
             <div className="border-b border-slate-800 pb-3">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-emerald-400" /> Step 2: WhatsApp Outreach Blueprint
@@ -690,7 +812,7 @@ export default function LeadOutreachStudio() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-300 block">Outreach Message Template:</label>
               <textarea
-                rows={9}
+                rows={7}
                 value={template}
                 onChange={(e) => setTemplate(e.target.value)}
                 className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors leading-relaxed shadow-inner"
@@ -698,35 +820,114 @@ export default function LeadOutreachStudio() {
               <p className="text-[11px] text-slate-500">Available variables: <code className="text-emerald-400">{"{{business_name}}"}</code>, <code className="text-emerald-400">{"{{location}}"}</code></p>
             </div>
 
-            {/* Live Message Sample Preview */}
-            {leads.length > 0 && (
-              <div className="p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl space-y-2">
-                <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wide">Live Preview for {leads[0].name}:</span>
-                <p className="text-xs font-mono text-slate-300 whitespace-pre-wrap leading-relaxed">
-                  {getCustomizedMessage(leads[0])}
-                </p>
+            {/* Step 3: Anti-Ban Automated Dispatcher Control Card */}
+            <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl space-y-4 shadow-inner">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                  <div>
+                    <h4 className="text-xs font-bold text-white">Step 3: Anti-Ban Automated Lead Drip</h4>
+                    <p className="text-[11px] text-slate-400">Protects your WhatsApp Business number from spam flags</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">
+                  Today: {dailySentCount}/{dailyQuotaLimit} Max
+                </span>
               </div>
-            )}
 
-            {/* Bulk Action Dispatcher */}
-            <div className="pt-2 border-t border-slate-800 space-y-3">
-              <button
-                onClick={handleBulkOutreach}
-                disabled={sending || selectedLeads.length === 0}
-                className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
-              >
-                {sending ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Launching WhatsApp Chats...</span>
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4" />
-                    <span>Launch WhatsApp Outreach ({selectedLeads.length} Selected Leads)</span>
-                  </>
-                )}
-              </button>
+              {/* Pacing & Batch Controls */}
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-400 block mb-1">Human Pacing Delay:</label>
+                  <select
+                    value={dispatchDelay}
+                    onChange={(e) => setDispatchDelay(Number(e.target.value))}
+                    disabled={isAutoDispatching}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-emerald-400 font-mono"
+                  >
+                    <option value={25}>⚡ 25s (Standard Delay)</option>
+                    <option value={35}>🛡️ 35s (Recommended Safe)</option>
+                    <option value={50}>🔒 50s (Ultra Safe)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-400 block mb-1">Batch Limit (Leads):</label>
+                  <select
+                    value={batchLimit}
+                    onChange={(e) => setBatchLimit(Number(e.target.value))}
+                    disabled={isAutoDispatching}
+                    className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white font-mono"
+                  >
+                    <option value={10}>10 Leads / Batch</option>
+                    <option value={15}>15 Leads (Recommended)</option>
+                    <option value={25}>25 Leads / Batch</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Active Automated Dispatch Progress */}
+              {isAutoDispatching ? (
+                <div className="p-4 bg-slate-900 border border-emerald-500/40 rounded-xl space-y-3 shadow-lg">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      Dispatching Lead {currentQueueIndex + 1} of {activeQueue.length}
+                    </span>
+                    <span className="text-amber-300 font-bold bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
+                      Next in: {String(timerSecondsLeft).padStart(2, '0')}s
+                    </span>
+                  </div>
+
+                  {activeQueue[currentQueueIndex] && (
+                    <p className="text-xs text-slate-300 font-medium truncate">
+                      📍 Target: <strong className="text-white">{activeQueue[currentQueueIndex].name}</strong> ({activeQueue[currentQueueIndex].phone})
+                    </p>
+                  )}
+
+                  {/* Progress Bar */}
+                  <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 transition-all duration-500"
+                      style={{ width: `${((currentQueueIndex + 1) / activeQueue.length) * 100}%` }}
+                    />
+                  </div>
+
+                  {/* Controls */}
+                  <div className="flex items-center gap-2 pt-1">
+                    {isPaused ? (
+                      <button
+                        onClick={handleResumeAutoDispatch}
+                        className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5"
+                      >
+                        <Play className="w-3.5 h-3.5 fill-white" /> Resume Queue
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handlePauseAutoDispatch}
+                        className="flex-1 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5"
+                      >
+                        <Pause className="w-3.5 h-3.5 fill-white" /> Pause Queue
+                      </button>
+                    )}
+                    <button
+                      onClick={handleStopAutoDispatch}
+                      className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-300 font-bold text-xs rounded-lg flex items-center justify-center gap-1.5"
+                    >
+                      <Square className="w-3.5 h-3.5 fill-rose-300" /> Stop
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleStartAutoDispatch}
+                  disabled={selectedLeads.length === 0 || dailySentCount >= dailyQuotaLimit}
+                  className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50"
+                >
+                  <Play className="w-4 h-4 fill-white" />
+                  <span>Start Automated Anti-Ban Drip ({Math.min(selectedLeads.length, batchLimit)} Selected Leads)</span>
+                </button>
+              )}
             </div>
 
             {/* Outreach Logs */}
