@@ -704,28 +704,28 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Stat Summary Row */}
+              {/* Stat Summary Row (Reset to 0) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className={cardClass}>
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PENDING PAYOUTS</p>
-                    <p className="text-2xl font-black text-amber-400 mt-1">₹1,500</p>
-                    <p className="text-[11px] text-slate-500 mt-1">1 booking awaiting UPI transfer</p>
+                    <p className="text-2xl font-black text-amber-400 mt-1">₹0</p>
+                    <p className="text-[11px] text-slate-500 mt-1">0 bookings awaiting UPI transfer</p>
                   </div>
                 </div>
 
                 <div className={cardClass}>
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">TOTAL PAID OUT</p>
-                    <p className="text-2xl font-black text-emerald-400 mt-1">₹12,499</p>
-                    <p className="text-[11px] text-slate-500 mt-1">8 successful referral transfers</p>
+                    <p className="text-2xl font-black text-emerald-400 mt-1">₹0</p>
+                    <p className="text-[11px] text-slate-500 mt-1">0 referral transfers</p>
                   </div>
                 </div>
 
                 <div className={cardClass}>
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">REGISTERED PROMOTERS</p>
-                    <p className="text-2xl font-black text-cyan-400 mt-1">24</p>
+                    <p className="text-2xl font-black text-cyan-400 mt-1">0</p>
                     <p className="text-[11px] text-slate-500 mt-1">Active verified UPI profiles</p>
                   </div>
                 </div>
@@ -733,96 +733,27 @@ export default function AdminPage() {
                 <div className={cardClass}>
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">SELF-REFERRALS BLOCKED</p>
-                    <p className="text-2xl font-black text-purple-400 mt-1">3</p>
+                    <p className="text-2xl font-black text-purple-400 mt-1">0</p>
                     <p className="text-[11px] text-slate-500 mt-1">Protected by Anti-Fraud Shield</p>
                   </div>
                 </div>
               </div>
 
-              {/* Pending Referral Redemptions Table */}
+              {/* Referral Redemptions Queue (Clean Reset State) */}
               <div className={cardClass}>
                 <div className="p-5 border-b border-slate-800 flex items-center justify-between">
                   <h3 className="text-sm font-bold text-white uppercase tracking-wider">Referral Bonus Queue (Credited within 24h)</h3>
-                  <span className="text-xs text-slate-400 font-mono">2 Records Found</span>
+                  <span className="text-xs text-slate-400 font-mono">0 Records Found</span>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-                      <tr>
-                        <th className="p-4">1-Click Referral Link & Partner</th>
-                        <th className="p-4">Registered UPI & WhatsApp</th>
-                        <th className="p-4">Referred Host & Event</th>
-                        <th className="p-4">Booking (₹)</th>
-                        <th className="p-4">10% Bonus (₹)</th>
-                        <th className="p-4">Anti-Fraud Check</th>
-                        <th className="p-4 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono">
-                      {/* Queue Item 1 */}
-                      <tr className="hover:bg-slate-800/30 transition">
-                        <td className="p-4">
-                          <span className="font-bold text-emerald-400 block text-xs">mymementoapp.com/join?ref=MEM-7K4X</span>
-                          <span className="text-[11px] text-slate-300 font-sans font-medium">Partner: Rahul Sharma (MEM-7K4X)</span>
-                        </td>
-                        <td className="p-4 text-slate-200 font-sans">
-                          <span className="font-bold text-white block">rahul@okicici</span>
-                          <span className="text-[11px] text-slate-400">+91 98765 43210</span>
-                        </td>
-                        <td className="p-4 text-slate-200 font-sans">
-                          <span className="font-bold text-white block">Ananya Wedding</span>
-                          <span className="text-[11px] text-slate-400">Host: Vikram Singh (vikram@gmail.com)</span>
-                        </td>
-                        <td className="p-4 text-white font-bold">₹14,999</td>
-                        <td className="p-4 text-emerald-400 font-black text-sm">₹1,500</td>
-                        <td className="p-4">
-                          <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold font-sans">
-                            ✅ Auto-Linked via Referral Link
-                          </span>
-                        </td>
-                        <td className="p-4 text-right font-sans">
-                          <button
-                            onClick={() => showToast('10% Bonus marked as paid! ₹1,500 transferred to rahul@okicici')}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition"
-                          >
-                            🚀 Mark Bonus Paid via UPI
-                          </button>
-                        </td>
-                      </tr>
-
-                      {/* Queue Item 2 — Self Referral Flagged */}
-                      <tr className="hover:bg-slate-800/30 transition bg-red-950/10">
-                        <td className="p-4">
-                          <span className="font-bold text-red-400 block text-xs">mymementoapp.com/join?ref=MEM-8921</span>
-                          <span className="text-[11px] text-slate-300 font-sans font-medium">Partner: Karan Verma (MEM-8921)</span>
-                        </td>
-                        <td className="p-4 text-slate-200 font-sans">
-                          <span className="font-bold text-white block">karan@upi</span>
-                          <span className="text-[11px] text-slate-400">+91 91234 56789</span>
-                        </td>
-                        <td className="p-4 text-slate-200 font-sans">
-                          <span className="font-bold text-white block">Karan Birthday Bash</span>
-                          <span className="text-[11px] text-slate-400">Host: Karan Verma (karan@upi)</span>
-                        </td>
-                        <td className="p-4 text-white font-bold">₹4,999</td>
-                        <td className="p-4 text-slate-400 font-bold">₹500</td>
-                        <td className="p-4">
-                          <span className="px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold font-sans">
-                            ⚠️ Self-Referral Flagged
-                          </span>
-                        </td>
-                        <td className="p-4 text-right font-sans">
-                          <button
-                            onClick={() => showToast('Self-referral rejected successfully', 'error')}
-                            className="px-3 py-1.5 rounded-lg bg-red-500/20 border border-red-500/40 text-red-300 font-bold text-xs hover:bg-red-500/30 transition"
-                          >
-                            ❌ Reject Self-Referral
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div className="p-12 text-center flex flex-col items-center justify-center space-y-3">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+                    🤝
+                  </div>
+                  <h4 className="text-base font-bold text-white">No Pending Referral Payouts</h4>
+                  <p className="text-xs text-slate-400 max-w-md leading-relaxed">
+                    When new users register via partner links (`mymementoapp.com/join?ref=MEM-XXXX`) and complete bookings, 10% referral bonus payouts will appear here for 1-click UPI approval.
+                  </p>
                 </div>
               </div>
             </div>
