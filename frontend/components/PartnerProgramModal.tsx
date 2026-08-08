@@ -210,20 +210,20 @@ export default function PartnerProgramModal({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-start">
                   <span className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-extrabold text-xs flex items-center justify-center mb-3">1</span>
-                  <h4 className="text-xs font-bold text-white mb-1">Share Partner ID</h4>
-                  <p className="text-[11px] text-slate-400 leading-normal">Share your link or Partner ID with couples, event planners, or venue hosts.</p>
+                  <h4 className="text-xs font-bold text-white mb-1">Share Unique Link</h4>
+                  <p className="text-[11px] text-slate-400 leading-normal">Share your 1-Click Referral Link with wedding couples, planners, or hosts.</p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-start">
                   <span className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-extrabold text-xs flex items-center justify-center mb-3">2</span>
-                  <h4 className="text-xs font-bold text-white mb-1">Host Books Event</h4>
-                  <p className="text-[11px] text-slate-400 leading-normal">Host quotes your ID during checkout. Our team handles live TV stream setup.</p>
+                  <h4 className="text-xs font-bold text-white mb-1">Host Auto-Linked</h4>
+                  <p className="text-[11px] text-slate-400 leading-normal">Host registers via your link. The booking is automatically linked to your partner account.</p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-start">
                   <span className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-extrabold text-xs flex items-center justify-center mb-3">3</span>
                   <h4 className="text-xs font-bold text-white mb-1">10% Bonus (24h)</h4>
-                  <p className="text-[11px] text-slate-400 leading-normal">10% referral bonus credited to your registered UPI ID within 24 hours of booking.</p>
+                  <p className="text-[11px] text-slate-400 leading-normal">10% referral bonus credited directly to your registered UPI ID within 24 hours of booking.</p>
                 </div>
               </div>
 

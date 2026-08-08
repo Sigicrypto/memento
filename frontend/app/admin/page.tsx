@@ -750,11 +750,11 @@ export default function AdminPage() {
                   <table className="w-full text-left text-xs text-slate-300">
                     <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
                       <tr>
-                        <th className="p-4">Partner Code & Promoter</th>
-                        <th className="p-4">Promoter UPI & WhatsApp</th>
-                        <th className="p-4">Event & Host Details</th>
+                        <th className="p-4">1-Click Referral Link & Partner</th>
+                        <th className="p-4">Registered UPI & WhatsApp</th>
+                        <th className="p-4">Referred Host & Event</th>
                         <th className="p-4">Booking (₹)</th>
-                        <th className="p-4">10% Payout (₹)</th>
+                        <th className="p-4">10% Bonus (₹)</th>
                         <th className="p-4">Anti-Fraud Check</th>
                         <th className="p-4 text-right">Action</th>
                       </tr>
@@ -763,8 +763,8 @@ export default function AdminPage() {
                       {/* Queue Item 1 */}
                       <tr className="hover:bg-slate-800/30 transition">
                         <td className="p-4">
-                          <span className="font-bold text-emerald-400">MEM-7K4X</span>
-                          <span className="block text-[11px] text-slate-300 font-sans font-medium">Rahul Sharma</span>
+                          <span className="font-bold text-emerald-400 block text-xs">mymementoapp.com/join?ref=MEM-7K4X</span>
+                          <span className="text-[11px] text-slate-300 font-sans font-medium">Partner: Rahul Sharma (MEM-7K4X)</span>
                         </td>
                         <td className="p-4 text-slate-200 font-sans">
                           <span className="font-bold text-white block">rahul@okicici</span>
@@ -778,15 +778,15 @@ export default function AdminPage() {
                         <td className="p-4 text-emerald-400 font-black text-sm">₹1,500</td>
                         <td className="p-4">
                           <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold font-sans">
-                            ✅ Distinct Host & Promoter
+                            ✅ Auto-Linked via Referral Link
                           </span>
                         </td>
                         <td className="p-4 text-right font-sans">
                           <button
-                            onClick={() => showToast('Payout marked as paid! ₹1,500 transferred to rahul@okicici')}
+                            onClick={() => showToast('10% Bonus marked as paid! ₹1,500 transferred to rahul@okicici')}
                             className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition"
                           >
-                            🚀 Mark Paid via UPI
+                            🚀 Mark Bonus Paid via UPI
                           </button>
                         </td>
                       </tr>
@@ -794,8 +794,8 @@ export default function AdminPage() {
                       {/* Queue Item 2 — Self Referral Flagged */}
                       <tr className="hover:bg-slate-800/30 transition bg-red-950/10">
                         <td className="p-4">
-                          <span className="font-bold text-red-400">MEM-8921</span>
-                          <span className="block text-[11px] text-slate-300 font-sans font-medium">Karan Verma</span>
+                          <span className="font-bold text-red-400 block text-xs">mymementoapp.com/join?ref=MEM-8921</span>
+                          <span className="text-[11px] text-slate-300 font-sans font-medium">Partner: Karan Verma (MEM-8921)</span>
                         </td>
                         <td className="p-4 text-slate-200 font-sans">
                           <span className="font-bold text-white block">karan@upi</span>
