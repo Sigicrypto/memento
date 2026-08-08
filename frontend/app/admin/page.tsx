@@ -800,6 +800,86 @@ export default function AdminPage() {
                   </p>
                 </div>
               </div>
+
+              {/* 📲 1-Tap WhatsApp Referral Bonus Dispatch Assistant */}
+              <div className={`${cardClass} p-5 space-y-4`}>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                      📲
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Automated WhatsApp Referral Bonus Dispatcher</h4>
+                      <p className="text-[11px] text-slate-400">Instantly send 1-click WhatsApp bonus credit alerts to ambassadors</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-bold border border-emerald-500/30">
+                    Instant WhatsApp Dispatch
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ambassador WhatsApp Phone</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 9876543210"
+                      id="notifyPhone"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ambassador Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Rahul Sharma"
+                      id="notifyName"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referred Event & Host</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Ananya Wedding (Vikram)"
+                      id="notifyEvent"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referral Bonus (₹)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1500"
+                      id="notifyBonus"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    onClick={() => {
+                      const phone = (document.getElementById('notifyPhone') as HTMLInputElement)?.value || '919866161775';
+                      const name = (document.getElementById('notifyName') as HTMLInputElement)?.value || 'Ambassador';
+                      const event = (document.getElementById('notifyEvent') as HTMLInputElement)?.value || 'Hosted Event';
+                      const bonus = (document.getElementById('notifyBonus') as HTMLInputElement)?.value || '1500';
+
+                      const cleanPhone = phone.replace(/[^0-9]/g, '');
+                      const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+                      const text = `🎉 Congratulations ${name}! Host ${event} just completed booking using your 1-Click Referral Link! Your ₹${bonus} Referral Bonus has been approved & queued for 24h UPI transfer. Thank you for partnering with Memento! 🚀`;
+                      
+                      window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`, '_blank');
+                    }}
+                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                  >
+                    <span>📲 Dispatch 1-Click WhatsApp Bonus Alert</span>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 

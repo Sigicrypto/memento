@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Gift, CheckCircle2, Copy, Check, ArrowRight, DollarSign, Award, MessageCircle, ShieldCheck, UserCheck, Wallet, RefreshCw } from 'lucide-react';
+import { X, Sparkles, Gift, CheckCircle2, Copy, Check, ArrowRight, DollarSign, Award, MessageCircle, ShieldCheck, UserCheck, Wallet, RefreshCw, QrCode, Download } from 'lucide-react';
 
 import { usePartnerId } from '@/hooks/usePartnerId';
 
@@ -23,7 +23,7 @@ export default function PartnerProgramModal({
   const activePartnerId = overrideRefCode || autoPartnerId;
   const activeLink = overrideRefCode ? `https://mymementoapp.com/join?ref=${overrideRefCode}` : partnerLink;
   
-  const [activeTab, setActiveTab] = useState<'overview' | 'payout'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'qrcode' | 'payout'>('overview');
   const [eventValue, setEventValue] = useState<number>(14999);
   
   // Registration Form State
@@ -146,28 +146,39 @@ export default function PartnerProgramModal({
           </p>
 
           {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 p-1.5 bg-slate-900/80 border border-white/10 rounded-2xl mb-6">
+          <div className="flex items-center gap-1.5 p-1.5 bg-slate-900/80 border border-white/10 rounded-2xl mb-6">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === 'overview'
                   ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Sparkles size={14} />
-              <span>Overview & Calculator</span>
+              <span>Overview</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('qrcode')}
+              className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                activeTab === 'qrcode'
+                  ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <QrCode size={14} />
+              <span>Referral QR Poster</span>
             </button>
             <button
               onClick={() => setActiveTab('payout')}
-              className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === 'payout'
                   ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <Wallet size={14} />
-              <span>{isSaved ? 'Payout Profile Active' : 'Register UPI Payout'}</span>
+              <span>{isSaved ? 'UPI Payout Active' : 'Register UPI'}</span>
             </button>
           </div>
 
@@ -250,8 +261,54 @@ export default function PartnerProgramModal({
                 </div>
               </div>
             </>
+          ) : activeTab === 'qrcode' ? (
+            /* Tab 2: Digital Referral QR Poster Card */
+            <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-5 sm:p-6 mb-6 text-center space-y-4 shadow-2xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold uppercase tracking-widest">
+                <Award size={14} />
+                <span>Memento Ambassador Digital QR Card</span>
+              </div>
+
+              {/* QR Code Container */}
+              <div className="w-48 h-48 sm:w-56 sm:h-56 mx-auto bg-[#090d16] p-3 rounded-2xl border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.2)] flex items-center justify-center relative group">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(activeLink)}&color=10b981&bcolor=090d16`}
+                  alt={`Referral QR Code for ${activePartnerId}`}
+                  className="w-full h-full object-contain rounded-xl"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-white">Scan to Join Memento Live Event App</p>
+                <p className="text-[11px] font-mono text-emerald-300 font-bold">{activeLink}</p>
+                <p className="text-[10px] text-slate-400">Scan code with any mobile camera to claim 10% referral bonus tracking.</p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-2 pt-2">
+                <a
+                  href={`https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(activeLink)}&color=10b981&bcolor=090d16`}
+                  download={`Memento-Referral-QR-${activePartnerId}.png`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+                >
+                  <Download size={14} className="stroke-[3]" />
+                  <span>Download Referral QR Code</span>
+                </a>
+
+                <a
+                  href={whatsappShareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageCircle size={14} className="text-emerald-400" />
+                  <span>Share QR Link on WhatsApp</span>
+                </a>
+              </div>
+            </div>
           ) : (
-            /* Tab 2: Payout Registration Form */
+            /* Tab 3: Payout Registration Form */
             <form onSubmit={handleRegisterPromoter} className="bg-slate-900/90 border border-white/10 rounded-2xl p-5 sm:p-6 mb-6 space-y-4">
               <div className="flex items-center gap-3 pb-3 border-b border-white/10">
                 <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400">
