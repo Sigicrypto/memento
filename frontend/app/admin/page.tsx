@@ -22,6 +22,10 @@ interface UserRow {
   role: string;
   events_count?: number;
   phone?: string;
+  referred_by_partner_id?: string;
+  promoter_upi?: string;
+  promoter_whatsapp?: string;
+  promoter_name?: string;
 }
 
 interface EventRow {
@@ -161,18 +165,39 @@ export default function AdminPage() {
         userEventCounts[e.owner_id] = (userEventCounts[e.owner_id] || 0) + 1;
       });
 
-      const formatted: UserRow[] = (profiles || []).map(p => ({
-        id: p.id,
-        email: p.email || 'No email',
-        full_name: p.full_name || '',
-        created_at: p.created_at,
-        plan: (p.plan || 'STARTER').toUpperCase(),
-        payment_status: p.payment_status || 'unpaid',
-        is_approved: p.is_approved ?? false,
-        role: p.role || 'user',
-        events_count: userEventCounts[p.id] || 0,
-        phone: p.phone,
-      }));
+      // Fetch verified promoter profiles
+      const { data: promotersData } = await supabase
+        .from('promoters')
+        .select('*');
+
+      const promoterMap: Record<string, any> = {};
+      promotersData?.forEach(p => {
+        if (p.partner_code) {
+          promoterMap[p.partner_code.toUpperCase()] = p;
+        }
+      });
+
+      const formatted: UserRow[] = (profiles || []).map(p => {
+        const defaultRefCode = `MEM-${p.id.substring(0, 4).toUpperCase()}`;
+        const promoterProfile = promoterMap[defaultRefCode];
+
+        return {
+          id: p.id,
+          email: p.email || 'No email',
+          full_name: p.full_name || '',
+          created_at: p.created_at,
+          plan: (p.plan || 'STARTER').toUpperCase(),
+          payment_status: p.payment_status || 'unpaid',
+          is_approved: p.is_approved ?? false,
+          role: p.role || 'user',
+          events_count: userEventCounts[p.id] || 0,
+          phone: p.phone,
+          referred_by_partner_id: p.referred_by_partner_id,
+          promoter_upi: promoterProfile?.upi_id,
+          promoter_whatsapp: promoterProfile?.whatsapp_number,
+          promoter_name: promoterProfile?.full_name,
+        };
+      });
 
       setUsers(formatted);
     } catch (err: any) {
@@ -648,6 +673,25 @@ export default function AdminPage() {
                               {u.full_name || 'No name'} • <span className="text-amber-400">{u.events_count} events</span>
                               {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
                             </p>
+
+                            {/* Referral Link & Promoter Badges */}
+                            <div className="flex items-center gap-2 flex-wrap mt-1.5 font-mono text-[10px]">
+                              <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold">
+                                🔗 Link: mymementoapp.com/join?ref=MEM-{u.id.substring(0, 4).toUpperCase()}
+                              </span>
+
+                              {u.promoter_upi && (
+                                <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold">
+                                  💳 UPI: {u.promoter_upi} {u.promoter_whatsapp && `| 📲 ${u.promoter_whatsapp}`}
+                                </span>
+                              )}
+
+                              {u.referred_by_partner_id && (
+                                <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-bold">
+                                  🎁 Referred by: {u.referred_by_partner_id}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
 
