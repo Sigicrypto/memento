@@ -238,9 +238,15 @@ export default function AdminPage() {
   // ── User Management Actions ──
   const updateUserProfile = async (userId: string, updates: Partial<UserRow>) => {
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token || '';
+
       const res = await fetch('/api/admin/update-user', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({ userId, updates }),
       });
 
@@ -249,7 +255,7 @@ export default function AdminPage() {
         return null;
       }
 
-      // Fallback client update if API role bypass allowed
+      // Fallback client update if RLS permits
       const { error: clientError } = await supabase.from('profiles').update(updates).eq('id', userId);
       if (!clientError) {
         return null;
