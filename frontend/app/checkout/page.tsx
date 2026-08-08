@@ -234,7 +234,7 @@ function CheckoutContent() {
                 </div>
                 {partnerCode && (
                   <p style={{ fontSize: '11px', color: 'var(--emerald-400, #10b981)', fontWeight: 600, marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Sparkles size={12} /> Partner Code {partnerCode} logged for 10% promoter commission!
+                    <Sparkles size={12} /> Partner Link {partnerCode} active — 10% referral bonus credited to referring partner within 24 hours of booking!
                   </p>
                 )}
               </div>

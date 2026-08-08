@@ -138,11 +138,11 @@ export default function PartnerProgramModal({
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
-            Earn <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">10% Cash Commission</span> on Every Event
+            Earn <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">10% Referral Bonus</span> for Each User Referred
           </h2>
 
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6">
-            Promote Memento for weddings, corporate events, and parties. Earn 10% cash transferred directly to your UPI ID on every successful booking.
+            Promote Memento for weddings, corporate events, and parties. Earn 10% cash referral bonus for each user referred, credited directly to your registered UPI ID within 24 hours.
           </p>
 
           {/* Navigation Tabs */}
@@ -222,8 +222,8 @@ export default function PartnerProgramModal({
 
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-start">
                   <span className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-extrabold text-xs flex items-center justify-center mb-3">3</span>
-                  <h4 className="text-xs font-bold text-white mb-1">10% UPI Payout</h4>
-                  <p className="text-[11px] text-slate-400 leading-normal">Get paid 10% cash transferred directly to your registered UPI ID.</p>
+                  <h4 className="text-xs font-bold text-white mb-1">10% Bonus (24h)</h4>
+                  <p className="text-[11px] text-slate-400 leading-normal">10% referral bonus credited to your registered UPI ID within 24 hours of booking.</p>
                 </div>
               </div>
 
@@ -245,7 +245,7 @@ export default function PartnerProgramModal({
                 />
 
                 <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                  <span className="text-xs font-extrabold text-white">Your 10% Cash Earnings:</span>
+                  <span className="text-xs font-extrabold text-white">Your 10% Referral Bonus:</span>
                   <span className="text-base sm:text-lg font-mono font-black text-emerald-300">₹{commissionAmount.toLocaleString()}</span>
                 </div>
               </div>

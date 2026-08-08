@@ -112,10 +112,10 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
               type="button"
               onClick={() => setIsPartnerModalOpen(true)}
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 dark:text-emerald-300 text-xs font-extrabold tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
-              title="Earn 10% Commission on Event Referrals"
+              title="Earn 10% Referral Bonus for each user referred"
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Earn 10%</span>
+              <span>10% Referral Bonus</span>
             </button>
 
             <ThemeToggle />
@@ -217,7 +217,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   className="w-full py-3.5 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-sm flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span>Earn 10% Event Commission</span>
+                  <span>Earn 10% Referral Bonus</span>
                 </button>
               </div>
 

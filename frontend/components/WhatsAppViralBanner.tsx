@@ -24,7 +24,7 @@ export default function WhatsAppViralBanner({
   // Generate a clean referral tracking code based on slug and timestamp
   const refCode = `MEM-${(eventSlug || 'DEMO').toUpperCase().slice(0, 6)}-${Date.now().toString(36).slice(-4).toUpperCase()}`;
 
-  const referMessage = `Hi Memento! 👋 I took photos at "${eventName}". My Unique Partner ID is ${refCode}. I would like to inquire about event referral privileges & 10% commission details.`;
+  const referMessage = `Hi Memento! 👋 I took photos at "${eventName}". My Unique Partner ID is ${refCode}. I would like to inquire about event referral privileges & 10% referral bonus details.`;
   const whatsappReferUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(referMessage)}`;
 
   const handleCopyCode = () => {

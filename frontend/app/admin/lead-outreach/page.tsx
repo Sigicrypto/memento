@@ -91,7 +91,7 @@ Let's connect so we can discuss to proceed further! 💼`,
 
 Upgrade your banquet hall TVs and LED walls into an interactive guest experience for every event hosted at your venue in {{location}}.
 
-Zero hardware required — works directly on smart TVs or browser screens. Plus, earn 10% venue commission on all hosted event upgrades! 🏰
+Zero hardware required — works directly on smart TVs or browser screens. Plus, earn 10% venue referral bonus on all hosted event upgrades! 🏰
 
 See it live:
 👉 www.mymementoapp.com/demo
@@ -102,7 +102,7 @@ Let's connect so we can discuss to proceed further! 🚀`,
 
 We're launching Memento's Partner & Referral Program in {{location}}.
 
-Earn 10% cash commission (₹750 – ₹2,000 per booking) + give your clients 10% OFF when they add Memento's Live Photo Wall to their weddings and events! 🎁
+Earn 10% referral bonus (₹750 – ₹2,000 per booking) for each user referred, credited within 24 hours! 🎁
 
 Check out how it works:
 👉 www.mymementoapp.com/demo

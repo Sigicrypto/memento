@@ -238,23 +238,24 @@ export default function AdminPage() {
   // ── User Management Actions ──
   const updateUserProfile = async (userId: string, updates: Partial<UserRow>) => {
     try {
-      const res = await fetch('/api/admin/users', {
+      const res = await fetch('/api/admin/update-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, updates }),
       });
 
-      if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
         return null;
       }
 
+      // Fallback client update if API role bypass allowed
       const { error: clientError } = await supabase.from('profiles').update(updates).eq('id', userId);
       if (!clientError) {
         return null;
       }
 
-      const data = await res.json().catch(() => ({}));
-      return clientError.message || data.error || 'Failed to update user profile';
+      return data.error || clientError.message || 'Failed to update user profile';
     } catch (err: any) {
       return err.message || 'Network error updating user';
     }
@@ -265,6 +266,7 @@ export default function AdminPage() {
     if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_approved: !current } : u));
     showToast(!current ? 'User approved ✅' : 'User unapproved');
+    fetchUsers();
     fetchStats();
   };
 
@@ -273,6 +275,8 @@ export default function AdminPage() {
     if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase(), payment_status: 'paid' } : u));
     showToast(`Plan upgraded to ${newPlan} ✅`);
+    fetchUsers();
+    fetchStats();
   };
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
@@ -732,7 +736,7 @@ export default function AdminPage() {
               {/* Pending Referral Redemptions Table */}
               <div className={cardClass}>
                 <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Referral Commission Queue</h3>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Referral Bonus Queue (Credited within 24h)</h3>
                   <span className="text-xs text-slate-400 font-mono">2 Records Found</span>
                 </div>
 
