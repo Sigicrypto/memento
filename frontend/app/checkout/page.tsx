@@ -47,10 +47,20 @@ function CheckoutContent() {
     if (refParam) {
       setPartnerCode(refParam.toUpperCase());
     } else if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('memento_partner_id');
-      if (stored) setPartnerCode(stored);
+      const refToken = localStorage.getItem('memento_ref_token') || localStorage.getItem('memento_partner_id');
+      if (refToken) setPartnerCode(refToken.toUpperCase());
     }
   }, [refParam]);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from('profiles').select('referred_by_partner_id').eq('id', user.id).single().then(({ data }) => {
+        if (data?.referred_by_partner_id) {
+          setPartnerCode(data.referred_by_partner_id.toUpperCase());
+        }
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!isLoading && !user) {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/lib/supabase';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,10 +25,14 @@ function AuthPageContent() {
   useEffect(() => {
     if (!isLoading && user && profile) {
       const plan = searchParams.get('plan');
-      const isPaid = profile.payment_status === 'paid';
-      if (isPaid) router.push('/dashboard');
-      else if (plan) router.push(`/checkout?plan=${plan}`);
-      else router.push('/dashboard');
+      const redirectParam = searchParams.get('redirect');
+      if (plan) {
+        router.push(`/checkout?plan=${plan}`);
+      } else if (redirectParam) {
+        router.push(decodeURIComponent(redirectParam));
+      } else {
+        router.push('/dashboard');
+      }
     }
   }, [user, profile, isLoading, searchParams, router]);
 
@@ -45,6 +50,17 @@ function AuthPageContent() {
         }
         const { error: signUpError } = await signUp(email, password, phone, name);
         if (signUpError) throw signUpError;
+
+        // Save active referral token to profile if registered via 1-click partner link
+        const refToken = searchParams.get('ref') || (typeof window !== 'undefined' ? localStorage.getItem('memento_ref_token') : null);
+        if (refToken && user) {
+          try {
+            await supabase.from('profiles').update({ referred_by_partner_id: refToken.toUpperCase() }).eq('id', user.id);
+          } catch (refErr) {
+            console.log('Referral token binding note:', refErr);
+          }
+        }
+
         setMessage('Check your email for a confirmation link!');
       } else {
         const { error: signInError } = await signIn(email, password);

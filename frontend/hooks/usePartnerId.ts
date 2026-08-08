@@ -31,10 +31,17 @@ export function getOrCreatePartnerId(): string {
 export function usePartnerId() {
   const [partnerId, setPartnerId] = useState<string>('MEM-2026');
   const [copied, setCopied] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [origin, setOrigin] = useState<string>('https://mymementoapp.com');
 
   useEffect(() => {
     setPartnerId(getOrCreatePartnerId());
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
   }, []);
+
+  const partnerLink = `${origin}/join?ref=${partnerId}`;
 
   const copyPartnerId = () => {
     if (typeof navigator !== 'undefined' && partnerId) {
@@ -44,5 +51,24 @@ export function usePartnerId() {
     }
   };
 
-  return { partnerId, copyPartnerId, copied };
+  const copyPartnerLink = () => {
+    if (typeof navigator !== 'undefined' && partnerLink) {
+      navigator.clipboard.writeText(partnerLink);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
+
+  const shareText = `Check out Memento for live event photo walls & instant guest downloads! Join using my referral link: ${partnerLink}`;
+  const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+
+  return {
+    partnerId,
+    partnerLink,
+    copyPartnerId,
+    copyPartnerLink,
+    copied,
+    copiedLink,
+    whatsappShareUrl,
+  };
 }

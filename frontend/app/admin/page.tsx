@@ -618,26 +618,50 @@ export default function AdminPage() {
                     <div key={u.id} className={cardClass}>
                       <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 border border-amber-500/30 flex items-center justify-center text-xs font-black text-amber-300">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/20 to-purple-500/20 border border-amber-500/30 flex items-center justify-center text-xs font-black text-amber-300 shrink-0">
                             {u.email.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="text-xs font-bold text-white">{u.email}</p>
-                            <p className="text-[11px] text-slate-400">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-xs font-bold text-white">{u.email}</p>
+                              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border uppercase tracking-wider ${
+                                (u.plan || '').toUpperCase() === 'PREMIUM' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
+                                (u.plan || '').toUpperCase() === 'STANDARD' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' :
+                                (u.plan || '').toUpperCase() === 'WHITE LABEL' || (u.plan || '').toUpperCase() === 'WHITE_LABEL' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                                (u.plan || '').toUpperCase() === 'STARTER' ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' :
+                                'bg-slate-800 text-slate-400 border-slate-700'
+                              }`}>
+                                {u.plan || 'FREE'}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
                               {u.full_name || 'No name'} • <span className="text-amber-400">{u.events_count} events</span>
-                              {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid Subscriber</span>}
+                              {u.payment_status === 'paid' && <span className="text-emerald-400 ml-2">💎 Paid</span>}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                          {/* Plan Upgrade Selector */}
+                          <select
+                            value={(u.plan || 'FREE').toUpperCase()}
+                            onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-700 text-amber-300 outline-none focus:border-amber-500 transition cursor-pointer"
+                          >
+                            <option value="FREE">Free Tier</option>
+                            <option value="STARTER">⚡ Starter (₹2.4k)</option>
+                            <option value="STANDARD">⭐ Standard (₹4.9k)</option>
+                            <option value="PREMIUM">💎 Premium (₹7.4k)</option>
+                            <option value="WHITE_LABEL">👑 White Label (₹9.9k)</option>
+                          </select>
+
                           <button
                             onClick={() => handleToggleApproval(u.id, u.is_approved)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
                               u.is_approved ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
                             }`}
                           >
-                            {u.is_approved ? 'Approved ✅' : 'Approve User'}
+                            {u.is_approved ? 'Approved ✅' : 'Approve'}
                           </button>
 
                           <button

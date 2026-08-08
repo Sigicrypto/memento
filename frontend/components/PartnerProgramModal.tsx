@@ -19,8 +19,9 @@ export default function PartnerProgramModal({
   onClose,
   refCode: overrideRefCode,
 }: PartnerProgramModalProps) {
-  const { partnerId: autoPartnerId, copyPartnerId, copied } = usePartnerId();
+  const { partnerId: autoPartnerId, partnerLink, copyPartnerId, copyPartnerLink, copied, copiedLink, whatsappShareUrl } = usePartnerId();
   const activePartnerId = overrideRefCode || autoPartnerId;
+  const activeLink = overrideRefCode ? `https://mymementoapp.com/join?ref=${overrideRefCode}` : partnerLink;
   
   const [activeTab, setActiveTab] = useState<'overview' | 'payout'>('overview');
   const [eventValue, setEventValue] = useState<number>(14999);
@@ -172,19 +173,37 @@ export default function PartnerProgramModal({
 
           {activeTab === 'overview' ? (
             <>
-              {/* Unique Partner ID Box */}
-              <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">YOUR UNIQUE PARTNER ID</p>
-                  <p className="text-lg font-mono font-bold text-emerald-300 tracking-wider">{activePartnerId}</p>
+              {/* 1-Click Unique Partner Share Link Box */}
+              <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 mb-6 shadow-inner space-y-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">YOUR 1-CLICK REFERRAL LINK</p>
+                    <p className="text-xs sm:text-sm font-mono font-bold text-emerald-300 break-all">{activeLink}</p>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold shrink-0">
+                    ID: {activePartnerId}
+                  </span>
                 </div>
-                <button
-                  onClick={copyPartnerId}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0"
-                >
-                  {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                  <span>{copied ? 'Copied to Clipboard!' : 'Copy Partner ID'}</span>
-                </button>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    onClick={copyPartnerLink}
+                    className="flex-1 py-2.5 px-3.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                  >
+                    {copiedLink ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                    <span>{copiedLink ? 'Link Copied!' : 'Copy Referral Link'}</span>
+                  </button>
+
+                  <a
+                    href={whatsappShareUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20 shrink-0"
+                  >
+                    <MessageCircle size={14} className="fill-slate-950" />
+                    <span>Share on WhatsApp</span>
+                  </a>
+                </div>
               </div>
 
               {/* 3 Step Breakdown */}
