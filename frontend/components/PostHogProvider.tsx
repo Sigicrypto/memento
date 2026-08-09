@@ -11,6 +11,7 @@ const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com';
 if (typeof window !== 'undefined' && key) {
   posthog.init(key, {
     api_host: host,
+    disable_surveys: true,
     // Enable debug mode in development
     loaded: (posthog: any) => {
       if (process.env.NODE_ENV === 'development') posthog.debug();

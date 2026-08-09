@@ -58,7 +58,15 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
     router.push('/');
   };
 
-  const navLinks = ['Features', 'Pricing', 'Gallery', 'Contact'];
+  const navItems = [
+    { label: 'Product', href: '/#product' },
+    { label: 'How It Works', href: '/#how-it-works' },
+    { label: 'Weddings', href: '/weddings' },
+    { label: 'Professionals', href: '/professionals' },
+    { label: 'Corporate', href: '/corporate-events' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Demo', href: '/?demo=true' },
+  ];
 
   return (
     <>
@@ -77,7 +85,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
         {/* subtle top gradient accent line */}
         <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-        <div className="h-16 md:h-20 flex items-center justify-between px-6 md:px-10">
+        <div className="h-16 md:h-20 flex items-center justify-between px-6 md:px-8">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
               whileHover={{ scale: 1.03 }}
@@ -92,49 +100,41 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden md:flex items-center gap-10">
-              {navLinks.map((item) => (
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+              {navItems.map((item) => (
                 <Link
-                  key={item}
-                  href={`/#${item.toLowerCase().replace(/ /g, '')}`}
-                  className="group relative text-sm font-medium text-slate-200 dark:text-white/70 hover:text-white transition-colors duration-200"
+                  key={item.label}
+                  href={item.href}
+                  className="group relative text-xs xl:text-sm font-medium text-slate-200 dark:text-white/80 hover:text-white transition-colors duration-200"
                 >
-                  {item}
-                  <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gradient-neon transition-all duration-300 group-hover:w-full" />
+                  {item.label}
+                  <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-cyan-400 transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
             </nav>
           )}
 
           {/* Right Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setIsPartnerModalOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 dark:text-emerald-300 text-xs font-extrabold tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
+              className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold tracking-wider uppercase transition-all shrink-0 cursor-pointer"
               title="Earn 10% Referral Bonus for each user referred"
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>10% Referral Bonus</span>
+              <span>10% Partner Bonus</span>
             </button>
 
             <ThemeToggle />
             
             {!mini && showAuthButtons && (
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-3">
                 {user ? (
                   <>
                     <Link
                       href="/dashboard"
-                      className="rounded-full bg-gradient-neon text-white text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit"
-                      style={{
-                        paddingLeft: '1rem',
-                        paddingRight: '1rem',
-                        paddingTop: '.5rem',
-                        paddingBottom: '.5rem',
-                        marginLeft: '0.5rem',
-                        marginRight: '0.5rem',
-                      }}
+                      className="px-4 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-extrabold tracking-wide transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-105 active:scale-95 whitespace-nowrap"
                     >
                       Dashboard
                     </Link>
@@ -147,30 +147,28 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                     </button>
                   </>
                 ) : (
-                      <button
-                      onClick={() => openAuth('signup')}
-                      style={{
-                        paddingLeft: '1rem',
-                        paddingRight: '1rem',
-                        paddingTop: '.5rem',
-                        paddingBottom: '.5rem',
-                        marginLeft: '0.5rem',
-                        marginRight: '0.5rem',
-                      }}
-                      className="rounded-full bg-gradient-neon text-white text-sm font-bold shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.65)] hover:scale-105 active:scale-95 transition-all duration-200 whitespace-nowrap h-fit"
+                  <>
+                    <button
+                      onClick={() => openAuth('login')}
+                      className="px-4 py-2 rounded-full text-white/90 hover:text-white hover:bg-white/10 text-xs font-bold transition-all"
                     >
-                      Get Started
+                      Log in
                     </button>
-                )
-                }
+                    <button
+                      onClick={() => openAuth('signup')}
+                      className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-extrabold tracking-wide shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                    >
+                      Create Event
+                    </button>
+                  </>
+                )}
               </div>
-
             )}
 
             {/* Hamburger Toggle */}
             {!mini && (
               <button
-                className="md:hidden relative z-[101] p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+                className="lg:hidden relative z-[101] p-2 text-white hover:bg-white/10 rounded-full transition-colors"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -188,23 +186,23 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-[#050505]/98 backdrop-blur-md md:hidden overflow-hidden flex flex-col"
+            className="fixed inset-0 z-[100] bg-[#050505]/98 backdrop-blur-md lg:hidden overflow-y-auto flex flex-col"
           >
             <div className="flex flex-col flex-1 pt-28 px-6 pb-8">
-              <nav className="flex flex-col gap-6">
-                {navLinks.map((item, i) => (
+              <nav className="flex flex-col gap-5">
+                {navItems.map((item, i) => (
                   <motion.div
-                    key={item}
+                    key={item.label}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.1 }}
+                    transition={{ delay: 0.05 + i * 0.05 }}
                   >
                     <Link
-                      href={`/#${item.toLowerCase().replace(/ /g, '')}`}
-                      className="text-2xl font-semibold text-white hover:text-neon-cyan transition-colors"
+                      href={item.href}
+                      className="text-xl font-semibold text-white hover:text-cyan-400 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </motion.div>
                 ))}
@@ -221,19 +219,19 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 </button>
               </div>
 
-              <div className="mt-auto space-y-4">
+              <div className="mt-auto space-y-3 pt-6 border-t border-white/10">
                 {user ? (
                   <>
                     <Link
                       href="/dashboard"
-                      className="w-full block py-4 rounded-xl border border-white/20 text-center text-white font-bold"
+                      className="w-full block py-3.5 rounded-xl border border-white/20 text-center text-white font-bold text-sm"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="w-full py-4 rounded-xl bg-white/5 text-white/70 font-semibold"
+                      className="w-full py-3.5 rounded-xl bg-white/5 text-white/70 font-semibold text-sm"
                     >
                       Sign Out
                     </button>
@@ -241,10 +239,16 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 ) : (
                   <div className="flex flex-col gap-3">
                     <button
-                      onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
-                      className="w-full py-4 rounded-xl bg-gradient-neon text-white font-bold"
+                      onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
+                      className="w-full py-3.5 rounded-xl border border-white/20 text-white font-bold text-sm"
                     >
-                      Get Started
+                      Log in
+                    </button>
+                    <button
+                      onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
+                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-sm shadow-lg"
+                    >
+                      Create Event
                     </button>
                   </div>
                 )}

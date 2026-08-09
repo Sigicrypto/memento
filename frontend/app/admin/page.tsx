@@ -473,6 +473,17 @@ export default function AdminPage() {
                 )}
               </button>
             ))}
+
+            <Link
+              href="/admin/branding"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20"
+            >
+              <span className="flex items-center gap-3">
+                <span className="text-base">🎨</span>
+                <span>White-Label Settings</span>
+              </span>
+              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">PRO</span>
+            </Link>
           </nav>
 
           {/* PWA Install Button & Profile Chip */}
@@ -671,10 +682,9 @@ export default function AdminPage() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-xs font-bold text-white">{u.email}</p>
                               <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border uppercase tracking-wider ${
-                                (u.plan || '').toUpperCase() === 'PREMIUM' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
-                                (u.plan || '').toUpperCase() === 'STANDARD' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' :
-                                (u.plan || '').toUpperCase() === 'WHITE LABEL' || (u.plan || '').toUpperCase() === 'WHITE_LABEL' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
-                                (u.plan || '').toUpperCase() === 'STARTER' ? 'bg-blue-500/20 text-blue-300 border-blue-500/40' :
+                                (u.plan || '').toUpperCase() === 'PROFESSIONAL' || (u.plan || '').toUpperCase() === 'WHITE_LABEL' || (u.plan || '').toUpperCase() === 'WHITE LABEL' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
+                                (u.plan || '').toUpperCase() === 'PREMIUM' || (u.plan || '').toUpperCase() === 'STANDARD' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                                (u.plan || '').toUpperCase() === 'EVENT' || (u.plan || '').toUpperCase() === 'STARTER' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' :
                                 'bg-slate-800 text-slate-400 border-slate-700'
                               }`}>
                                 {u.plan || 'FREE'}
@@ -717,11 +727,10 @@ export default function AdminPage() {
                             onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
                             className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-700 text-amber-300 outline-none focus:border-amber-500 transition cursor-pointer"
                           >
-                            <option value="FREE">Free Tier</option>
-                            <option value="STARTER">⚡ Starter (₹2.4k)</option>
-                            <option value="STANDARD">⭐ Standard (₹4.9k)</option>
-                            <option value="PREMIUM">💎 Premium (₹7.4k)</option>
-                            <option value="WHITE_LABEL">👑 White Label (₹9.9k)</option>
+                            <option value="FREE">Free (₹0)</option>
+                            <option value="EVENT">⚡ Event Pass (₹999)</option>
+                            <option value="PREMIUM">🔥 Premium Pass (₹2,499)</option>
+                            <option value="PROFESSIONAL">👑 Professional (₹4,999/mo)</option>
                           </select>
 
                           <button

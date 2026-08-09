@@ -179,10 +179,13 @@ export default function EditEventPage() {
                   onChange={e => setPlanType(e.target.value)}
                   className="w-full px-5 py-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold uppercase outline-none cursor-pointer text-sm"
                 >
-                  <option value="STARTER" className="bg-slate-900 text-white">Starter Tier</option>
-                  <option value="STANDARD" className="bg-slate-900 text-white">Standard Tier (⭐ Recommended)</option>
-                  <option value="PREMIUM" className="bg-slate-900 text-white">Premium Tier (🔥 Best Value)</option>
-                  <option value="WHITE_LABEL" className="bg-slate-900 text-white">White Label Tier (Custom Domain & Branding)</option>
+                  <option value="FREE" className="bg-slate-900 text-white">Free Tier (₹0)</option>
+                  <option value="EVENT" className="bg-slate-900 text-white">⚡ Event Pass (₹999)</option>
+                  <option value="PREMIUM" className="bg-slate-900 text-white">🔥 Premium Pass (₹2,499)</option>
+                  <option value="PROFESSIONAL" className="bg-slate-900 text-white">👑 Professional Tier (₹4,999/mo)</option>
+                  <option value="STARTER" className="bg-slate-900 text-white">Starter (Legacy Event Pass)</option>
+                  <option value="STANDARD" className="bg-slate-900 text-white">Standard (Legacy Premium Pass)</option>
+                  <option value="WHITE_LABEL" className="bg-slate-900 text-white">White Label (Legacy Professional)</option>
                 </select>
               </div>
               {/* Branding - White Label Only */}

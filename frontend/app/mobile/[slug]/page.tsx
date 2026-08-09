@@ -382,16 +382,23 @@ export default function MobilePage() {
          </div>
  
          {/* ── Actions ── */}
-         {hasFeature(event?.plan_type, 'SELFIE_MATCH') && (
-           <div className="flex flex-col gap-3">
-              <button onClick={() => setShowSelfieCam(true)} className="btn btn-secondary w-full btn-lg">
-                 <User size={16} /> Find Me on Wall
-              </button>
-              {matchedPhotoIds && (
-                 <button onClick={() => setMatchedPhotoIds(null)} className="text-xs font-semibold text-text-primary hover:underline text-center mt-2">✕ Clear Filter & Show My Uploads</button>
-              )}
-           </div>
-         )}
+         <div className="flex flex-col gap-3 mb-4">
+            <Link 
+              href={`/mobile/${slug}/camera`} 
+              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-black font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:brightness-110 active:scale-[0.99] transition-all"
+            >
+               <Camera size={18} />
+               <span>Launch Memento Pro Camera</span>
+            </Link>
+            {hasFeature(event?.plan_type, 'SELFIE_MATCH') && (
+               <button onClick={() => setShowSelfieCam(true)} className="btn btn-secondary w-full btn-lg">
+                  <User size={16} /> Find Me on Wall
+               </button>
+            )}
+            {matchedPhotoIds && (
+               <button onClick={() => setMatchedPhotoIds(null)} className="text-xs font-semibold text-text-primary hover:underline text-center mt-2">✕ Clear Filter & Show My Uploads</button>
+            )}
+         </div>
  
          {/* ── Gallery ── */}
          {(matchedPhotoIds || photos.length > 0) && (

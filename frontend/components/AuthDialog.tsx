@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { X, Mail, Lock, User, Eye, EyeOff, Loader2, Check, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-type PlanType = 'starter' | 'standard' | 'premium' | 'whitelabel' | null;
+type PlanType = 'free' | 'event' | 'premium' | 'professional' | 'starter' | 'standard' | 'whitelabel' | null;
 type AuthTab = 'login' | 'signup';
 type AuthStep = 'auth' | 'payment' | 'success';
 type Region = 'IN' | 'OM' | 'GLOBAL';
@@ -38,9 +38,12 @@ interface AuthDialogProps {
 }
 
 const PLAN_LABELS: Record<string, { name: string; emoji: string; color: string }> = {
+  free: { name: 'Free', emoji: '⚪', color: '#94a3b8' },
+  event: { name: 'Event', emoji: '🔵', color: '#06b6d4' },
+  premium: { name: 'Premium', emoji: '🔥', color: '#f59e0b' },
+  professional: { name: 'Professional', emoji: '🟣', color: '#a855f7' },
   starter: { name: 'Starter', emoji: '🟢', color: '#22c55e' },
   standard: { name: 'Standard', emoji: '🔵', color: '#3b82f6' },
-  premium: { name: 'Premium', emoji: '🟣', color: '#a855f7' },
   whitelabel: { name: 'White Label', emoji: '🟡', color: '#eab308' },
 };
 

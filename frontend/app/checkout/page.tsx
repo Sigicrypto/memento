@@ -10,24 +10,30 @@ import { ArrowLeft, Check, Shield, Clock, Sparkles, MessageCircle, IndianRupee, 
 import AnimatedLogo from '@/components/AnimatedLogo';
 
 const PLAN_PRICES: Record<string, { IN: string; amount: string }> = {
-  STARTER:       { IN: '₹2,499',  amount: '2,499' },
-  STANDARD:      { IN: '₹4,999',  amount: '4,999' },
-  PREMIUM:       { IN: '₹7,499',  amount: '7,499' },
-  'WHITE LABEL': { IN: '₹9,999', amount: '9,999' },
-  'WHITE_LABEL':  { IN: '₹9,999', amount: '9,999' },
+  FREE:          { IN: '₹0',      amount: '0' },
+  EVENT:         { IN: '₹999',    amount: '999' },
+  PREMIUM:       { IN: '₹2,499',  amount: '2,499' },
+  PROFESSIONAL:  { IN: '₹4,999',  amount: '4,999' },
+  STARTER:       { IN: '₹999',    amount: '999' },
+  STANDARD:      { IN: '₹2,499',  amount: '2,499' },
+  'WHITE LABEL': { IN: '₹4,999',  amount: '4,999' },
+  'WHITE_LABEL':  { IN: '₹4,999',  amount: '4,999' },
 };
 
 const PLAN_DISPLAY_NAMES: Record<string, string> = {
-  STARTER: 'Starter', STANDARD: 'Standard', PREMIUM: 'Premium',
-  'WHITE LABEL': 'White Label', 'WHITE_LABEL': 'White Label',
+  FREE: 'Free', EVENT: 'Event', PREMIUM: 'Premium', PROFESSIONAL: 'Professional',
+  STARTER: 'Event', STANDARD: 'Premium', 'WHITE LABEL': 'Professional', 'WHITE_LABEL': 'Professional',
 };
 
 const PLAN_FEATURES: Record<string, string[]> = {
-  STARTER: ['Live Photo Wall', '25 uploads/guest', 'ZIP Download', '1 Month Storage'],
-  STANDARD: ['Everything in Starter', '50 uploads/guest', 'AI Face Discovery', 'Slideshow TV Mode', 'Real-time Reactions', '3 Month Storage'],
-  PREMIUM: ['Everything in Standard', 'Unlimited uploads', 'Cinematic Soundtrack', 'Priority 24/7 Support', '6 Month Storage'],
-  'WHITE_LABEL': ['Everything in Premium', 'Custom Domain', 'Full Branding Removal', 'Partner Resell Rights', 'Concierge Setup'],
-  'WHITE LABEL': ['Everything in Premium', 'Custom Domain', 'Full Branding Removal', 'Partner Resell Rights', 'Concierge Setup'],
+  FREE: ['50 photo uploads', 'Basic photo gallery view', 'Event QR code sharing', '7 Days cloud storage'],
+  EVENT: ['2,000 photo & video uploads', 'Interactive Live Photo Wall', 'High-res ZIP album download', 'Printable QR card asset suite', '3 Months storage'],
+  PREMIUM: ['Unlimited photo & video uploads', 'Premium Live Wall with music', 'Host moderation (approve/reject)', 'Custom branding & logo', '12 Months storage'],
+  PROFESSIONAL: ['Unlimited events & multi-client portal', 'Full white-label branding removal', 'Custom domain connection', 'Client management dashboard', '24/7 Priority support'],
+  STARTER: ['2,000 photo & video uploads', 'Interactive Live Photo Wall', 'High-res ZIP album download', 'Printable QR card asset suite', '3 Months storage'],
+  STANDARD: ['Unlimited photo & video uploads', 'Premium Live Wall with music', 'Host moderation (approve/reject)', 'Custom branding & logo', '12 Months storage'],
+  'WHITE_LABEL': ['Unlimited events & multi-client portal', 'Full white-label branding removal', 'Custom domain connection', 'Client management dashboard', '24/7 Priority support'],
+  'WHITE LABEL': ['Unlimited events & multi-client portal', 'Full white-label branding removal', 'Custom domain connection', 'Client management dashboard', '24/7 Priority support'],
 };
 
 function CheckoutContent() {

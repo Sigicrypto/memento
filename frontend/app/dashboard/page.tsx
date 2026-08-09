@@ -10,7 +10,7 @@ import {
   Plus, Camera, Layout, Shield, Copy, Trash2, Sparkles,
   BarChart2, Image as ImageIcon, Settings, ArrowRight,
   Search, CheckCircle, Zap, Star, Heart, Grid, List,
-  ExternalLink, LogOut, Lock, Unlock
+  ExternalLink, LogOut, Lock, Unlock, QrCode
 } from 'lucide-react';
 import Lottie from 'lottie-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
@@ -40,25 +40,40 @@ interface Event {
 }
 
 const PLAN_INFO: Record<string, { name: string; icon: React.ReactNode; features: string[] }> = {
-  starter: {
-    name: 'Starter',
+  free: {
+    name: 'Free',
     icon: <Zap size={16} />,
-    features: ['Up to 150 guests', 'Live photo wall', '25 uploads/guest'],
+    features: ['50 photo uploads', 'Basic gallery view', 'QR code sharing'],
   },
-  standard: {
-    name: 'Standard',
+  event: {
+    name: 'Event',
     icon: <Star size={16} />,
-    features: ['Up to 300 guests', 'Auto album creation', '50 uploads/guest'],
+    features: ['2,000 uploads', 'Interactive Live Wall', 'ZIP Album download'],
   },
   premium: {
     name: 'Premium',
     icon: <Heart size={16} />,
-    features: ['Unlimited guests', 'Music slideshow', 'Expiring galleries'],
+    features: ['Unlimited uploads', 'Host moderation', 'Custom wall branding'],
+  },
+  professional: {
+    name: 'Professional',
+    icon: <Shield size={16} />,
+    features: ['Multi-event portal', 'Full white-label branding', 'Custom domain'],
+  },
+  starter: {
+    name: 'Event',
+    icon: <Star size={16} />,
+    features: ['2,000 uploads', 'Interactive Live Wall', 'ZIP Album download'],
+  },
+  standard: {
+    name: 'Premium',
+    icon: <Heart size={16} />,
+    features: ['Unlimited uploads', 'Host moderation', 'Custom wall branding'],
   },
   whitelabel: {
-    name: 'White Label',
+    name: 'Professional',
     icon: <Shield size={16} />,
-    features: ['Full branding removal', 'Custom domain', 'Partner resell rights'],
+    features: ['Multi-event portal', 'Full white-label branding', 'Custom domain'],
   },
 };
 
@@ -754,6 +769,20 @@ export default function DashboardPage() {
                       >
                         {copied === event.slug ? <CheckCircle size={16} className="text-success" /> : <Copy size={16} />}
                       </button>
+                      <Link
+                        href={`/mobile/${event.slug}/camera`}
+                        className="p-2 rounded-xl text-text-muted hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors"
+                        title="Launch Pro Camera"
+                      >
+                        <Camera size={16} />
+                      </Link>
+                      <Link
+                        href={`/dashboard/${event.id}/qr-assets`}
+                        className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"
+                        title="Printable QR Assets"
+                      >
+                        <QrCode size={16} />
+                      </Link>
                       <Link
                         href={`/dashboard/${event.id}/analytics`}
                         className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type PlanType = 'starter' | 'standard' | 'premium' | 'whitelabel' | null;
+export type PlanType = 'free' | 'event' | 'premium' | 'professional' | 'starter' | 'standard' | 'whitelabel' | null;
 type AuthTab = 'login' | 'signup';
 
 interface AuthModalContextType {

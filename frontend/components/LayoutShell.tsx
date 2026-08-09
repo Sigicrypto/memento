@@ -21,6 +21,11 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
 
   // Pages that render their own complete layout (nav, background, etc.)
   const isStandaloneRoute =
+    pathname === '/' ||
+    pathname?.startsWith('/weddings') ||
+    pathname?.startsWith('/professionals') ||
+    pathname?.startsWith('/corporate-events') ||
+    pathname?.startsWith('/pricing') ||
     pathname?.startsWith('/privacy') ||
     pathname?.startsWith('/terms') ||
     pathname?.startsWith('/checkout') ||

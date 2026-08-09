@@ -1,59 +1,79 @@
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import SectionHeader from './SectionHeader';
+import React from "react";
+import { QrCode, Camera, Share2, Tv } from "lucide-react";
 
-const Steps: React.FC = () => {
+export default function Steps() {
   const steps = [
-    { num: '01', icon: '🎉', title: 'Create Your Event', desc: 'Name it and get a shareable QR code in under a minute.' },
-    { num: '02', icon: '📲', title: 'Guests Scan & Share', desc: 'No app. No login. Just scan the QR and upload photos instantly.' },
-    { num: '03', icon: '✨', title: 'Watch It Come Alive', desc: 'Every photo streams live into a beautiful gallery for everyone.' },
+    {
+      step: "01",
+      title: "SCAN",
+      icon: <QrCode className="w-6 h-6 text-cyan-400" />,
+      description: "Guests scan your event QR code placed on table cards or welcome signs.",
+    },
+    {
+      step: "02",
+      title: "CAPTURE",
+      icon: <Camera className="w-6 h-6 text-purple-400" />,
+      description: "Their phone instantly becomes the camera in their browser. No app download.",
+    },
+    {
+      step: "03",
+      title: "SHARE",
+      icon: <Share2 className="w-6 h-6 text-amber-400" />,
+      description: "Their photo goes straight to your event gallery in high resolution.",
+    },
+    {
+      step: "04",
+      title: "EXPERIENCE",
+      icon: <Tv className="w-6 h-6 text-emerald-400" />,
+      description: "Watch memories appear live on your venue projector or screen in real time.",
+    },
   ];
 
   return (
-    <section id="howitworks" className="lp-section overflow-hidden scroll-mt-32">
-      <div className="section-container">
-        <SectionHeader
-          badge="Process"
-          badgeColor="magenta"
-          title="Three steps. That's it."
-          description="No downloads. No accounts. No friction."
-        />
+    <section id="how-it-works" className="w-full py-20 px-4 md:px-8 relative bg-slate-950/70 border-b border-white/5 flex flex-col items-center justify-center">
+      <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
+        
+        <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-extrabold tracking-wider uppercase mb-4">
+          How It Works
+        </span>
 
-        <div className="relative max-w-5xl mx-auto">
-          <div className="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-cyan/30 to-transparent hidden lg:block" />
+        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight max-w-3xl">
+          From QR Code to Memory in Seconds
+        </h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 relative z-10">
-            {steps.map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.15, ease: 'easeOut' }}
-                className="lp-card group relative overflow-hidden flex flex-col items-center text-center justify-center"
-              >
-                <div className="absolute -right-12 -top-12 w-40 h-40 bg-neon-magenta/20 blur-[60px] rounded-full group-hover:bg-neon-magenta/40 transition-all" />
-                <div className="relative z-10 w-full flex flex-col items-center">
-                  <span className="text-xs font-bold text-neon-cyan tracking-widest mb-6 uppercase font-mono bg-neon-cyan/10 px-4 py-1.5 rounded-full border border-neon-cyan/30">
-                    Step {s.num}
-                  </span>
-                  <div className="w-16 h-16 rounded-2xl bg-bg-subtle flex items-center justify-center mb-8 border border-border group-hover:border-neon-cyan/50 group-hover:scale-110 transition-all duration-300">
-                    <span className="text-3xl">{s.icon}</span>
-                  </div>
-                  <h3 className="text-xl lg:text-2xl font-bold text-text-primary mb-4 tracking-tight group-hover:text-neon-cyan transition-colors duration-300" style={{ color: 'var(--text-primary)' }}>
-                    {s.title}
-                  </h3>
-                  <p className="text-text-secondary font-medium leading-relaxed text-base max-w-xs" style={{ color: 'var(--text-secondary)' }}>{s.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+        <p className="text-slate-300 text-sm md:text-base max-w-2xl mt-4 font-medium">
+          Zero friction for your guests. No app setup, no password forms, no frustration.
+        </p>
+
+        {/* 4 Steps Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full mt-12 text-center">
+          {steps.map((item) => (
+            <div
+              key={item.step}
+              className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 hover:border-cyan-400/30 transition-all shadow-xl flex flex-col items-center text-center relative group overflow-hidden"
+            >
+              <span className="text-4xl font-black text-slate-800 group-hover:text-slate-700 transition-colors absolute top-4 right-4 pointer-events-none">
+                {item.step}
+              </span>
+
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                {item.icon}
+              </div>
+
+              <h3 className="text-white font-black text-lg mb-2 tracking-wider">
+                {item.step} — {item.title}
+              </h3>
+
+              <p className="text-slate-400 text-xs leading-relaxed z-10">
+                {item.description}
+              </p>
+            </div>
+          ))}
         </div>
+
       </div>
     </section>
   );
-};
-
-export default Steps;
+}

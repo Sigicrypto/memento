@@ -10,7 +10,8 @@ export type Feature =
   | 'SELFIE_MATCH'
   | 'GUEST_DOWNLOAD'
   | 'VIDEO_UPLOAD'
-  | 'SLIDESHOW_MODE';
+  | 'SLIDESHOW_MODE'
+  | 'PRO_CAMERA';
 
 const TIER_RANK: Record<PlanTier, number> = {
   STARTER: 0,
@@ -41,6 +42,7 @@ const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
   SLIDESHOW_MODE: 'STANDARD',
   SLIDESHOW_MUSIC: 'PREMIUM',
   VIDEO_UPLOAD: 'PREMIUM',
+  PRO_CAMERA: 'PREMIUM',
   BRANDING_REMOVAL: 'WHITELABEL',
   CUSTOM_DOMAIN: 'WHITELABEL',
 };
