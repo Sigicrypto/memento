@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Award, ArrowRight } from 'lucide-react';
 import { usePartnerId } from '@/hooks/usePartnerId';
@@ -9,6 +9,21 @@ import PartnerProgramModal from '@/components/PartnerProgramModal';
 export default function PartnerSection() {
   const { partnerId } = usePartnerId();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkHashAndParams = () => {
+        const hash = window.location.hash;
+        const search = window.location.search;
+        if (hash === '#partner-program' || search.includes('partner=true')) {
+          setIsModalOpen(true);
+        }
+      };
+      checkHashAndParams();
+      window.addEventListener('hashchange', checkHashAndParams);
+      return () => window.removeEventListener('hashchange', checkHashAndParams);
+    }
+  }, []);
 
   return (
     <section className="relative py-10 px-4 sm:px-6 lg:px-8 w-full flex justify-center items-center" id="partner-program">
