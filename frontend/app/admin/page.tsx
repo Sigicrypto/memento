@@ -816,6 +816,107 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* 🔗 Generated Unique Partner Referral Links Directory */}
+              <div className={cardClass}>
+                <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                      <span>Generated Partner Referral Links Directory</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                        {users.length} Active Partner Links
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400">Complete master list of generated 1-click referral links, promoter UPI IDs, and referred user counts.</p>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-slate-300">
+                    <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                      <tr>
+                        <th className="p-4">Partner Code & Name</th>
+                        <th className="p-4">1-Click Referral Link</th>
+                        <th className="p-4">Registered UPI & WhatsApp</th>
+                        <th className="p-4">Referred Hosts</th>
+                        <th className="p-4 text-right">Quick Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 font-mono">
+                      {users.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-slate-500 text-xs font-sans">
+                            No partner referral links generated yet.
+                          </td>
+                        </tr>
+                      ) : (
+                        users.map(u => {
+                          const refCode = `MEM-${u.id.substring(0, 4).toUpperCase()}`;
+                          const link = `https://mymementoapp.com/join?ref=${refCode}`;
+                          const cleanPhone = (u.promoter_whatsapp || u.phone || '').replace(/[^0-9]/g, '');
+                          const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+
+                          return (
+                            <tr key={u.id} className="hover:bg-slate-800/30 transition">
+                              <td className="p-4">
+                                <span className="font-bold text-emerald-400 block">{refCode}</span>
+                                <span className="text-[11px] text-white font-sans font-bold block">{u.promoter_name || u.full_name || 'Host / Partner'}</span>
+                                <span className="text-[10px] text-slate-400 font-sans">{u.email}</span>
+                              </td>
+
+                              <td className="p-4 font-mono text-slate-200">
+                                <span className="text-emerald-300 font-bold block text-[11px] break-all">{link}</span>
+                              </td>
+
+                              <td className="p-4 font-sans">
+                                {u.promoter_upi ? (
+                                  <>
+                                    <span className="font-bold text-purple-300 block">{u.promoter_upi}</span>
+                                    <span className="text-[11px] text-slate-400 block">{u.promoter_whatsapp || u.phone || 'No phone'}</span>
+                                  </>
+                                ) : (
+                                  <span className="text-slate-500 text-[11px] italic">Not registered yet</span>
+                                )}
+                              </td>
+
+                              <td className="p-4 font-sans">
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                  (u.referrals_count || 0) > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                }`}>
+                                  👥 {u.referrals_count || 0} Referred Host{(u.referrals_count || 0) !== 1 ? 's' : ''}
+                                </span>
+                              </td>
+
+                              <td className="p-4 text-right font-sans space-x-2">
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(link);
+                                    showToast('Referral link copied to clipboard! ✅');
+                                  }}
+                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition"
+                                >
+                                  📋 Copy Link
+                                </button>
+
+                                {cleanPhone && (
+                                  <a
+                                    href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi ${u.promoter_name || u.full_name || 'Ambassador'}! 👋 Here is your official Memento Partner Referral Link: ${link}`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-2.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-[11px] hover:bg-emerald-400 transition inline-flex items-center gap-1"
+                                  >
+                                    📲 WhatsApp
+                                  </a>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
               {/* 📲 1-Tap WhatsApp Referral Bonus Dispatch Assistant */}
               <div className={`${cardClass} p-5 space-y-4`}>
                 <div className="flex items-center justify-between pb-3 border-b border-slate-800">
