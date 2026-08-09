@@ -26,6 +26,7 @@ interface UserRow {
   promoter_upi?: string;
   promoter_whatsapp?: string;
   promoter_name?: string;
+  referrals_count?: number;
 }
 
 interface EventRow {
@@ -177,6 +178,15 @@ export default function AdminPage() {
         }
       });
 
+      // Calculate referral counts per partner ID
+      const referralCounts: Record<string, number> = {};
+      (profiles || []).forEach(p => {
+        if (p.referred_by_partner_id) {
+          const code = p.referred_by_partner_id.toUpperCase();
+          referralCounts[code] = (referralCounts[code] || 0) + 1;
+        }
+      });
+
       const formatted: UserRow[] = (profiles || []).map(p => {
         const defaultRefCode = `MEM-${p.id.substring(0, 4).toUpperCase()}`;
         const promoterProfile = promoterMap[defaultRefCode];
@@ -196,6 +206,7 @@ export default function AdminPage() {
           promoter_upi: promoterProfile?.upi_id,
           promoter_whatsapp: promoterProfile?.whatsapp_number,
           promoter_name: promoterProfile?.full_name,
+          referrals_count: referralCounts[defaultRefCode] || 0,
         };
       });
 
@@ -678,6 +689,10 @@ export default function AdminPage() {
                             <div className="flex items-center gap-2 flex-wrap mt-1.5 font-mono text-[10px]">
                               <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold">
                                 🔗 Link: mymementoapp.com/join?ref=MEM-{u.id.substring(0, 4).toUpperCase()}
+                              </span>
+
+                              <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold">
+                                👥 Referrals Generated: {u.referrals_count || 0}
                               </span>
 
                               {u.promoter_upi && (
