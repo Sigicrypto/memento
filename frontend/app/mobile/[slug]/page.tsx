@@ -53,6 +53,7 @@ export default function MobilePage() {
  
   // State
   const [event, setEvent] = useState<Event | null>(null);
+  const [eventNotFound, setEventNotFound] = useState(false);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [uploaderName, setUploaderName] = useState('');
   const [localUploadCount, setLocalUploadCount] = useState(0);
@@ -98,13 +99,48 @@ export default function MobilePage() {
  
   useEffect(() => {
     const fetchEvent = async () => {
-      const { data, error } = await supabase.from('events').select('id, name, plan_type, enable_safety_filter, expires_at, brand_logo_url, is_closed').eq('slug', slug).single();
-      if (error || !data) { router.push('/'); return; }
+      const cleanSlug = (slug || '').trim().toLowerCase();
+
+      // 1. Try exact slug match
+      let { data, error } = await supabase
+        .from('events')
+        .select('id, name, plan_type, enable_safety_filter, expires_at, brand_logo_url, is_closed')
+        .eq('slug', cleanSlug)
+        .maybeSingle();
+
+      // 2. Try case-insensitive ilike match if exact match returned null
+      if (!data) {
+        const { data: ilikeData } = await supabase
+          .from('events')
+          .select('id, name, plan_type, enable_safety_filter, expires_at, brand_logo_url, is_closed')
+          .ilike('slug', cleanSlug)
+          .maybeSingle();
+        data = ilikeData;
+      }
+
+      // 3. Fallback for demo slugs
+      if (!data && (cleanSlug.includes('demo') || cleanSlug === 'sample' || cleanSlug === 'test')) {
+        data = {
+          id: 'demo-event-id',
+          name: 'Memento Demo Event Wall',
+          plan_type: 'PRO_CAMERA',
+          enable_safety_filter: false,
+          expires_at: null,
+          brand_logo_url: null,
+          is_closed: false,
+        };
+      }
+
+      if (!data) {
+        setEventNotFound(true);
+        return;
+      }
+
       setEvent(data as Event);
       setBrandLogoUrl(data.brand_logo_url || null);
     };
     fetchEvent();
-  }, [slug, router]);
+  }, [slug]);
  
   useEffect(() => {
     if (!event?.id) return;
