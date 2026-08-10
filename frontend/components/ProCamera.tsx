@@ -7,8 +7,8 @@ import {
   X, Check, RotateCcw, Upload, Lock, Sparkles, Eye, Sun, Grid, Compass, 
   Activity, Zap, Info, ChevronUp, ChevronDown, Image as ImageIcon, Volume2, 
   VolumeX, Shield, SlidersHorizontal, Layers, Film, Crop, Radio, Target, MoveVertical, Focus,
-  Share2, MessageCircle, Star, Heart, Smile, Download, Sliders as SlidersIcon, Frame, Sparkle,
-  RefreshCw, SmilePlus, Crown, Tv
+  Share2, MessageCircle, Star, Heart, Smile, Download, Frame, Sparkle,
+  RefreshCw, Crown, Sliders as SlidersIcon
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { extractFaceDescriptorRobust, fileToImage } from '@/lib/faceEngine';
@@ -21,7 +21,7 @@ import ProCameraUpgradeModal from '@/components/ProCameraUpgradeModal';
 export type ShootingMode = 'AUTO' | 'PRO' | 'PORTRAIT' | 'EVENT' | 'LOW LIGHT' | 'PRODUCT' | 'DOCUMENT';
 export type AspectRatioType = '4:3' | '1:1' | '16:9' | '9:16';
 export type PeakingColor = '#00e5ff' | '#00ffaa' | '#ff0077' | '#ffff00' | '#ff3300';
-export type SnapFilterType = 'none' | 'hearts' | 'crown' | 'puppy' | 'vhs' | 'disco';
+export type SnapFilterType = 'none' | 'hearts' | 'crown' | 'vhs';
 
 const EVENT_BADGES = [
   '👑 VIP Guest',
@@ -109,7 +109,6 @@ export default function ProCamera({
   const [showZebra, setShowZebra] = useState<boolean>(false);
   const [zebraThreshold, setZebraThreshold] = useState<number>(240);
   const [mirrorFront, setMirrorFront] = useState<boolean>(true);
-  const [photoFormat, setPhotoFormat] = useState<'JPEG' | 'HEIF' | 'RAW+JPEG'>('JPEG');
   const [torchOn, setTorchOn] = useState<boolean>(false);
   const [selfTimer, setSelfTimer] = useState<number>(0);
   const [timerCountdown, setTimerCountdown] = useState<number | null>(null);
@@ -120,7 +119,6 @@ export default function ProCamera({
   const [showSettingsDrawer, setShowSettingsDrawer] = useState<boolean>(false);
   const [showPresetsPanel, setShowPresetsPanel] = useState<boolean>(false);
   const [showFilmStylePanel, setShowFilmStylePanel] = useState<boolean>(false);
-  const [showSnapFiltersPanel, setShowSnapFiltersPanel] = useState<boolean>(false);
   const [showGuidedTipExpand, setShowGuidedTipExpand] = useState<boolean>(false);
   const [activeManualControlTab, setActiveManualControlTab] = useState<'iso' | 'shutter' | 'ev' | 'wb' | 'focus' | 'tint' | null>(null);
 
@@ -268,7 +266,6 @@ export default function ProCamera({
     };
   }, [selectedDeviceId, initCamera, stopCameraStream]);
 
-  // Explicit Front Selfie / Back Main Camera Toggle Handler
   const toggleCameraFacingMode = () => {
     const nextFacing = facingMode === 'environment' ? 'user' : 'environment';
     setFacingMode(nextFacing);
@@ -276,7 +273,6 @@ export default function ProCamera({
     initCamera(undefined, nextFacing);
   };
 
-  // Apply track constraints dynamically
   const applyCameraConstraints = useCallback(async (overrides: Record<string, any>) => {
     if (!activeTrack || typeof activeTrack.applyConstraints !== 'function') return;
     try {
@@ -345,7 +341,6 @@ export default function ProCamera({
     });
   };
 
-  // ── Native Web Share & Social Export ──
   const handleNativeShare = async () => {
     if (!capturedBlob) return;
     try {
@@ -367,7 +362,6 @@ export default function ProCamera({
     }
   };
 
-  // ── Fallback Camera Roll File Input Handler ──
   const handleFallbackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -653,7 +647,6 @@ export default function ProCamera({
         ctx.drawImage(video, 0, 0, baseWidth, baseHeight);
         ctx.filter = 'none';
 
-        // Draw Leica/Hasselblad Aesthetic Watermark Strip
         if (addWatermarkFrame) {
           ctx.fillStyle = '#09090b';
           ctx.fillRect(0, baseHeight, baseWidth, watermarkMargin);
@@ -668,7 +661,6 @@ export default function ProCamera({
           ctx.fillText(detailsStr, Math.round(baseWidth * 0.45), baseHeight + Math.round(watermarkMargin * 0.6));
         }
 
-        // Trigger NOMO CAM instant film developing reveal animation!
         setIsDevelopingPolaroid(true);
         setTimeout(() => setIsDevelopingPolaroid(false), 2200);
 
@@ -776,7 +768,7 @@ export default function ProCamera({
       />
 
       {/* ── Top Header Navigation ── */}
-      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
+      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-3.5 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
         <button 
           onClick={onClose} 
           className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/90 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
@@ -784,15 +776,14 @@ export default function ProCamera({
           <X size={20} />
         </button>
 
-        {/* Halide Process Zero, Beauty Glow & Direct Pro Controls Badge */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {/* Explicit Front / Back Camera Flip Button */}
+        {/* Sleek Action Badges */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-1">
           <button
             onClick={toggleCameraFacingMode}
-            className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-extrabold text-[11px] flex items-center gap-1.5 backdrop-blur-md hover:bg-cyan-500/30 active:scale-95 transition-all shadow-lg"
+            className="px-3 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-extrabold text-[11px] flex items-center gap-1.5 backdrop-blur-md hover:bg-cyan-500/30 active:scale-95 transition-all shadow-md"
           >
-            <RefreshCw size={13} className="animate-spin-slow" />
-            <span>{facingMode === 'user' ? '🤳 SELFIE CAM' : '📷 MAIN CAM'}</span>
+            <RefreshCw size={12} className="animate-spin-slow" />
+            <span>{facingMode === 'user' ? '🤳 SELFIE' : '📷 MAIN'}</span>
           </button>
 
           <button
@@ -805,14 +796,14 @@ export default function ProCamera({
                 setActiveManualControlTab('ev');
               }
             }}
-            className={`px-3 py-1 rounded-full border text-[11px] font-extrabold tracking-wider transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full border text-[11px] font-extrabold tracking-wider transition-all flex items-center gap-1.5 ${
               shootingMode === 'PRO'
                 ? 'bg-cyan-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/30 scale-105'
                 : 'bg-black/70 text-cyan-400 border-cyan-500/40 hover:bg-cyan-500/20'
             }`}
           >
-            <SlidersHorizontal size={13} />
-            <span>🎛️ PRO OPTIONS</span>
+            <SlidersHorizontal size={12} />
+            <span>PRO OPTIONS</span>
           </button>
 
           <button
@@ -820,7 +811,7 @@ export default function ProCamera({
               const nextStyle = activeFilmStyle === 'process_zero' ? 'natural' : 'process_zero';
               setActiveFilmStyle(nextStyle);
             }}
-            className={`px-3 py-1 rounded-full border text-[11px] font-extrabold tracking-wider font-mono transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-full border text-[11px] font-extrabold tracking-wider font-mono transition-all flex items-center gap-1.5 ${
               activeFilmStyle === 'process_zero'
                 ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/20'
                 : 'bg-black/60 text-zinc-400 border-white/15'
@@ -829,23 +820,10 @@ export default function ProCamera({
             <Zap size={12} className={activeFilmStyle === 'process_zero' ? 'fill-black' : ''} />
             <span>PROCESS ZERO</span>
           </button>
-
-          <button
-            onClick={() => {
-              setActiveFilmStyle('beauty_glow');
-            }}
-            className={`px-3 py-1 rounded-full border text-[11px] font-bold transition-all ${
-              activeFilmStyle === 'beauty_glow'
-                ? 'bg-pink-500 text-white border-pink-400 shadow-lg shadow-pink-500/30'
-                : 'bg-black/60 text-pink-300 border-pink-500/30 hover:bg-pink-500/20'
-            }`}
-          >
-            <span>✨ BEAUTY GLOW</span>
-          </button>
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {capabilities.hasTorch && (
             <button 
               onClick={toggleTorch}
@@ -862,14 +840,14 @@ export default function ProCamera({
             className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
             title="Film Science Profiles"
           >
-            <Film size={20} className={activeFilmStyle !== 'natural' ? 'text-cyan-400' : ''} />
+            <Film size={18} className={activeFilmStyle !== 'natural' ? 'text-cyan-400' : ''} />
           </button>
 
           <button 
             onClick={() => setShowSettingsDrawer(!showSettingsDrawer)}
             className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
           >
-            <Settings size={20} />
+            <Settings size={18} />
           </button>
         </div>
       </div>
@@ -1041,14 +1019,14 @@ export default function ProCamera({
         )}
 
         {/* Live OLED Telemetry Bar & Clean Micro-Pill AI Tip */}
-        <div className="absolute top-20 left-4 pointer-events-auto flex flex-col gap-1.5 z-20">
+        <div className="absolute top-16 left-3 pointer-events-auto flex flex-col gap-1.5 z-20">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShootingMode('PRO');
               setActiveManualControlTab(activeManualControlTab || 'ev');
             }}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[11px] font-mono text-amber-400 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[10px] font-mono text-amber-400 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
             title="Tap to Open Pro Controls"
           >
             <span>ISO {iso}</span>
@@ -1060,18 +1038,17 @@ export default function ProCamera({
             <span className="text-cyan-400">{colorTemperature}K</span>
           </button>
 
-          {/* Clean Non-Intrusive Micro-Pill AI Tip */}
+          {/* Clean Micro-Pill AI Tip */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowGuidedTipExpand(!showGuidedTipExpand)}
-              className="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg hover:bg-cyan-500/25 transition-all"
+              className="px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[9px] font-bold backdrop-blur-md flex items-center gap-1 shadow-lg hover:bg-cyan-500/25 transition-all"
             >
-              <Sparkles size={11} className="text-cyan-400 animate-pulse" />
-              <span>AI Tip: {v2Analysis.recommendation.slice(0, 24)}…</span>
+              <Sparkles size={10} className="text-cyan-400 animate-pulse" />
+              <span>AI Tip: {v2Analysis.recommendation.slice(0, 22)}…</span>
             </button>
           </div>
 
-          {/* Expanded AI Tip Dropdown */}
           <AnimatePresence>
             {showGuidedTipExpand && (
               <motion.div 
@@ -1104,9 +1081,9 @@ export default function ProCamera({
 
         {/* Live Histogram Overlay */}
         {showHistogram && (
-          <div className="absolute top-20 right-4 pointer-events-none rounded-xl overflow-hidden border border-white/20 shadow-xl bg-black/70 backdrop-blur-md">
-            <canvas ref={histogramCanvasRef} className="w-36 h-20" />
-            <div className="px-2 py-0.5 bg-black/80 text-[9px] text-zinc-400 font-mono text-center">RGB HISTOGRAM</div>
+          <div className="absolute top-16 right-3 pointer-events-none rounded-xl overflow-hidden border border-white/20 shadow-xl bg-black/70 backdrop-blur-md">
+            <canvas ref={histogramCanvasRef} className="w-32 h-16" />
+            <div className="px-2 py-0.5 bg-black/80 text-[8px] text-zinc-400 font-mono text-center">HISTOGRAM</div>
           </div>
         )}
 
@@ -1127,34 +1104,12 @@ export default function ProCamera({
         </AnimatePresence>
       </div>
 
-      {/* ── Bottom Control Deck ── */}
-      <div className="relative z-30 bg-gradient-to-t from-black via-black/95 to-transparent pt-3 pb-safe px-4 space-y-2.5">
+      {/* ── Sleek Un-Cramped Bottom Glass Dock ── */}
+      <div className="relative z-30 bg-black/80 backdrop-blur-2xl border-t border-white/10 pt-2 pb-safe px-3 space-y-2">
         
-        {/* Playful Snapchat AR Filter Selector Ribbon */}
-        <div className="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar py-1">
-          {[
-            { id: 'none', label: '📷 Normal', icon: '📷' },
-            { id: 'hearts', label: '💖 Snap Hearts', icon: '💖' },
-            { id: 'crown', label: '👑 Gold Crown', icon: '👑' },
-            { id: 'vhs', label: '📼 90s VHS Rec', icon: '📼' },
-          ].map((sf) => (
-            <button
-              key={sf.id}
-              onClick={() => setActiveSnapFilter(sf.id as SnapFilterType)}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
-                activeSnapFilter === sf.id
-                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg scale-105'
-                  : 'bg-zinc-900/80 text-zinc-400 border border-zinc-800 hover:text-white'
-              }`}
-            >
-              <span>{sf.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Lens Switcher & Aspect Ratio Bar */}
+        {/* Sleek Lens Switcher & Aspect Ratio Bar */}
         <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             {[
               { label: '0.5x', zoom: 0.5 },
               { label: '1x', zoom: 1 },
@@ -1163,10 +1118,10 @@ export default function ProCamera({
               <button
                 key={l.label}
                 onClick={() => switchCameraLens(l.zoom)}
-                className={`w-9 h-9 rounded-full text-xs font-bold font-mono transition-all ${
+                className={`w-8 h-8 rounded-full text-[11px] font-bold font-mono transition-all ${
                   lensZoom === l.zoom 
-                    ? 'bg-white text-black shadow-lg shadow-white/20 scale-105' 
-                    : 'bg-zinc-900/80 text-zinc-400 border border-zinc-800'
+                    ? 'bg-white text-black shadow-lg scale-105' 
+                    : 'bg-zinc-900/90 text-zinc-400 border border-zinc-800'
                 }`}
               >
                 {l.label}
@@ -1174,12 +1129,32 @@ export default function ProCamera({
             ))}
           </div>
 
-          <div className="flex items-center gap-1 bg-zinc-900/80 border border-zinc-800 rounded-full p-1">
+          {/* Snapchat Filter Quick Ribbon */}
+          <div className="flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 rounded-full p-1">
+            {[
+              { id: 'none', label: '📷' },
+              { id: 'hearts', label: '💖' },
+              { id: 'crown', label: '👑' },
+              { id: 'vhs', label: '📼' },
+            ].map((sf) => (
+              <button
+                key={sf.id}
+                onClick={() => setActiveSnapFilter(sf.id as SnapFilterType)}
+                className={`w-6 h-6 rounded-full text-xs font-bold transition-all flex items-center justify-center ${
+                  activeSnapFilter === sf.id ? 'bg-pink-500 text-white scale-110 shadow-md' : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                {sf.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 rounded-full p-0.5">
             {(['4:3', '1:1', '16:9', '9:16'] as AspectRatioType[]).map((ar) => (
               <button
                 key={ar}
                 onClick={() => setAspectRatio(ar)}
-                className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all ${
+                className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold transition-all ${
                   aspectRatio === ar ? 'bg-cyan-400 text-black' : 'text-zinc-400 hover:text-white'
                 }`}
               >
@@ -1190,8 +1165,8 @@ export default function ProCamera({
         </div>
 
         {/* Shooting Mode Selector Ribbon */}
-        <div className="flex items-center justify-center gap-4 overflow-x-auto no-scrollbar py-1">
-          {(['AUTO', 'PRO', 'PORTRAIT', 'EVENT', 'LOW LIGHT', 'PRODUCT', 'DOCUMENT'] as ShootingMode[]).map((mode) => {
+        <div className="flex items-center justify-center gap-3 overflow-x-auto no-scrollbar py-0.5">
+          {(['AUTO', 'PRO', 'PORTRAIT', 'EVENT', 'LOW LIGHT'] as ShootingMode[]).map((mode) => {
             const isProLocked = !isProUser && (mode === 'PRO' || mode === 'LOW LIGHT');
             return (
               <button
@@ -1204,14 +1179,14 @@ export default function ProCamera({
                     if (mode === 'EVENT') setShowPresetsPanel(true);
                   }
                 }}
-                className={`text-xs font-bold tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-1 ${
+                className={`text-[11px] font-extrabold tracking-wider uppercase transition-all whitespace-nowrap flex items-center gap-1 px-2 py-0.5 rounded-full ${
                   shootingMode === mode
-                    ? 'text-cyan-400 border-b-2 border-cyan-400 pb-0.5'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30'
+                    : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <span>{mode}</span>
-                {isProLocked && <Lock size={10} className="text-amber-400" />}
+                {isProLocked && <Lock size={9} className="text-amber-400" />}
               </button>
             );
           })}
@@ -1219,8 +1194,8 @@ export default function ProCamera({
 
         {/* Manual Control Bar */}
         {shootingMode === 'PRO' && (
-          <div className="p-3 rounded-2xl bg-zinc-900/95 border border-zinc-800 backdrop-blur-md space-y-3">
-            <div className="flex items-center justify-between text-xs border-b border-zinc-800 pb-2">
+          <div className="p-2.5 rounded-2xl bg-zinc-900/95 border border-zinc-800 backdrop-blur-md space-y-2">
+            <div className="flex items-center justify-between text-xs border-b border-zinc-800 pb-1.5">
               {[
                 { id: 'iso', label: 'ISO', val: iso, locked: !isProUser },
                 { id: 'shutter', label: 'Shutter', val: shutterSpeed, locked: !isProUser },
@@ -1238,21 +1213,21 @@ export default function ProCamera({
                       setActiveManualControlTab(activeManualControlTab === ctrl.id ? null : ctrl.id as any);
                     }
                   }}
-                  className={`flex flex-col items-center px-2 py-1 rounded-xl transition-all ${
+                  className={`flex flex-col items-center px-1.5 py-0.5 rounded-xl transition-all ${
                     activeManualControlTab === ctrl.id ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'text-zinc-400 hover:text-white'
                   }`}
                 >
-                  <span className="text-[10px] font-semibold text-zinc-500 uppercase flex items-center gap-0.5">
-                    {ctrl.label} {ctrl.locked && <Lock size={9} className="text-amber-400" />}
+                  <span className="text-[9px] font-semibold text-zinc-500 uppercase flex items-center gap-0.5">
+                    {ctrl.label} {ctrl.locked && <Lock size={8} className="text-amber-400" />}
                   </span>
-                  <span className="text-xs font-bold font-mono text-white mt-0.5">{ctrl.val}</span>
+                  <span className="text-[11px] font-bold font-mono text-white mt-0.5">{ctrl.val}</span>
                 </button>
               ))}
             </div>
 
             {activeManualControlTab === 'iso' && (
               <div className="space-y-1">
-                <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
+                <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
                   <span>ISO {iso}</span>
                   <span>Max 6400</span>
                 </div>
@@ -1272,28 +1247,9 @@ export default function ProCamera({
               </div>
             )}
 
-            {activeManualControlTab === 'shutter' && (
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                {['1/2000', '1/1000', '1/500', '1/250', '1/125', '1/60', '1/30', '1/15'].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => {
-                      setShutterSpeed(s);
-                      applyCameraConstraints({ shutterSpeed: s });
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-mono font-bold whitespace-nowrap ${
-                      shutterSpeed === s ? 'bg-amber-400 text-black' : 'bg-zinc-800 text-zinc-300'
-                    }`}
-                  >
-                    {s}s
-                  </button>
-                ))}
-              </div>
-            )}
-
             {activeManualControlTab === 'ev' && (
               <div className="space-y-1">
-                <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
+                <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
                   <span>EV {exposureCompensation > 0 ? `+${exposureCompensation}` : exposureCompensation}</span>
                 </div>
                 <input 
@@ -1314,20 +1270,20 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Main Shutter Bar */}
-        <div className="flex items-center justify-between px-6 pt-1 pb-2">
+        {/* Main Shutter & Flip Cam Bar */}
+        <div className="flex items-center justify-between px-6 pt-1 pb-1">
           <button 
             onClick={() => setShowPresetsPanel(!showPresetsPanel)}
             className="p-3 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white active:scale-95 transition-transform"
             title="Event Presets"
           >
-            <Sparkles size={20} className="text-cyan-400" />
+            <Sparkles size={18} className="text-cyan-400" />
           </button>
 
-          {/* Shutter Button */}
+          {/* Main Shutter Button */}
           <button 
             onClick={handleShutterTap}
-            className="relative w-20 h-20 rounded-full border-4 border-white/90 p-1 flex items-center justify-center active:scale-90 transition-transform shadow-2xl shadow-cyan-500/20"
+            className="relative w-18 h-18 rounded-full border-4 border-white/90 p-1 flex items-center justify-center active:scale-90 transition-transform shadow-2xl shadow-cyan-500/20"
           >
             <div className="w-full h-full rounded-full bg-white active:bg-cyan-400 transition-colors shadow-inner" />
           </button>
@@ -1335,10 +1291,10 @@ export default function ProCamera({
           {/* Front / Back Selfie Camera Flip Button */}
           <button 
             onClick={toggleCameraFacingMode}
-            className="p-3.5 rounded-full bg-cyan-500/20 border border-cyan-400/60 text-cyan-300 hover:text-white active:scale-90 transition-transform shadow-lg"
+            className="p-3 rounded-full bg-cyan-500/20 border border-cyan-400/60 text-cyan-300 hover:text-white active:scale-90 transition-transform shadow-lg"
             title="Switch Selfie / Rear Camera"
           >
-            <FlipHorizontal size={22} />
+            <RefreshCw size={20} />
           </button>
         </div>
       </div>

@@ -839,12 +839,13 @@ function DemoUploadContent() {
             </h1>
             <p className="hero-sub">Upload photos or a video — they appear on the live wall instantly.</p>
 
-            <div className="flex justify-center mt-4">
+            <div className="w-full flex justify-center py-3">
               <Link 
                 href="/camera"
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+                className="w-full max-w-sm py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-xl shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 border border-cyan-300/50"
               >
-                <span>📷 Open Memento Pro Camera</span>
+                <Camera size={16} />
+                <span>Open Memento Pro Camera</span>
               </Link>
             </div>
           </div>
