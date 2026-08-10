@@ -739,11 +739,13 @@ export default function WallPage() {
                   <div className="text-6xl mb-6 opacity-30">📸</div>
                   <h2 className="text-2xl font-bold mb-2 text-white">No Memories shared yet</h2>
                   <p className="text-text-secondary mb-8 text-sm max-w-md mx-auto">Be the first to share a moment. Join the wall and upload your favorite shots!</p>
-                  <Link href={uploadUrl} target="_blank">
-                    <RippleButton rippleColor="#ADD8E6" paddingX={32} paddingY={12} className="btn btn-primary text-sm font-bold">
-                      Share First Memory
-                    </RippleButton>
-                  </Link>
+                  <button 
+                    onClick={() => setShowProCameraModal(true)} 
+                    className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-sm uppercase tracking-wider shadow-2xl hover:brightness-110 active:scale-95 transition-all inline-flex items-center gap-2 cursor-pointer"
+                  >
+                    <Camera size={18} />
+                    <span>Share First Memory (Open Pro Camera)</span>
+                  </button>
                </motion.div>
 
             ) : viewMode === 'grid' ? (

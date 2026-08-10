@@ -397,18 +397,32 @@ export default function MobilePage() {
                      )}
                   </div>
                ) : (
-                  <div className="w-full rounded-lg border border-border bg-bg-subtle p-6 flex flex-col items-center justify-center gap-4 hover:border-primary/50 transition-colors relative">
-                     <div className="w-12 h-12 rounded-full bg-bg border border-border flex items-center justify-center text-text-primary">
-                        <Camera size={24} />
-                     </div>
-                     <div className="w-full relative">
-                        <input type="file" multiple accept="image/*,video/*,.heic,.heif" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                        <button type="button" className="btn btn-secondary w-full pointer-events-none">
-                           Select Files to Upload
-                        </button>
-                     </div>
-                     <p className="text-xs text-text-muted mt-1 text-center">Up to {MAX_IMAGES} files (Photos or Video)</p>
-                  </div>
+                   <div className="w-full rounded-2xl border border-border bg-bg-subtle/80 p-5 flex flex-col items-center justify-center gap-3">
+                      {/* Option 1: Open Memento Pro Camera */}
+                      <Link
+                        href={`/mobile/${slug}/camera`}
+                        className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 border border-cyan-300/50"
+                      >
+                         <Camera size={18} />
+                         <span>Take Photo / Selfie with Pro Camera</span>
+                      </Link>
+
+                      <div className="flex items-center gap-2 w-full my-0.5">
+                         <div className="h-px bg-border flex-grow" />
+                         <span className="text-[10px] text-text-muted font-bold uppercase tracking-widest">or</span>
+                         <div className="h-px bg-border flex-grow" />
+                      </div>
+
+                      {/* Option 2: Upload Files from Device */}
+                      <div className="w-full relative">
+                         <input type="file" multiple accept="image/*,video/*,.heic,.heif" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                         <button type="button" className="btn btn-secondary w-full text-xs font-bold flex items-center justify-center gap-2">
+                            <ImageIcon size={16} />
+                            <span>Choose Photos or Video from Gallery</span>
+                         </button>
+                      </div>
+                      <p className="text-[10px] text-text-muted text-center">Up to {MAX_IMAGES} files (Photos or Video)</p>
+                   </div>
                )}
  
                <div className="sticky bottom-2 pb-safe z-50 mt-8">
