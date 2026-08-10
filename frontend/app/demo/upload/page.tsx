@@ -8,7 +8,7 @@ import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import FloatingParticles from '@/components/FloatingParticles';
 import WhatsAppViralBanner from '@/components/WhatsAppViralBanner';
-import { Upload } from 'lucide-react';
+import { Upload, Camera } from 'lucide-react';
 
 const MAX_IMAGES = 5;
 const MAX_VIDEOS = 1;
