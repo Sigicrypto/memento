@@ -41,6 +41,8 @@ export default function ProCamera({
   const videoRef = useRef<HTMLVideoElement>(null);
   const viewfinderRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
   const histogramCanvasRef = useRef<HTMLCanvasElement>(null);
   const peakingCanvasRef = useRef<HTMLCanvasElement>(null);
   const zebraCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -178,16 +180,18 @@ export default function ProCamera({
     }
   }, [exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle]);
 
-  // ── Camera Initialization & Stream Handling (Robust iOS Safari WebKit Support) ──
-  const stopTracks = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
+  // ── Camera Initialization & Stream Handling (Fix Stream Ref Loop Bug!) ──
+  const stopCameraStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
-  }, [stream]);
+  }, []);
 
   const initCamera = useCallback(async (deviceId?: string) => {
     setIsLoadingCamera(true);
     setCameraError(null);
+    stopCameraStream();
 
     try {
       let videoDevs: MediaDeviceInfo[] = [];
@@ -199,7 +203,6 @@ export default function ProCamera({
 
       const targetId = deviceId || (videoDevs.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'))?.deviceId || videoDevs[0]?.deviceId);
 
-      // Clean iOS Safari compatible video constraints (no exact keyword)
       const videoConstraints: any = targetId
         ? { deviceId: targetId }
         : { facingMode: 'environment' };
@@ -209,6 +212,7 @@ export default function ProCamera({
         audio: false,
       });
 
+      streamRef.current = newStream;
       setStream(newStream);
 
       const track = newStream.getVideoTracks()[0];
@@ -233,14 +237,15 @@ export default function ProCamera({
       setCameraError(err?.message || 'Camera permission required. Tap below to select or take photo.');
       setIsLoadingCamera(false);
     }
-  }, []);
+  }, [stopCameraStream]);
 
+  // Run camera initialization ONCE on mount or when selectedDeviceId changes
   useEffect(() => {
     initCamera(selectedDeviceId);
     return () => {
-      stopTracks();
+      stopCameraStream();
     };
-  }, [selectedDeviceId, initCamera, stopTracks]);
+  }, [selectedDeviceId, initCamera, stopCameraStream]);
 
   // Apply track constraints dynamically
   const applyCameraConstraints = useCallback(async (overrides: Record<string, any>) => {
@@ -680,7 +685,7 @@ export default function ProCamera({
     <div className="fixed inset-0 z-[99999] bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none font-sans h-[100dvh] w-vw">
       <canvas ref={v2AnalysisCanvasRef} className="hidden" />
 
-      {/* Invisible Native Camera Fallback File Input */}
+      {/* Fallback Camera Roll File Input */}
       <input 
         ref={fileInputRef} 
         type="file" 
