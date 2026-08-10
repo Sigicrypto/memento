@@ -27,6 +27,7 @@ export type EventPresetKey =
   | 'product';
 
 export type FilmStyleKey = 
+  | 'process_zero'
   | 'natural'
   | 'vivid'
   | 'warm_vintage'
@@ -40,9 +41,17 @@ export interface FilmStyle {
   label: string;
   cssFilter: string;
   description: string;
+  isProcessZero?: boolean;
 }
 
 export const FILM_STYLES: Record<FilmStyleKey, FilmStyle> = {
+  process_zero: {
+    key: 'process_zero',
+    label: 'Halide Process Zero',
+    cssFilter: 'contrast(1.08) saturate(1.05) brightness(0.98)',
+    description: 'Raw filmic science without computational AI over-sharpening',
+    isProcessZero: true,
+  },
   natural: {
     key: 'natural',
     label: 'Standard TrueColor',
@@ -52,37 +61,37 @@ export const FILM_STYLES: Record<FilmStyleKey, FilmStyle> = {
   vivid: {
     key: 'vivid',
     label: 'Cinematic Vivid',
-    cssFilter: 'saturate(1.25) contrast(1.1)',
+    cssFilter: 'saturate(1.28) contrast(1.12)',
     description: 'Vibrant punchy colors for celebration photos',
   },
   warm_vintage: {
     key: 'warm_vintage',
     label: 'Warm Memory',
-    cssFilter: 'sepia(0.2) contrast(1.05) saturate(1.1) hue-rotate(-5deg)',
+    cssFilter: 'sepia(0.22) contrast(1.08) saturate(1.12) hue-rotate(-6deg)',
     description: 'Golden hour warmth for romantic event shots',
   },
   monochrome: {
     key: 'monochrome',
     label: 'Pro B&W Mono',
-    cssFilter: 'grayscale(1) contrast(1.15)',
+    cssFilter: 'grayscale(1) contrast(1.2)',
     description: 'Timeless black & white contrast',
   },
   moody_matte: {
     key: 'moody_matte',
     label: 'Moody Matte',
-    cssFilter: 'contrast(0.95) saturate(0.9) brightness(1.02)',
+    cssFilter: 'contrast(0.94) saturate(0.88) brightness(1.02)',
     description: 'Filmic crushed shadows with soft highlights',
   },
   high_contrast_bw: {
     key: 'high_contrast_bw',
     label: 'Noir B&W',
-    cssFilter: 'grayscale(1) contrast(1.4) brightness(0.95)',
+    cssFilter: 'grayscale(1) contrast(1.45) brightness(0.94)',
     description: 'Dramatic high-contrast documentary look',
   },
   soft_portrait: {
     key: 'soft_portrait',
     label: 'Soft Portrait',
-    cssFilter: 'contrast(0.98) brightness(1.03) saturate(1.05)',
+    cssFilter: 'contrast(0.96) brightness(1.04) saturate(1.06)',
     description: 'Flattering skin tone smoothing filter',
   },
 };
@@ -232,6 +241,7 @@ export const EVENT_PRESETS: Record<EventPresetKey, EventPreset> = {
       shutterValue: 1 / 200,
       whiteBalance: 'manual',
       colorTemperature: 5400,
+      tint: 10,
       focusMode: 'auto',
       exposureCompensation: 0.3,
       tip: 'Use 2x telephoto lens if available for natural compression and background blur.',
@@ -253,7 +263,7 @@ export const EVENT_PRESETS: Record<EventPresetKey, EventPreset> = {
       focusMode: 'manual',
       focusDistance: 0.2,
       exposureCompensation: 0.2,
-      tip: 'Use manual focus with focus peaking to highlight dish textures.',
+      tip: 'Use manual focus with focus loupe to highlight dish textures.',
       reasoning: 'Warm color temperature makes culinary presentation pop.',
     },
   },
@@ -321,7 +331,7 @@ export function detectTrackCapabilities(track: MediaStreamTrack | null): DeviceC
     return {
       hasISO: 'iso' in caps,
       minISO: caps.iso?.min || 100,
-      maxISO: caps.iso?.max || 3200,
+      maxISO: caps.iso?.max || 6400,
       hasShutterSpeed: 'shutterSpeed' in caps,
       minShutter: caps.shutterSpeed?.min || 0.0001,
       maxShutter: caps.shutterSpeed?.max || 1,
@@ -356,12 +366,49 @@ export function detectTrackCapabilities(track: MediaStreamTrack | null): DeviceC
   }
 }
 
+/**
+ * Generate CSS Filter string for real-time live preview simulation of
+ * ISO Gain, Exposure Compensation, Kelvin Color Temperature, Tint & Film Styles on WebKit (iOS Safari)
+ */
+export function computeViewportCSSFilter(
+  ev: number,
+  iso: number,
+  kelvin: number,
+  tint: number,
+  filmStyleKey: FilmStyleKey
+): string {
+  const film = FILM_STYLES[filmStyleKey];
+  const baseFilter = film ? film.cssFilter : 'none';
+
+  // Exposure brightness factor: EV range -3 to +3 -> brightness 0.5 to 1.6
+  const evBrightness = 1 + ev * 0.18;
+
+  // ISO gain simulation (boost contrast/brightness slightly for high ISO)
+  const isoGain = iso > 800 ? 1 + (iso - 800) * 0.00005 : 1;
+
+  // Kelvin Color Temperature simulation (2000K warm orange -> 10000K cool blue)
+  // 5500K is daylight neutral
+  const kelvinShift = (kelvin - 5500) / 100; // -35 to +45
+  const sepiaFactor = kelvin < 5500 ? Math.min(0.5, (5500 - kelvin) / 7000) : 0;
+  const hueRotateDeg = kelvin > 5500 ? Math.min(20, (kelvin - 5500) / 250) : -sepiaFactor * 10;
+
+  let combined = `brightness(${evBrightness * isoGain}) `;
+  if (sepiaFactor > 0) combined += `sepia(${sepiaFactor}) `;
+  if (Math.abs(hueRotateDeg) > 1) combined += `hue-rotate(${hueRotateDeg}deg) `;
+
+  if (baseFilter !== 'none') {
+    combined += `${baseFilter}`;
+  }
+
+  return combined.trim();
+}
+
 export interface RealtimeV2Analysis {
   luminance: number; // 0 to 255
   isLowLight: boolean;
   isOverexposed: boolean;
   isBacklit: boolean;
-  motionScore: number; // 0 (still) to 100 (heavy motion)
+  motionScore: number;
   recommendation: string;
   suggestedPreset?: EventPresetKey;
 }
@@ -402,7 +449,6 @@ export function analyzeFrameV2(canvas: HTMLCanvasElement, video: HTMLVideoElemen
 
       totalLuminance += lum;
 
-      // Center 16x16
       if (x >= 8 && x < 24 && y >= 8 && y < 24) {
         centerLuminance += lum;
         centerPixels++;
@@ -417,12 +463,10 @@ export function analyzeFrameV2(canvas: HTMLCanvasElement, video: HTMLVideoElemen
   const avgCenter = Math.round(centerLuminance / (centerPixels || 1));
   const avgEdge = Math.round(edgeLuminance / (edgePixels || 1));
 
-  // Backlight: Edges are significantly brighter than center subject
-  const isBacklit = avgEdge > avgCenter + 50;
+  const isBacklit = avgEdge > avgCenter + 45;
   const isLowLight = avgLum < 60;
   const isOverexposed = avgLum > 200;
 
-  // Motion Detection
   let motionScore = 0;
   if (prevFrameData && prevFrameData.length === imgData.length) {
     let diffSum = 0;
@@ -433,7 +477,6 @@ export function analyzeFrameV2(canvas: HTMLCanvasElement, video: HTMLVideoElemen
   }
   prevFrameData = new Uint8ClampedArray(imgData);
 
-  // Recommendations logic
   let recommendation = 'Optimal exposure & balance.';
   let suggestedPreset: EventPresetKey | undefined = undefined;
 
