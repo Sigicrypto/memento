@@ -313,6 +313,16 @@ export default function MobilePage() {
             <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-1">{slug}</p>
             <h1 className="text-2xl font-bold mb-1 text-text-primary">Share the Moment</h1>
             <p className="text-text-secondary text-sm">{event?.name || 'Live Photo Wall'}</p>
+            
+            <div className="w-full flex justify-center pt-3">
+              <Link 
+                href={`/mobile/${slug}/camera`}
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-xl shadow-cyan-500/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 border border-cyan-300/50"
+              >
+                <Camera size={16} />
+                <span>Open Memento Pro Camera</span>
+              </Link>
+            </div>
          </div>
  
          {/* Feedback */}
