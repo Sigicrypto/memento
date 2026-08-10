@@ -60,15 +60,14 @@ export default function ProCamera({
     hasZoom: false, hasTorch: false, cameraCount: 1,
   });
 
-  // ── Camera Settings (Halide & ProCamera Spec) ──
+  // ── Camera Settings ──
   const [shootingMode, setShootingMode] = useState<ShootingMode>('AUTO');
   const [activePresetKey, setActivePresetKey] = useState<EventPresetKey>('wedding');
   const [activeFilmStyle, setActiveFilmStyle] = useState<FilmStyleKey>('process_zero');
-  const [isProcessZero, setIsProcessZero] = useState<boolean>(true);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>('4:3');
   const [lensZoom, setLensZoom] = useState<number>(1);
 
-  // Manual Telemetry Controls
+  // Manual Controls
   const [iso, setIso] = useState<number>(400);
   const [shutterSpeed, setShutterSpeed] = useState<string>('1/125');
   const [exposureCompensation, setExposureCompensation] = useState<number>(0);
@@ -79,11 +78,9 @@ export default function ProCamera({
   const [focusDistance, setFocusDistance] = useState<number>(0.5);
   const [isFocusLoupeVisible, setIsFocusLoupeVisible] = useState<boolean>(false);
 
-  // Halide Touch Target Box Box
+  // Touch Target Box
   const [focusTargetPos, setFocusTargetPos] = useState<{ x: number; y: number } | null>(null);
   const [showTargetSunSlider, setShowTargetSunSlider] = useState<boolean>(false);
-
-  // Touch Gesture Swiping Tracker
   const touchStartPos = useRef<{ x: number; y: number; ev: number; focus: number } | null>(null);
 
   // Toggles & HUD
@@ -116,7 +113,7 @@ export default function ProCamera({
   // Realtime Gyro/Level State
   const [rollAngle, setRollAngle] = useState<number>(0);
 
-  // Realtime V2 Scene Analysis State
+  // Realtime V2 Scene Analysis State (Throttled!)
   const [v2Analysis, setV2Analysis] = useState<RealtimeV2Analysis>({
     luminance: 128, isLowLight: false, isOverexposed: false, isBacklit: false, motionScore: 0, recommendation: 'Analyzing scene...',
   });
@@ -172,7 +169,15 @@ export default function ProCamera({
     }
   }, []);
 
-  // ── Camera Initialization & Track Management ──
+  // ── Direct Ref Updating for Live Viewfinder CSS Filters (No React State Re-Renders!) ──
+  useEffect(() => {
+    if (videoRef.current) {
+      const filterStr = computeViewportCSSFilter(exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle);
+      videoRef.current.style.filter = filterStr;
+    }
+  }, [exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle]);
+
+  // ── Camera Initialization & Stream Handling (Robust iOS Safari Support) ──
   const stopTracks = useCallback(() => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
@@ -190,12 +195,16 @@ export default function ProCamera({
 
       const targetId = deviceId || (videoDevs.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'))?.deviceId || videoDevs[0]?.deviceId);
 
-      const constraints: MediaStreamConstraints = {
-        video: targetId ? { deviceId: { exact: targetId }, width: { ideal: 3840 }, height: { ideal: 2160 } } : { facingMode: { ideal: 'environment' }, width: { ideal: 3840 }, height: { ideal: 2160 } },
-        audio: false,
-      };
+      // Clean iOS Safari compatible video constraints
+      const videoConstraints: any = targetId
+        ? { deviceId: { exact: targetId } }
+        : { facingMode: { ideal: 'environment' } };
 
-      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: videoConstraints,
+        audio: false,
+      });
+
       setStream(newStream);
 
       const track = newStream.getVideoTracks()[0];
@@ -207,12 +216,16 @@ export default function ProCamera({
       }
 
       if (videoRef.current) {
-        videoRef.current.srcObject = newStream;
-        videoRef.current.play().catch(() => {});
+        const video = videoRef.current;
+        video.srcObject = newStream;
+        video.onloadedmetadata = () => {
+          video.play().catch(() => {});
+        };
       }
       setIsLoadingCamera(false);
     } catch (err: any) {
-      setCameraError(err?.message || 'Unable to access device camera. Please grant camera permissions.');
+      console.error('Camera access error:', err);
+      setCameraError(err?.message || 'Unable to access camera stream. Please check browser permissions.');
       setIsLoadingCamera(false);
     }
   }, []);
@@ -293,7 +306,7 @@ export default function ProCamera({
     });
   };
 
-  // ── Halide Touch & Gesture Viewfinder Handlers ──
+  // ── Touch Gesture Handlers ──
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length === 1) {
       const touch = e.touches[0];
@@ -312,15 +325,12 @@ export default function ProCamera({
     const deltaX = touch.clientX - touchStartPos.current.x;
     const deltaY = touch.clientY - touchStartPos.current.y;
 
-    // Vertical Drag -> EV Exposure Compensation Adjust
     if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
       const evChange = -Number((deltaY / 100).toFixed(1));
       const newEV = Math.max(-3, Math.min(3, Number((touchStartPos.current.ev + evChange).toFixed(1))));
       setExposureCompensation(newEV);
       applyCameraConstraints({ exposureCompensation: newEV });
-    } 
-    // Horizontal Drag -> Manual Focus Adjust & Focus Loupe
-    else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+    } else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
       setIsFocusLoupeVisible(true);
       setFocusMode('manual');
       const focusChange = Number((deltaX / 300).toFixed(2));
@@ -335,7 +345,6 @@ export default function ProCamera({
     setTimeout(() => setIsFocusLoupeVisible(false), 800);
   };
 
-  // Viewfinder Single Tap Target Reticle
   const handleViewfinderClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!viewfinderRef.current) return;
     const rect = viewfinderRef.current.getBoundingClientRect();
@@ -353,17 +362,22 @@ export default function ProCamera({
     }, 3500);
   };
 
-  // ── Realtime Overlays Frame Processing Loop ──
+  // ── Throttled Overlays Processing Loop (Prevents 60 FPS React Re-Render Flickering!) ──
+  const lastAnalysisTime = useRef<number>(0);
+
   useEffect(() => {
     let animId: number;
 
     const processFrame = () => {
       if (videoRef.current && videoRef.current.readyState === 4) {
         const video = videoRef.current;
+        const now = Date.now();
 
-        if (v2AnalysisCanvasRef.current) {
+        // Throttle scene state analysis to 1 FPS (1000ms) to prevent React re-render flicker
+        if (now - lastAnalysisTime.current > 1000 && v2AnalysisCanvasRef.current) {
+          lastAnalysisTime.current = now;
           const res = analyzeFrameV2(v2AnalysisCanvasRef.current, video);
-          setV2Analysis(res);
+          setV2Analysis((prev) => (prev.recommendation !== res.recommendation ? res : prev));
         }
 
         if (showHistogram && histogramCanvasRef.current) {
@@ -378,7 +392,6 @@ export default function ProCamera({
           drawZebraOverlayV2(video, zebraCanvasRef.current, zebraThreshold);
         }
 
-        // Halide Focus Loupe Center Magnifier
         if (isFocusLoupeVisible && loupeCanvasRef.current) {
           drawFocusLoupe(video, loupeCanvasRef.current);
         }
@@ -397,7 +410,6 @@ export default function ProCamera({
     canvas.width = 140;
     canvas.height = 140;
 
-    // Grab center 20% box
     const srcX = video.videoWidth * 0.4;
     const srcY = video.videoHeight * 0.4;
     const srcW = video.videoWidth * 0.2;
@@ -551,7 +563,6 @@ export default function ProCamera({
           ctx.scale(-1, 1);
         }
 
-        // Apply Process Zero & computeViewportCSSFilter Live Shading
         const activeFilter = computeViewportCSSFilter(exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle);
         if (activeFilter && activeFilter !== 'none') {
           ctx.filter = activeFilter;
@@ -644,43 +655,37 @@ export default function ProCamera({
     }
   };
 
-  // Calculated Live Viewport Shader Filter
-  const liveViewportFilter = computeViewportCSSFilter(
-    exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle
-  );
-
   return (
-    <div className="fixed inset-0 z-[1500] bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none font-sans h-[100dvh]">
+    <div className="fixed inset-0 z-[99999] bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none font-sans h-[100dvh] w-vw">
       <canvas ref={v2AnalysisCanvasRef} className="hidden" />
 
-      {/* ── Top Header Navigation (Halide OLED Telemetry Bar) ── */}
-      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-[2px] pt-safe">
+      {/* ── Top Header Navigation ── */}
+      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
         <button 
           onClick={onClose} 
-          className="p-2.5 rounded-full bg-black/50 border border-white/10 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
+          className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/90 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
         >
           <X size={20} />
         </button>
 
-        {/* Halide Process Zero & Quick Preset Launcher */}
+        {/* Halide Process Zero & Mode Badge */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
               const nextStyle = activeFilmStyle === 'process_zero' ? 'natural' : 'process_zero';
               setActiveFilmStyle(nextStyle);
-              setIsProcessZero(nextStyle === 'process_zero');
             }}
             className={`px-3 py-1 rounded-full border text-[11px] font-extrabold tracking-wider font-mono transition-all flex items-center gap-1.5 ${
               activeFilmStyle === 'process_zero'
                 ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/20'
-                : 'bg-black/50 text-zinc-400 border-white/10'
+                : 'bg-black/60 text-zinc-400 border-white/15'
             }`}
           >
             <Zap size={12} className={activeFilmStyle === 'process_zero' ? 'fill-black' : ''} />
             <span>PROCESS ZERO</span>
           </button>
 
-          <span className="text-[10px] font-bold text-cyan-400 uppercase bg-cyan-500/10 px-2 py-1 rounded-full border border-cyan-500/30 font-mono">
+          <span className="text-[10px] font-bold text-cyan-400 uppercase bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/30 font-mono">
             {shootingMode}
           </span>
         </div>
@@ -691,7 +696,7 @@ export default function ProCamera({
             <button 
               onClick={toggleTorch}
               className={`p-2.5 rounded-full border backdrop-blur-md transition-all active:scale-95 ${
-                torchOn ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/30' : 'bg-black/50 text-white/80 border-white/10'
+                torchOn ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/30' : 'bg-black/60 text-white/80 border-white/15'
               }`}
             >
               {torchOn ? <Flashlight size={18} /> : <FlashlightOff size={18} />}
@@ -700,7 +705,7 @@ export default function ProCamera({
 
           <button 
             onClick={() => setShowFilmStylePanel(!showFilmStylePanel)}
-            className="p-2.5 rounded-full bg-black/50 border border-white/10 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
+            className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
             title="Film Science Profiles"
           >
             <Film size={20} className={activeFilmStyle !== 'natural' ? 'text-cyan-400' : ''} />
@@ -708,14 +713,14 @@ export default function ProCamera({
 
           <button 
             onClick={() => setShowSettingsDrawer(!showSettingsDrawer)}
-            className="p-2.5 rounded-full bg-black/50 border border-white/10 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
+            className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
           >
             <Settings size={20} />
           </button>
         </div>
       </div>
 
-      {/* ── Main Viewfinder Area with Halide Swipe Gestures ── */}
+      {/* ── Main Viewfinder Area ── */}
       <div 
         ref={viewfinderRef}
         onTouchStart={handleTouchStart}
@@ -743,14 +748,14 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Video Frame with Real-Time Shading Filter */}
+        {/* Video Frame */}
         <div className={`relative transition-all duration-300 ${getAspectRatioContainerClass()}`}>
           <video 
             ref={videoRef}
             playsInline
+            webkit-playsinline="true"
             muted
             autoPlay
-            style={{ filter: liveViewportFilter }}
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               mirrorFront && selectedDeviceId.includes('front') ? 'scale-x-[-1]' : ''
             } ${isLoadingCamera ? 'opacity-0' : 'opacity-100'}`}
@@ -815,9 +820,9 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Live OLED Telemetry Bar (Etch Camera Typography) */}
+        {/* Live OLED Telemetry Bar */}
         <div className="absolute top-20 left-4 pointer-events-none flex flex-col gap-1 z-20">
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/70 border border-amber-500/30 backdrop-blur-md text-[11px] font-mono text-amber-400 shadow-lg">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[11px] font-mono text-amber-400 shadow-xl">
             <span>ISO {iso}</span>
             <span className="text-white/30">|</span>
             <span>{shutterSpeed}s</span>
@@ -849,13 +854,6 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Gesture Guidance Overlay Hint */}
-        <div className="absolute bottom-28 inset-x-0 pointer-events-none flex justify-center z-10 opacity-60">
-          <span className="text-[10px] font-mono font-semibold text-zinc-400 bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm">
-            Swipe ↕ EV | Swipe ↔ Focus | Tap Reticle
-          </span>
-        </div>
-
         {/* Timer Countdown Overlay */}
         <AnimatePresence>
           {timerCountdown !== null && (
@@ -877,7 +875,7 @@ export default function ProCamera({
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute top-32 inset-x-4 z-20 p-3 rounded-2xl bg-zinc-900/90 border border-cyan-500/30 backdrop-blur-md shadow-xl flex items-start gap-3"
+            className="absolute top-32 inset-x-4 z-20 p-3 rounded-2xl bg-zinc-900/95 border border-cyan-500/30 backdrop-blur-md shadow-xl flex items-start gap-3"
           >
             <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shrink-0">
               <Sparkles size={16} />
@@ -905,12 +903,11 @@ export default function ProCamera({
         )}
       </div>
 
-      {/* ── Bottom Control Deck (Rotary Wheel Dials & Tactile Controls) ── */}
+      {/* ── Bottom Control Deck ── */}
       <div className="relative z-30 bg-gradient-to-t from-black via-black/95 to-transparent pt-4 pb-safe px-4 space-y-3">
         
         {/* Lens Switcher & Aspect Ratio Bar */}
         <div className="flex items-center justify-between px-2">
-          {/* Zoom Lens Bar */}
           <div className="flex items-center gap-1.5">
             {[
               { label: '0.5x', zoom: 0.5 },
@@ -931,7 +928,6 @@ export default function ProCamera({
             ))}
           </div>
 
-          {/* Aspect Ratios */}
           <div className="flex items-center gap-1 bg-zinc-900/80 border border-zinc-800 rounded-full p-1">
             {(['4:3', '1:1', '16:9', '9:16'] as AspectRatioType[]).map((ar) => (
               <button
@@ -975,9 +971,9 @@ export default function ProCamera({
           })}
         </div>
 
-        {/* Tactile Rotary Dial Wheel (PRO mode active) */}
+        {/* Manual Control Bar (PRO mode active) */}
         {shootingMode === 'PRO' && (
-          <div className="p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 backdrop-blur-md space-y-3">
+          <div className="p-3 rounded-2xl bg-zinc-900/95 border border-zinc-800 backdrop-blur-md space-y-3">
             <div className="flex items-center justify-between text-xs border-b border-zinc-800 pb-2">
               {[
                 { id: 'iso', label: 'ISO', val: iso, locked: !isProUser },
@@ -1008,7 +1004,7 @@ export default function ProCamera({
               ))}
             </div>
 
-            {/* Active Wheel Slider Controls */}
+            {/* Active Control Sliders */}
             {activeManualControlTab === 'iso' && (
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
@@ -1083,7 +1079,7 @@ export default function ProCamera({
             <Sparkles size={20} className="text-cyan-400" />
           </button>
 
-          {/* Shutter Trigger */}
+          {/* Shutter Button */}
           <button 
             onClick={handleShutterTap}
             className="relative w-20 h-20 rounded-full border-4 border-white/90 p-1 flex items-center justify-center active:scale-90 transition-transform shadow-2xl shadow-cyan-500/20"
@@ -1131,7 +1127,6 @@ export default function ProCamera({
                   key={fs.key}
                   onClick={() => {
                     setActiveFilmStyle(fs.key);
-                    setIsProcessZero(fs.key === 'process_zero');
                     setShowFilmStylePanel(false);
                   }}
                   className={`p-3 rounded-2xl border text-left transition-all ${
