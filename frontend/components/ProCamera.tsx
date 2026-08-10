@@ -7,7 +7,7 @@ import {
   X, Check, RotateCcw, Upload, Lock, Sparkles, Eye, Sun, Grid, Compass, 
   Activity, Zap, Info, ChevronUp, ChevronDown, Image as ImageIcon, Volume2, 
   VolumeX, Shield, SlidersHorizontal, Layers, Film, Crop, Radio, Target, MoveVertical, Focus,
-  Share2, MessageCircle, Star, Heart, Smile, Download
+  Share2, MessageCircle, Star, Heart, Smile, Download, Sliders as SlidersIcon, Frame, Sparkle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { extractFaceDescriptorRobust, fileToImage } from '@/lib/faceEngine';
@@ -116,12 +116,16 @@ export default function ProCamera({
   const [showSettingsDrawer, setShowSettingsDrawer] = useState<boolean>(false);
   const [showPresetsPanel, setShowPresetsPanel] = useState<boolean>(false);
   const [showFilmStylePanel, setShowFilmStylePanel] = useState<boolean>(false);
-  const [showGuidedBanner, setShowGuidedBanner] = useState<boolean>(true);
+  const [showGuidedTipExpand, setShowGuidedTipExpand] = useState<boolean>(false);
   const [activeManualControlTab, setActiveManualControlTab] = useState<'iso' | 'shutter' | 'ev' | 'wb' | 'focus' | 'tint' | null>(null);
 
   // Casual User & Social Sharing State
   const [selectedBadge, setSelectedBadge] = useState<string>('');
   const [starRating, setStarRating] = useState<number>(5);
+  const [addWatermarkFrame, setAddWatermarkFrame] = useState<boolean>(true);
+
+  // NOMO CAM Instant Film Developing Animation State
+  const [isDevelopingPolaroid, setIsDevelopingPolaroid] = useState<boolean>(false);
 
   // Upgrade Modal
   const [showUpgradeModal, setShowUpgradeModal] = useState<boolean>(false);
@@ -329,7 +333,7 @@ export default function ProCamera({
     });
   };
 
-  // ── Native Web Share & Social Export for Snapchat, Instagram, WhatsApp ──
+  // ── Native Web Share & Social Export ──
   const handleNativeShare = async () => {
     if (!capturedBlob) return;
     try {
@@ -347,7 +351,7 @@ export default function ProCamera({
         a.click();
       }
     } catch (e) {
-      console.warn('Share cancelled or failed:', e);
+      console.warn('Share cancelled:', e);
     }
   };
 
@@ -614,13 +618,19 @@ export default function ProCamera({
 
     try {
       const video = videoRef.current;
+      const baseWidth = video.videoWidth || 1920;
+      const baseHeight = video.videoHeight || 1080;
+      
+      // If Watermark Frame is enabled, add Leica/Hasselblad style bottom strip!
+      const watermarkMargin = addWatermarkFrame ? Math.round(baseHeight * 0.08) : 0;
+      
       const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth || 1920;
-      canvas.height = video.videoHeight || 1080;
+      canvas.width = baseWidth;
+      canvas.height = baseHeight + watermarkMargin;
       const ctx = canvas.getContext('2d');
       if (ctx) {
         if (mirrorFront && selectedDeviceId.includes('front')) {
-          ctx.translate(canvas.width, 0);
+          ctx.translate(baseWidth, 0);
           ctx.scale(-1, 1);
         }
 
@@ -629,7 +639,28 @@ export default function ProCamera({
           ctx.filter = activeFilter;
         }
 
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Draw main camera photo
+        ctx.drawImage(video, 0, 0, baseWidth, baseHeight);
+        ctx.filter = 'none';
+
+        // Draw Leica/Hasselblad Aesthetic Watermark Strip
+        if (addWatermarkFrame) {
+          ctx.fillStyle = '#09090b';
+          ctx.fillRect(0, baseHeight, baseWidth, watermarkMargin);
+
+          ctx.fillStyle = '#f59e0b';
+          ctx.font = `bold ${Math.round(watermarkMargin * 0.35)}px monospace`;
+          ctx.fillText(`MEMENTO PRO CAMERA`, Math.round(baseWidth * 0.04), baseHeight + Math.round(watermarkMargin * 0.6));
+
+          ctx.fillStyle = '#a1a1aa';
+          ctx.font = `${Math.round(watermarkMargin * 0.28)}px monospace`;
+          const detailsStr = `ISO ${iso} • 1/125s • ${colorTemperature}K • ${eventName.toUpperCase()}`;
+          ctx.fillText(detailsStr, Math.round(baseWidth * 0.45), baseHeight + Math.round(watermarkMargin * 0.6));
+        }
+
+        // Trigger NOMO CAM instant film developing reveal animation!
+        setIsDevelopingPolaroid(true);
+        setTimeout(() => setIsDevelopingPolaroid(false), 2200);
 
         canvas.toBlob((blob) => {
           if (blob) {
@@ -659,7 +690,6 @@ export default function ProCamera({
       if (storageErr) throw storageErr;
       setUploadProgress(60);
 
-      // Append stamp & star rating to caption
       const badgePrefix = selectedBadge ? `[${selectedBadge}] ` : '';
       const starSuffix = starRating > 0 ? ` (${'★'.repeat(starRating)})` : '';
       const finalCaption = `${badgePrefix}${caption.trim()}${starSuffix}`.trim() || null;
@@ -901,6 +931,34 @@ export default function ProCamera({
           )}
         </div>
 
+        {/* NOMO CAM Retro Instant Film Reveal Animation */}
+        <AnimatePresence>
+          {isDevelopingPolaroid && (
+            <motion.div 
+              initial={{ y: -200, opacity: 0, scale: 0.8 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 200, opacity: 0, scale: 0.8 }}
+              className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md pointer-events-none"
+            >
+              <div className="p-4 pb-10 bg-zinc-100 rounded-2xl shadow-2xl border-4 border-white max-w-xs w-64 flex flex-col items-center gap-3">
+                <div className="w-full aspect-[4/3] bg-zinc-900 rounded-lg overflow-hidden relative shadow-inner">
+                  <motion.div 
+                    initial={{ filter: 'brightness(0) contrast(2)' }}
+                    animate={{ filter: 'brightness(1) contrast(1)' }}
+                    transition={{ duration: 1.8 }}
+                    className="w-full h-full bg-cover bg-center"
+                    style={{ backgroundImage: capturedPreviewUrl ? `url(${capturedPreviewUrl})` : 'none' }}
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 text-zinc-800 font-mono text-[10px] font-bold">
+                  <Sparkles size={12} className="text-amber-500 animate-spin" />
+                  <span>DEVELOPING INSTANT FILM...</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Halide Focus Loupe Circle Magnifier */}
         {isFocusLoupeVisible && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-40 flex flex-col items-center gap-1 animate-in zoom-in-75">
@@ -929,8 +987,8 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Live OLED Telemetry Bar (Interactive Pro Shortcut) */}
-        <div className="absolute top-20 left-4 pointer-events-auto flex flex-col gap-1 z-20">
+        {/* Live OLED Telemetry Bar & Clean Micro-Pill AI Tip */}
+        <div className="absolute top-20 left-4 pointer-events-auto flex flex-col gap-1.5 z-20">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -949,7 +1007,48 @@ export default function ProCamera({
             <span className="text-cyan-400">{colorTemperature}K</span>
           </button>
 
-          <div className="flex gap-1.5 mt-1">
+          {/* Clean Non-Intrusive Micro-Pill AI Tip (Unobscured Viewfinder) */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowGuidedTipExpand(!showGuidedTipExpand)}
+              className="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold backdrop-blur-md flex items-center gap-1.5 shadow-lg hover:bg-cyan-500/25 transition-all"
+            >
+              <Sparkles size={11} className="text-cyan-400 animate-pulse" />
+              <span>AI Tip: {v2Analysis.recommendation.slice(0, 24)}…</span>
+            </button>
+          </div>
+
+          {/* Expanded AI Tip Dropdown (Only on click!) */}
+          <AnimatePresence>
+            {showGuidedTipExpand && (
+              <motion.div 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="p-3 rounded-2xl bg-zinc-900/95 border border-cyan-500/30 backdrop-blur-md max-w-xs space-y-2 shadow-2xl"
+              >
+                <p className="text-[11px] text-zinc-200 font-medium">
+                  {v2Analysis.recommendation || EVENT_PRESETS[activePresetKey].settings.tip}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => {
+                      applyPreset(v2Analysis.suggestedPreset || activePresetKey);
+                      setShowGuidedTipExpand(false);
+                    }}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-cyan-400 text-black hover:bg-cyan-300 transition-colors"
+                  >
+                    ⚡ Apply Recommended Settings
+                  </button>
+                  <button onClick={() => setShowGuidedTipExpand(false)} className="text-[10px] text-zinc-400 hover:text-white">
+                    Close
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex gap-1.5">
             {v2Analysis.motionScore > 25 && (
               <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-bold">
                 ⚡ Motion Detected
@@ -986,38 +1085,6 @@ export default function ProCamera({
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* AI Guided Recommendation Banner */}
-        {showGuidedBanner && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute top-32 inset-x-4 z-20 p-3 rounded-2xl bg-zinc-900/95 border border-cyan-500/30 backdrop-blur-md shadow-xl flex items-start gap-3"
-          >
-            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shrink-0">
-              <Sparkles size={16} />
-            </div>
-            <div className="flex-grow min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-cyan-400 tracking-wide">
-                  AI Guidance — {EVENT_PRESETS[activePresetKey].label}
-                </span>
-                <button onClick={() => setShowGuidedBanner(false)} className="text-zinc-500 hover:text-white">
-                  <X size={14} />
-                </button>
-              </div>
-              <p className="text-[11px] text-zinc-300 mt-0.5 leading-tight">
-                {v2Analysis.recommendation || EVENT_PRESETS[activePresetKey].settings.tip}
-              </p>
-              <button 
-                onClick={() => applyPreset(v2Analysis.suggestedPreset || activePresetKey)}
-                className="mt-2 text-[10px] font-bold px-2.5 py-1 rounded-lg bg-cyan-400 text-black hover:bg-cyan-300 transition-colors inline-flex items-center gap-1"
-              >
-                <Zap size={11} /> Apply Recommended Settings
-              </button>
-            </div>
-          </motion.div>
-        )}
       </div>
 
       {/* ── Bottom Control Deck ── */}
@@ -1230,7 +1297,7 @@ export default function ProCamera({
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Film size={16} className="text-cyan-400" />
-                <span>Film & Beauty Filters</span>
+                <span>Film & Beauty Profiles</span>
               </h3>
               <button onClick={() => setShowFilmStylePanel(false)} className="text-zinc-500 hover:text-white">
                 <X size={18} />
@@ -1414,6 +1481,23 @@ export default function ProCamera({
             </div>
 
             <div className="space-y-3 max-w-lg mx-auto w-full">
+              {/* Leica / Hasselblad Watermark Frame Toggle */}
+              <div className="flex items-center justify-between p-2.5 bg-zinc-900/80 rounded-xl border border-zinc-800">
+                <div className="flex items-center gap-2 text-xs font-bold text-amber-400 font-mono">
+                  <Frame size={16} />
+                  <span>Leica Event Watermark Strip</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setAddWatermarkFrame(!addWatermarkFrame)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                    addWatermarkFrame ? 'bg-amber-400 text-black' : 'bg-zinc-800 text-zinc-400'
+                  }`}
+                >
+                  {addWatermarkFrame ? 'ON' : 'OFF'}
+                </button>
+              </div>
+
               {/* Event Badge Stamps & 5-Star Guest Rating */}
               <div className="space-y-2 bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800">
                 <div className="flex items-center justify-between">
