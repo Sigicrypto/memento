@@ -40,6 +40,7 @@ export default function ProCamera({
   // ── Camera Stream & Canvas Refs ──
   const videoRef = useRef<HTMLVideoElement>(null);
   const viewfinderRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const histogramCanvasRef = useRef<HTMLCanvasElement>(null);
   const peakingCanvasRef = useRef<HTMLCanvasElement>(null);
   const zebraCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -113,7 +114,7 @@ export default function ProCamera({
   // Realtime Gyro/Level State
   const [rollAngle, setRollAngle] = useState<number>(0);
 
-  // Realtime V2 Scene Analysis State (Throttled!)
+  // Realtime V2 Scene Analysis State (Throttled)
   const [v2Analysis, setV2Analysis] = useState<RealtimeV2Analysis>({
     luminance: 128, isLowLight: false, isOverexposed: false, isBacklit: false, motionScore: 0, recommendation: 'Analyzing scene...',
   });
@@ -169,7 +170,7 @@ export default function ProCamera({
     }
   }, []);
 
-  // ── Direct Ref Updating for Live Viewfinder CSS Filters (No React State Re-Renders!) ──
+  // Live Viewfinder CSS Filter Updates (DOM Ref Direct Assignment)
   useEffect(() => {
     if (videoRef.current) {
       const filterStr = computeViewportCSSFilter(exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle);
@@ -177,7 +178,7 @@ export default function ProCamera({
     }
   }, [exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle]);
 
-  // ── Camera Initialization & Stream Handling (Robust iOS Safari Support) ──
+  // ── Camera Initialization & Stream Handling (Robust iOS Safari WebKit Support) ──
   const stopTracks = useCallback(() => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
@@ -189,16 +190,19 @@ export default function ProCamera({
     setCameraError(null);
 
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevs = devices.filter((d) => d.kind === 'videoinput');
-      setCameraDevices(videoDevs);
+      let videoDevs: MediaDeviceInfo[] = [];
+      if (navigator.mediaDevices && typeof navigator.mediaDevices.enumerateDevices === 'function') {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        videoDevs = devices.filter((d) => d.kind === 'videoinput');
+        setCameraDevices(videoDevs);
+      }
 
       const targetId = deviceId || (videoDevs.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'))?.deviceId || videoDevs[0]?.deviceId);
 
-      // Clean iOS Safari compatible video constraints
+      // Clean iOS Safari compatible video constraints (no exact keyword)
       const videoConstraints: any = targetId
-        ? { deviceId: { exact: targetId } }
-        : { facingMode: { ideal: 'environment' } };
+        ? { deviceId: targetId }
+        : { facingMode: 'environment' };
 
       const newStream = await navigator.mediaDevices.getUserMedia({
         video: videoConstraints,
@@ -221,11 +225,12 @@ export default function ProCamera({
         video.onloadedmetadata = () => {
           video.play().catch(() => {});
         };
+        video.play().catch(() => {});
       }
       setIsLoadingCamera(false);
     } catch (err: any) {
-      console.error('Camera access error:', err);
-      setCameraError(err?.message || 'Unable to access camera stream. Please check browser permissions.');
+      console.warn('Camera getUserMedia error:', err);
+      setCameraError(err?.message || 'Camera permission required. Tap below to select or take photo.');
       setIsLoadingCamera(false);
     }
   }, []);
@@ -306,6 +311,15 @@ export default function ProCamera({
     });
   };
 
+  // ── Fallback Camera Roll File Input Handler ──
+  const handleFallbackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const blob = file.slice(0, file.size, file.type);
+    setCapturedBlob(blob);
+    setCapturedPreviewUrl(URL.createObjectURL(file));
+  };
+
   // ── Touch Gesture Handlers ──
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length === 1) {
@@ -362,7 +376,7 @@ export default function ProCamera({
     }, 3500);
   };
 
-  // ── Throttled Overlays Processing Loop (Prevents 60 FPS React Re-Render Flickering!) ──
+  // ── Throttled Overlays Loop ──
   const lastAnalysisTime = useRef<number>(0);
 
   useEffect(() => {
@@ -373,7 +387,6 @@ export default function ProCamera({
         const video = videoRef.current;
         const now = Date.now();
 
-        // Throttle scene state analysis to 1 FPS (1000ms) to prevent React re-render flicker
         if (now - lastAnalysisTime.current > 1000 && v2AnalysisCanvasRef.current) {
           lastAnalysisTime.current = now;
           const res = analyzeFrameV2(v2AnalysisCanvasRef.current, video);
@@ -525,6 +538,11 @@ export default function ProCamera({
 
   // ── Shutter Action ──
   const handleShutterTap = () => {
+    if (cameraError) {
+      if (fileInputRef.current) fileInputRef.current.click();
+      return;
+    }
+
     if (selfTimer > 0) {
       let count = selfTimer;
       setTimerCountdown(count);
@@ -549,7 +567,10 @@ export default function ProCamera({
       navigator.vibrate([45]);
     }
 
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      if (fileInputRef.current) fileInputRef.current.click();
+      return;
+    }
 
     try {
       const video = videoRef.current;
@@ -578,7 +599,7 @@ export default function ProCamera({
         }, 'image/jpeg', 0.95);
       }
     } catch (err) {
-      console.error('Capture error:', err);
+      if (fileInputRef.current) fileInputRef.current.click();
     }
   };
 
@@ -658,6 +679,16 @@ export default function ProCamera({
   return (
     <div className="fixed inset-0 z-[99999] bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none font-sans h-[100dvh] w-vw">
       <canvas ref={v2AnalysisCanvasRef} className="hidden" />
+
+      {/* Invisible Native Camera Fallback File Input */}
+      <input 
+        ref={fileInputRef} 
+        type="file" 
+        accept="image/*" 
+        capture="environment" 
+        onChange={handleFallbackFileSelect} 
+        className="hidden" 
+      />
 
       {/* ── Top Header Navigation ── */}
       <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
@@ -742,8 +773,11 @@ export default function ProCamera({
               <Camera size={24} />
             </div>
             <p className="text-sm font-medium text-red-300">{cameraError}</p>
-            <button onClick={() => initCamera()} className="px-4 py-2 rounded-xl bg-white text-black font-semibold text-xs">
-              Retry Access
+            <button 
+              onClick={() => fileInputRef.current?.click()} 
+              className="px-5 py-3 rounded-2xl bg-cyan-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg hover:bg-cyan-300 transition-colors"
+            >
+              Take Photo with Device Camera
             </button>
           </div>
         )}
@@ -756,13 +790,14 @@ export default function ProCamera({
             webkit-playsinline="true"
             muted
             autoPlay
+            style={{ WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               mirrorFront && selectedDeviceId.includes('front') ? 'scale-x-[-1]' : ''
-            } ${isLoadingCamera ? 'opacity-0' : 'opacity-100'}`}
+            } ${isLoadingCamera || cameraError ? 'opacity-0' : 'opacity-100'}`}
           />
 
           {/* Grid Overlay */}
-          {showGrid && !isLoadingCamera && (
+          {showGrid && !isLoadingCamera && !cameraError && (
             <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 border border-white/10">
               {[...Array(9)].map((_, i) => (
                 <div key={i} className="border border-white/10" />
@@ -771,7 +806,7 @@ export default function ProCamera({
           )}
 
           {/* Horizon Level */}
-          {showLevel && !isLoadingCamera && (
+          {showLevel && !isLoadingCamera && !cameraError && (
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
               <div className={`relative w-48 h-0.5 transition-all duration-100 ${
                 Math.abs(rollAngle) <= 1 ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50 scale-105' : 'bg-white/40'
@@ -971,7 +1006,7 @@ export default function ProCamera({
           })}
         </div>
 
-        {/* Manual Control Bar (PRO mode active) */}
+        {/* Manual Control Bar */}
         {shootingMode === 'PRO' && (
           <div className="p-3 rounded-2xl bg-zinc-900/95 border border-zinc-800 backdrop-blur-md space-y-3">
             <div className="flex items-center justify-between text-xs border-b border-zinc-800 pb-2">
@@ -1004,7 +1039,6 @@ export default function ProCamera({
               ))}
             </div>
 
-            {/* Active Control Sliders */}
             {activeManualControlTab === 'iso' && (
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px] text-zinc-400 font-mono">
