@@ -7,7 +7,8 @@ import {
   X, Check, RotateCcw, Upload, Lock, Sparkles, Eye, Sun, Grid, Compass, 
   Activity, Zap, Info, ChevronUp, ChevronDown, Image as ImageIcon, Volume2, 
   VolumeX, Shield, SlidersHorizontal, Layers, Film, Crop, Radio, Target, MoveVertical, Focus,
-  Share2, MessageCircle, Star, Heart, Smile, Download, Sliders as SlidersIcon, Frame, Sparkle
+  Share2, MessageCircle, Star, Heart, Smile, Download, Sliders as SlidersIcon, Frame, Sparkle,
+  RefreshCw, SmilePlus, Crown, Tv
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { extractFaceDescriptorRobust, fileToImage } from '@/lib/faceEngine';
@@ -20,6 +21,7 @@ import ProCameraUpgradeModal from '@/components/ProCameraUpgradeModal';
 export type ShootingMode = 'AUTO' | 'PRO' | 'PORTRAIT' | 'EVENT' | 'LOW LIGHT' | 'PRODUCT' | 'DOCUMENT';
 export type AspectRatioType = '4:3' | '1:1' | '16:9' | '9:16';
 export type PeakingColor = '#00e5ff' | '#00ffaa' | '#ff0077' | '#ffff00' | '#ff3300';
+export type SnapFilterType = 'none' | 'hearts' | 'crown' | 'puppy' | 'vhs' | 'disco';
 
 const EVENT_BADGES = [
   '👑 VIP Guest',
@@ -63,6 +65,7 @@ export default function ProCamera({
   const [activeTrack, setActiveTrack] = useState<MediaStreamTrack | null>(null);
   const [cameraDevices, setCameraDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isLoadingCamera, setIsLoadingCamera] = useState<boolean>(true);
 
@@ -77,6 +80,7 @@ export default function ProCamera({
   const [shootingMode, setShootingMode] = useState<ShootingMode>('AUTO');
   const [activePresetKey, setActivePresetKey] = useState<EventPresetKey>('wedding');
   const [activeFilmStyle, setActiveFilmStyle] = useState<FilmStyleKey>('process_zero');
+  const [activeSnapFilter, setActiveSnapFilter] = useState<SnapFilterType>('none');
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>('4:3');
   const [lensZoom, setLensZoom] = useState<number>(1);
 
@@ -116,6 +120,7 @@ export default function ProCamera({
   const [showSettingsDrawer, setShowSettingsDrawer] = useState<boolean>(false);
   const [showPresetsPanel, setShowPresetsPanel] = useState<boolean>(false);
   const [showFilmStylePanel, setShowFilmStylePanel] = useState<boolean>(false);
+  const [showSnapFiltersPanel, setShowSnapFiltersPanel] = useState<boolean>(false);
   const [showGuidedTipExpand, setShowGuidedTipExpand] = useState<boolean>(false);
   const [activeManualControlTab, setActiveManualControlTab] = useState<'iso' | 'shutter' | 'ev' | 'wb' | 'focus' | 'tint' | null>(null);
 
@@ -198,7 +203,7 @@ export default function ProCamera({
     }
   }, [exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle]);
 
-  // ── Camera Initialization & Stream Handling ──
+  // ── Camera Initialization & Front/Back Toggle ──
   const stopCameraStream = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -206,7 +211,7 @@ export default function ProCamera({
     }
   }, []);
 
-  const initCamera = useCallback(async (deviceId?: string) => {
+  const initCamera = useCallback(async (deviceId?: string, forceFacingMode?: 'user' | 'environment') => {
     setIsLoadingCamera(true);
     setCameraError(null);
     stopCameraStream();
@@ -219,11 +224,10 @@ export default function ProCamera({
         setCameraDevices(videoDevs);
       }
 
-      const targetId = deviceId || (videoDevs.find((d) => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'))?.deviceId || videoDevs[0]?.deviceId);
-
-      const videoConstraints: any = targetId
-        ? { deviceId: targetId }
-        : { facingMode: 'environment' };
+      const targetFacing = forceFacingMode || facingMode;
+      const videoConstraints: any = deviceId
+        ? { deviceId }
+        : { facingMode: { ideal: targetFacing } };
 
       const newStream = await navigator.mediaDevices.getUserMedia({
         video: videoConstraints,
@@ -255,7 +259,7 @@ export default function ProCamera({
       setCameraError(err?.message || 'Camera permission required. Tap below to select or take photo.');
       setIsLoadingCamera(false);
     }
-  }, [stopCameraStream]);
+  }, [facingMode, stopCameraStream]);
 
   useEffect(() => {
     initCamera(selectedDeviceId);
@@ -263,6 +267,14 @@ export default function ProCamera({
       stopCameraStream();
     };
   }, [selectedDeviceId, initCamera, stopCameraStream]);
+
+  // Explicit Front Selfie / Back Main Camera Toggle Handler
+  const toggleCameraFacingMode = () => {
+    const nextFacing = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextFacing);
+    setSelectedDeviceId('');
+    initCamera(undefined, nextFacing);
+  };
 
   // Apply track constraints dynamically
   const applyCameraConstraints = useCallback(async (overrides: Record<string, any>) => {
@@ -621,7 +633,6 @@ export default function ProCamera({
       const baseWidth = video.videoWidth || 1920;
       const baseHeight = video.videoHeight || 1080;
       
-      // If Watermark Frame is enabled, add Leica/Hasselblad style bottom strip!
       const watermarkMargin = addWatermarkFrame ? Math.round(baseHeight * 0.08) : 0;
       
       const canvas = document.createElement('canvas');
@@ -629,7 +640,7 @@ export default function ProCamera({
       canvas.height = baseHeight + watermarkMargin;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        if (mirrorFront && selectedDeviceId.includes('front')) {
+        if (facingMode === 'user' || (mirrorFront && selectedDeviceId.includes('front'))) {
           ctx.translate(baseWidth, 0);
           ctx.scale(-1, 1);
         }
@@ -639,7 +650,6 @@ export default function ProCamera({
           ctx.filter = activeFilter;
         }
 
-        // Draw main camera photo
         ctx.drawImage(video, 0, 0, baseWidth, baseHeight);
         ctx.filter = 'none';
 
@@ -776,6 +786,15 @@ export default function ProCamera({
 
         {/* Halide Process Zero, Beauty Glow & Direct Pro Controls Badge */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          {/* Explicit Front / Back Camera Flip Button */}
+          <button
+            onClick={toggleCameraFacingMode}
+            className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-extrabold text-[11px] flex items-center gap-1.5 backdrop-blur-md hover:bg-cyan-500/30 active:scale-95 transition-all shadow-lg"
+          >
+            <RefreshCw size={13} className="animate-spin-slow" />
+            <span>{facingMode === 'user' ? '🤳 SELFIE CAM' : '📷 MAIN CAM'}</span>
+          </button>
+
           <button
             onClick={() => {
               if (shootingMode === 'PRO') {
@@ -896,9 +915,43 @@ export default function ProCamera({
             autoPlay
             style={{ WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}
             className={`w-full h-full object-cover transition-opacity duration-300 ${
-              mirrorFront && selectedDeviceId.includes('front') ? 'scale-x-[-1]' : ''
+              facingMode === 'user' || (mirrorFront && selectedDeviceId.includes('front')) ? 'scale-x-[-1]' : ''
             } ${isLoadingCamera || cameraError ? 'opacity-0' : 'opacity-100'}`}
           />
+
+          {/* Playful Snapchat AR Filter Overlays */}
+          {activeSnapFilter === 'hearts' && (
+            <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6 bg-gradient-to-b from-pink-500/20 via-transparent to-pink-500/20">
+              <div className="flex justify-between text-pink-300 text-2xl animate-bounce">
+                <span>💖</span>
+                <span>✨</span>
+                <span>💖</span>
+              </div>
+              <div className="flex justify-between text-pink-300 text-2xl animate-bounce delay-100">
+                <span>✨</span>
+                <span>💖</span>
+                <span>✨</span>
+              </div>
+            </div>
+          )}
+
+          {activeSnapFilter === 'crown' && (
+            <div className="absolute top-8 inset-x-0 pointer-events-none flex justify-center text-amber-400 animate-pulse">
+              <Crown size={56} className="drop-shadow-[0_0_15px_rgba(245,158,11,0.8)]" />
+            </div>
+          )}
+
+          {activeSnapFilter === 'vhs' && (
+            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between border-2 border-red-500/30">
+              <div className="flex items-center justify-between text-red-500 font-mono text-xs font-bold tracking-widest bg-black/40 px-2 py-1 rounded">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" /> REC</span>
+                <span>SP 0:00:12</span>
+              </div>
+              <div className="text-amber-400 font-mono text-xs font-bold tracking-widest bg-black/40 px-2 py-1 rounded w-fit">
+                <span>AUG 10 2026</span>
+              </div>
+            </div>
+          )}
 
           {/* Grid Overlay */}
           {showGrid && !isLoadingCamera && !cameraError && (
@@ -1007,7 +1060,7 @@ export default function ProCamera({
             <span className="text-cyan-400">{colorTemperature}K</span>
           </button>
 
-          {/* Clean Non-Intrusive Micro-Pill AI Tip (Unobscured Viewfinder) */}
+          {/* Clean Non-Intrusive Micro-Pill AI Tip */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowGuidedTipExpand(!showGuidedTipExpand)}
@@ -1018,7 +1071,7 @@ export default function ProCamera({
             </button>
           </div>
 
-          {/* Expanded AI Tip Dropdown (Only on click!) */}
+          {/* Expanded AI Tip Dropdown */}
           <AnimatePresence>
             {showGuidedTipExpand && (
               <motion.div 
@@ -1047,19 +1100,6 @@ export default function ProCamera({
               </motion.div>
             )}
           </AnimatePresence>
-
-          <div className="flex gap-1.5">
-            {v2Analysis.motionScore > 25 && (
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-bold">
-                ⚡ Motion Detected
-              </span>
-            )}
-            {v2Analysis.isBacklit && (
-              <span className="px-2.5 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-[10px] font-bold">
-                ☀️ Backlight Alert
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Live Histogram Overlay */}
@@ -1088,8 +1128,30 @@ export default function ProCamera({
       </div>
 
       {/* ── Bottom Control Deck ── */}
-      <div className="relative z-30 bg-gradient-to-t from-black via-black/95 to-transparent pt-4 pb-safe px-4 space-y-3">
+      <div className="relative z-30 bg-gradient-to-t from-black via-black/95 to-transparent pt-3 pb-safe px-4 space-y-2.5">
         
+        {/* Playful Snapchat AR Filter Selector Ribbon */}
+        <div className="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar py-1">
+          {[
+            { id: 'none', label: '📷 Normal', icon: '📷' },
+            { id: 'hearts', label: '💖 Snap Hearts', icon: '💖' },
+            { id: 'crown', label: '👑 Gold Crown', icon: '👑' },
+            { id: 'vhs', label: '📼 90s VHS Rec', icon: '📼' },
+          ].map((sf) => (
+            <button
+              key={sf.id}
+              onClick={() => setActiveSnapFilter(sf.id as SnapFilterType)}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                activeSnapFilter === sf.id
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg scale-105'
+                  : 'bg-zinc-900/80 text-zinc-400 border border-zinc-800 hover:text-white'
+              }`}
+            >
+              <span>{sf.label}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Lens Switcher & Aspect Ratio Bar */}
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-1.5">
@@ -1253,7 +1315,7 @@ export default function ProCamera({
         )}
 
         {/* Main Shutter Bar */}
-        <div className="flex items-center justify-between px-6 pt-2 pb-3">
+        <div className="flex items-center justify-between px-6 pt-1 pb-2">
           <button 
             onClick={() => setShowPresetsPanel(!showPresetsPanel)}
             className="p-3 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white active:scale-95 transition-transform"
@@ -1270,17 +1332,13 @@ export default function ProCamera({
             <div className="w-full h-full rounded-full bg-white active:bg-cyan-400 transition-colors shadow-inner" />
           </button>
 
-          {/* Device Camera Flip */}
+          {/* Front / Back Selfie Camera Flip Button */}
           <button 
-            onClick={() => {
-              if (cameraDevices.length > 1) {
-                const nextDev = cameraDevices.find((d) => d.deviceId !== selectedDeviceId) || cameraDevices[0];
-                if (nextDev) setSelectedDeviceId(nextDev.deviceId);
-              }
-            }}
-            className="p-3 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white active:scale-95 transition-transform"
+            onClick={toggleCameraFacingMode}
+            className="p-3.5 rounded-full bg-cyan-500/20 border border-cyan-400/60 text-cyan-300 hover:text-white active:scale-90 transition-transform shadow-lg"
+            title="Switch Selfie / Rear Camera"
           >
-            <FlipHorizontal size={20} />
+            <FlipHorizontal size={22} />
           </button>
         </div>
       </div>
