@@ -744,8 +744,28 @@ export default function ProCamera({
           <X size={20} />
         </button>
 
-        {/* Halide Process Zero & Mode Badge */}
-        <div className="flex items-center gap-2">
+        {/* Halide Process Zero, Beauty Glow & Direct Pro Controls Badge */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => {
+              if (shootingMode === 'PRO') {
+                setShootingMode('AUTO');
+                setActiveManualControlTab(null);
+              } else {
+                setShootingMode('PRO');
+                setActiveManualControlTab('ev');
+              }
+            }}
+            className={`px-3 py-1 rounded-full border text-[11px] font-extrabold tracking-wider transition-all flex items-center gap-1.5 ${
+              shootingMode === 'PRO'
+                ? 'bg-cyan-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/30 scale-105'
+                : 'bg-black/70 text-cyan-400 border-cyan-500/40 hover:bg-cyan-500/20'
+            }`}
+          >
+            <SlidersHorizontal size={13} />
+            <span>🎛️ PRO OPTIONS</span>
+          </button>
+
           <button
             onClick={() => {
               const nextStyle = activeFilmStyle === 'process_zero' ? 'natural' : 'process_zero';
@@ -909,9 +929,17 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Live OLED Telemetry Bar */}
-        <div className="absolute top-20 left-4 pointer-events-none flex flex-col gap-1 z-20">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[11px] font-mono text-amber-400 shadow-xl">
+        {/* Live OLED Telemetry Bar (Interactive Pro Shortcut) */}
+        <div className="absolute top-20 left-4 pointer-events-auto flex flex-col gap-1 z-20">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShootingMode('PRO');
+              setActiveManualControlTab(activeManualControlTab || 'ev');
+            }}
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[11px] font-mono text-amber-400 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="Tap to Open Pro Controls"
+          >
             <span>ISO {iso}</span>
             <span className="text-white/30">|</span>
             <span>{shutterSpeed}s</span>
@@ -919,7 +947,7 @@ export default function ProCamera({
             <span className="text-emerald-400">EV {exposureCompensation > 0 ? `+${exposureCompensation}` : exposureCompensation}</span>
             <span className="text-white/30">|</span>
             <span className="text-cyan-400">{colorTemperature}K</span>
-          </div>
+          </button>
 
           <div className="flex gap-1.5 mt-1">
             {v2Analysis.motionScore > 25 && (
