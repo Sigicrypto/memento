@@ -34,7 +34,9 @@ export type FilmStyleKey =
   | 'monochrome'
   | 'moody_matte'
   | 'high_contrast_bw'
-  | 'soft_portrait';
+  | 'soft_portrait'
+  | 'beauty_glow'
+  | 'neon_party';
 
 export interface FilmStyle {
   key: FilmStyleKey;
@@ -93,6 +95,18 @@ export const FILM_STYLES: Record<FilmStyleKey, FilmStyle> = {
     label: 'Soft Portrait',
     cssFilter: 'contrast(0.96) brightness(1.04) saturate(1.06)',
     description: 'Flattering skin tone smoothing filter',
+  },
+  beauty_glow: {
+    key: 'beauty_glow',
+    label: '✨ Snap Beauty Glow',
+    cssFilter: 'contrast(0.95) brightness(1.08) saturate(1.15) sepia(0.08)',
+    description: 'Flattering smooth skin glow like Snapchat filters',
+  },
+  neon_party: {
+    key: 'neon_party',
+    label: '🎉 Neon Party Vibe',
+    cssFilter: 'saturate(1.4) contrast(1.15) hue-rotate(10deg)',
+    description: 'Vibrant popping colors for party lights & dancefloors',
   },
 };
 

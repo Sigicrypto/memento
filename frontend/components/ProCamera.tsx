@@ -6,7 +6,8 @@ import {
   Camera, FlipHorizontal, Flashlight, FlashlightOff, Sliders, Settings, 
   X, Check, RotateCcw, Upload, Lock, Sparkles, Eye, Sun, Grid, Compass, 
   Activity, Zap, Info, ChevronUp, ChevronDown, Image as ImageIcon, Volume2, 
-  VolumeX, Shield, SlidersHorizontal, Layers, Film, Crop, Radio, Target, MoveVertical, Focus
+  VolumeX, Shield, SlidersHorizontal, Layers, Film, Crop, Radio, Target, MoveVertical, Focus,
+  Share2, MessageCircle, Star, Heart, Smile, Download
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { extractFaceDescriptorRobust, fileToImage } from '@/lib/faceEngine';
@@ -19,6 +20,15 @@ import ProCameraUpgradeModal from '@/components/ProCameraUpgradeModal';
 export type ShootingMode = 'AUTO' | 'PRO' | 'PORTRAIT' | 'EVENT' | 'LOW LIGHT' | 'PRODUCT' | 'DOCUMENT';
 export type AspectRatioType = '4:3' | '1:1' | '16:9' | '9:16';
 export type PeakingColor = '#00e5ff' | '#00ffaa' | '#ff0077' | '#ffff00' | '#ff3300';
+
+const EVENT_BADGES = [
+  '👑 VIP Guest',
+  '🥂 Best Wishes',
+  '🥳 Party Legend',
+  '💍 Pure Love',
+  '🔥 Vibe Master',
+  '📸 Photo Freak',
+];
 
 interface ProCameraProps {
   eventId?: string;
@@ -109,6 +119,10 @@ export default function ProCamera({
   const [showGuidedBanner, setShowGuidedBanner] = useState<boolean>(true);
   const [activeManualControlTab, setActiveManualControlTab] = useState<'iso' | 'shutter' | 'ev' | 'wb' | 'focus' | 'tint' | null>(null);
 
+  // Casual User & Social Sharing State
+  const [selectedBadge, setSelectedBadge] = useState<string>('');
+  const [starRating, setStarRating] = useState<number>(5);
+
   // Upgrade Modal
   const [showUpgradeModal, setShowUpgradeModal] = useState<boolean>(false);
   const [upgradeReason, setUpgradeReason] = useState<string>('Pro Camera');
@@ -180,7 +194,7 @@ export default function ProCamera({
     }
   }, [exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle]);
 
-  // ── Camera Initialization & Stream Handling (Fix Stream Ref Loop Bug!) ──
+  // ── Camera Initialization & Stream Handling ──
   const stopCameraStream = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -239,7 +253,6 @@ export default function ProCamera({
     }
   }, [stopCameraStream]);
 
-  // Run camera initialization ONCE on mount or when selectedDeviceId changes
   useEffect(() => {
     initCamera(selectedDeviceId);
     return () => {
@@ -314,6 +327,28 @@ export default function ProCamera({
       colorTemperature: s.colorTemperature,
       focusMode: s.focusMode,
     });
+  };
+
+  // ── Native Web Share & Social Export for Snapchat, Instagram, WhatsApp ──
+  const handleNativeShare = async () => {
+    if (!capturedBlob) return;
+    try {
+      const file = new File([capturedBlob], `memento_${Date.now()}.jpg`, { type: 'image/jpeg' });
+      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: eventName,
+          text: caption ? `${selectedBadge ? selectedBadge + ' — ' : ''}${caption}` : `Live photo from ${eventName}! ✨`,
+        });
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = file.name;
+        a.click();
+      }
+    } catch (e) {
+      console.warn('Share cancelled or failed:', e);
+    }
   };
 
   // ── Fallback Camera Roll File Input Handler ──
@@ -624,11 +659,16 @@ export default function ProCamera({
       if (storageErr) throw storageErr;
       setUploadProgress(60);
 
+      // Append stamp & star rating to caption
+      const badgePrefix = selectedBadge ? `[${selectedBadge}] ` : '';
+      const starSuffix = starRating > 0 ? ` (${'★'.repeat(starRating)})` : '';
+      const finalCaption = `${badgePrefix}${caption.trim()}${starSuffix}`.trim() || null;
+
       const { data: inserted, error: dbErr } = await supabase.from('photos').insert({
         event_id: eventId,
         storage_path: storagePath,
-        uploader_name: uploaderName.trim() || 'Pro Photographer',
-        caption: caption.trim() || null,
+        uploader_name: uploaderName.trim() || 'Guest Photographer',
+        caption: finalCaption,
         media_type: 'image',
         approved: true,
       }).select().single();
@@ -721,9 +761,18 @@ export default function ProCamera({
             <span>PROCESS ZERO</span>
           </button>
 
-          <span className="text-[10px] font-bold text-cyan-400 uppercase bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/30 font-mono">
-            {shootingMode}
-          </span>
+          <button
+            onClick={() => {
+              setActiveFilmStyle('beauty_glow');
+            }}
+            className={`px-3 py-1 rounded-full border text-[11px] font-bold transition-all ${
+              activeFilmStyle === 'beauty_glow'
+                ? 'bg-pink-500 text-white border-pink-400 shadow-lg shadow-pink-500/30'
+                : 'bg-black/60 text-pink-300 border-pink-500/30 hover:bg-pink-500/20'
+            }`}
+          >
+            <span>✨ BEAUTY GLOW</span>
+          </button>
         </div>
 
         {/* Header Actions */}
@@ -1153,14 +1202,14 @@ export default function ProCamera({
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Film size={16} className="text-cyan-400" />
-                <span>Film Science Profiles</span>
+                <span>Film & Beauty Filters</span>
               </h3>
               <button onClick={() => setShowFilmStylePanel(false)} className="text-zinc-500 hover:text-white">
                 <X size={18} />
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-64 overflow-y-auto">
               {Object.values(FILM_STYLES).map((fs) => (
                 <button
                   key={fs.key}
@@ -1303,17 +1352,17 @@ export default function ProCamera({
         )}
       </AnimatePresence>
 
-      {/* ── Photo Review Modal ── */}
+      {/* ── Photo Review & Social Share / Guestbook Modal ── */}
       <AnimatePresence>
         {capturedPreviewUrl && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[2200] bg-black/95 flex flex-col justify-between p-4 sm:p-6"
+            className="fixed inset-0 z-[2200] bg-black/95 flex flex-col justify-between p-4 sm:p-6 overflow-y-auto"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Review Photo</span>
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Review & Share Memory</span>
               <button 
                 onClick={() => {
                   setCapturedBlob(null);
@@ -1325,37 +1374,99 @@ export default function ProCamera({
               </button>
             </div>
 
-            <div className="relative flex-grow my-4 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+            <div className="relative flex-grow my-3 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 flex items-center justify-center max-h-[55vh]">
               <img src={capturedPreviewUrl} alt="Captured memory" className="w-full h-full object-contain" />
 
               {uploadSuccess && (
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 text-emerald-400">
+                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 text-emerald-400">
                   <Check size={48} className="animate-bounce" />
-                  <p className="text-base font-bold">Successfully Shared to Event!</p>
+                  <p className="text-base font-bold">Successfully Posted to Event!</p>
                 </div>
               )}
             </div>
 
             <div className="space-y-3 max-w-lg mx-auto w-full">
-              {eventId && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <input 
-                    type="text" 
-                    placeholder="Your Name..." 
-                    value={uploaderName}
-                    onChange={(e) => setUploaderName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
-                  />
-                  <input 
-                    type="text" 
-                    placeholder="Add caption..." 
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
-                  />
+              {/* Event Badge Stamps & 5-Star Guest Rating */}
+              <div className="space-y-2 bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Event Badge Stamp</span>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setStarRating(star)}
+                        className="text-amber-400 hover:scale-110 transition-transform"
+                      >
+                        <Star size={14} className={star <= starRating ? 'fill-amber-400' : 'text-zinc-600'} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
 
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                  {EVENT_BADGES.map((badge) => (
+                    <button
+                      key={badge}
+                      type="button"
+                      onClick={() => setSelectedBadge(selectedBadge === badge ? '' : badge)}
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all ${
+                        selectedBadge === badge
+                          ? 'bg-amber-400 text-black border border-amber-300 shadow-md'
+                          : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:text-white'
+                      }`}
+                    >
+                      {badge}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Guestbook Name & Caption Form */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input 
+                  type="text" 
+                  placeholder="Your Name..." 
+                  value={uploaderName}
+                  onChange={(e) => setUploaderName(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
+                />
+                <input 
+                  type="text" 
+                  placeholder="Add a message for the host..." 
+                  value={caption}
+                  onChange={(e) => setCaption(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
+                />
+              </div>
+
+              {/* Direct Social Export Bar */}
+              <div className="flex items-center justify-between gap-2 p-2 bg-zinc-900/60 rounded-xl border border-zinc-800">
+                <button
+                  type="button"
+                  onClick={handleNativeShare}
+                  className="flex-1 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-[11px] hover:bg-yellow-500/20 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span>👻 Snapchat / Stories</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNativeShare}
+                  className="flex-1 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-[11px] hover:bg-emerald-500/20 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <MessageCircle size={14} /> WhatsApp
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNativeShare}
+                  className="p-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
+                  title="Share / Save Photo"
+                >
+                  <Share2 size={16} />
+                </button>
+              </div>
+
+              {/* Action Buttons */}
               <div className="flex gap-3">
                 <button 
                   onClick={() => {
@@ -1372,7 +1483,7 @@ export default function ProCamera({
                   disabled={isUploading}
                   className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-bold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/20"
                 >
-                  <Upload size={16} /> {isUploading ? `Uploading (${uploadProgress}%)...` : eventId ? 'Use Photo & Upload' : 'Save Photo'}
+                  <Upload size={16} /> {isUploading ? `Uploading (${uploadProgress}%)...` : eventId ? 'Post to Event Wall' : 'Save Memory'}
                 </button>
               </div>
             </div>
