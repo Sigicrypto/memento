@@ -16,6 +16,7 @@ import { hasFeature } from '@/lib/permissions';
 import { Layout, Camera, Shield, Search, Download, Trash2, X, Play, Pause, Heart, Clock, ExternalLink, Sparkles, User, Settings, ArrowLeft, Maximize2, Music, QrCode, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
 import CircularGallery from '@/components/CircularGallery';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import ProCamera from '@/components/ProCamera';
 import { RippleButton } from '@/registry/magicui/ripple-button';
 import { ShimmerButton } from '@/registry/magicui/shimmer-button';
 
@@ -194,6 +195,7 @@ export default function WallPage() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [isSlideshowAuto, setIsSlideshowAuto] = useState(true);
   const [showMobileQR, setShowMobileQR] = useState(false);
+  const [showProCameraModal, setShowProCameraModal] = useState(false);
   const webcamRef = useRef<Webcam>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -659,6 +661,14 @@ export default function WallPage() {
                    <QrCode size={18} />
                 </ShimmerButton>
 
+                <button
+                  onClick={() => setShowProCameraModal(true)}
+                  className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5 hover:brightness-110 active:scale-95 transition-all shrink-0"
+                >
+                  <Camera size={14} />
+                  <span className="whitespace-nowrap">📷 PRO CAMERA</span>
+                </button>
+
                 <Link href={uploadUrl} target="_blank" className="shrink-0">
                   <ShimmerButton 
                     shimmerColor="#ffffff" 
@@ -1077,17 +1087,32 @@ export default function WallPage() {
 
       {/* Mobile Upload & QR Floating CTA */}
       {!isViewOnly && (
-        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm flex gap-3">
-           <RippleButton rippleColor="#ADD8E6" onClick={() => setShowMobileQR(true)} className="flex-shrink-0 !w-14 !h-14 bg-surface/80 border border-white/10 shadow-xl rounded-2xl flex items-center justify-center text-white !p-0">
-              <QrCode size={24} />
-           </RippleButton>
-           <Link href={uploadUrl} target="_blank" className="flex-grow">
-              <RippleButton rippleColor="#ADD8E6" className="btn btn-primary w-full !h-14 shadow-2xl flex items-center justify-center gap-3 text-sm rounded-2xl font-bold">
-                 <Upload size={18} /> Upload Photos
-              </RippleButton>
-           </Link>
+        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-[90%] max-w-sm flex gap-2">
+           <button onClick={() => setShowMobileQR(true)} className="flex-shrink-0 w-12 h-12 bg-zinc-900/90 border border-white/15 shadow-xl rounded-2xl flex items-center justify-center text-white">
+              <QrCode size={20} />
+           </button>
+           <button onClick={() => setShowProCameraModal(true)} className="flex-grow py-3 px-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-xs shadow-2xl flex items-center justify-center gap-2">
+              <Camera size={16} />
+              <span>Memento Pro Camera</span>
+           </button>
         </div>
       )}
+
+      {/* Pro Camera Modal */}
+      <AnimatePresence>
+        {showProCameraModal && (
+          <ProCamera 
+            eventId={eventId || undefined}
+            eventSlug={slug}
+            eventName={eventName}
+            isProUser={true}
+            onClose={() => setShowProCameraModal(false)}
+            onPhotoUploaded={() => {
+              setShowProCameraModal(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Mobile QR Modal */}
       <AnimatePresence>
