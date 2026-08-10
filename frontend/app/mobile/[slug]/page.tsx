@@ -401,7 +401,7 @@ export default function MobilePage() {
                   </div>
                )}
  
-               <div className="sticky bottom-4 z-50 mt-8">
+               <div className="sticky bottom-2 pb-safe z-50 mt-8">
                  <button 
                    onClick={handleUpload} 
                    disabled={uploading || files.length === 0 || processingFiles || isLimited}

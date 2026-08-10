@@ -669,7 +669,7 @@ export default function WallPage() {
                   <span className="whitespace-nowrap">📷 PRO CAMERA</span>
                 </button>
 
-                <Link href={uploadUrl} target="_blank" className="shrink-0">
+                <Link href={uploadUrl} target="_blank" className="hidden sm:block shrink-0">
                   <ShimmerButton 
                     shimmerColor="#ffffff" 
                     background="#ffffff"
