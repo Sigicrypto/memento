@@ -97,6 +97,40 @@ export default function ThemeCustomizationPage() {
                <option value="Comic Sans MS">Comic Sans (Why not?)</option>
              </select>
           </div>
+
+          <div className="glass-panel p-8">
+             <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+               <span>📸 Camera Experience Mode</span>
+               <span className="px-2.5 py-0.5 rounded-full bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 text-[10px] font-extrabold uppercase">Dual Layer</span>
+             </h3>
+             <p className="text-xs text-text-secondary mb-6">Choose how the camera appears to your event guests.</p>
+
+             <div className="space-y-3">
+               <label className="flex items-start gap-3 p-4 rounded-xl border border-primary/40 bg-primary/10 cursor-pointer">
+                 <input type="radio" name="cameraMode" defaultChecked className="mt-1 accent-cyan-400" />
+                 <div>
+                   <span className="font-bold text-sm text-text-primary block">✨ Dual Layer Smart Camera (Recommended)</span>
+                   <span className="text-xs text-text-secondary block mt-0.5">Simple point-and-shoot view by default with an optional 🎛️ PRO button for power users & photographers.</span>
+                 </div>
+               </label>
+
+               <label className="flex items-start gap-3 p-4 rounded-xl border border-white/10 bg-bg-subtle cursor-pointer hover:border-white/20">
+                 <input type="radio" name="cameraMode" className="mt-1 accent-cyan-400" />
+                 <div>
+                   <span className="font-bold text-sm text-text-primary block">⚡ Ultra-Simple Camera</span>
+                   <span className="text-xs text-text-secondary block mt-0.5">1-tap capture only. Hides all manual exposure sliders for maximum simplicity.</span>
+                 </div>
+               </label>
+
+               <label className="flex items-start gap-3 p-4 rounded-xl border border-white/10 bg-bg-subtle cursor-pointer hover:border-white/20">
+                 <input type="radio" name="cameraMode" className="mt-1 accent-cyan-400" />
+                 <div>
+                   <span className="font-bold text-sm text-text-primary block">🎛️ Pro Photographer Mode</span>
+                   <span className="text-xs text-text-secondary block mt-0.5">Opens with ISO, Shutter Speed, Kelvin, and Focus Loupe controls expanded by default.</span>
+                 </div>
+               </label>
+             </div>
+          </div>
         </div>
 
         {/* Live Preview */}
