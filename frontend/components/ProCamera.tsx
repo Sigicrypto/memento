@@ -1024,7 +1024,7 @@ export default function ProCamera({
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className="p-3 rounded-2xl bg-zinc-900/95 border border-cyan-500/30 backdrop-blur-md max-w-xs space-y-2 shadow-2xl"
+                className="absolute top-16 left-3 z-30 p-3 rounded-2xl bg-zinc-900/95 border border-cyan-500/30 backdrop-blur-md max-w-xs space-y-2 shadow-2xl"
               >
                 <p className="text-[11px] text-zinc-200 font-medium">
                   {v2Analysis.recommendation || EVENT_PRESETS[activePresetKey].settings.tip}
@@ -1046,7 +1046,6 @@ export default function ProCamera({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
 
         {/* Live Histogram Overlay */}
         {showHistogram && (
