@@ -34,7 +34,7 @@ export function getGuestPhotoLimit(currentPlan: string | null | undefined): numb
 }
 
 const FEATURE_MIN_TIER: Record<Feature, PlanTier> = {
-  ZIP_DOWNLOAD: 'STARTER', // Updated based on marketing
+  ZIP_DOWNLOAD: 'STANDARD',
   CUSTOM_THEME: 'STANDARD',
   LIVE_REACTIONS: 'STANDARD',
   SELFIE_MATCH: 'STANDARD',
