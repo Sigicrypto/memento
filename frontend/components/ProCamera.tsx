@@ -767,87 +767,64 @@ export default function ProCamera({
         className="hidden" 
       />
 
-      {/* ── Top Header Navigation ── */}
-      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-3.5 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
-        <button 
-          onClick={onClose} 
-          className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/90 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
-        >
-          <X size={20} />
-        </button>
-
-        {/* Sleek Action Badges */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-1">
+      {/* ── Top Header Navigation (Un-Cut & Sleek) ── */}
+      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between px-3.5 py-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
+        {/* Left: Close & Flip Camera */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button 
+            onClick={onClose} 
+            className="p-2 rounded-full bg-black/60 border border-white/15 text-white/90 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
+          >
+            <X size={18} />
+          </button>
           <button
             onClick={toggleCameraFacingMode}
-            className="px-3 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-extrabold text-[11px] flex items-center gap-1.5 backdrop-blur-md hover:bg-cyan-500/30 active:scale-95 transition-all shadow-md"
+            className="px-2.5 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-extrabold text-[10px] flex items-center gap-1 backdrop-blur-md hover:bg-cyan-500/30 active:scale-95 transition-all shadow-md shrink-0"
           >
-            <RefreshCw size={12} className="animate-spin-slow" />
+            <RefreshCw size={11} className="animate-spin-slow" />
             <span>{facingMode === 'user' ? '🤳 SELFIE' : '📷 MAIN'}</span>
-          </button>
-
-          <button
-            onClick={() => {
-              if (shootingMode === 'PRO') {
-                setShootingMode('AUTO');
-                setActiveManualControlTab(null);
-              } else {
-                setShootingMode('PRO');
-                setActiveManualControlTab('ev');
-              }
-            }}
-            className={`px-3 py-1.5 rounded-full border text-[11px] font-extrabold tracking-wider transition-all flex items-center gap-1.5 ${
-              shootingMode === 'PRO'
-                ? 'bg-cyan-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/30 scale-105'
-                : 'bg-black/70 text-cyan-400 border-cyan-500/40 hover:bg-cyan-500/20'
-            }`}
-          >
-            <SlidersHorizontal size={12} />
-            <span>PRO OPTIONS</span>
-          </button>
-
-          <button
-            onClick={() => {
-              const nextStyle = activeFilmStyle === 'process_zero' ? 'natural' : 'process_zero';
-              setActiveFilmStyle(nextStyle);
-            }}
-            className={`px-3 py-1.5 rounded-full border text-[11px] font-extrabold tracking-wider font-mono transition-all flex items-center gap-1.5 ${
-              activeFilmStyle === 'process_zero'
-                ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/20'
-                : 'bg-black/60 text-zinc-400 border-white/15'
-            }`}
-          >
-            <Zap size={12} className={activeFilmStyle === 'process_zero' ? 'fill-black' : ''} />
-            <span>PROCESS ZERO</span>
           </button>
         </div>
 
-        {/* Header Actions */}
-        <div className="flex items-center gap-1.5">
+        {/* Center: PRO OPTIONS Toggle Pill */}
+        <button
+          onClick={() => {
+            if (shootingMode === 'PRO') {
+              setShootingMode('AUTO');
+              setActiveManualControlTab(null);
+            } else {
+              setShootingMode('PRO');
+              setActiveManualControlTab('ev');
+            }
+          }}
+          className={`px-3 py-1.5 rounded-full border text-[10px] font-extrabold tracking-wider transition-all flex items-center gap-1 shrink-0 ${
+            shootingMode === 'PRO'
+              ? 'bg-cyan-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/30 scale-105'
+              : 'bg-black/75 text-cyan-400 border-cyan-500/40 hover:bg-cyan-500/20'
+          }`}
+        >
+          <SlidersHorizontal size={11} />
+          <span>PRO OPTIONS</span>
+        </button>
+
+        {/* Right: Quick Torch & Settings */}
+        <div className="flex items-center gap-1.5 shrink-0">
           {capabilities.hasTorch && (
             <button 
               onClick={toggleTorch}
-              className={`p-2.5 rounded-full border backdrop-blur-md transition-all active:scale-95 ${
+              className={`p-2 rounded-full border backdrop-blur-md transition-all active:scale-95 ${
                 torchOn ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/30' : 'bg-black/60 text-white/80 border-white/15'
               }`}
             >
-              {torchOn ? <Flashlight size={18} /> : <FlashlightOff size={18} />}
+              {torchOn ? <Flashlight size={16} /> : <FlashlightOff size={16} />}
             </button>
           )}
 
           <button 
-            onClick={() => setShowFilmStylePanel(!showFilmStylePanel)}
-            className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
-            title="Film Science Profiles"
-          >
-            <Film size={18} className={activeFilmStyle !== 'natural' ? 'text-cyan-400' : ''} />
-          </button>
-
-          <button 
             onClick={() => setShowSettingsDrawer(!showSettingsDrawer)}
-            className="p-2.5 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
+            className="p-2 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
           >
-            <Settings size={18} />
+            <Settings size={16} />
           </button>
         </div>
       </div>
@@ -1018,36 +995,28 @@ export default function ProCamera({
           </div>
         )}
 
-        {/* Live OLED Telemetry Bar & Clean Micro-Pill AI Tip */}
-        <div className="absolute top-16 left-3 pointer-events-auto flex flex-col gap-1.5 z-20">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShootingMode('PRO');
-              setActiveManualControlTab(activeManualControlTab || 'ev');
-            }}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[10px] font-mono text-amber-400 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
-            title="Tap to Open Pro Controls"
-          >
-            <span>ISO {iso}</span>
-            <span className="text-white/30">|</span>
-            <span>{shutterSpeed}s</span>
-            <span className="text-white/30">|</span>
-            <span className="text-emerald-400">EV {exposureCompensation > 0 ? `+${exposureCompensation}` : exposureCompensation}</span>
-            <span className="text-white/30">|</span>
-            <span className="text-cyan-400">{colorTemperature}K</span>
-          </button>
-
-          {/* Clean Micro-Pill AI Tip */}
-          <div className="flex items-center gap-2">
+        {/* Live OLED Telemetry Bar (Visible only in PRO mode for zero clutter) */}
+        {shootingMode === 'PRO' && (
+          <div className="absolute top-16 left-3 pointer-events-auto flex flex-col gap-1.5 z-20">
             <button
-              onClick={() => setShowGuidedTipExpand(!showGuidedTipExpand)}
-              className="px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[9px] font-bold backdrop-blur-md flex items-center gap-1 shadow-lg hover:bg-cyan-500/25 transition-all"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShootingMode('PRO');
+                setActiveManualControlTab(activeManualControlTab || 'ev');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[10px] font-mono text-amber-400 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              title="Tap to Open Pro Controls"
             >
-              <Sparkles size={10} className="text-cyan-400 animate-pulse" />
-              <span>AI Tip: {v2Analysis.recommendation.slice(0, 22)}…</span>
+              <span>ISO {iso}</span>
+              <span className="text-white/30">|</span>
+              <span>{shutterSpeed}s</span>
+              <span className="text-white/30">|</span>
+              <span className="text-emerald-400">EV {exposureCompensation > 0 ? `+${exposureCompensation}` : exposureCompensation}</span>
+              <span className="text-white/30">|</span>
+              <span className="text-cyan-400">{colorTemperature}K</span>
             </button>
           </div>
+        )}
 
           <AnimatePresence>
             {showGuidedTipExpand && (
@@ -1105,8 +1074,33 @@ export default function ProCamera({
       </div>
 
       {/* ── Sleek Un-Cramped Bottom Glass Dock ── */}
-      <div className="relative z-30 bg-black/80 backdrop-blur-2xl border-t border-white/10 pt-2 pb-safe px-3 space-y-2">
+      <div className="relative z-30 bg-black/85 backdrop-blur-2xl border-t border-white/10 pt-2 pb-safe px-3 space-y-2">
         
+        {/* ── 1-Tap Quick Aesthetic Color Effects Ribbon ── */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-1">
+          {[
+            { key: 'natural', label: '🪄 Natural' },
+            { key: 'monochrome', label: '🖤 B&W Noir' },
+            { key: 'vivid', label: '🎬 Cinematic' },
+            { key: 'warm_vintage', label: '🌾 Rustic Gold' },
+            { key: 'beauty_glow', label: '✨ Beauty Glow' },
+            { key: 'process_zero', label: '⚡ Process Zero' },
+            { key: 'neon_party', label: '🎉 Neon Party' },
+          ].map((style) => (
+            <button
+              key={style.key}
+              onClick={() => setActiveFilmStyle(style.key as FilmStyleKey)}
+              className={`px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase whitespace-nowrap transition-all flex items-center gap-1 border shrink-0 ${
+                activeFilmStyle === style.key
+                  ? 'bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/20 scale-105'
+                  : 'bg-zinc-900/90 text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'
+              }`}
+            >
+              <span>{style.label}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Sleek Lens Switcher & Aspect Ratio Bar */}
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-1">
