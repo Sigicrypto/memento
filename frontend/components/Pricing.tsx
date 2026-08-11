@@ -161,11 +161,13 @@ function ComparisonRow({ label, values }: { label: string, values: any[] }) {
        {values.map((v, i) => (
           <td key={i} className="py-3.5 px-4 text-center">
              {typeof v === 'boolean' ? (
-                v ? (
-                   <Check size={18} className="text-cyan-400 mx-auto" />
-                ) : (
-                   <X size={18} className="text-slate-600 opacity-40 mx-auto" />
-                )
+                <div className="flex justify-center items-center">
+                   {v ? (
+                      <Check size={18} className="text-cyan-400" />
+                   ) : (
+                      <X size={18} className="text-slate-600 opacity-40" />
+                   )}
+                </div>
              ) : (
                  <span className="text-xs font-bold uppercase tracking-wider text-slate-300">{v}</span>
               )}
