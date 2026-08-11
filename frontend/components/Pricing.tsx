@@ -136,13 +136,13 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                        </tr>
                     </thead>
                     <tbody>
-                       <ComparisonRow label="Photo & Video Uploads" values={['50 Photos', '2,000 Uploads', 'Unlimited', 'Unlimited']} />
+                       <ComparisonRow label="Photo & Video Uploads" values={['30 Photos', '1,000 Uploads', '5,000 Uploads', '10,000 / Event']} />
                        <ComparisonRow label="Live Wall Experience" values={[false, true, true, true]} />
                        <ComparisonRow label="Full ZIP Download" values={[false, true, true, true]} />
                        <ComparisonRow label="Host Moderation Panel" values={[false, false, true, true]} />
                        <ComparisonRow label="Custom Branding" values={[false, false, true, true]} />
                        <ComparisonRow label="White-Label & Custom Domain" values={[false, false, false, true]} />
-                       <ComparisonRow label="Storage Duration" values={['7 Days', '3 Months', '12 Months', '12 Months']} />
+                       <ComparisonRow label="Storage Duration" values={['24 Hours', '7 Days', '30 Days', '90 Days']} />
                     </tbody>
                  </table>
               </div>
