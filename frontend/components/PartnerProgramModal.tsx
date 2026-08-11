@@ -24,7 +24,7 @@ export default function PartnerProgramModal({
   const activeLink = overrideRefCode ? `https://mymementoapp.com/join?ref=${overrideRefCode}` : partnerLink;
   
   const [activeTab, setActiveTab] = useState<'overview' | 'qrcode' | 'payout'>('overview');
-  const [eventValue, setEventValue] = useState<number>(14999);
+  const [eventValue, setEventValue] = useState<number>(2999);
   
   // Registration Form State
   const [fullName, setFullName] = useState('');
@@ -239,23 +239,35 @@ export default function PartnerProgramModal({
               </div>
 
               {/* Live Payout Calculator */}
-              <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 sm:p-5 mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-300">Estimated Booking Price:</span>
+              <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-4 sm:p-5 mb-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-300">Select Event Plan Package:</span>
                   <span className="text-xs font-mono font-bold text-emerald-400">₹{eventValue.toLocaleString()}</span>
                 </div>
 
-                <input
-                  type="range"
-                  min={2500}
-                  max={30000}
-                  step={500}
-                  value={eventValue}
-                  onChange={(e) => setEventValue(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 mb-3"
-                />
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'event', label: 'Event', price: 999, bonus: 100 },
+                    { id: 'premium', label: 'Premium', price: 2999, bonus: 300 },
+                    { id: 'professional', label: 'Pro', price: 7999, bonus: 800 },
+                  ].map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      type="button"
+                      onClick={() => setEventValue(pkg.price)}
+                      className={`p-2.5 rounded-xl border text-center transition-all ${
+                        eventValue === pkg.price
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold scale-105 shadow-md shadow-emerald-500/10'
+                          : 'bg-slate-950/40 border-white/5 text-slate-400 hover:border-white/10'
+                      }`}
+                    >
+                      <div className="text-[10px] uppercase font-bold tracking-wider">{pkg.label}</div>
+                      <div className="text-xs font-mono mt-0.5">₹{pkg.price}</div>
+                    </button>
+                  ))}
+                </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                <div className="flex items-center justify-between pt-3 border-t border-white/10">
                   <span className="text-xs font-extrabold text-white">Your 10% Referral Bonus:</span>
                   <span className="text-base sm:text-lg font-mono font-black text-emerald-300">₹{commissionAmount.toLocaleString()}</span>
                 </div>

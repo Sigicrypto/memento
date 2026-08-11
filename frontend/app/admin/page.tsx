@@ -978,7 +978,7 @@ export default function AdminPage() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referral Bonus (₹)</label>
                     <input
                       type="text"
-                      placeholder="e.g. 1500"
+                      placeholder="e.g. 300"
                       id="notifyBonus"
                       className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
                     />
@@ -991,7 +991,7 @@ export default function AdminPage() {
                       const phone = (document.getElementById('notifyPhone') as HTMLInputElement)?.value || '919866161775';
                       const name = (document.getElementById('notifyName') as HTMLInputElement)?.value || 'Ambassador';
                       const event = (document.getElementById('notifyEvent') as HTMLInputElement)?.value || 'Hosted Event';
-                      const bonus = (document.getElementById('notifyBonus') as HTMLInputElement)?.value || '1500';
+                      const bonus = (document.getElementById('notifyBonus') as HTMLInputElement)?.value || '300';
 
                       const cleanPhone = phone.replace(/[^0-9]/g, '');
                       const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
