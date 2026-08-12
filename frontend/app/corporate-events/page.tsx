@@ -63,32 +63,32 @@ export default function CorporateEventsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Sparkles size={24} className="text-blue-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Branded Live Screen</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Display corporate sponsor banners, conference logos, and custom event hashtags on main screens.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <QrCode size={24} className="text-cyan-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Instant QR Activation</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Embed QR codes on attendee badges, booth screens, and presentation slides for seamless uploads.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Share2 size={24} className="text-emerald-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">UGC Rights & Collection</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Collect high-res photo and video assets from attendees for post-event marketing and press releases.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Shield size={24} className="text-amber-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Strict Moderation Controls</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Real-time host moderation panel to ensure all content matches brand standards before broadcast.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <BarChart size={24} className="text-pink-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Engagement Analytics</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Export post-event reports showing total uploads, peak photo hours, and engagement velocity.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Building2 size={24} className="text-purple-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Multi-Stage Support</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Run separate live walls for main stage keynote, break-out tracks, and expo floors.</p>

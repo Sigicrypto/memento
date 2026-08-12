@@ -63,32 +63,32 @@ export default function ProfessionalsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Layers size={24} className="text-purple-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Multi-Event Dashboard</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Launch and monitor dozens of events simultaneously from a single unified portal.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Palette size={24} className="text-cyan-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Full White-Labeling</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Remove all Memento logos. Display your agency name and custom brand styling.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Globe size={24} className="text-emerald-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Custom Domain Connection</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Serve client galleries under your custom subdomain (e.g. live.youragency.com).</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Users size={24} className="text-amber-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Client Management</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Grant clients view-only or moderator permissions to their specific event dashboard.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <BarChart3 size={24} className="text-pink-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Event Analytics</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Track upload velocity, guest engagement metrics, and download reports for your clients.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Shield size={24} className="text-blue-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">Priority Support</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Dedicated 24/7 channel and concierge setup assistance for live event activations.</p>

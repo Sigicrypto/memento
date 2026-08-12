@@ -64,22 +64,22 @@ export default function WeddingsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <QrCode size={24} className="text-pink-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">1. Wedding QR</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Place elegant printable QR cards on guest tables and welcome boards.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Camera size={24} className="text-cyan-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">2. Guest Uploads</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Guests scan and upload photos directly from their phone camera with zero apps.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Tv size={24} className="text-purple-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">3. Live Wall</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Display photos live on venue screens or TV screens during reception.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-left">
+            <div className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 text-center flex flex-col items-center">
               <Download size={24} className="text-amber-400 mb-4" />
               <h3 className="text-white font-bold text-base mb-1">4. Full Digital Album</h3>
               <p className="text-slate-400 text-xs leading-relaxed">Download every single photo and video clip in full original resolution after the wedding.</p>

@@ -2,6 +2,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "./auth-dialog.css";
 import { AppProviders } from "@/components/AppProviders";
 import LayoutShell from "@/components/LayoutShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Facebook, Instagram, MessageCircle } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import PartnerProgramModal from '@/components/PartnerProgramModal';
 
@@ -36,15 +37,18 @@ const Footer: React.FC = () => {
                 <Link href="/terms" className="text-sm text-text-secondary hover:text-neon-cyan transition-colors duration-300">
                   Terms of Service
                 </Link>
-                <a href="https://www.facebook.com/1270689629459999" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-neon-cyan transition-colors duration-300">
-                  Facebook
-                </a>
-                <a href="https://www.instagram.com/my_memento_app" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-neon-cyan transition-colors duration-300">
-                  Instagram
-                </a>
-                <a href="https://wa.me/919866161775" target="_blank" rel="noopener noreferrer" className="text-sm text-text-secondary hover:text-neon-cyan transition-colors duration-300">
-                  Contact
-                </a>
+                
+                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-white/10">
+                  <a href="https://www.facebook.com/1270689629459999" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-900 border border-white/10 text-slate-400 hover:text-blue-500 hover:border-blue-500/50 hover:bg-blue-500/10 transition-all shadow-lg hover:-translate-y-1" aria-label="Facebook">
+                    <Facebook size={18} />
+                  </a>
+                  <a href="https://www.instagram.com/my_memento_app" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-900 border border-white/10 text-slate-400 hover:text-pink-500 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all shadow-lg hover:-translate-y-1" aria-label="Instagram">
+                    <Instagram size={18} />
+                  </a>
+                  <a href="https://wa.me/919866161775" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-slate-900 border border-white/10 text-slate-400 hover:text-emerald-500 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all shadow-lg hover:-translate-y-1" aria-label="WhatsApp">
+                    <MessageCircle size={18} />
+                  </a>
+                </div>
               </div>
 
               <div className="text-xs text-text-muted text-center md:text-right">
