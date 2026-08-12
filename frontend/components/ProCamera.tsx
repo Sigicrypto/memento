@@ -2,35 +2,25 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Camera, FlipHorizontal, Flashlight, FlashlightOff, Sliders, Settings, 
-  X, Check, RotateCcw, Upload, Lock, Sparkles, Eye, Sun, Grid, Compass, 
-  Activity, Zap, Info, ChevronUp, ChevronDown, Image as ImageIcon, Volume2, 
-  VolumeX, Shield, SlidersHorizontal, Layers, Film, Crop, Radio, Target, MoveVertical, Focus,
-  Share2, MessageCircle, Star, Heart, Smile, Download, Frame, Sparkle,
-  RefreshCw, Crown, Sliders as SlidersIcon
-} from 'lucide-react';
+import { Camera, X, RefreshCw, Flashlight, FlashlightOff, Image as ImageIcon, Check, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { extractFaceDescriptorRobust, fileToImage } from '@/lib/faceEngine';
-import { 
-  detectTrackCapabilities, analyzeFrameV2, computeViewportCSSFilter, EVENT_PRESETS, FILM_STYLES,
-  EventPresetKey, FilmStyleKey, DeviceCapabilitiesSummary, RealtimeV2Analysis 
-} from '@/lib/aiCameraAdvisor';
-import ProCameraUpgradeModal from '@/components/ProCameraUpgradeModal';
 
-export type ShootingMode = 'AUTO' | 'PRO' | 'PORTRAIT' | 'EVENT' | 'LOW LIGHT' | 'PRODUCT' | 'DOCUMENT';
-export type AspectRatioType = '4:3' | '1:1' | '16:9' | '9:16';
-export type PeakingColor = '#00e5ff' | '#00ffaa' | '#ff0077' | '#ffff00' | '#ff3300';
-export type SnapFilterType = 'none' | 'hearts' | 'crown' | 'vhs';
+type AspectRatioType = '4:3' | '1:1' | '16:9' | '9:16';
+type FilterType = 'original' | 'bw' | 'cinematic' | 'vintage' | 'polaroid' | 'cyberpunk' | 'dreamy' | 'golden' | 'cool' | 'vivid';
 
-const EVENT_BADGES = [
-  '👑 VIP Guest',
-  '🥂 Best Wishes',
-  '🥳 Party Legend',
-  '💍 Pure Love',
-  '🔥 Vibe Master',
-  '📸 Photo Freak',
-];
+const FILTERS: Record<FilterType, { label: string; css: string; emoji: string }> = {
+  original: { label: 'Original', css: 'none', emoji: '📷' },
+  bw: { label: 'B&W Noir', css: 'grayscale(1) contrast(1.2)', emoji: '🖤' },
+  cinematic: { label: 'Cinematic', css: 'saturate(1.28) contrast(1.12)', emoji: '🎬' },
+  vintage: { label: 'Vintage', css: 'sepia(0.22) contrast(1.08) saturate(1.12) hue-rotate(-6deg)', emoji: '🕰️' },
+  polaroid: { label: 'Polaroid', css: 'sepia(0.4) contrast(0.85) blur(0.5px)', emoji: '🎞️' },
+  cyberpunk: { label: 'Cyberpunk', css: 'contrast(1.3) saturate(1.5) hue-rotate(-15deg)', emoji: '🌃' },
+  dreamy: { label: 'Dreamy', css: 'brightness(1.1) contrast(0.9) blur(1px)', emoji: '✨' },
+  golden: { label: 'Golden Hour', css: 'sepia(0.3) brightness(1.05) saturate(1.2)', emoji: '🌅' },
+  cool: { label: 'Cool', css: 'saturate(0.9) hue-rotate(10deg)', emoji: '❄️' },
+  vivid: { label: 'Vivid', css: 'saturate(1.5) contrast(1.1)', emoji: '🎉' }
+};
 
 interface ProCameraProps {
   eventId?: string;
@@ -43,104 +33,29 @@ interface ProCameraProps {
 
 export default function ProCamera({
   eventId,
-  eventSlug,
   eventName = 'Memento Event',
-  isProUser = false,
   onPhotoUploaded,
   onClose,
 }: ProCameraProps) {
-  // ── Camera Stream & Canvas Refs ──
   const videoRef = useRef<HTMLVideoElement>(null);
   const viewfinderRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const histogramCanvasRef = useRef<HTMLCanvasElement>(null);
-  const peakingCanvasRef = useRef<HTMLCanvasElement>(null);
-  const zebraCanvasRef = useRef<HTMLCanvasElement>(null);
-  const v2AnalysisCanvasRef = useRef<HTMLCanvasElement>(null);
-  const loupeCanvasRef = useRef<HTMLCanvasElement>(null);
-
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [activeTrack, setActiveTrack] = useState<MediaStreamTrack | null>(null);
-  const [cameraDevices, setCameraDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
-  const [cameraError, setCameraError] = useState<string | null>(null);
   const [isLoadingCamera, setIsLoadingCamera] = useState<boolean>(true);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
-  // Capabilities
-  const [capabilities, setCapabilities] = useState<DeviceCapabilitiesSummary>({
-    hasISO: false, hasShutterSpeed: false, hasFocusMode: false, hasFocusDistance: false,
-    hasWhiteBalance: false, hasColorTemperature: false, hasExposureCompensation: false,
-    hasZoom: false, hasTorch: false, cameraCount: 1,
-  });
-
-  // ── Camera Settings ──
-  const [shootingMode, setShootingMode] = useState<ShootingMode>('AUTO');
-  const [activePresetKey, setActivePresetKey] = useState<EventPresetKey>('wedding');
-  const [activeFilmStyle, setActiveFilmStyle] = useState<FilmStyleKey>('process_zero');
-  const [activeSnapFilter, setActiveSnapFilter] = useState<SnapFilterType>('none');
+  // Settings
+  const [activeFilter, setActiveFilter] = useState<FilterType>('original');
   const [aspectRatio, setAspectRatio] = useState<AspectRatioType>('4:3');
-  const [lensZoom, setLensZoom] = useState<number>(1);
-
-  // Manual Controls
-  const [iso, setIso] = useState<number>(400);
-  const [shutterSpeed, setShutterSpeed] = useState<string>('1/125');
-  const [exposureCompensation, setExposureCompensation] = useState<number>(0);
-  const [wbMode, setWbMode] = useState<'auto' | 'daylight' | 'cloudy' | 'tungsten' | 'fluorescent' | 'manual'>('auto');
-  const [colorTemperature, setColorTemperature] = useState<number>(5500);
-  const [wbTint, setWbTint] = useState<number>(0);
-  const [focusMode, setFocusMode] = useState<'auto' | 'manual'>('auto');
-  const [focusDistance, setFocusDistance] = useState<number>(0.5);
-  const [isFocusLoupeVisible, setIsFocusLoupeVisible] = useState<boolean>(false);
-
-  // Touch Target Box
-  const [focusTargetPos, setFocusTargetPos] = useState<{ x: number; y: number } | null>(null);
-  const [showTargetSunSlider, setShowTargetSunSlider] = useState<boolean>(false);
-  const touchStartPos = useRef<{ x: number; y: number; ev: number; focus: number } | null>(null);
-
-  // Toggles & HUD
-  const [showGrid, setShowGrid] = useState<boolean>(true);
-  const [showLevel, setShowLevel] = useState<boolean>(true);
-  const [showHistogram, setShowHistogram] = useState<boolean>(false);
-  const [showFocusPeaking, setShowFocusPeaking] = useState<boolean>(false);
-  const [peakingColor, setPeakingColor] = useState<PeakingColor>('#00e5ff');
-  const [showZebra, setShowZebra] = useState<boolean>(false);
-  const [zebraThreshold, setZebraThreshold] = useState<number>(240);
-  const [mirrorFront, setMirrorFront] = useState<boolean>(true);
   const [torchOn, setTorchOn] = useState<boolean>(false);
-  const [selfTimer, setSelfTimer] = useState<number>(0);
-  const [timerCountdown, setTimerCountdown] = useState<number | null>(null);
-  const [hapticsEnabled, setHapticsEnabled] = useState<boolean>(true);
-  const [shutterSoundEnabled, setShutterSoundEnabled] = useState<boolean>(true);
+  const [hasTorchCaps, setHasTorchCaps] = useState<boolean>(false);
 
-  // UI Panels State
-  const [showSettingsDrawer, setShowSettingsDrawer] = useState<boolean>(false);
-  const [showPresetsPanel, setShowPresetsPanel] = useState<boolean>(false);
-  const [showFilmStylePanel, setShowFilmStylePanel] = useState<boolean>(false);
-  const [showGuidedTipExpand, setShowGuidedTipExpand] = useState<boolean>(false);
-  const [activeManualControlTab, setActiveManualControlTab] = useState<'iso' | 'shutter' | 'ev' | 'wb' | 'focus' | 'tint' | null>(null);
-
-  // Casual User & Social Sharing State
-  const [selectedBadge, setSelectedBadge] = useState<string>('');
-  const [starRating, setStarRating] = useState<number>(5);
-  const [addWatermarkFrame, setAddWatermarkFrame] = useState<boolean>(true);
-
-  // NOMO CAM Instant Film Developing Animation State
-  const [isDevelopingPolaroid, setIsDevelopingPolaroid] = useState<boolean>(false);
-
-  // Upgrade Modal
-  const [showUpgradeModal, setShowUpgradeModal] = useState<boolean>(false);
-  const [upgradeReason, setUpgradeReason] = useState<string>('Pro Camera');
-
-  // Realtime Gyro/Level State
-  const [rollAngle, setRollAngle] = useState<number>(0);
-
-  // Realtime V2 Scene Analysis State (Throttled)
-  const [v2Analysis, setV2Analysis] = useState<RealtimeV2Analysis>({
-    luminance: 128, isLowLight: false, isOverexposed: false, isBacklit: false, motionScore: 0, recommendation: 'Analyzing scene...',
-  });
+  // Focus UI
+  const [focusTargetPos, setFocusTargetPos] = useState<{ x: number; y: number } | null>(null);
 
   // Capture & Upload State
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
@@ -148,12 +63,99 @@ export default function ProCamera({
   const [uploaderName, setUploaderName] = useState<string>('');
   const [caption, setCaption] = useState<string>('');
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadSuccess, setUploadSuccess] = useState<boolean>(false);
 
-  // ── Synthetic Audio Shutter Click ──
-  const playShutterSound = useCallback(() => {
-    if (!shutterSoundEnabled) return;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('memento_guest_name') || '';
+      if (saved) setUploaderName(saved);
+    }
+  }, []);
+
+  const stopCameraStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+  }, []);
+
+  const initCamera = useCallback(async (forceFacingMode?: 'user' | 'environment') => {
+    setIsLoadingCamera(true);
+    setCameraError(null);
+    stopCameraStream();
+
+    try {
+      const targetFacing = forceFacingMode || facingMode;
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: targetFacing } },
+        audio: false,
+      });
+
+      streamRef.current = newStream;
+      setStream(newStream);
+
+      const track = newStream.getVideoTracks()[0];
+      if (track) {
+        setActiveTrack(track);
+        try {
+          const caps: any = track.getCapabilities();
+          setHasTorchCaps('torch' in caps);
+        } catch (e) {}
+      }
+
+      if (videoRef.current) {
+        const video = videoRef.current;
+        video.srcObject = newStream;
+        video.onloadedmetadata = () => {
+          video.play().catch(() => {});
+        };
+        video.play().catch(() => {});
+      }
+      setIsLoadingCamera(false);
+    } catch (err: any) {
+      console.warn('Camera getUserMedia error:', err);
+      setCameraError(err?.message || 'Camera permission required.');
+      setIsLoadingCamera(false);
+    }
+  }, [facingMode, stopCameraStream]);
+
+  useEffect(() => {
+    initCamera();
+    return () => stopCameraStream();
+  }, [initCamera, stopCameraStream]);
+
+  // Apply CSS Filter to Live Viewfinder
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.style.filter = FILTERS[activeFilter].css;
+    }
+  }, [activeFilter]);
+
+  const toggleCameraFacingMode = () => {
+    const nextFacing = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextFacing);
+    initCamera(nextFacing);
+  };
+
+  const toggleTorch = async () => {
+    if (!activeTrack || !hasTorchCaps) return;
+    try {
+      const nextTorch = !torchOn;
+      await activeTrack.applyConstraints({ advanced: [{ torch: nextTorch }] } as any);
+      setTorchOn(nextTorch);
+    } catch (e) {}
+  };
+
+  const handleViewfinderClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!viewfinderRef.current) return;
+    const rect = viewfinderRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setFocusTargetPos({ x, y });
+    setTimeout(() => setFocusTargetPos(null), 2000);
+  };
+
+  const playShutterSound = () => {
     try {
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const osc = audioCtx.createOscillator();
@@ -168,508 +170,48 @@ export default function ProCamera({
       osc.start();
       osc.stop(audioCtx.currentTime + 0.04);
     } catch (e) {}
-  }, [shutterSoundEnabled]);
-
-  // ── Device Gyro Listener ──
-  useEffect(() => {
-    const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.gamma !== null) setRollAngle(Math.round(e.gamma));
-    };
-    if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
-      window.addEventListener('deviceorientation', handleOrientation);
-    }
-    return () => {
-      if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
-        window.removeEventListener('deviceorientation', handleOrientation);
-      }
-    };
-  }, []);
-
-  // Saved Uploader Name
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('memento_guest_name') || '';
-      if (saved) setUploaderName(saved);
-    }
-  }, []);
-
-  // Live Viewfinder CSS Filter Updates (DOM Ref Direct Assignment)
-  useEffect(() => {
-    if (videoRef.current) {
-      const filterStr = computeViewportCSSFilter(exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle);
-      videoRef.current.style.filter = filterStr;
-    }
-  }, [exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle]);
-
-  // ── Camera Initialization & Front/Back Toggle ──
-  const stopCameraStream = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-  }, []);
-
-  const initCamera = useCallback(async (deviceId?: string, forceFacingMode?: 'user' | 'environment') => {
-    setIsLoadingCamera(true);
-    setCameraError(null);
-    stopCameraStream();
-
-    try {
-      let videoDevs: MediaDeviceInfo[] = [];
-      if (navigator.mediaDevices && typeof navigator.mediaDevices.enumerateDevices === 'function') {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        videoDevs = devices.filter((d) => d.kind === 'videoinput');
-        setCameraDevices(videoDevs);
-      }
-
-      const targetFacing = forceFacingMode || facingMode;
-      const videoConstraints: any = deviceId
-        ? { deviceId }
-        : { facingMode: { ideal: targetFacing } };
-
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: videoConstraints,
-        audio: false,
-      });
-
-      streamRef.current = newStream;
-      setStream(newStream);
-
-      const track = newStream.getVideoTracks()[0];
-      if (track) {
-        setActiveTrack(track);
-        const caps = detectTrackCapabilities(track);
-        caps.cameraCount = videoDevs.length;
-        setCapabilities(caps);
-      }
-
-      if (videoRef.current) {
-        const video = videoRef.current;
-        video.srcObject = newStream;
-        video.onloadedmetadata = () => {
-          video.play().catch(() => {});
-        };
-        video.play().catch(() => {});
-      }
-      setIsLoadingCamera(false);
-    } catch (err: any) {
-      console.warn('Camera getUserMedia error:', err);
-      setCameraError(err?.message || 'Camera permission required. Tap below to select or take photo.');
-      setIsLoadingCamera(false);
-    }
-  }, [facingMode, stopCameraStream]);
-
-  useEffect(() => {
-    initCamera(selectedDeviceId);
-    return () => {
-      stopCameraStream();
-    };
-  }, [selectedDeviceId, initCamera, stopCameraStream]);
-
-  const toggleCameraFacingMode = () => {
-    const nextFacing = facingMode === 'environment' ? 'user' : 'environment';
-    setFacingMode(nextFacing);
-    setSelectedDeviceId('');
-    initCamera(undefined, nextFacing);
   };
 
-  const applyCameraConstraints = useCallback(async (overrides: Record<string, any>) => {
-    if (!activeTrack || typeof activeTrack.applyConstraints !== 'function') return;
-    try {
-      const advancedConstraints: any = {};
-      if ('iso' in overrides && capabilities.hasISO) advancedConstraints.iso = overrides.iso;
-      if ('exposureCompensation' in overrides && capabilities.hasExposureCompensation) advancedConstraints.exposureCompensation = overrides.exposureCompensation;
-      if ('focusMode' in overrides && capabilities.hasFocusMode) advancedConstraints.focusMode = overrides.focusMode;
-      if ('focusDistance' in overrides && capabilities.hasFocusDistance) advancedConstraints.focusDistance = overrides.focusDistance;
-      if ('whiteBalanceMode' in overrides && capabilities.hasWhiteBalance) advancedConstraints.whiteBalanceMode = overrides.whiteBalanceMode;
-      if ('colorTemperature' in overrides && capabilities.hasColorTemperature) advancedConstraints.colorTemperature = overrides.colorTemperature;
-      if ('zoom' in overrides && capabilities.hasZoom) advancedConstraints.zoom = overrides.zoom;
-      if ('torch' in overrides && capabilities.hasTorch) advancedConstraints.torch = overrides.torch;
-
-      if (Object.keys(advancedConstraints).length > 0) {
-        await activeTrack.applyConstraints({ advanced: [advancedConstraints] } as any);
-      }
-    } catch (e) {}
-  }, [activeTrack, capabilities]);
-
-  const toggleTorch = async () => {
-    const nextTorch = !torchOn;
-    setTorchOn(nextTorch);
-    await applyCameraConstraints({ torch: nextTorch });
-  };
-
-  const switchCameraLens = (zoomMultiplier: number) => {
-    setLensZoom(zoomMultiplier);
-    if (capabilities.hasZoom) {
-      applyCameraConstraints({ zoom: zoomMultiplier });
-    } else if (cameraDevices.length > 1) {
-      const targetIndex = zoomMultiplier === 0.5 ? 0 : zoomMultiplier >= 2 ? cameraDevices.length - 1 : 1;
-      const targetDev = cameraDevices[targetIndex] || cameraDevices[0];
-      if (targetDev && targetDev.deviceId !== selectedDeviceId) {
-        setSelectedDeviceId(targetDev.deviceId);
-      }
-    }
-  };
-
-  const requirePro = (featureName: string, action: () => void) => {
-    if (isProUser) {
-      action();
-    } else {
-      setUpgradeReason(featureName);
-      setShowUpgradeModal(true);
-    }
-  };
-
-  const applyPreset = (presetKey: EventPresetKey) => {
-    const preset = EVENT_PRESETS[presetKey];
-    if (!preset) return;
-    setActivePresetKey(presetKey);
-
-    const s = preset.settings;
-    if (s.iso) setIso(s.iso);
-    if (s.shutterSpeed) setShutterSpeed(s.shutterSpeed);
-    if (s.exposureCompensation !== undefined) setExposureCompensation(s.exposureCompensation);
-    if (s.colorTemperature) setColorTemperature(s.colorTemperature);
-    if (s.tint !== undefined) setWbTint(s.tint);
-    if (s.focusMode) setFocusMode(s.focusMode);
-
-    applyCameraConstraints({
-      iso: s.iso,
-      exposureCompensation: s.exposureCompensation,
-      colorTemperature: s.colorTemperature,
-      focusMode: s.focusMode,
-    });
-  };
-
-  const handleNativeShare = async () => {
-    if (!capturedBlob) return;
-    try {
-      const file = new File([capturedBlob], `memento_${Date.now()}.jpg`, { type: 'image/jpeg' });
-      if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: eventName,
-          text: caption ? `${selectedBadge ? selectedBadge + ' — ' : ''}${caption}` : `Live photo from ${eventName}! ✨`,
-        });
-      } else {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(file);
-        a.download = file.name;
-        a.click();
-      }
-    } catch (e) {
-      console.warn('Share cancelled:', e);
-    }
-  };
-
-  const handleFallbackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const blob = file.slice(0, file.size, file.type);
-    setCapturedBlob(blob);
-    setCapturedPreviewUrl(URL.createObjectURL(file));
-  };
-
-  // ── Touch Gesture Handlers ──
-  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (e.touches.length === 1) {
-      const touch = e.touches[0];
-      touchStartPos.current = {
-        x: touch.clientX,
-        y: touch.clientY,
-        ev: exposureCompensation,
-        focus: focusDistance,
-      };
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!touchStartPos.current || e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - touchStartPos.current.x;
-    const deltaY = touch.clientY - touchStartPos.current.y;
-
-    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
-      const evChange = -Number((deltaY / 100).toFixed(1));
-      const newEV = Math.max(-3, Math.min(3, Number((touchStartPos.current.ev + evChange).toFixed(1))));
-      setExposureCompensation(newEV);
-      applyCameraConstraints({ exposureCompensation: newEV });
-    } else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-      setIsFocusLoupeVisible(true);
-      setFocusMode('manual');
-      const focusChange = Number((deltaX / 300).toFixed(2));
-      const newFocus = Math.max(0, Math.min(1, Number((touchStartPos.current.focus + focusChange).toFixed(2))));
-      setFocusDistance(newFocus);
-      applyCameraConstraints({ focusDistance: newFocus });
-    }
-  };
-
-  const handleTouchEnd = () => {
-    touchStartPos.current = null;
-    setTimeout(() => setIsFocusLoupeVisible(false), 800);
-  };
-
-  const handleViewfinderClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!viewfinderRef.current) return;
-    const rect = viewfinderRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    setFocusTargetPos({ x, y });
-    setShowTargetSunSlider(true);
-    if (hapticsEnabled && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate([20]);
-    }
-
-    setTimeout(() => {
-      setShowTargetSunSlider(false);
-    }, 3500);
-  };
-
-  // ── Throttled Overlays Loop ──
-  const lastAnalysisTime = useRef<number>(0);
-
-  useEffect(() => {
-    let animId: number;
-
-    const processFrame = () => {
-      if (videoRef.current && videoRef.current.readyState === 4) {
-        const video = videoRef.current;
-        const now = Date.now();
-
-        if (now - lastAnalysisTime.current > 1000 && v2AnalysisCanvasRef.current) {
-          lastAnalysisTime.current = now;
-          const res = analyzeFrameV2(v2AnalysisCanvasRef.current, video);
-          setV2Analysis((prev) => (prev.recommendation !== res.recommendation ? res : prev));
-        }
-
-        if (showHistogram && histogramCanvasRef.current) {
-          drawHistogram(video, histogramCanvasRef.current);
-        }
-
-        if (showFocusPeaking && peakingCanvasRef.current) {
-          drawFocusPeakingV2(video, peakingCanvasRef.current, peakingColor);
-        }
-
-        if (showZebra && zebraCanvasRef.current) {
-          drawZebraOverlayV2(video, zebraCanvasRef.current, zebraThreshold);
-        }
-
-        if (isFocusLoupeVisible && loupeCanvasRef.current) {
-          drawFocusLoupe(video, loupeCanvasRef.current);
-        }
-      }
-      animId = requestAnimationFrame(processFrame);
-    };
-
-    animId = requestAnimationFrame(processFrame);
-    return () => cancelAnimationFrame(animId);
-  }, [showHistogram, showFocusPeaking, peakingColor, showZebra, zebraThreshold, isFocusLoupeVisible]);
-
-  // ── Canvas Loupe Rendering ──
-  const drawFocusLoupe = (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
-    const ctx = canvas.getContext('2d');
-    if (!ctx || !video.videoWidth || !video.videoHeight) return;
-    canvas.width = 140;
-    canvas.height = 140;
-
-    const srcX = video.videoWidth * 0.4;
-    const srcY = video.videoHeight * 0.4;
-    const srcW = video.videoWidth * 0.2;
-    const srcH = video.videoHeight * 0.2;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(70, 70, 68, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, 140, 140);
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#00e5ff';
-    ctx.stroke();
-    ctx.restore();
-  };
-
-  const drawHistogram = (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    canvas.width = 160;
-    canvas.height = 80;
-    ctx.clearRect(0, 0, 160, 80);
-
-    const sampleCanvas = document.createElement('canvas');
-    sampleCanvas.width = 80;
-    sampleCanvas.height = 40;
-    const sampleCtx = sampleCanvas.getContext('2d', { willReadFrequently: true });
-    if (!sampleCtx) return;
-    sampleCtx.drawImage(video, 0, 0, 80, 40);
-
-    const imgData = sampleCtx.getImageData(0, 0, 80, 40).data;
-    const histogram = new Array(256).fill(0);
-
-    for (let i = 0; i < imgData.length; i += 4) {
-      const lum = Math.round(0.2126 * imgData[i] + 0.7152 * imgData[i + 1] + 0.0722 * imgData[i + 2]);
-      histogram[lum]++;
-    }
-
-    const maxVal = Math.max(...histogram) || 1;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, 160, 80);
-
-    ctx.fillStyle = 'rgba(34, 211, 238, 0.75)';
-    for (let i = 0; i < 256; i += 2) {
-      const barHeight = (histogram[i] / maxVal) * 70;
-      const x = (i / 256) * 160;
-      ctx.fillRect(x, 80 - barHeight, 1.2, barHeight);
-    }
-  };
-
-  const drawFocusPeakingV2 = (video: HTMLVideoElement, canvas: HTMLCanvasElement, colorHex: string) => {
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
-    const width = 160;
-    const height = 120;
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(video, 0, 0, width, height);
-
-    const imgData = ctx.getImageData(0, 0, width, height);
-    const data = imgData.data;
-    const output = ctx.createImageData(width, height);
-    const outData = output.data;
-
-    const rCol = parseInt(colorHex.substring(1, 3), 16) || 0;
-    const gCol = parseInt(colorHex.substring(3, 5), 16) || 229;
-    const bCol = parseInt(colorHex.substring(5, 7), 16) || 255;
-
-    for (let y = 1; y < height - 1; y++) {
-      for (let x = 1; x < width - 1; x++) {
-        const idx = (y * width + x) * 4;
-        const lumCenter = 0.2126 * data[idx] + 0.7152 * data[idx + 1] + 0.0722 * data[idx + 2];
-        const lumRight = 0.2126 * data[idx + 4] + 0.7152 * data[idx + 5] + 0.0722 * data[idx + 6];
-        const lumBottom = 0.2126 * data[idx + width * 4] + 0.7152 * data[idx + width * 4 + 1] + 0.0722 * data[idx + width * 4 + 2];
-
-        const diff = Math.abs(lumCenter - lumRight) + Math.abs(lumCenter - lumBottom);
-
-        if (diff > 42) {
-          outData[idx] = rCol;
-          outData[idx + 1] = gCol;
-          outData[idx + 2] = bCol;
-          outData[idx + 3] = 230;
-        }
-      }
-    }
-    ctx.putImageData(output, 0, 0);
-  };
-
-  const drawZebraOverlayV2 = (video: HTMLVideoElement, canvas: HTMLCanvasElement, threshold: number) => {
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
-    const width = 160;
-    const height = 120;
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(video, 0, 0, width, height);
-
-    const imgData = ctx.getImageData(0, 0, width, height);
-    const data = imgData.data;
-    ctx.clearRect(0, 0, width, height);
-
-    ctx.fillStyle = '#ff0055';
-    for (let y = 0; y < height; y += 4) {
-      for (let x = 0; x < width; x += 4) {
-        const idx = (y * width + x) * 4;
-        const lum = 0.2126 * data[idx] + 0.7152 * data[idx + 1] + 0.0722 * data[idx + 2];
-        if (lum >= threshold) {
-          ctx.fillRect(x, y, 3, 3);
-        }
-      }
-    }
-  };
-
-  // ── Shutter Action ──
   const handleShutterTap = () => {
     if (cameraError) {
       if (fileInputRef.current) fileInputRef.current.click();
       return;
     }
 
-    if (selfTimer > 0) {
-      let count = selfTimer;
-      setTimerCountdown(count);
-      const interval = setInterval(() => {
-        count -= 1;
-        if (count > 0) {
-          setTimerCountdown(count);
-        } else {
-          clearInterval(interval);
-          setTimerCountdown(null);
-          executeCaptureV2();
-        }
-      }, 1000);
-    } else {
-      executeCaptureV2();
-    }
-  };
+    if (!videoRef.current) return;
 
-  const executeCaptureV2 = async () => {
     playShutterSound();
-    if (hapticsEnabled && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate([45]);
-    }
-
-    if (!videoRef.current) {
-      if (fileInputRef.current) fileInputRef.current.click();
-      return;
-    }
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate([45]);
 
     try {
       const video = videoRef.current;
       const baseWidth = video.videoWidth || 1920;
       const baseHeight = video.videoHeight || 1080;
       
-      const watermarkMargin = addWatermarkFrame ? Math.round(baseHeight * 0.08) : 0;
-      
       const canvas = document.createElement('canvas');
       canvas.width = baseWidth;
-      canvas.height = baseHeight + watermarkMargin;
+      canvas.height = baseHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        if (facingMode === 'user' || (mirrorFront && selectedDeviceId.includes('front'))) {
+        if (facingMode === 'user') {
           ctx.translate(baseWidth, 0);
           ctx.scale(-1, 1);
         }
 
-        const activeFilter = computeViewportCSSFilter(exposureCompensation, iso, colorTemperature, wbTint, activeFilmStyle);
-        if (activeFilter && activeFilter !== 'none') {
-          ctx.filter = activeFilter;
+        const cssFilter = FILTERS[activeFilter].css;
+        if (cssFilter !== 'none') {
+          ctx.filter = cssFilter;
         }
 
         ctx.drawImage(video, 0, 0, baseWidth, baseHeight);
         ctx.filter = 'none';
-
-        if (addWatermarkFrame) {
-          ctx.fillStyle = '#09090b';
-          ctx.fillRect(0, baseHeight, baseWidth, watermarkMargin);
-
-          ctx.fillStyle = '#f59e0b';
-          ctx.font = `bold ${Math.round(watermarkMargin * 0.35)}px monospace`;
-          ctx.fillText(`MEMENTO PRO CAMERA`, Math.round(baseWidth * 0.04), baseHeight + Math.round(watermarkMargin * 0.6));
-
-          ctx.fillStyle = '#a1a1aa';
-          ctx.font = `${Math.round(watermarkMargin * 0.28)}px monospace`;
-          const detailsStr = `ISO ${iso} • 1/125s • ${colorTemperature}K • ${eventName.toUpperCase()}`;
-          ctx.fillText(detailsStr, Math.round(baseWidth * 0.45), baseHeight + Math.round(watermarkMargin * 0.6));
-        }
-
-        setIsDevelopingPolaroid(true);
-        setTimeout(() => setIsDevelopingPolaroid(false), 2200);
 
         canvas.toBlob((blob) => {
           if (blob) {
             setCapturedBlob(blob);
             setCapturedPreviewUrl(URL.createObjectURL(blob));
           }
-        }, 'image/jpeg', 0.95);
+        }, 'image/jpeg', 0.92);
       }
     } catch (err) {
       if (fileInputRef.current) fileInputRef.current.click();
@@ -678,36 +220,29 @@ export default function ProCamera({
 
   const handleUploadPhoto = async () => {
     if (!capturedBlob || !eventId) return;
-
     setIsUploading(true);
-    setUploadProgress(10);
 
     try {
-      const filename = `pro_cam_v2_${eventId}_${Date.now()}.jpg`;
+      const filename = `memento_upload_${eventId}_${Date.now()}.jpg`;
       const storagePath = `${eventId}/${filename}`;
 
       const { error: storageErr } = await supabase.storage.from('photos').upload(storagePath, capturedBlob, {
         contentType: 'image/jpeg',
       });
       if (storageErr) throw storageErr;
-      setUploadProgress(60);
-
-      const badgePrefix = selectedBadge ? `[${selectedBadge}] ` : '';
-      const starSuffix = starRating > 0 ? ` (${'★'.repeat(starRating)})` : '';
-      const finalCaption = `${badgePrefix}${caption.trim()}${starSuffix}`.trim() || null;
 
       const { data: inserted, error: dbErr } = await supabase.from('photos').insert({
         event_id: eventId,
         storage_path: storagePath,
-        uploader_name: uploaderName.trim() || 'Guest Photographer',
-        caption: finalCaption,
+        uploader_name: uploaderName.trim() || 'Guest',
+        caption: caption.trim() || null,
         media_type: 'image',
         approved: true,
       }).select().single();
 
       if (dbErr) throw dbErr;
-      setUploadProgress(90);
 
+      // Extract Face
       try {
         const fileObj = new File([capturedBlob], filename, { type: 'image/jpeg' });
         const imgEl = await fileToImage(fileObj);
@@ -721,22 +256,17 @@ export default function ProCamera({
         }
       } catch (faceErr) {}
 
-      setUploadProgress(100);
       setUploadSuccess(true);
-      if (uploaderName.trim() && typeof window !== 'undefined') {
-        localStorage.setItem('memento_guest_name', uploaderName.trim());
-      }
+      if (uploaderName.trim()) localStorage.setItem('memento_guest_name', uploaderName.trim());
 
-      if (onPhotoUploaded && inserted) {
-        onPhotoUploaded(inserted.id);
-      }
+      if (onPhotoUploaded && inserted) onPhotoUploaded(inserted.id);
 
       setTimeout(() => {
         setCapturedBlob(null);
         setCapturedPreviewUrl(null);
         setUploadSuccess(false);
         setIsUploading(false);
-        setUploadProgress(0);
+        setCaption('');
       }, 1500);
     } catch (err: any) {
       alert(err.message || 'Upload failed');
@@ -744,878 +274,188 @@ export default function ProCamera({
     }
   };
 
-  const getAspectRatioContainerClass = () => {
+  const handleFallbackFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCapturedBlob(file);
+    setCapturedPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const getAspectRatioClass = () => {
     switch (aspectRatio) {
-      case '1:1': return 'aspect-square max-w-lg mx-auto rounded-3xl overflow-hidden';
-      case '16:9': return 'aspect-video w-full rounded-3xl overflow-hidden';
+      case '1:1': return 'aspect-square w-full max-w-md mx-auto';
+      case '16:9': return 'aspect-video w-full max-w-md mx-auto';
       case '9:16': return 'w-full h-full';
       default: return 'w-full h-full';
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black text-white flex flex-col justify-between overflow-hidden select-none touch-none font-sans h-[100dvh] w-vw">
-      <canvas ref={v2AnalysisCanvasRef} className="hidden" />
+    <div className="fixed inset-0 z-[99999] bg-black text-white flex flex-col justify-between overflow-hidden select-none font-sans h-[100dvh] w-vw">
+      
+      <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handleFallbackFileSelect} className="hidden" />
 
-      {/* Fallback Camera Roll File Input */}
-      <input 
-        ref={fileInputRef} 
-        type="file" 
-        accept="image/*" 
-        capture="environment" 
-        onChange={handleFallbackFileSelect} 
-        className="hidden" 
-      />
-
-      {/* ── Top Header Navigation (Un-Cut & Sleek) ── */}
-      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between px-3.5 py-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-[2px] pt-safe">
-        {/* Left: Close & Flip Camera */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button 
-            onClick={onClose} 
-            className="p-2 rounded-full bg-black/60 border border-white/15 text-white/90 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
-          >
-            <X size={18} />
-          </button>
-          <button
-            onClick={toggleCameraFacingMode}
-            className="px-2.5 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 font-extrabold text-[10px] flex items-center gap-1 backdrop-blur-md hover:bg-cyan-500/30 active:scale-95 transition-all shadow-md shrink-0"
-          >
-            <RefreshCw size={11} className="animate-spin-slow" />
-            <span>{facingMode === 'user' ? '🤳 SELFIE' : '📷 MAIN'}</span>
-          </button>
-        </div>
-
-        {/* Center: PRO OPTIONS Toggle Pill */}
-        <button
-          onClick={() => {
-            if (shootingMode === 'PRO') {
-              setShootingMode('AUTO');
-              setActiveManualControlTab(null);
-            } else {
-              setShootingMode('PRO');
-              setActiveManualControlTab('ev');
-            }
-          }}
-          className={`px-3 py-1.5 rounded-full border text-[10px] font-extrabold tracking-wider transition-all flex items-center gap-1 shrink-0 ${
-            shootingMode === 'PRO'
-              ? 'bg-cyan-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/30 scale-105'
-              : 'bg-black/75 text-cyan-400 border-cyan-500/40 hover:bg-cyan-500/20'
-          }`}
-        >
-          <SlidersHorizontal size={11} />
-          <span>PRO OPTIONS</span>
+      {/* Top Header */}
+      <div className="absolute top-0 inset-x-0 z-30 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/80 to-transparent pt-safe">
+        <button onClick={onClose} className="p-2 rounded-full bg-black/60 border border-white/10 text-white/90 hover:text-white backdrop-blur active:scale-95 transition">
+          <X size={20} />
         </button>
-
-        {/* Right: Quick Torch & Settings */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {capabilities.hasTorch && (
-            <button 
-              onClick={toggleTorch}
-              className={`p-2 rounded-full border backdrop-blur-md transition-all active:scale-95 ${
-                torchOn ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/30' : 'bg-black/60 text-white/80 border-white/15'
-              }`}
-            >
-              {torchOn ? <Flashlight size={16} /> : <FlashlightOff size={16} />}
-            </button>
-          )}
-
-          <button 
-            onClick={() => setShowSettingsDrawer(!showSettingsDrawer)}
-            className="p-2 rounded-full bg-black/60 border border-white/15 text-white/80 hover:text-white backdrop-blur-md active:scale-95 transition-transform"
-          >
-            <Settings size={16} />
+        
+        {hasTorchCaps && (
+          <button onClick={toggleTorch} className={`p-2 rounded-full border backdrop-blur active:scale-95 transition ${torchOn ? 'bg-amber-400 text-black border-amber-300 shadow-lg shadow-amber-500/30' : 'bg-black/60 text-white/80 border-white/10'}`}>
+            {torchOn ? <Flashlight size={18} /> : <FlashlightOff size={18} />}
           </button>
-        </div>
+        )}
       </div>
 
-      {/* ── Main Viewfinder Area ── */}
-      <div 
-        ref={viewfinderRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onClick={handleViewfinderClick}
-        className="relative flex-grow w-full h-full bg-zinc-950 overflow-hidden flex items-center justify-center cursor-crosshair"
-      >
+      {/* Viewfinder Area */}
+      <div ref={viewfinderRef} onClick={handleViewfinderClick} className="relative flex-grow w-full h-full bg-zinc-950 overflow-hidden flex items-center justify-center cursor-crosshair">
         {isLoadingCamera && (
           <div className="flex flex-col items-center gap-3 text-zinc-400">
-            <div className="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs font-medium tracking-wide">Starting Pro Camera Viewfinder...</p>
+            <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-xs font-medium">Starting Camera...</p>
           </div>
         )}
 
         {cameraError && (
-          <div className="p-6 max-w-xs text-center space-y-4">
+          <div className="p-6 text-center space-y-4">
             <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto">
               <Camera size={24} />
             </div>
             <p className="text-sm font-medium text-red-300">{cameraError}</p>
-            <button 
-              onClick={() => fileInputRef.current?.click()} 
-              className="px-5 py-3 rounded-2xl bg-cyan-400 text-black font-extrabold text-xs uppercase tracking-wider shadow-lg hover:bg-cyan-300 transition-colors"
-            >
-              Take Photo with Device Camera
+            <button onClick={() => fileInputRef.current?.click()} className="px-5 py-3 rounded-2xl bg-cyan-400 text-black font-extrabold text-xs uppercase shadow-lg hover:bg-cyan-300">
+              Pick from Gallery
             </button>
           </div>
         )}
 
-        {/* Video Frame */}
-        <div className={`relative transition-all duration-300 ${getAspectRatioContainerClass()}`}>
+        <div className={`relative transition-all duration-300 ${getAspectRatioClass()}`}>
           <video 
             ref={videoRef}
             playsInline
-            webkit-playsinline="true"
             muted
             autoPlay
-            style={{ WebkitTransform: 'translateZ(0)', transform: 'translateZ(0)' }}
-            className={`w-full h-full object-cover transition-opacity duration-300 ${
-              facingMode === 'user' || (mirrorFront && selectedDeviceId.includes('front')) ? 'scale-x-[-1]' : ''
-            } ${isLoadingCamera || cameraError ? 'opacity-0' : 'opacity-100'}`}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${facingMode === 'user' ? 'scale-x-[-1]' : ''} ${isLoadingCamera || cameraError ? 'opacity-0' : 'opacity-100'}`}
           />
-
-          {/* Playful Snapchat AR Filter Overlays */}
-          {activeSnapFilter === 'hearts' && (
-            <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6 bg-gradient-to-b from-pink-500/20 via-transparent to-pink-500/20">
-              <div className="flex justify-between text-pink-300 text-2xl animate-bounce">
-                <span>💖</span>
-                <span>✨</span>
-                <span>💖</span>
-              </div>
-              <div className="flex justify-between text-pink-300 text-2xl animate-bounce delay-100">
-                <span>✨</span>
-                <span>💖</span>
-                <span>✨</span>
-              </div>
-            </div>
-          )}
-
-          {activeSnapFilter === 'crown' && (
-            <div className="absolute top-8 inset-x-0 pointer-events-none flex justify-center text-amber-400 animate-pulse">
-              <Crown size={56} className="drop-shadow-[0_0_15px_rgba(245,158,11,0.8)]" />
-            </div>
-          )}
-
-          {activeSnapFilter === 'vhs' && (
-            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between border-2 border-red-500/30">
-              <div className="flex items-center justify-between text-red-500 font-mono text-xs font-bold tracking-widest bg-black/40 px-2 py-1 rounded">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" /> REC</span>
-                <span>SP 0:00:12</span>
-              </div>
-              <div className="text-amber-400 font-mono text-xs font-bold tracking-widest bg-black/40 px-2 py-1 rounded w-fit">
-                <span>AUG 10 2026</span>
-              </div>
-            </div>
-          )}
-
-          {/* Grid Overlay */}
-          {showGrid && !isLoadingCamera && !cameraError && (
-            <div className="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3 border border-white/10">
-              {[...Array(9)].map((_, i) => (
-                <div key={i} className="border border-white/10" />
-              ))}
-            </div>
-          )}
-
-          {/* Horizon Level */}
-          {showLevel && !isLoadingCamera && !cameraError && (
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-              <div className={`relative w-48 h-0.5 transition-all duration-100 ${
-                Math.abs(rollAngle) <= 1 ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50 scale-105' : 'bg-white/40'
-              }`} style={{ transform: `rotate(${rollAngle}deg)` }}>
-                <div className="absolute left-1/2 -top-1.5 -translate-x-1/2 w-3 h-3 border-2 border-white/80 rounded-full" />
-              </div>
-            </div>
-          )}
-
-          {/* Focus Peaking Overlay */}
-          {showFocusPeaking && (
-            <canvas ref={peakingCanvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80" />
-          )}
-
-          {/* Zebra Overlay */}
-          {showZebra && (
-            <canvas ref={zebraCanvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-70" />
-          )}
         </div>
 
-        {/* NOMO CAM Retro Instant Film Reveal Animation */}
-        <AnimatePresence>
-          {isDevelopingPolaroid && (
-            <motion.div 
-              initial={{ y: -200, opacity: 0, scale: 0.8 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 200, opacity: 0, scale: 0.8 }}
-              className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md pointer-events-none"
-            >
-              <div className="p-4 pb-10 bg-zinc-100 rounded-2xl shadow-2xl border-4 border-white max-w-xs w-64 flex flex-col items-center gap-3">
-                <div className="w-full aspect-[4/3] bg-zinc-900 rounded-lg overflow-hidden relative shadow-inner">
-                  <motion.div 
-                    initial={{ filter: 'brightness(0) contrast(2)' }}
-                    animate={{ filter: 'brightness(1) contrast(1)' }}
-                    transition={{ duration: 1.8 }}
-                    className="w-full h-full bg-cover bg-center"
-                    style={{ backgroundImage: capturedPreviewUrl ? `url(${capturedPreviewUrl})` : 'none' }}
-                  />
-                </div>
-                <div className="flex items-center gap-1.5 text-zinc-800 font-mono text-[10px] font-bold">
-                  <Sparkles size={12} className="text-amber-500 animate-spin" />
-                  <span>DEVELOPING INSTANT FILM...</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Halide Focus Loupe Circle Magnifier */}
-        {isFocusLoupeVisible && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-40 flex flex-col items-center gap-1 animate-in zoom-in-75">
-            <canvas ref={loupeCanvasRef} className="w-36 h-36 rounded-full border-2 border-cyan-400 shadow-2xl bg-black" />
-            <span className="text-[10px] font-mono font-bold bg-black/80 px-2 py-0.5 rounded-full text-cyan-400">
-              FOCUS LOUPE: {Math.round(focusDistance * 100)}%
-            </span>
-          </div>
-        )}
-
-        {/* Halide Touch AF/AE Target Reticle Box */}
+        {/* Touch Focus Indicator */}
         {focusTargetPos && (
-          <div 
-            className="absolute pointer-events-none z-30 flex flex-col items-center gap-1 transition-all duration-150"
-            style={{ left: focusTargetPos.x - 30, top: focusTargetPos.y - 30 }}
-          >
-            <div className="w-16 h-16 border-2 border-yellow-400 rounded-lg shadow-lg flex items-center justify-center relative animate-pulse">
-              <div className="w-1.5 h-1.5 bg-yellow-400 rounded-full" />
-              {showTargetSunSlider && (
-                <div className="absolute -right-6 top-0 bottom-0 flex flex-col items-center justify-between text-yellow-400 text-[9px] font-mono">
-                  <Sun size={12} />
-                  <div className="w-0.5 h-8 bg-yellow-400/60 rounded" />
-                </div>
-              )}
-            </div>
+          <div className="absolute pointer-events-none z-30 flex items-center justify-center transition-all animate-pulse" style={{ left: focusTargetPos.x - 30, top: focusTargetPos.y - 30 }}>
+            <div className="w-16 h-16 border-2 border-yellow-400 rounded-lg shadow-lg" />
           </div>
         )}
-
-        {/* Live OLED Telemetry Bar (Visible only in PRO mode for zero clutter) */}
-        {shootingMode === 'PRO' && (
-          <div className="absolute top-16 left-3 pointer-events-auto flex flex-col gap-1.5 z-20">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShootingMode('PRO');
-                setActiveManualControlTab(activeManualControlTab || 'ev');
-              }}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-amber-500/40 backdrop-blur-md text-[10px] font-mono text-amber-400 shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
-              title="Tap to Open Pro Controls"
-            >
-              <span>ISO {iso}</span>
-              <span className="text-white/30">|</span>
-              <span>{shutterSpeed}s</span>
-              <span className="text-white/30">|</span>
-              <span className="text-emerald-400">EV {exposureCompensation > 0 ? `+${exposureCompensation}` : exposureCompensation}</span>
-              <span className="text-white/30">|</span>
-              <span className="text-cyan-400">{colorTemperature}K</span>
-            </button>
-          </div>
-        )}
-
-          <AnimatePresence>
-            {showGuidedTipExpand && (
-              <motion.div 
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                className="absolute top-16 left-3 z-30 p-3 rounded-2xl bg-zinc-900/95 border border-cyan-500/30 backdrop-blur-md max-w-xs space-y-2 shadow-2xl"
-              >
-                <p className="text-[11px] text-zinc-200 font-medium">
-                  {v2Analysis.recommendation || EVENT_PRESETS[activePresetKey].settings.tip}
-                </p>
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => {
-                      applyPreset(v2Analysis.suggestedPreset || activePresetKey);
-                      setShowGuidedTipExpand(false);
-                    }}
-                    className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-cyan-400 text-black hover:bg-cyan-300 transition-colors"
-                  >
-                    ⚡ Apply Recommended Settings
-                  </button>
-                  <button onClick={() => setShowGuidedTipExpand(false)} className="text-[10px] text-zinc-400 hover:text-white">
-                    Close
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-        {/* Live Histogram Overlay */}
-        {showHistogram && (
-          <div className="absolute top-16 right-3 pointer-events-none rounded-xl overflow-hidden border border-white/20 shadow-xl bg-black/70 backdrop-blur-md">
-            <canvas ref={histogramCanvasRef} className="w-32 h-16" />
-            <div className="px-2 py-0.5 bg-black/80 text-[8px] text-zinc-400 font-mono text-center">HISTOGRAM</div>
-          </div>
-        )}
-
-        {/* Timer Countdown Overlay */}
-        <AnimatePresence>
-          {timerCountdown !== null && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.5 }}
-              className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-            >
-              <span className="text-8xl font-extrabold text-cyan-400 drop-shadow-2xl animate-pulse">
-                {timerCountdown}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
-      {/* ── Sleek Un-Cramped Bottom Glass Dock ── */}
-      <div className="relative z-30 bg-black/85 backdrop-blur-2xl border-t border-white/10 pt-2 pb-safe px-3 space-y-2">
+      {/* Bottom Controls Dock */}
+      <div className="relative z-30 bg-black/80 backdrop-blur-xl border-t border-white/10 pt-2 pb-safe px-3 space-y-3">
         
-        {/* ── 1-Tap Quick Aesthetic Color Effects Ribbon ── */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 px-1">
-          {[
-            { key: 'natural', label: '🪄 Natural' },
-            { key: 'monochrome', label: '🖤 B&W Noir' },
-            { key: 'vivid', label: '🎬 Cinematic' },
-            { key: 'warm_vintage', label: '🌾 Rustic Gold' },
-            { key: 'beauty_glow', label: '✨ Beauty Glow' },
-            { key: 'process_zero', label: '⚡ Process Zero' },
-            { key: 'neon_party', label: '🎉 Neon Party' },
-          ].map((style) => (
-            <button
-              key={style.key}
-              onClick={() => setActiveFilmStyle(style.key as FilmStyleKey)}
-              className={`px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wider uppercase whitespace-nowrap transition-all flex items-center gap-1 border shrink-0 ${
-                activeFilmStyle === style.key
-                  ? 'bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black border-cyan-300 shadow-lg shadow-cyan-500/20 scale-105'
-                  : 'bg-zinc-900/90 text-zinc-300 border-zinc-800 hover:border-zinc-700 hover:text-white'
-              }`}
-            >
-              <span>{style.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Sleek Lens Switcher & Aspect Ratio Bar */}
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-1">
-            {[
-              { label: '0.5x', zoom: 0.5 },
-              { label: '1x', zoom: 1 },
-              { label: '2x', zoom: 2 },
-            ].map((l) => (
-              <button
-                key={l.label}
-                onClick={() => switchCameraLens(l.zoom)}
-                className={`w-8 h-8 rounded-full text-[11px] font-bold font-mono transition-all ${
-                  lensZoom === l.zoom 
-                    ? 'bg-white text-black shadow-lg scale-105' 
-                    : 'bg-zinc-900/90 text-zinc-400 border border-zinc-800'
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Snapchat Filter Quick Ribbon */}
-          <div className="flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 rounded-full p-1">
-            {[
-              { id: 'none', label: '📷' },
-              { id: 'hearts', label: '💖' },
-              { id: 'crown', label: '👑' },
-              { id: 'vhs', label: '📼' },
-            ].map((sf) => (
-              <button
-                key={sf.id}
-                onClick={() => setActiveSnapFilter(sf.id as SnapFilterType)}
-                className={`w-6 h-6 rounded-full text-xs font-bold transition-all flex items-center justify-center ${
-                  activeSnapFilter === sf.id ? 'bg-pink-500 text-white scale-110 shadow-md' : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                {sf.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1 bg-zinc-900/90 border border-zinc-800 rounded-full p-0.5">
-            {(['4:3', '1:1', '16:9', '9:16'] as AspectRatioType[]).map((ar) => (
-              <button
-                key={ar}
-                onClick={() => setAspectRatio(ar)}
-                className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold transition-all ${
-                  aspectRatio === ar ? 'bg-cyan-400 text-black' : 'text-zinc-400 hover:text-white'
-                }`}
-              >
-                {ar}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Shooting Mode Selector Ribbon */}
-        <div className="flex items-center justify-center gap-3 overflow-x-auto no-scrollbar py-0.5">
-          {(['AUTO', 'PRO', 'PORTRAIT', 'EVENT', 'LOW LIGHT'] as ShootingMode[]).map((mode) => {
-            const isProLocked = !isProUser && (mode === 'PRO' || mode === 'LOW LIGHT');
+        {/* Quick Filters Ribbon */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1">
+          {(Object.keys(FILTERS) as FilterType[]).map((key) => {
+            const filter = FILTERS[key];
             return (
               <button
-                key={mode}
-                onClick={() => {
-                  if (isProLocked) {
-                    requirePro(`${mode} Mode`, () => setShootingMode(mode));
-                  } else {
-                    setShootingMode(mode);
-                    if (mode === 'EVENT') setShowPresetsPanel(true);
-                  }
-                }}
-                className={`text-[11px] font-extrabold tracking-wider uppercase transition-all whitespace-nowrap flex items-center gap-1 px-2 py-0.5 rounded-full ${
-                  shootingMode === mode
-                    ? 'text-cyan-400 bg-cyan-500/10 border border-cyan-500/30'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                key={key}
+                onClick={() => setActiveFilter(key)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 border shrink-0 ${
+                  activeFilter === key ? 'bg-cyan-400 text-black border-cyan-300 shadow-md shadow-cyan-500/20 scale-105' : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:text-white'
                 }`}
               >
-                <span>{mode}</span>
-                {isProLocked && <Lock size={9} className="text-amber-400" />}
+                <span>{filter.emoji}</span>
+                <span>{filter.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Manual Control Bar */}
-        {shootingMode === 'PRO' && (
-          <div className="p-2.5 rounded-2xl bg-zinc-900/95 border border-zinc-800 backdrop-blur-md space-y-2">
-            <div className="flex items-center justify-between text-xs border-b border-zinc-800 pb-1.5">
-              {[
-                { id: 'iso', label: 'ISO', val: iso, locked: !isProUser },
-                { id: 'shutter', label: 'Shutter', val: shutterSpeed, locked: !isProUser },
-                { id: 'ev', label: 'EV', val: exposureCompensation, locked: false },
-                { id: 'wb', label: 'WB', val: wbMode, locked: false },
-                { id: 'tint', label: 'Tint', val: wbTint > 0 ? `+${wbTint}` : wbTint, locked: !isProUser },
-                { id: 'focus', label: 'Focus', val: focusMode, locked: !isProUser },
-              ].map((ctrl) => (
-                <button
-                  key={ctrl.id}
-                  onClick={() => {
-                    if (ctrl.locked) {
-                      requirePro(`Manual ${ctrl.label}`, () => setActiveManualControlTab(ctrl.id as any));
-                    } else {
-                      setActiveManualControlTab(activeManualControlTab === ctrl.id ? null : ctrl.id as any);
-                    }
-                  }}
-                  className={`flex flex-col items-center px-1.5 py-0.5 rounded-xl transition-all ${
-                    activeManualControlTab === ctrl.id ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <span className="text-[9px] font-semibold text-zinc-500 uppercase flex items-center gap-0.5">
-                    {ctrl.label} {ctrl.locked && <Lock size={8} className="text-amber-400" />}
-                  </span>
-                  <span className="text-[11px] font-bold font-mono text-white mt-0.5">{ctrl.val}</span>
-                </button>
-              ))}
-            </div>
+        {/* Aspect Ratio Selector */}
+        <div className="flex items-center justify-center gap-2">
+          {(['4:3', '1:1', '16:9', '9:16'] as AspectRatioType[]).map((ar) => (
+            <button
+              key={ar}
+              onClick={() => setAspectRatio(ar)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition ${
+                aspectRatio === ar ? 'bg-zinc-800 text-white' : 'text-zinc-500 hover:text-zinc-300'
+              }`}
+            >
+              {ar}
+            </button>
+          ))}
+        </div>
 
-            {activeManualControlTab === 'iso' && (
-              <div className="space-y-1">
-                <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
-                  <span>ISO {iso}</span>
-                  <span>Max 6400</span>
-                </div>
-                <input 
-                  type="range" 
-                  min={100} 
-                  max={6400} 
-                  step={100} 
-                  value={iso} 
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    setIso(val);
-                    applyCameraConstraints({ iso: val });
-                  }} 
-                  className="w-full accent-cyan-400 h-1.5 bg-zinc-800 rounded-lg cursor-pointer"
-                />
-              </div>
-            )}
-
-            {activeManualControlTab === 'ev' && (
-              <div className="space-y-1">
-                <div className="flex justify-between text-[10px] text-zinc-400 font-mono">
-                  <span>EV {exposureCompensation > 0 ? `+${exposureCompensation}` : exposureCompensation}</span>
-                </div>
-                <input 
-                  type="range" 
-                  min={-3} 
-                  max={3} 
-                  step={0.3} 
-                  value={exposureCompensation} 
-                  onChange={(e) => {
-                    const val = Number(e.target.value);
-                    setExposureCompensation(val);
-                    applyCameraConstraints({ exposureCompensation: val });
-                  }} 
-                  className="w-full accent-emerald-400 h-1.5 bg-zinc-800 rounded-lg cursor-pointer"
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Main Shutter & Flip Cam Bar */}
-        <div className="flex items-center justify-between px-6 pt-1 pb-1">
-          <button 
-            onClick={() => setShowPresetsPanel(!showPresetsPanel)}
-            className="p-3 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white active:scale-95 transition-transform"
-            title="Event Presets"
-          >
-            <Sparkles size={18} className="text-cyan-400" />
+        {/* Shutter Area */}
+        <div className="flex items-center justify-between px-6 pb-2">
+          <button onClick={() => fileInputRef.current?.click()} className="p-3 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white">
+            <ImageIcon size={22} />
           </button>
 
-          {/* Main Shutter Button */}
-          <button 
-            onClick={handleShutterTap}
-            className="relative w-18 h-18 rounded-full border-4 border-white/90 p-1 flex items-center justify-center active:scale-90 transition-transform shadow-2xl shadow-cyan-500/20"
-          >
+          <button onClick={handleShutterTap} className="w-16 h-16 rounded-full border-4 border-white/90 p-1 flex items-center justify-center active:scale-90 transition shadow-2xl">
             <div className="w-full h-full rounded-full bg-white active:bg-cyan-400 transition-colors shadow-inner" />
           </button>
 
-          {/* Front / Back Selfie Camera Flip Button */}
-          <button 
-            onClick={toggleCameraFacingMode}
-            className="p-3 rounded-full bg-cyan-500/20 border border-cyan-400/60 text-cyan-300 hover:text-white active:scale-90 transition-transform shadow-lg"
-            title="Switch Selfie / Rear Camera"
-          >
-            <RefreshCw size={20} />
+          <button onClick={toggleCameraFacingMode} className="p-3 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 hover:text-white active:scale-90 transition">
+            <RefreshCw size={22} />
           </button>
         </div>
       </div>
 
-      {/* ── Film Styles Drawer Modal ── */}
+      {/* Photo Review & Upload Modal */}
       <AnimatePresence>
-        {showFilmStylePanel && (
-          <motion.div 
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 inset-x-0 z-[1600] p-6 bg-zinc-950 border-t border-zinc-800 rounded-t-3xl shadow-2xl space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Film size={16} className="text-cyan-400" />
-                <span>Film & Beauty Profiles</span>
-              </h3>
-              <button onClick={() => setShowFilmStylePanel(false)} className="text-zinc-500 hover:text-white">
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-64 overflow-y-auto">
-              {Object.values(FILM_STYLES).map((fs) => (
-                <button
-                  key={fs.key}
-                  onClick={() => {
-                    setActiveFilmStyle(fs.key);
-                    setShowFilmStylePanel(false);
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    activeFilmStyle === fs.key
-                      ? 'bg-cyan-500/10 border-cyan-500 text-white shadow-lg'
-                      : 'bg-zinc-900/60 border-zinc-800/80 text-zinc-400 hover:border-zinc-700'
-                  }`}
-                >
-                  <h4 className="text-xs font-bold text-white flex items-center gap-1">
-                    <span>{fs.label}</span>
-                    {fs.isProcessZero && <Zap size={10} className="text-amber-400 fill-amber-400" />}
-                  </h4>
-                  <p className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{fs.description}</p>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Event Presets Drawer Modal ── */}
-      <AnimatePresence>
-        {showPresetsPanel && (
-          <motion.div 
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 inset-x-0 z-[1600] p-6 bg-zinc-950 border-t border-zinc-800 rounded-t-3xl shadow-2xl space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Sparkles size={16} className="text-cyan-400" />
-                <span>Event Photography Presets</span>
-              </h3>
-              <button onClick={() => setShowPresetsPanel(false)} className="text-zinc-500 hover:text-white">
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 max-h-60 overflow-y-auto no-scrollbar">
-              {Object.values(EVENT_PRESETS).map((p) => (
-                <button
-                  key={p.key}
-                  onClick={() => {
-                    applyPreset(p.key);
-                    setShowPresetsPanel(false);
-                  }}
-                  className={`p-3 rounded-2xl border text-left transition-all ${
-                    activePresetKey === p.key
-                      ? 'bg-cyan-500/10 border-cyan-500 text-white shadow-lg'
-                      : 'bg-zinc-900/60 border-zinc-800/80 text-zinc-400 hover:border-zinc-700'
-                  }`}
-                >
-                  <span className="text-xl">{p.icon}</span>
-                  <h4 className="text-xs font-bold text-white mt-1">{p.label}</h4>
-                  <p className="text-[10px] text-zinc-500 line-clamp-1 mt-0.5">{p.tagline}</p>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Settings Drawer Modal ── */}
-      <AnimatePresence>
-        {showSettingsDrawer && (
-          <motion.div 
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-0 inset-x-0 z-[1700] p-6 bg-zinc-950 border-t border-zinc-800 rounded-t-3xl shadow-2xl space-y-5 max-h-[85vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Settings size={18} className="text-cyan-400" />
-                <span>Pro Camera Settings</span>
-              </h3>
-              <button onClick={() => setShowSettingsDrawer(false)} className="text-zinc-500 hover:text-white">
+        {capturedPreviewUrl && (
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="fixed inset-0 z-[2200] bg-black flex flex-col p-4 overflow-y-auto">
+            <div className="flex items-center justify-between mb-2 mt-safe">
+              <span className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Review & Post</span>
+              <button onClick={() => { setCapturedBlob(null); setCapturedPreviewUrl(null); }} className="p-2 rounded-full bg-zinc-900 text-zinc-400 hover:text-white">
                 <X size={20} />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900 border border-zinc-800">
-                <span className="text-zinc-300 font-semibold">Shutter Sound</span>
-                <button 
-                  onClick={() => setShutterSoundEnabled(!shutterSoundEnabled)}
-                  className={`p-2 rounded-lg ${shutterSoundEnabled ? 'bg-cyan-500/20 text-cyan-400' : 'text-zinc-500'}`}
-                >
-                  {shutterSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-zinc-400 uppercase tracking-wider text-[10px]">Overlays & HUD</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <button 
-                    onClick={() => setShowGrid(!showGrid)}
-                    className={`p-3 rounded-xl border flex items-center justify-between ${showGrid ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
-                  >
-                    <span>Grid Lines</span>
-                    <Grid size={16} />
-                  </button>
-
-                  <button 
-                    onClick={() => setShowLevel(!showLevel)}
-                    className={`p-3 rounded-xl border flex items-center justify-between ${showLevel ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
-                  >
-                    <span>Horizon Level</span>
-                    <Compass size={16} />
-                  </button>
-
-                  <button 
-                    onClick={() => setShowHistogram(!showHistogram)}
-                    className={`p-3 rounded-xl border flex items-center justify-between ${showHistogram ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
-                  >
-                    <span>RGB Histogram</span>
-                    <Activity size={16} />
-                  </button>
-
-                  <button 
-                    onClick={() => {
-                      if (!isProUser) requirePro('Focus Peaking', () => setShowFocusPeaking(!showFocusPeaking));
-                      else setShowFocusPeaking(!showFocusPeaking);
-                    }}
-                    className={`p-3 rounded-xl border flex items-center justify-between ${showFocusPeaking ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
-                  >
-                    <span className="flex items-center gap-1">Focus Peaking {!isProUser && <Lock size={10} className="text-amber-400" />}</span>
-                    <Eye size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Photo Review & Social Share / Guestbook Modal ── */}
-      <AnimatePresence>
-        {capturedPreviewUrl && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[2200] bg-black/95 flex flex-col justify-between p-4 sm:p-6 overflow-y-auto"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Review & Share Memory</span>
-              <button 
-                onClick={() => {
-                  setCapturedBlob(null);
-                  setCapturedPreviewUrl(null);
-                }}
-                className="p-2 rounded-full bg-zinc-900 text-zinc-400 hover:text-white"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="relative flex-grow my-3 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 flex items-center justify-center max-h-[55vh]">
-              <img src={capturedPreviewUrl} alt="Captured memory" className="w-full h-full object-contain" />
-
+            <div className="relative flex-grow my-2 rounded-2xl overflow-hidden bg-zinc-900 flex items-center justify-center max-h-[50vh]">
+              <img src={capturedPreviewUrl} alt="Captured" className="w-full h-full object-contain" />
               {uploadSuccess && (
-                <div className="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 text-emerald-400">
-                  <Check size={48} className="animate-bounce" />
-                  <p className="text-base font-bold">Successfully Posted to Event!</p>
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 text-emerald-400">
+                  <Check size={56} className="animate-bounce" />
+                  <p className="text-lg font-bold">Posted to Wall!</p>
                 </div>
               )}
             </div>
 
-            <div className="space-y-3 max-w-lg mx-auto w-full">
-              {/* Leica / Hasselblad Watermark Frame Toggle */}
-              <div className="flex items-center justify-between p-2.5 bg-zinc-900/80 rounded-xl border border-zinc-800">
-                <div className="flex items-center gap-2 text-xs font-bold text-amber-400 font-mono">
-                  <Frame size={16} />
-                  <span>Leica Event Watermark Strip</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setAddWatermarkFrame(!addWatermarkFrame)}
-                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                    addWatermarkFrame ? 'bg-amber-400 text-black' : 'bg-zinc-800 text-zinc-400'
-                  }`}
-                >
-                  {addWatermarkFrame ? 'ON' : 'OFF'}
-                </button>
-              </div>
-
-              {/* Event Badge Stamps & 5-Star Guest Rating */}
-              <div className="space-y-2 bg-zinc-900/80 p-3 rounded-2xl border border-zinc-800">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Event Badge Stamp</span>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setStarRating(star)}
-                        className="text-amber-400 hover:scale-110 transition-transform"
-                      >
-                        <Star size={14} className={star <= starRating ? 'fill-amber-400' : 'text-zinc-600'} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-                  {EVENT_BADGES.map((badge) => (
-                    <button
-                      key={badge}
-                      type="button"
-                      onClick={() => setSelectedBadge(selectedBadge === badge ? '' : badge)}
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap transition-all ${
-                        selectedBadge === badge
-                          ? 'bg-amber-400 text-black border border-amber-300 shadow-md'
-                          : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:text-white'
-                      }`}
-                    >
-                      {badge}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Guestbook Name & Caption Form */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="space-y-4 max-w-lg mx-auto w-full mt-4">
+              <div className="space-y-3">
                 <input 
                   type="text" 
-                  placeholder="Your Name..." 
+                  placeholder="Your Name (Optional)" 
                   value={uploaderName}
                   onChange={(e) => setUploaderName(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
+                  className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
                 />
-                <input 
-                  type="text" 
-                  placeholder="Add a message for the host..." 
+                <textarea 
+                  placeholder="Add a caption..." 
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400"
+                  rows={2}
+                  className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400 resize-none"
                 />
               </div>
 
-              {/* Direct Social Export Bar */}
-              <div className="flex items-center justify-between gap-2 p-2 bg-zinc-900/60 rounded-xl border border-zinc-800">
-                <button
-                  type="button"
-                  onClick={handleNativeShare}
-                  className="flex-1 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-bold text-[11px] hover:bg-yellow-500/20 transition-all flex items-center justify-center gap-1.5"
-                >
-                  <span>👻 Snapchat / Stories</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNativeShare}
-                  className="flex-1 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-[11px] hover:bg-emerald-500/20 transition-all flex items-center justify-center gap-1.5"
-                >
-                  <MessageCircle size={14} /> WhatsApp
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNativeShare}
-                  className="p-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white transition-colors"
-                  title="Share / Save Photo"
-                >
-                  <Share2 size={16} />
-                </button>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => {
-                    setCapturedBlob(null);
-                    setCapturedPreviewUrl(null);
-                  }}
-                  className="flex-1 py-3.5 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold text-xs hover:bg-zinc-800 transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <RotateCcw size={16} /> Retake
+              <div className="flex gap-3 pt-2 pb-safe">
+                <button onClick={() => { setCapturedBlob(null); setCapturedPreviewUrl(null); }} className="flex-1 py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold hover:bg-zinc-800 flex items-center justify-center gap-2">
+                  <RotateCcw size={18} /> Retake
                 </button>
 
                 <button 
                   onClick={handleUploadPhoto}
                   disabled={isUploading}
-                  className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-bold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-500/20"
+                  className="flex-[2] py-4 rounded-xl bg-cyan-400 text-black font-extrabold text-sm uppercase flex items-center justify-center gap-2 hover:bg-cyan-300 shadow-lg shadow-cyan-500/20 disabled:opacity-50"
                 >
-                  <Upload size={16} /> {isUploading ? `Uploading (${uploadProgress}%)...` : eventId ? 'Post to Event Wall' : 'Save Memory'}
+                  {isUploading ? 'Uploading...' : '🚀 Upload to Wall'}
                 </button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* ── Upgrade Gate Modal ── */}
-      <ProCameraUpgradeModal 
-        isOpen={showUpgradeModal} 
-        onClose={() => setShowUpgradeModal(false)} 
-        triggeredFeature={upgradeReason}
-      />
     </div>
   );
 }
