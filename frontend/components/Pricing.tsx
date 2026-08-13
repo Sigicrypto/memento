@@ -186,7 +186,8 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mt-16 mb-20 w-full"
+          className="w-full"
+          style={{ marginTop: '140px', marginBottom: '80px' }}
         >
            <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-8">Feature Comparison</h3>
            <div className="rounded-2xl border border-white/10 bg-slate-900/60 overflow-hidden shadow-xl">
