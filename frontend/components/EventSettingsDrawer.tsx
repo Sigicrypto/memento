@@ -451,7 +451,6 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                           }}
                         />
                       </div>
-                      </div>
                     </div>
                   </div>
 
