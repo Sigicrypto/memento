@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import Navbar from "@/components/Navbar";
 import MainContent from "@/components/MainContent";
 import SocialFloat from "@/components/SocialFloat";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/CustomCursor";
 import CookieBanner from "@/components/CookieBanner";
 import { BackgroundBeams } from "@/components/BackgroundBeams";
@@ -36,9 +35,19 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
     pathname?.startsWith('/create') ||
     pathname?.startsWith('/dashboard');
 
-  // ── Admin & standalone routes: bare shell, no site chrome ──
-  if (isAdminRoute || isStandaloneRoute) {
+  // ── Admin routes: bare shell, no site chrome ──
+  if (isAdminRoute) {
     return <>{children}</>;
+  }
+
+  // ── Standalone routes: custom layout, but still need floating socials ──
+  if (isStandaloneRoute) {
+    return (
+      <>
+        {children}
+        <SocialFloat />
+      </>
+    );
   }
 
   // ── All other routes: full site chrome ──
@@ -50,7 +59,6 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
         <MainContent>
           {children}
         </MainContent>
-        <WhatsAppFloat />
         <SocialFloat />
         <CookieBanner />
       </div>
