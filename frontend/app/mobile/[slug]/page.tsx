@@ -62,9 +62,9 @@ export default function MobilePage() {
   const [realtimeStatus, setRealtimeStatus] = useState<string>('connecting');
   const [brandLogoUrl, setBrandLogoUrl] = useState<string | null>(null);
  
-  // Upload State
   const [files, setFiles] = useState<File[]>([]);
   const [caption, setCaption] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [hasAudioNote, setHasAudioNote] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
