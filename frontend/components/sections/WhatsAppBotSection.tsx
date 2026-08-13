@@ -9,7 +9,8 @@ export default function WhatsAppBotSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
         <SectionHeader 
           title="Frictionless Entry via WhatsApp"
-          subtitle="QR-LESS JOINING"
+          badge="QR-LESS JOINING"
+          badgeColor="cyan"
           description="Don't want guests squinting at QR codes? Just have them text your dedicated Memento WhatsApp bot. They'll be instantly added to your event gallery."
         />
         
