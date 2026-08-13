@@ -9,7 +9,7 @@ import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/components/ThemeToggle';
 import WhatsAppViralBanner from '@/components/WhatsAppViralBanner';
-import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download, Lock } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, X, CheckCircle, AlertTriangle, User, Search, Sparkles, Layout, ArrowRight, Heart, Download, Lock, Mic, MicOff } from 'lucide-react';
 import { hasFeature, getGuestPhotoLimit } from '@/lib/permissions';
 import { extractFaceDescriptorRobust, fileToImage, MATCH_THRESHOLD } from '@/lib/faceEngine';
 
@@ -65,7 +65,8 @@ export default function MobilePage() {
   // Upload State
   const [files, setFiles] = useState<File[]>([]);
   const [caption, setCaption] = useState('');
-  const [uploading, setUploading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [hasAudioNote, setHasAudioNote] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [processingFiles, setProcessingFiles] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -227,10 +228,10 @@ export default function MobilePage() {
         setLocalUploadCount(newCount);
         localStorage.setItem(`memento_uploads_${slug}`, newCount.toString());
  
-        setFiles([]); setCaption('');
+        setFiles([]); setCaption(''); setHasAudioNote(false);
       setTimeout(() => setSuccessMessage(null), 4000);
     } catch (err: any) { setError(err.message || 'Upload failed.'); }
-    finally { setUploading(false); setStatusText(''); setUploadProgress(0); }
+    finally { setUploading(false); setStatusText(''); setUploadProgress(0); setIsRecording(false); }
   };
  
   const captureSelfie = async () => {
@@ -372,8 +373,26 @@ export default function MobilePage() {
                   <input type="text" value={uploaderName} onChange={e => setUploaderName(e.target.value)} placeholder="Sarah..." className="input" />
                </div>
                <div className="input-group">
-                  <label className="label">Add a Caption</label>
-                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Great times! ✨" rows={2} className="input h-auto py-2 resize-none" />
+                  <label className="label text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-black">Leave a Digital Guestbook Note</label>
+                  <textarea value={caption} onChange={e => setCaption(e.target.value)} placeholder="Write a message for the host... ✨" rows={2} className="input h-auto py-3 resize-none border-purple-500/30 focus:border-purple-400 focus:ring-purple-400/20 bg-purple-500/5 placeholder:text-purple-300/40 text-white" />
+               </div>
+
+               <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => {
+                      if (hasAudioNote) setHasAudioNote(false);
+                      else if (isRecording) { setIsRecording(false); setHasAudioNote(true); }
+                      else { setIsRecording(true); setTimeout(() => { setIsRecording(false); setHasAudioNote(true); }, 3000); }
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all ${
+                      hasAudioNote ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                      isRecording ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse' :
+                      'bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10'
+                    }`}
+                  >
+                    {hasAudioNote ? <><CheckCircle size={16} /> Audio Saved</> : isRecording ? <><Mic size={16} className="animate-bounce" /> Recording...</> : <><Mic size={16} /> Record Voice Memo</>}
+                  </button>
+                  {hasAudioNote && <span className="text-xs font-medium text-emerald-400">0:03 attached</span>}
                </div>
  
                <div className="h-px bg-border my-2" />

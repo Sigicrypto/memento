@@ -14,6 +14,8 @@ import FAQSection from '@/components/sections/FAQSection';
 import { BackgroundBeams } from '@/components/BackgroundBeams';
 
 const ThemedNav = dynamic(() => import('@/components/ThemedNav'), { ssr: false });
+const EnterpriseSection = dynamic(() => import('@/components/sections/EnterpriseSection'), { ssr: false });
+const WhatsAppBotSection = dynamic(() => import('@/components/sections/WhatsAppBotSection'), { ssr: false });
 const PricingSection = dynamic(() => import('@/components/sections/PricingSection'), { ssr: false });
 const Footer = dynamic(() => import('@/components/sections/Footer'), { ssr: false });
 const DemoModal = dynamic(() => import('@/components/DemoModal'), { ssr: false });
@@ -39,6 +41,8 @@ export default function LandingPage() {
         <EmotionalValueSection />
         <LiveWallFeatureSection />
         <PostEventReliveSection />
+        <WhatsAppBotSection />
+        <EnterpriseSection />
         <PricingSection />
         <TrustSecuritySection />
         <FAQSection />

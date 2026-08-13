@@ -1,4 +1,3 @@
-
 export interface PlanFeature {
   label: string;
   included: boolean;
@@ -7,25 +6,7 @@ export interface PlanFeature {
 export interface Plan {
   id: string;
   name: string;
-  price: string;
-  highlight?: boolean;
-  stats: string;
-  description: string;
-  tagline: string;
-  iconColor: string;
-  features: PlanFeature[];
-  badge?: string;
-}
-
-export interface PlanFeature {
-  label: string;
-  included: boolean;
-}
-
-export interface Plan {
-  id: string;
-  name: string;
-  price: string;
+  price: { inr: string; usd: string };
   period?: string;
   highlight?: boolean;
   stats: string;
@@ -40,7 +21,7 @@ export const PLANS: Plan[] = [
   {
     id: 'free',
     name: 'FREE',
-    price: '₹0',
+    price: { inr: '₹0', usd: '$0' },
     iconColor: 'text-slate-400',
     description: 'Great for trying out Memento',
     tagline: 'Basic photo collection for small gatherings.',
@@ -60,7 +41,7 @@ export const PLANS: Plan[] = [
   {
     id: 'event',
     name: 'EVENT',
-    price: '₹999',
+    price: { inr: '₹999', usd: '$12' },
     period: '/event',
     highlight: true,
     badge: '⭐ Most Popular',
@@ -83,7 +64,7 @@ export const PLANS: Plan[] = [
   {
     id: 'premium',
     name: 'PREMIUM',
-    price: '₹2,999',
+    price: { inr: '₹2,999', usd: '$39' },
     period: '/event',
     badge: '🔥 Best Value',
     iconColor: 'text-amber-400',
@@ -105,7 +86,7 @@ export const PLANS: Plan[] = [
   {
     id: 'professional',
     name: 'PROFESSIONAL',
-    price: '₹7,999',
+    price: { inr: '₹7,999', usd: '$99' },
     period: '/month',
     iconColor: 'text-purple-400',
     description: 'For photographers, planners & agencies',

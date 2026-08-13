@@ -7,9 +7,23 @@ import { Check, X, Zap, Star, Heart, Shield, ArrowLeft } from 'lucide-react';
 import { PLANS } from '@/lib/plans';
 import SectionHeader from '@/components/sections/SectionHeader';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
  
 export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: boolean, eventId?: string }) {
   const router = useRouter();
+  const [billingMode, setBillingMode] = useState<'event' | 'subscription'>('event');
+  const [currency, setCurrency] = useState<'inr' | 'usd'>('inr');
+
+  useEffect(() => {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz && !tz.includes('Asia/Calcutta') && !tz.includes('Asia/Kolkata')) {
+        setCurrency('usd');
+      }
+    } catch (e) {
+      // fallback to INR
+    }
+  }, []);
  
   return (
     <section id="pricing" className={`${isEmbedded ? 'lp-section' : 'pt-32 pb-32'} relative z-10 scroll-mt-32 w-full flex flex-col items-center justify-center bg-slate-950/80`}>
@@ -29,10 +43,59 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           description="Clear pricing tailored for host celebrations and professional event businesses."
         />
 
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12 mt-6">
+          <div className="bg-slate-900/80 p-1.5 rounded-full border border-white/10 flex items-center shadow-inner">
+            <button
+              onClick={() => setBillingMode('event')}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+                billingMode === 'event' 
+                  ? 'bg-cyan-500 text-slate-950 shadow-md' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Pay-per-Event
+            </button>
+            <button
+              onClick={() => setBillingMode('subscription')}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+                billingMode === 'subscription' 
+                  ? 'bg-purple-500 text-white shadow-md' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Agencies & Planners
+            </button>
+          </div>
+
+          {/* Currency Toggle */}
+          <div className="bg-slate-900/80 p-1 rounded-full border border-white/10 flex items-center shadow-inner">
+            <button
+              onClick={() => setCurrency('inr')}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
+                currency === 'inr' 
+                  ? 'bg-emerald-500 text-slate-950 shadow-md' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              INR
+            </button>
+            <button
+              onClick={() => setCurrency('usd')}
+              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
+                currency === 'usd' 
+                  ? 'bg-emerald-500 text-slate-950 shadow-md' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              USD
+            </button>
+          </div>
+        </div>
+
         {/* ─── Pricing Cards Grid ─── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-6 mb-20 items-stretch w-full mt-10">
-          {PLANS.map((plan, idx) => {
-            const price = plan.price;
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-6 mb-20 items-stretch w-full">
+          {PLANS.filter(p => billingMode === 'event' ? p.id !== 'professional' : p.id === 'professional').map((plan, idx) => {
+            const price = plan.price[currency];
             const Icon = plan.id === 'free' ? Zap : plan.id === 'event' ? Star : plan.id === 'premium' ? Heart : Shield;
             
             return (
@@ -100,7 +163,10 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
                 {/* CTA Button */}
                 <button
                   type="button"
-                  onClick={() => router.push(`/checkout?plan=${plan.id}${eventId ? `&eventId=${eventId}` : ''}`)}
+                  onClick={() => {
+                    const message = encodeURIComponent(`Hi, I'm interested in the ${plan.name} plan for Memento.`);
+                    window.open(`https://api.whatsapp.com/send?phone=919866161775&text=${message}`, '_blank');
+                  }}
                   className={`mt-auto w-full font-extrabold text-xs py-3.5 px-6 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] ${
                     plan.highlight
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/30 hover:shadow-cyan-500/50'

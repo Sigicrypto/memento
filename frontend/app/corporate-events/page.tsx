@@ -8,6 +8,7 @@ import { useAuthModal } from "@/context/AuthModalContext";
 const ThemedNav = dynamic(() => import("@/components/ThemedNav"), { ssr: false });
 const Footer = dynamic(() => import("@/components/sections/Footer"), { ssr: false });
 const DemoModal = dynamic(() => import("@/components/DemoModal"), { ssr: false });
+const TrustSecuritySection = dynamic(() => import("@/components/sections/TrustSecuritySection"), { ssr: false });
 
 export default function CorporateEventsPage() {
   const { openAuth } = useAuthModal();
@@ -95,6 +96,8 @@ export default function CorporateEventsPage() {
             </div>
           </div>
         </section>
+
+        <TrustSecuritySection />
 
       </main>
       <Footer />

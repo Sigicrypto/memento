@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Globe, Palette, Lock, Star, Sparkles, Image as ImageIcon, AlertTriangle, CheckCircle } from 'lucide-react';
+import { X, Globe, Palette, Lock, Star, Sparkles, Image as ImageIcon, AlertTriangle, CheckCircle, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface EventSettingsDrawerProps {
@@ -451,6 +451,67 @@ export default function EventSettingsDrawer({ eventId, onClose, onSuccess, user 
                           }}
                         />
                       </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── SECTION 4: WHATSAPP INTEGRATION ── */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        paddingBottom: '10px',
+                        borderBottom: '1px solid var(--border)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', fontSize: '15px', fontWeight: 700 }}>
+                        <MessageCircle size={16} style={{ color: '#25D366' }} />
+                        <span>WhatsApp Bot Integration</span>
+                      </div>
+                      {!isStandardPlus && <UpgradeBadge href={`/#pricing?eventId=${eventId}`} label="Upgrade Plan" />}
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        Enable QR-less entry for your guests. They can simply text your dedicated WhatsApp bot to instantly join the photo wall.
+                      </p>
+                      
+                      {isStandardPlus ? (
+                        <div style={{ padding: '16px', background: 'var(--bg-subtle)', borderRadius: '12px', border: '1px solid var(--border)', marginTop: '8px' }}>
+                          <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>
+                            Guest Join Link
+                          </label>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                            <input 
+                              type="text" 
+                              readOnly 
+                              value={`https://wa.me/15551234567?text=JOIN%20${slug || eventId}`}
+                              style={{ 
+                                flex: 1, 
+                                cursor: 'copy', 
+                                fontFamily: 'monospace',
+                                background: 'var(--bg)',
+                                border: '1px solid var(--border)',
+                                color: 'var(--text-primary)',
+                                padding: '10px 14px',
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                width: '100%'
+                              }} 
+                              onClick={(e) => (e.target as HTMLInputElement).select()}
+                            />
+                          </div>
+                          <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '10px' }}>
+                            Share this link directly or embed it in digital invites.
+                          </p>
+                        </div>
+                      ) : (
+                        <button disabled style={disabledInputStyle}>
+                          WhatsApp Bot requires EVENT plan or higher
+                        </button>
+                      )}
                     </div>
                   </div>
 

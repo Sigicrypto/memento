@@ -64,8 +64,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
     { label: 'Weddings', href: '/weddings' },
     { label: 'Professionals', href: '/professionals' },
     { label: 'Corporate', href: '/corporate-events' },
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'Demo', href: '/?demo=true' },
+    { label: 'Pricing', href: '/#pricing' },
   ];
 
   return (
