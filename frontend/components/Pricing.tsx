@@ -93,7 +93,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
         </div>
 
         {/* ─── Pricing Cards Grid ─── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-6 mb-20 items-stretch w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 lg:gap-6 mb-32 items-stretch w-full">
           {PLANS.filter(p => billingMode === 'event' ? p.id !== 'professional' : p.id === 'professional').map((plan, idx) => {
             const price = plan.price[currency];
             const Icon = plan.id === 'free' ? Zap : plan.id === 'event' ? Star : plan.id === 'premium' ? Heart : Shield;
@@ -186,7 +186,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-20 w-full"
+          className="mt-16 mb-20 w-full"
         >
            <h3 className="text-2xl md:text-3xl font-bold text-center text-white mb-8">Feature Comparison</h3>
            <div className="rounded-2xl border border-white/10 bg-slate-900/60 overflow-hidden shadow-xl">
