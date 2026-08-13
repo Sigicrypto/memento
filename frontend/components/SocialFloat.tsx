@@ -35,7 +35,7 @@ export default function SocialFloat() {
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="Facebook"
-        className="w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700/50 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500 hover:bg-blue-500/20 hover:scale-110 transition-all shadow-lg backdrop-blur-sm"
+        className="w-12 h-12 rounded-full bg-[#1877F2] flex items-center justify-center text-white hover:scale-110 hover:brightness-110 transition-all shadow-[0_4px_14px_0_rgba(24,119,242,0.39)]"
       >
         <FacebookIcon />
       </a>
@@ -44,7 +44,7 @@ export default function SocialFloat() {
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="Instagram"
-        className="w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700/50 flex items-center justify-center text-slate-400 hover:text-white hover:border-pink-500 hover:bg-pink-500/20 hover:scale-110 transition-all shadow-lg backdrop-blur-sm"
+        className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex items-center justify-center text-white hover:scale-110 hover:brightness-110 transition-all shadow-[0_4px_14px_0_rgba(220,39,67,0.39)]"
       >
         <InstagramIcon />
       </a>
@@ -53,9 +53,9 @@ export default function SocialFloat() {
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="WhatsApp"
-        className="w-12 h-12 rounded-full bg-slate-900/80 border border-slate-700/50 flex items-center justify-center text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-emerald-500/20 hover:scale-110 transition-all shadow-lg backdrop-blur-sm"
+        className="w-12 h-12 rounded-full bg-[#25D366] flex items-center justify-center text-white hover:scale-110 hover:brightness-110 transition-all shadow-[0_4px_14px_0_rgba(37,211,102,0.39)]"
       >
-        <MessageCircle size={20} />
+        <MessageCircle size={22} fill="white" className="text-white" />
       </a>
     </div>
   );
