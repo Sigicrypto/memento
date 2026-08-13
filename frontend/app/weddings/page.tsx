@@ -17,10 +17,10 @@ export default function WeddingsPage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-slate-950 text-white pt-28 pb-16">
+      <main className="min-h-screen w-full flex flex-col items-center overflow-x-hidden bg-slate-950 text-white pt-28 pb-16">
         
         {/* HERO */}
-        <section className="relative px-4 md:px-8 py-16 flex flex-col items-center text-center">
+        <section className="relative w-full max-w-7xl px-4 md:px-8 py-16 flex flex-col items-center text-center">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-500/10 blur-[130px] rounded-full pointer-events-none" />
 
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-400 text-xs font-extrabold tracking-wider uppercase mb-6">
@@ -57,7 +57,8 @@ export default function WeddingsPage() {
         </section>
 
         {/* WEDDING FLOW */}
-        <section className="py-16 px-4 md:px-8 border-t border-white/5 max-w-6xl mx-auto">
+        <section className="py-16 px-4 md:px-8 border-t border-white/5 w-full flex justify-center">
+          <div className="w-full max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold text-white">How Wedding Memento Works</h2>
             <p className="text-slate-400 text-sm mt-2">Simple 4-step setup for your big day</p>
@@ -85,11 +86,12 @@ export default function WeddingsPage() {
               <p className="text-slate-400 text-xs leading-relaxed">Download every single photo and video clip in full original resolution after the wedding.</p>
             </div>
           </div>
+          </div>
         </section>
 
         {/* FEATURES FOR WEDDINGS */}
-        <section className="py-16 px-4 md:px-8 border-t border-white/5 bg-slate-900/40">
-          <div className="max-w-5xl mx-auto">
+        <section className="py-16 px-4 md:px-8 border-t border-white/5 bg-slate-900/40 w-full flex flex-col items-center">
+          <div className="w-full max-w-5xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-extrabold text-white">Designed for Peace of Mind</h2>
             </div>
@@ -119,3 +121,4 @@ export default function WeddingsPage() {
     </>
   );
 }
+

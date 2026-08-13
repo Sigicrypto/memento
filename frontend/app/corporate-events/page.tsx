@@ -16,10 +16,10 @@ export default function CorporateEventsPage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-slate-950 text-white pt-28 pb-16">
+      <main className="min-h-screen w-full flex flex-col items-center overflow-x-hidden bg-slate-950 text-white pt-28 pb-16">
         
         {/* HERO */}
-        <section className="relative px-4 md:px-8 py-16 flex flex-col items-center text-center">
+        <section className="relative w-full max-w-7xl px-4 md:px-8 py-16 flex flex-col items-center text-center">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 blur-[130px] rounded-full pointer-events-none" />
 
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-extrabold tracking-wider uppercase mb-6">
@@ -56,7 +56,7 @@ export default function CorporateEventsPage() {
         </section>
 
         {/* CORPORATE FEATURES */}
-        <section className="py-16 px-4 md:px-8 border-t border-white/5 max-w-6xl mx-auto">
+        <section className="w-full max-w-6xl py-16 px-4 md:px-8 border-t border-white/5">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold text-white">Enterprise Event Engagement</h2>
             <p className="text-slate-400 text-sm mt-2">Tailored for product launches, summits, and brand activations</p>
@@ -102,3 +102,4 @@ export default function CorporateEventsPage() {
     </>
   );
 }
+
