@@ -49,7 +49,7 @@ export default function SocialFloat() {
         <InstagramIcon />
       </a>
       <a 
-        href="https://wa.me/919866161775" 
+        href="https://api.whatsapp.com/send?phone=919866161775" 
         target="_blank" 
         rel="noopener noreferrer"
         aria-label="WhatsApp"
