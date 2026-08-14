@@ -43,7 +43,7 @@ export default function Pricing({ isEmbedded = false, eventId }: { isEmbedded?: 
           description="Clear pricing tailored for host celebrations and professional event businesses."
         />
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-24 mt-6">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-6" style={{ marginBottom: '120px' }}>
           <div className="bg-slate-900/80 p-1.5 rounded-full border border-white/10 flex items-center shadow-inner">
             <button
               onClick={() => setBillingMode('event')}
