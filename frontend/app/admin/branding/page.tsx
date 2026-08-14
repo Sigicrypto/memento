@@ -21,6 +21,8 @@ export default function BrandingPage() {
   const [brandLogoFile, setBrandLogoFile] = useState<File | null>(null);
   const [brandLogoPreview, setBrandLogoPreview] = useState<string | null>(null);
   const [faviconUrl, setFaviconUrl] = useState('');
+  const [faviconFile, setFaviconFile] = useState<File | null>(null);
+  const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
   
   // Custom Domain State
   const [customDomain, setCustomDomain] = useState('live.apexevents.com');
@@ -58,7 +60,10 @@ export default function BrandingPage() {
         if (metadata.brand_name) setBrandName(metadata.brand_name);
         if (metadata.brand_tagline) setBrandTagline(metadata.brand_tagline);
         if (metadata.brand_logo_url) setBrandLogoPreview(metadata.brand_logo_url);
-        if (metadata.favicon_url) setFaviconUrl(metadata.favicon_url);
+        if (metadata.favicon_url) {
+          setFaviconUrl(metadata.favicon_url);
+          setFaviconPreview(metadata.favicon_url);
+        }
         if (metadata.custom_domain) setCustomDomain(metadata.custom_domain);
         if (metadata.brand_colors?.primary) setPrimaryColor(metadata.brand_colors.primary);
         if (metadata.brand_colors?.secondary) setSecondaryColor(metadata.brand_colors.secondary);
@@ -91,13 +96,22 @@ export default function BrandingPage() {
         }
       }
 
+      let newFaviconUrl = faviconPreview;
+      if (faviconFile) {
+        const filePath = `branding/${user.id}/favicon_${Date.now()}`;
+        const { error: uploadErr } = await supabase.storage.from('photos').upload(filePath, faviconFile, { upsert: true });
+        if (!uploadErr) {
+          newFaviconUrl = supabase.storage.from('photos').getPublicUrl(filePath).data.publicUrl;
+        }
+      }
+
       const { error } = await supabase.auth.updateUser({
         data: {
           ...user.user_metadata,
           brand_name: brandName,
           brand_tagline: brandTagline,
           brand_logo_url: logoUrl,
-          favicon_url: faviconUrl,
+          favicon_url: newFaviconUrl,
           custom_domain: customDomain,
           brand_colors: { primary: primaryColor, secondary: secondaryColor },
           wall_theme: wallTheme,
@@ -141,11 +155,11 @@ export default function BrandingPage() {
       <div className="relative z-10 max-w-6xl mx-auto flex flex-col gap-8">
         
         {/* Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-white/10 pb-6">
+          <div className="flex items-start gap-3">
             <Link 
               href="/admin" 
-              className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:border-cyan-400/40 transition-all"
+              className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:border-cyan-400/40 transition-all mt-1"
             >
               <ArrowLeft size={18} />
             </Link>
@@ -156,13 +170,13 @@ export default function BrandingPage() {
                   PRO AGENCY
                 </span>
               </div>
-              <p className="text-slate-400 text-xs mt-0.5">
+              <p className="text-slate-400 text-xs mt-1">
                 Customize agency logos, domain titles, color palettes, and remove Memento branding on live walls & cards.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3 mt-1 sm:mt-2">
             <AnimatedLogo width={120} height={38} />
           </div>
         </div>
@@ -318,18 +332,38 @@ export default function BrandingPage() {
                     </div>
                   </div>
 
-                  {/* Favicon URL */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Favicon / Browser Tab Icon URL
-                    </label>
-                    <input
-                      type="url"
-                      value={faviconUrl}
-                      onChange={(e) => setFaviconUrl(e.target.value)}
-                      placeholder="https://youragency.com/favicon.ico"
-                      className="px-4 py-3 rounded-xl bg-slate-950 border border-white/15 text-white text-sm focus:border-cyan-400 focus:outline-none transition-all font-mono"
-                    />
+                  {/* Favicon Upload Section */}
+                  <div className="p-6 rounded-2xl bg-slate-950/80 border border-white/10 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                        <ImageIcon size={16} className="text-cyan-400" />
+                        Favicon / Browser Tab Icon
+                      </label>
+                      <span className="text-[10px] font-mono text-cyan-400">.ICO or PNG</span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-6">
+                      <div className="w-full flex-1">
+                        <input
+                          type="file"
+                          accept=".ico, image/png, image/jpeg"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null;
+                            setFaviconFile(file);
+                            if (file) {
+                              setFaviconPreview(URL.createObjectURL(file));
+                            }
+                          }}
+                          className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all border border-white/10 rounded-xl p-2 bg-slate-900"
+                        />
+                      </div>
+
+                      {faviconPreview && (
+                        <div className="w-16 h-16 rounded-xl bg-black/60 border border-white/15 p-2 flex items-center justify-center shrink-0">
+                          <img src={faviconPreview} alt="Favicon Preview" className="max-h-full max-w-full object-contain" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -490,7 +524,7 @@ export default function BrandingPage() {
                     <div>
                       <h4 className="text-sm font-bold text-white">Remove "Powered by Memento" Watermark</h4>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        Completely hides Memento badges on live screens, printable QR cards, and photo download zip files.
+                        Completely hides Memento badges. Your custom Brand Logo (if uploaded) will be used as a replacement on live walls and printed cards.
                       </p>
                     </div>
 
@@ -550,10 +584,10 @@ export default function BrandingPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-extrabold text-sm tracking-wider uppercase shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm tracking-wider uppercase shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Save size={18} />
-                  <span>{saving ? 'Saving White-Label Settings...' : 'Save White-Label Branding Settings'}</span>
+                  <span>{saving ? 'Saving All Settings...' : 'Save All Branding Settings'}</span>
                 </button>
               </div>
 
