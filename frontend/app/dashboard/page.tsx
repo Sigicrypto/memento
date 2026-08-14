@@ -340,23 +340,49 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <Link
-          href="/create"
-          className="btn btn-primary"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 24px',
-            fontSize: '14px',
-            fontWeight: 700,
-            borderRadius: '14px',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          <Plus size={18} />
-          <span>Create New Wall</span>
-        </Link>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <Link
+            href="/dashboard/branding"
+            className="btn btn-secondary"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: 700,
+              borderRadius: '14px',
+              whiteSpace: 'nowrap',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'var(--text-primary)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
+          >
+            <Sparkles size={18} className="text-cyan-400" />
+            <span>White-Label</span>
+          </Link>
+
+          <Link
+            href="/create"
+            className="btn btn-primary"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: 700,
+              borderRadius: '14px',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Plus size={18} />
+            <span>Create New Wall</span>
+          </Link>
+        </div>
       </motion.div>
 
       {/* ── KPI STATS ── */}

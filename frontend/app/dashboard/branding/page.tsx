@@ -12,8 +12,9 @@ import {
 } from 'lucide-react';
 
 export default function BrandingPage() {
-  const { user, isLoading, isSuperAdmin } = useAuth();
+  const { user, profile, isLoading, isSuperAdmin } = useAuth();
   const router = useRouter();
+  const isPro = profile?.plan === 'professional' || isSuperAdmin;
 
   // Branding Form State
   const [brandName, setBrandName] = useState('Apex Event Media');
@@ -82,6 +83,7 @@ export default function BrandingPage() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!isPro) return;
 
     setSaving(true);
     setSaveSuccess(false);
@@ -158,7 +160,7 @@ export default function BrandingPage() {
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-white/10 pb-6">
           <div className="flex items-start gap-3">
             <Link 
-              href="/admin" 
+              href="/dashboard" 
               className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:border-cyan-400/40 transition-all mt-1"
             >
               <ArrowLeft size={18} />
@@ -581,14 +583,25 @@ export default function BrandingPage() {
 
               {/* Submit Save Button */}
               <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm tracking-wider uppercase shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <Save size={18} />
-                  <span>{saving ? 'Saving All Settings...' : 'Save All Branding Settings'}</span>
-                </button>
+                {isPro ? (
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm tracking-wider uppercase shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <Save size={18} />
+                    <span>{saving ? 'Saving All Settings...' : 'Save All Branding Settings'}</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => router.push('/pricing')}
+                    className="w-full py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer border border-cyan-500/30 hover:border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)]"
+                  >
+                    <Sparkles size={18} className="text-cyan-400" />
+                    <span className="text-cyan-50">Upgrade to Professional to Save Branding</span>
+                  </button>
+                )}
               </div>
 
             </form>
