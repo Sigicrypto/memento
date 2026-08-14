@@ -14,7 +14,7 @@ import {
 export default function BrandingPage() {
   const { user, profile, isLoading, isSuperAdmin } = useAuth();
   const router = useRouter();
-  const isPro = profile?.plan === 'professional' || isSuperAdmin;
+  const isPro = profile?.plan === 'whitelabel' || isSuperAdmin;
 
   // Branding Form State
   const [brandName, setBrandName] = useState('Apex Event Media');
