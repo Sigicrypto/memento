@@ -147,12 +147,12 @@ export default function BrandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white relative overflow-x-hidden pt-20 pb-16 px-4 md:px-8">
+    <div className="min-h-screen w-full bg-slate-950 text-white relative overflow-x-hidden pt-20 pb-16 px-4 md:px-8 flex justify-center">
       {/* Background ambient lighting */}
       <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none z-0" />
       <div className="fixed top-2/3 right-1/4 w-[500px] h-[500px] bg-purple-500/10 blur-[140px] rounded-full pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-6xl mx-auto flex flex-col gap-8">
+      <div className="relative z-10 w-full max-w-6xl flex flex-col gap-8">
         
         {/* Navigation Bar */}
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-white/10 pb-6">
