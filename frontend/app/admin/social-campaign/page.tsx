@@ -32,7 +32,9 @@ import {
   Filter,
   Eye,
   Award,
-  Smartphone
+  Smartphone,
+  Download,
+  Paintbrush
 } from 'lucide-react';
 import { generateRandomCampaign } from '@/lib/metaSocial';
 
@@ -218,6 +220,117 @@ Learn more about Memento: www.mymementoapp.com
     setTimeout(() => setCopiedSuccess(false), 4000);
   };
 
+  const handleDownloadAdPoster = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background Gradient
+    const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+    grad.addColorStop(0, '#07090E');
+    grad.addColorStop(0.5, '#0F172A');
+    grad.addColorStop(1, '#082F49');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    // Neon Ambient Circles
+    ctx.fillStyle = 'rgba(6, 182, 212, 0.15)';
+    ctx.beginPath();
+    ctx.arc(900, 150, 300, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+    ctx.beginPath();
+    ctx.arc(150, 900, 350, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Outer Border
+    ctx.strokeStyle = '#06b6d4';
+    ctx.lineWidth = 12;
+    ctx.strokeRect(30, 30, 1020, 1020);
+
+    // Top Badge: PAN-INDIA HIRING
+    ctx.fillStyle = '#06b6d4';
+    ctx.fillRect(340, 80, 400, 52);
+    ctx.fillStyle = '#07090E';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🇮🇳 PAN-INDIA HIRING • ALL STATES', 540, 115);
+
+    // Main Title: HIRING EVENT SALES PARTNERS
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '900 46px sans-serif';
+    ctx.fillText('HIRING NOW ACROSS INDIA', 540, 210);
+
+    ctx.fillStyle = '#38BDF8';
+    ctx.font = '900 52px sans-serif';
+    ctx.fillText(selectedRole.title.toUpperCase(), 540, 280);
+
+    // Sub-badge: NO FIXED SALARY
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+    ctx.strokeStyle = '#F59E0B';
+    ctx.lineWidth = 3;
+    ctx.fillRect(160, 325, 760, 60);
+    ctx.strokeRect(160, 325, 760, 60);
+    ctx.fillStyle = '#FCD34D';
+    ctx.font = '900 24px sans-serif';
+    ctx.fillText('NO FIXED SALARY • 100% COMMISSION BASIS', 540, 363);
+
+    // Feature Card 1: 10% Flat Commission
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#10B981';
+    ctx.lineWidth = 3;
+    ctx.fillRect(120, 425, 840, 110);
+    ctx.strokeRect(120, 425, 840, 110);
+    ctx.fillStyle = '#34D399';
+    ctx.font = '900 32px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('💰 10% FLAT COMMISSION PER DEAL', 160, 490);
+
+    // Feature Card 2: Instant Payout on Monetization
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#F59E0B';
+    ctx.lineWidth = 3;
+    ctx.fillRect(120, 555, 840, 110);
+    ctx.strokeRect(120, 555, 840, 110);
+    ctx.fillStyle = '#FBBF24';
+    ctx.font = '900 32px sans-serif';
+    ctx.fillText('⚡ INSTANT PAYOUT UPON MONETIZATION', 160, 620);
+
+    // Feature Card 3: Work From Anywhere
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 3;
+    ctx.fillRect(120, 685, 840, 110);
+    ctx.strokeRect(120, 685, 840, 110);
+    ctx.fillStyle = '#38BDF8';
+    ctx.font = '900 32px sans-serif';
+    ctx.fillText('📍 WORK FROM ANYWHERE IN INDIA', 160, 750);
+
+    // Benefits Text
+    ctx.fillStyle = '#E2E8F0';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🎁 Unlimited Earning Potential + Instant UPI / Bank Transfer!', 540, 835);
+
+    // Bottom Call To Action Bar
+    ctx.fillStyle = '#10B981';
+    ctx.fillRect(80, 885, 920, 115);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '900 34px sans-serif';
+    ctx.fillText('📲 WhatsApp Name & City to +91 9866161775', 540, 938);
+    ctx.font = 'bold 22px sans-serif';
+    ctx.fillText('www.mymementoapp.com', 540, 975);
+
+    // Trigger Image File Download
+    const link = document.createElement('a');
+    link.download = `Memento_PanIndia_Hiring_Ad.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
   const handleLaunchWhatsApp = () => {
     const postText = getFormattedJobCopy();
     const encodedText = encodeURIComponent(postText);
@@ -244,11 +357,11 @@ Learn more about Memento: www.mymementoapp.com
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-black tracking-tight text-white">Social & Hiring Studio</h1>
                   <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[11px] font-black uppercase tracking-wider">
-                    PAN-INDIA CONTENT STUDIO
+                    AD IMAGE & COPY CREATOR
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  Design high-converting hiring ad blueprints for <span className="text-emerald-400 font-bold">10% Flat Commission (No Fixed Salary)</span> & <span className="text-amber-400 font-bold">Instant Payout upon Lead Monetization</span>.
+                  Design ad-worthy poster graphics & copy blueprints for <span className="text-emerald-400 font-bold">10% Commission (No Fixed Salary)</span> & <span className="text-amber-400 font-bold">Instant Lead Payout</span>.
                 </p>
               </div>
             </div>
@@ -315,7 +428,7 @@ Learn more about Memento: www.mymementoapp.com
             }`}
           >
             <Briefcase className="w-4 h-4" />
-            <span>💼 Hiring Content Studio (10% Commission - Whole India)</span>
+            <span>💼 Ad Image & Copy Creator (10% Commission - Whole India)</span>
           </button>
 
           <button
@@ -331,7 +444,7 @@ Learn more about Memento: www.mymementoapp.com
           </button>
         </div>
 
-        {/* TAB 1: HIRING CONTENT STUDIO */}
+        {/* TAB 1: HIRING AD IMAGE & COPY STUDIO */}
         {activeTab === 'job_launcher' && (
           <div className="space-y-8">
             
@@ -465,87 +578,117 @@ Learn more about Memento: www.mymementoapp.com
 
               </div>
 
-              {/* Right Column: Live Ad Copy Studio & Preview (7 Cols) */}
+              {/* Right Column: Visual Ad Poster Banner & Text Studio (7 Cols) */}
               <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
                 
+                {/* 1. VISUAL AD POSTER BANNER GRAPHIC */}
                 <div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-4">
                     <div>
                       <h3 className="text-base font-bold text-white flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-cyan-400" /> Live Ad Copy Blueprint (Whole India)
+                        <ImageIcon className="w-5 h-5 text-cyan-400" /> Ad-Worthy Visual Image Poster
                       </h3>
-                      <p className="text-xs text-slate-400 mt-0.5">Ready to copy and post manually on Facebook, Instagram, LinkedIn, or job portals.</p>
+                      <p className="text-xs text-slate-400 mt-0.5">High-converting social media ad graphic formatted for Instagram & Facebook.</p>
                     </div>
 
+                    <button
+                      onClick={handleDownloadAdPoster}
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 cursor-pointer"
+                    >
+                      <Download size={15} />
+                      <span>Download Ad Poster (PNG)</span>
+                    </button>
+                  </div>
+
+                  {/* Rendered Visual Poster Mockup */}
+                  <div className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950 border-2 border-cyan-500/40 shadow-2xl relative overflow-hidden flex flex-col gap-6">
+                    {/* Glowing Orbs */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/15 blur-3xl rounded-full pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/15 blur-3xl rounded-full pointer-events-none" />
+
+                    {/* Top Badge */}
+                    <div className="flex items-center justify-between relative z-10">
+                      <span className="px-3.5 py-1 rounded-full bg-cyan-500 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg">
+                        🇮🇳 PAN-INDIA HIRING • ALL STATES
+                      </span>
+                      <span className="text-xs font-mono font-bold text-cyan-400">
+                        memento app
+                      </span>
+                    </div>
+
+                    {/* Main Headline */}
+                    <div className="space-y-1 relative z-10">
+                      <div className="text-xs font-black tracking-widest text-slate-400 uppercase">Hiring Now Across India</div>
+                      <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight uppercase">
+                        {selectedRole.title}
+                      </h2>
+                    </div>
+
+                    {/* Sub-badge: No Fixed Salary */}
+                    <div className="px-4 py-2.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 font-black text-xs tracking-wider uppercase flex items-center justify-center gap-2 relative z-10">
+                      <AlertCircle size={14} className="shrink-0 text-amber-400" />
+                      <span>NO FIXED SALARY • 100% COMMISSION BASIS</span>
+                    </div>
+
+                    {/* 3 High Impact Feature Cards */}
+                    <div className="grid grid-cols-1 gap-3 relative z-10">
+                      <div className="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/40 text-emerald-400 font-black text-sm flex items-center justify-between">
+                        <span>💰 10% FLAT COMMISSION PER DEAL</span>
+                        <CheckCircle2 size={16} />
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-slate-950/80 border border-amber-500/40 text-amber-300 font-black text-sm flex items-center justify-between">
+                        <span>⚡ INSTANT PAYOUT UPON MONETIZATION</span>
+                        <Zap size={16} />
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-slate-950/80 border border-cyan-500/40 text-cyan-300 font-black text-sm flex items-center justify-between">
+                        <span>📍 WORK FROM ANYWHERE IN INDIA</span>
+                        <Globe size={16} />
+                      </div>
+                    </div>
+
+                    {/* Benefits text */}
+                    <div className="text-xs font-bold text-slate-300 text-center relative z-10">
+                      🎁 Benefits: Unlimited Earning Potential + Instant UPI / Bank Transfer!
+                    </div>
+
+                    {/* Bottom CTA Bar */}
+                    <div className="p-3.5 rounded-xl bg-emerald-600 text-white font-black text-xs text-center uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl relative z-10">
+                      <MessageSquare size={16} />
+                      <span>WhatsApp Name & City to +91 9866161775 | www.mymementoapp.com</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. LIVE AD TEXT COPY BLUEPRINT */}
+                <div className="pt-4 border-t border-slate-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                    <label className="text-xs font-bold text-slate-300 block">Formated Ad Text Caption:</label>
+                    
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleCopyJobText}
-                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-cyan-500/20 cursor-pointer"
                       >
-                        <Copy size={14} />
-                        <span>Copy Ad Copy</span>
+                        <Copy size={13} />
+                        <span>Copy Text</span>
                       </button>
 
                       <button
                         onClick={handleLaunchWhatsApp}
-                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 cursor-pointer"
                       >
-                        <MessageSquare size={14} />
-                        <span>WhatsApp Share</span>
+                        <MessageSquare size={13} />
+                        <span>WhatsApp</span>
                       </button>
                     </div>
                   </div>
-                </div>
 
-                {/* Formatted Textarea */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-300 block">Formated Ad Post Text:</label>
-                    <span className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1">
-                      <Zap size={12} /> Hook Blueprint #{dailyHookIndex + 1}
-                    </span>
-                  </div>
                   <textarea
-                    rows={12}
+                    rows={10}
                     readOnly
                     value={getFormattedJobCopy()}
-                    className="w-full p-5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none leading-relaxed shadow-inner"
+                    className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none leading-relaxed shadow-inner"
                   />
-                </div>
-
-                {/* Live Card Preview Box */}
-                <div className="p-5 rounded-2xl bg-slate-950/90 border border-white/10 flex flex-col gap-4 shadow-xl">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold flex items-center gap-1.5">
-                      <Eye size={14} /> Live Social Post Preview
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                        🇮🇳 WHOLE INDIA
-                      </span>
-                      <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                        10% COMMISSION
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="text-xs text-slate-300 space-y-2 leading-relaxed">
-                    <div className="font-bold text-white text-sm">
-                      {DAILY_HOOKS[dailyHookIndex]}
-                    </div>
-                    <div className="text-slate-400">
-                      📍 <strong>Location:</strong> All India (Work From Anywhere)
-                    </div>
-                    <div className="text-emerald-400 font-bold">
-                      💰 <strong>Compensation:</strong> {jobPay}
-                    </div>
-                    <div className="text-amber-300 font-bold">
-                      ⚡ <strong>Payout:</strong> INSTANT PAYOUT as soon as lead is monetized (No waiting period!)
-                    </div>
-                    <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-medium">
-                      🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!
-                    </div>
-                  </div>
                 </div>
 
               </div>
@@ -667,7 +810,7 @@ Learn more about Memento: www.mymementoapp.com
                     rows={8}
                     value={caption}
                     onChange={(e) => setCaption(e.target.value)}
-                    className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-blue-500 transition-colors leading-relaxed shadow-inner"
+                    className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none leading-relaxed shadow-inner"
                   />
                 </div>
 
