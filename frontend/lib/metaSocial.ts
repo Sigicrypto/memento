@@ -34,6 +34,11 @@ const CATEGORY_IMAGES: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
   ],
+  hiring: [
+    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
+  ],
 };
 
 const HOOKS: Record<string, string[]> = {
@@ -60,6 +65,12 @@ const HOOKS: Record<string, string[]> = {
     '📱 Why event hosts choose Memento over traditional photo booths:',
     '💡 Turn any TV or projector into a live interactive memory wall in 2 minutes:',
   ],
+  hiring: [
+    '💼 HIRING: PAN-INDIA EVENT SALES PARTNER (100% COMMISSION BASIS - NO FIXED SALARY)',
+    '🚀 WORK FROM ANYWHERE IN INDIA: Earn 10% Flat Commission per Deal + Instant Payout on Monetization!',
+    '⚡ EARN 10% ON EVERY EVENT BOOKING: Live QR Photo Wall Sales Partners Needed Nationwide!',
+    '🔥 PAN-INDIA FREELANCE OPPORTUNITY: 10% Commission per Deal (Paid Immediately on Monetization!)',
+  ],
 };
 
 const BODIES: Record<string, string[]> = {
@@ -77,6 +88,9 @@ const BODIES: Record<string, string[]> = {
   ],
   product: [
     'Memento is the effortless live photo wall for events. Guests scan a QR code, upload photos from their phone browser, and watch them project live instantly.',
+  ],
+  hiring: [
+    'Introduce Memento\'s Live QR Photo Wall to wedding planners, corporate event hosts & venues across India!\n\n💰 10% Flat Commission per Closed Booking (No Fixed Salary)\n⚡ INSTANT PAYOUT as soon as lead is monetized (No waiting period!)\n🕒 Flexible Part-Time / Work-From-Anywhere Hours\n\n🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!',
   ],
 };
 

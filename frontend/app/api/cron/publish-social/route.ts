@@ -3,8 +3,8 @@ import { generateRandomCampaign, publishToMeta } from '@/lib/metaSocial';
 
 export async function GET(request: Request) {
   try {
-    // Pick a random category out of wedding, corporate, birthday, product
-    const categories = ['wedding', 'corporate', 'birthday', 'product'];
+    // Pick a random category out of wedding, corporate, birthday, product, hiring
+    const categories = ['wedding', 'corporate', 'birthday', 'product', 'hiring'];
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
 
     // Generate fresh AI variation

@@ -16,6 +16,7 @@ import Lottie from 'lottie-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import ThemeToggle from '@/components/ThemeToggle';
 import EventSettingsDrawer from '@/components/EventSettingsDrawer';
+import PrintableQrKitModal from '@/components/PrintableQrKitModal';
 
 interface Profile {
   id: string;
@@ -88,6 +89,7 @@ export default function DashboardPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [activeQrKitEvent, setActiveQrKitEvent] = useState<Event | null>(null);
   const [emptyLottieData, setEmptyLottieData] = useState<any>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
@@ -802,13 +804,13 @@ export default function DashboardPage() {
                       >
                         <Camera size={16} />
                       </Link>
-                      <Link
-                        href={`/dashboard/${event.id}/qr-assets`}
-                        className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"
-                        title="Printable QR Assets"
+                      <button
+                        onClick={() => setActiveQrKitEvent(event)}
+                        className="p-2 rounded-xl text-text-muted hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors cursor-pointer"
+                        title="Generate Printable QR Collateral Kit (PDF)"
                       >
                         <QrCode size={16} />
-                      </Link>
+                      </button>
                       <Link
                         href={`/dashboard/${event.id}/analytics`}
                         className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-bg-subtle transition-colors"
@@ -1042,6 +1044,15 @@ export default function DashboardPage() {
         onSuccess={fetchEvents}
         user={user}
       />
+
+      {activeQrKitEvent && (
+        <PrintableQrKitModal
+          isOpen={!!activeQrKitEvent}
+          onClose={() => setActiveQrKitEvent(null)}
+          eventName={activeQrKitEvent.name}
+          eventSlug={activeQrKitEvent.slug}
+        />
+      )}
     </>
   );
 }
