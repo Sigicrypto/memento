@@ -21,10 +21,10 @@ const TIER_RANK: Record<PlanTier, number> = {
 };
 
 export const GUEST_UPLOAD_LIMITS: Record<PlanTier, number> = {
-  STARTER: 15,
-  STANDARD: 30,
-  PREMIUM: 30,
-  WHITELABEL: 50,
+  STARTER: 30,
+  STANDARD: 1000,
+  PREMIUM: 5000,
+  WHITELABEL: 10000,
 };
 
 export function getGuestPhotoLimit(currentPlan: string | null | undefined): number {

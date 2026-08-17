@@ -26,6 +26,7 @@ function AuthCallbackContent() {
           full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
           email: session.user.email || '',
           plan: plan || 'starter',
+          is_approved: true,
         });
 
         if (plan && plan !== 'starter') {

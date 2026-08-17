@@ -129,7 +129,7 @@ export const useAuth = () => {
   // Super admin always gets whitelabel (max tier) with full access
   const plan = isSuperAdmin ? 'whitelabel' : (profile?.plan || 'starter');
   const isPaid = isSuperAdmin ? true : (profile?.payment_status === 'paid');
-  const isApproved = isSuperAdmin ? true : (profile?.is_approved === true);
+  const isApproved = isSuperAdmin ? true : (profile ? (profile.is_approved !== false) : true);
   const isAdmin = isSuperAdmin ? true : (profile?.role === 'admin');
 
   return { user, profile, isLoading, signIn, signUp, signInWithGoogle, signOut, plan, isPaid, isApproved, isAdmin, isSuperAdmin };

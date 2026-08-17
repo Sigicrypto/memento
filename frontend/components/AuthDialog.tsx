@@ -165,6 +165,7 @@ export default function AuthDialog({ isOpen, onClose, selectedPlan = null, initi
           full_name: name.trim(),
           email: email.trim(),
           plan: plan || 'starter',
+          is_approved: true,
         });
 
         // ── Oman: redirect to WhatsApp for manual payment ──

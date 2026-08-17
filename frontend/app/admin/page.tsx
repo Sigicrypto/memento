@@ -313,10 +313,15 @@ export default function AdminPage() {
   };
 
   const handleUpdatePlan = async (userId: string, newPlan: string) => {
-    const err = await updateUserProfile(userId, { plan: newPlan.toLowerCase(), payment_status: 'paid' });
+    const planNormalized = newPlan.toLowerCase();
+    const isPaid = planNormalized !== 'free';
+    const err = await updateUserProfile(userId, { 
+      plan: planNormalized, 
+      payment_status: isPaid ? 'paid' : 'pending' 
+    });
     if (err) { showToast('Failed: ' + err, 'error'); return; }
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase(), payment_status: 'paid' } : u));
-    showToast(`Plan upgraded to ${newPlan} ✅`);
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: newPlan.toUpperCase(), payment_status: isPaid ? 'paid' : 'pending' } : u));
+    showToast(`Plan updated to ${newPlan} ✅`);
     fetchUsers();
     fetchStats();
   };
@@ -326,6 +331,7 @@ export default function AdminPage() {
     if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
     showToast(`Role updated to ${newRole} ✅`);
+    fetchUsers();
   };
 
   const handleDeleteUser = (userId: string, email: string) => {
@@ -364,7 +370,9 @@ export default function AdminPage() {
   // ── Filter ──
   const filteredUsers = users.filter(u =>
     u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (u.full_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+    (u.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (u.plan || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (u.role || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
   const filteredEvents = events.filter(e =>
     e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -475,7 +483,7 @@ export default function AdminPage() {
             ))}
 
             <Link
-              href="/admin/branding"
+              href="/dashboard/branding"
               className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20"
             >
               <span className="flex items-center gap-3">
@@ -681,13 +689,22 @@ export default function AdminPage() {
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-xs font-bold text-white">{u.email}</p>
+
+                              {/* Role Badge */}
+                              {(u.role === 'admin' || u.email.toLowerCase() === 'sagarfalcon@gmail.com') && (
+                                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full border uppercase tracking-wider bg-purple-500/20 text-purple-300 border-purple-500/40 flex items-center gap-1">
+                                  🛡️ {u.email.toLowerCase() === 'sagarfalcon@gmail.com' ? 'Super Admin' : 'Admin'}
+                                </span>
+                              )}
+
+                              {/* Plan Tier Badge */}
                               <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border uppercase tracking-wider ${
-                                (u.plan || '').toUpperCase() === 'PROFESSIONAL' || (u.plan || '').toUpperCase() === 'WHITE_LABEL' || (u.plan || '').toUpperCase() === 'WHITE LABEL' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
-                                (u.plan || '').toUpperCase() === 'PREMIUM' || (u.plan || '').toUpperCase() === 'STANDARD' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                                (u.plan || '').toUpperCase() === 'PROFESSIONAL' || (u.plan || '').toUpperCase() === 'WHITELABEL' || (u.plan || '').toUpperCase() === 'WHITE_LABEL' ? 'bg-purple-500/20 text-purple-300 border-purple-500/40' :
+                                (u.plan || '').toUpperCase() === 'PREMIUM' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
                                 (u.plan || '').toUpperCase() === 'EVENT' || (u.plan || '').toUpperCase() === 'STARTER' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' :
                                 'bg-slate-800 text-slate-400 border-slate-700'
                               }`}>
-                                {u.plan || 'FREE'}
+                                {(u.plan || '').toUpperCase() === 'WHITELABEL' ? 'PROFESSIONAL' : (u.plan || 'FREE')}
                               </span>
                             </div>
                             <p className="text-[11px] text-slate-400 mt-0.5">
@@ -723,14 +740,29 @@ export default function AdminPage() {
                         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                           {/* Plan Upgrade Selector */}
                           <select
-                            value={(u.plan || 'FREE').toUpperCase()}
+                            value={
+                              (u.plan || '').toUpperCase() === 'WHITELABEL' || (u.plan || '').toUpperCase() === 'WHITE_LABEL' ? 'PROFESSIONAL' :
+                              (u.plan || 'FREE').toUpperCase()
+                            }
                             onChange={(e) => handleUpdatePlan(u.id, e.target.value)}
                             className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-700 text-amber-300 outline-none focus:border-amber-500 transition cursor-pointer"
+                            title="Upgrade User Tier"
                           >
                             <option value="FREE">Free (₹0)</option>
-                            <option value="EVENT">⚡ Event Pass (₹999)</option>
-                            <option value="PREMIUM">🔥 Premium Pass (₹2,499)</option>
-                            <option value="PROFESSIONAL">👑 Professional (₹4,999/mo)</option>
+                            <option value="EVENT">⚡ Event Pass (₹999 / $12)</option>
+                            <option value="PREMIUM">🔥 Premium Pass (₹2,999 / $39)</option>
+                            <option value="PROFESSIONAL">👑 Professional (₹7,999/mo / $99/mo)</option>
+                          </select>
+
+                          {/* Role Access Selector */}
+                          <select
+                            value={u.role || 'user'}
+                            onChange={(e) => handleUpdateRole(u.id, e.target.value)}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-slate-950 border border-slate-700 text-purple-300 outline-none focus:border-purple-500 transition cursor-pointer"
+                            title="Change Access Role"
+                          >
+                            <option value="user">👤 User</option>
+                            <option value="admin">🛡️ Admin</option>
                           </select>
 
                           <button

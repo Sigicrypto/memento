@@ -73,11 +73,11 @@ const PRESETS = [
   },
   {
     id: 'hiring',
-    badge: '💼 Hiring & Manpower',
-    title: 'Event Crew & Part-Time Job Posting',
-    desc: 'Generate hiring notices for Photo Wall Operators, Hostesses, and Event Photographers.',
+    badge: '💼 Commission Hiring',
+    title: 'Commission Sales & Partner Posting',
+    desc: 'Target freelancers, promoters, and event planners to earn 20-30% commission per booking.',
     imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
-    caption: `🔥 URGENT HIRING: Event Crew & Live Photo Wall Operators needed! \n\n📍 Location: Delhi NCR / Mumbai / Bangalore\n💰 Daily Pay: ₹1,500 - ₹3,000 / day\n🕒 Timings: Weekend Events & Evening Shifts\n\nRequirements:\n✔️ Good communication skills & enthusiasm\n✔️ Basic smartphone operation\n✔️ Punctual & well-groomed\n\n👉 Apply via WhatsApp / DM to secure your slot! www.mymementoapp.com\n\n#EventJobs #PartTimeJobs #EventCrew #HiringNow #EventJobsIndia #FreelanceJobs`,
+    caption: `💼 JOIN AS AN EVENT SALES PARTNER (100% Commission Basis!)\n\nEarn ₹2,000 - ₹5,000 per booking by introducing Memento's Live QR Photo Wall to wedding planners, venues & event hosts!\n\n💰 High 20-30% Commission per Deal\n🕒 Flexible Part-Time / Freelance Hours\n⚡ Instant Payout upon Booking\n\nApply via WhatsApp: +91 9866161775 | Learn more at www.mymementoapp.com 🚀\n\n#CommissionJobs #EventJobs #PartTimeEarnings #EventPromoter #MementoPartner`,
   },
 ];
 
@@ -93,10 +93,10 @@ const FB_GROUPS = [
 ];
 
 const JOB_ROLES = [
-  { id: 'operator', title: 'Live Photo Wall Operator', defaultPay: '₹2,000 / day', desc: 'Manage QR display screen & assist guests with uploads' },
-  { id: 'hostess', title: 'Event Hostess / Promoter', defaultPay: '₹1,500 - ₹2,500 / day', desc: 'Guide attendees to scan QR codes and boost engagement' },
-  { id: 'photographer', title: 'Event Photographer / Videographer', defaultPay: '₹3,000 - ₹6,000 / day', desc: 'Capture candid photos for live memory wall streaming' },
-  { id: 'coordinator', title: 'On-Site Event Coordinator', defaultPay: '₹2,500 - ₹4,000 / day', desc: 'Coordinate event setup, venue screen sync & logistics' },
+  { id: 'partner', title: 'Event Sales Partner / Affiliate', defaultPay: '20% - 30% Commission / Deal', desc: 'Promote live QR photo walls to wedding planners, venues & event hosts' },
+  { id: 'promoter', title: 'Commission Event Promoter', defaultPay: 'Earn ₹2,000 - ₹5,000 / deal', desc: 'Pitch Memento to client leads and earn instant commission per closed event' },
+  { id: 'ambassador', title: 'Venue & College Brand Ambassador', defaultPay: '30% High Commission Basis', desc: 'Activate venue partnerships, clubs & private party bookings' },
+  { id: 'freelancer', title: 'Event Agency Referral Partner', defaultPay: '₹1,500 - ₹3,000 / Event Sold', desc: 'Refer wedding & corporate clients to Memento and get paid per booking' },
 ];
 
 import { generateRandomCampaign } from '@/lib/metaSocial';
@@ -117,10 +117,10 @@ export default function SocialCampaignStudio() {
   // Job Launcher State
   const [selectedRole, setSelectedRole] = useState(JOB_ROLES[0]);
   const [jobCity, setJobCity] = useState('Delhi NCR');
-  const [jobPay, setJobPay] = useState('₹2,000 / day');
-  const [jobDate, setJobDate] = useState('This Saturday (Evening Shift)');
+  const [jobPay, setJobPay] = useState('20% - 30% Commission (Earn ₹2,000 - ₹5,000 / deal)');
+  const [jobDate, setJobDate] = useState('Flexible / Freelance Hours');
   const [jobContact, setJobContact] = useState('+91 9866161775');
-  const [jobExtraNote, setJobExtraNote] = useState('Food provided on-site. Instant pay.');
+  const [jobExtraNote, setJobExtraNote] = useState('Zero Fixed Salary. 100% High Commission & Instant Payout per Booking!');
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>(['1', '2', '3', '4']);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
 
@@ -187,29 +187,29 @@ export default function SocialCampaignStudio() {
 
   // Job Launcher Helpers
   const getFormattedJobCopy = () => {
-    return `🔥 URGENT HIRING: ${selectedRole.title.toUpperCase()} NEEDED!
+    return `💼 HIRING: ${selectedRole.title.toUpperCase()} (100% COMMISSION BASIS)
 
-📍 Location: ${jobCity}
-💰 Daily Pay: ${jobPay}
-📅 Date & Shift: ${jobDate}
-📞 WhatsApp: ${jobContact}
+📍 Target Location: ${jobCity}
+💰 Earnings Potential: ${jobPay} (No Fixed Salary)
+📅 Work Flexibility: ${jobDate}
+📞 WhatsApp Direct: ${jobContact}
 
-📋 Role & Responsibilities:
+📋 Role & Opportunity:
 • ${selectedRole.desc}
-• Help event guests scan QR codes & upload live memories
-• Maintain professionalism & enthusiasm at the venue
+• Introduce Memento's Live QR Photo Wall to event planners, wedding hosts & venues.
+• Earn high recurring commission on every successful event booking!
 
-✨ Candidate Requirements:
-✔️ Active smartphone with internet
-✔️ Punctual, friendly & presentable
+✨ Ideal Candidate:
+✔️ Passionate about events, sales, networking & social media
+✔️ Good connections with event hosts, wedding planners, or venues
 ${jobExtraNote ? `✔️ ${jobExtraNote}\n` : ''}
-🎁 Perks: Refreshments provided + Instant cash/UPI payout after event!
+🎁 Benefits: Unlimited earning potential + Instant UPI/Bank transfer upon deal closure + Flexible hours!
 
 👇 HOW TO APPLY:
-Send your Name, Photo & City via WhatsApp to ${jobContact} or DM us!
+Send your Name, City & Experience via WhatsApp to ${jobContact} or DM us!
 Learn more about Memento: www.mymementoapp.com
 
-#EventJobs #${jobCity.replace(/\s+/g, '')} #EventCrew #PartTimeJobs #HiringNow #EventJobsIndia`;
+#CommissionJobs #EventPromoter #FreelanceJobs #${jobCity.replace(/\s+/g, '')} #EventSales #AffiliatePartner #JobHiringIndia`;
   };
 
   const toggleGroupSelection = (id: string) => {
@@ -538,7 +538,7 @@ Learn more about Memento: www.mymementoapp.com
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      💰 Daily Pay (₹)
+                      💰 Commission Structure
                     </label>
                     <input
                       type="text"
