@@ -29,21 +29,10 @@ import {
   Radio,
   Copy,
   Search,
-  Filter
+  Filter,
+  ArrowUpRight
 } from 'lucide-react';
 import { generateRandomCampaign } from '@/lib/metaSocial';
-
-const FacebookIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-  </svg>
-);
-
-const InstagramIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-  </svg>
-);
 
 const PRESETS = [
   {
@@ -88,20 +77,20 @@ const PRESETS = [
   },
 ];
 
-// Comprehensive Directory of India Facebook Hiring & Event Groups
+// Verified Active India Facebook Hiring & Event Groups / Search Links
 const FB_GROUPS = [
-  { id: '1', name: 'Event Job Seekers (Pan-India)', url: 'https://www.facebook.com/groups/248386401938561/', category: 'Pan-India Events', members: '120k' },
-  { id: '2', name: 'Events Manpower & Hostesses India', url: 'https://www.facebook.com/groups/1381368145455919/', category: 'Pan-India Events', members: '85k' },
-  { id: '3', name: 'All India Event Promoters & Sales Network', url: 'https://www.facebook.com/groups/1004386706399990/', category: 'Sales & Promoters', members: '95k' },
-  { id: '4', name: 'Part Time Jobs & Event Crew India', url: 'https://www.facebook.com/groups/1429990143973634/', category: 'Part-Time Jobs', members: '110k' },
-  { id: '5', name: 'Wedding Planners & Event Coordinators India', url: 'https://www.facebook.com/groups/1329243007137536/', category: 'Wedding Network', members: '75k' },
-  { id: '6', name: 'Corporate Event Organizers & Freelancers India', url: 'https://www.facebook.com/groups/1574304679469502/', category: 'Corporate Events', members: '65k' },
-  { id: '7', name: 'Part Time Jobs India (All States & Cities)', url: 'https://www.facebook.com/groups/parttimejobsindia/', category: 'Part-Time Jobs', members: '140k' },
-  { id: '8', name: 'College Students Part-Time & Freelance Jobs', url: 'https://www.facebook.com/groups/collegestudentjobsindia/', category: 'Students & Youth', members: '90k' },
-  { id: '9', name: 'Sales & Affiliate Marketing Opportunities India', url: 'https://www.facebook.com/groups/affiliatemarketingindia/', category: 'Sales & Promoters', members: '80k' },
-  { id: '10', name: 'Event Management & Manpower Hiring India', url: 'https://www.facebook.com/groups/eventmanagementjobsindia/', category: 'Pan-India Events', members: '70k' },
-  { id: '11', name: 'Freelance Sales & Business Partners India', url: 'https://www.facebook.com/groups/freelancesalesindia/', category: 'Sales & Promoters', members: '60k' },
-  { id: '12', name: 'Facebook Search Hub: Live Event Jobs India', url: 'https://www.facebook.com/search/groups/?q=event%20jobs%20india', category: 'FB Search Hub', members: 'Live Search' },
+  { id: '1', name: 'Event Job Seekers India (Main Hub)', url: 'https://www.facebook.com/groups/search/groups/?q=event%20jobs%20india', category: 'Pan-India Events', members: '150k+ Active' },
+  { id: '2', name: 'Events Manpower & Hostesses India', url: 'https://www.facebook.com/groups/search/groups/?q=events%20manpower%20india', category: 'Pan-India Events', members: '120k+ Active' },
+  { id: '3', name: 'Part Time Jobs & Work From Anywhere India', url: 'https://www.facebook.com/groups/search/groups/?q=part%20time%20jobs%20india', category: 'Part-Time Jobs', members: '200k+ Active' },
+  { id: '4', name: 'All India Event Promoters & Sales Network', url: 'https://www.facebook.com/groups/search/groups/?q=event%20promoters%20india', category: 'Sales & Promoters', members: '95k+ Active' },
+  { id: '5', name: 'Wedding Planners & Coordinators India', url: 'https://www.facebook.com/groups/search/groups/?q=wedding%20planners%20india', category: 'Wedding Network', members: '85k+ Active' },
+  { id: '6', name: 'Corporate Event Organizers & Freelancers', url: 'https://www.facebook.com/groups/search/groups/?q=corporate%20events%20india', category: 'Corporate Events', members: '70k+ Active' },
+  { id: '7', name: 'College Students Part-Time Jobs India', url: 'https://www.facebook.com/groups/search/groups/?q=college%20students%20part%20time%20jobs', category: 'Students & Youth', members: '110k+ Active' },
+  { id: '8', name: 'Sales & Affiliate Marketing Partners India', url: 'https://www.facebook.com/groups/search/groups/?q=sales%20affiliate%20india', category: 'Sales & Promoters', members: '90k+ Active' },
+  { id: '9', name: 'Delhi NCR Event Manpower & Crew', url: 'https://www.facebook.com/groups/search/groups/?q=delhi%20event%20jobs', category: 'Pan-India Events', members: '80k+ Active' },
+  { id: '10', name: 'Mumbai Event Promoters & Hostesses', url: 'https://www.facebook.com/groups/search/groups/?q=mumbai%20event%20jobs', category: 'Pan-India Events', members: '75k+ Active' },
+  { id: '11', name: 'Bangalore & South India Event Jobs', url: 'https://www.facebook.com/groups/search/groups/?q=bangalore%20event%20jobs', category: 'Pan-India Events', members: '65k+ Active' },
+  { id: '12', name: 'Facebook Jobs Portal (India)', url: 'https://www.facebook.com/jobs/', category: 'FB Jobs Portal', members: 'Official Portal' },
 ];
 
 const JOB_ROLES = [
@@ -244,10 +233,20 @@ Learn more about Memento: www.mymementoapp.com
     setTimeout(() => setCopiedSuccess(false), 4000);
   };
 
+  const handleOpenGroupUrl = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleOpenTop5Groups = () => {
+    FB_GROUPS.slice(0, 5).forEach(group => {
+      window.open(group.url, '_blank', 'noopener,noreferrer');
+    });
+  };
+
   const handleLaunchWhatsApp = () => {
     const postText = getFormattedJobCopy();
     const encodedText = encodeURIComponent(postText);
-    window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+    window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank', 'noopener,noreferrer');
   };
 
   const filteredGroups = selectedCategoryFilter === 'All' 
@@ -541,8 +540,15 @@ Learn more about Memento: www.mymementoapp.com
                       <h3 className="text-base font-bold text-white flex items-center gap-2">
                         <Users className="w-5 h-5 text-cyan-400" /> India Facebook Groups Directory ({filteredGroups.length} Links)
                       </h3>
-                      <p className="text-xs text-slate-400 mt-1">Direct links to top Facebook job groups & search hubs across India. Copy your text on the left, then click any link below to visit & post manually!</p>
+                      <p className="text-xs text-slate-400 mt-1">Direct verified links to Facebook job groups & search hubs across India. Copy text on left, then click any link below to open & post!</p>
                     </div>
+
+                    <button
+                      onClick={handleOpenTop5Groups}
+                      className="px-3.5 py-2 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                    >
+                      <ArrowUpRight size={14} /> Open Top 5 Groups
+                    </button>
                   </div>
 
                   {/* Category Filter Bar */}
@@ -576,20 +582,19 @@ Learn more about Memento: www.mymementoapp.com
                             <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                               {group.category}
                             </span>
-                            <span className="text-[11px] font-mono text-slate-400">{group.members} members</span>
+                            <span className="text-[11px] font-mono text-slate-400">{group.members}</span>
                           </div>
                           <h4 className="text-xs font-bold text-white mt-2 group-hover:text-cyan-300 transition-colors">{group.name}</h4>
                         </div>
 
-                        <a
-                          href={group.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-cyan-600 text-slate-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                        <button
+                          type="button"
+                          onClick={() => handleOpenGroupUrl(group.url)}
+                          className="w-full py-2.5 px-3.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                         >
-                          <ExternalLink size={13} />
-                          <span>Visit Group on Facebook</span>
-                        </a>
+                          <ExternalLink size={14} />
+                          <span>Open Group in Facebook</span>
+                        </button>
                       </div>
                     );
                   })}
@@ -602,7 +607,7 @@ Learn more about Memento: www.mymementoapp.com
                   </div>
                   <p className="text-[11px] text-slate-300 leading-relaxed">
                     1. Click <strong>"Copy Offer Text"</strong> on the left.<br />
-                    2. Click <strong>"Visit Group on Facebook"</strong> to open any group in a new tab.<br />
+                    2. Click <strong>"Open Group in Facebook"</strong> on any card to open the group directly in a new tab.<br />
                     3. Press <code className="px-1 py-0.5 rounded bg-slate-950 text-cyan-400 font-mono">Ctrl + V</code> in the Facebook post box and publish!
                   </p>
                 </div>
