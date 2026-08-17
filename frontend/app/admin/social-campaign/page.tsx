@@ -26,7 +26,10 @@ import {
   IndianRupee,
   ShieldCheck,
   TrendingUp,
-  Radio
+  Radio,
+  Copy,
+  Search,
+  Filter
 } from 'lucide-react';
 import { generateRandomCampaign } from '@/lib/metaSocial';
 
@@ -79,19 +82,26 @@ const PRESETS = [
     id: 'hiring',
     badge: '💼 10% Commission Hiring',
     title: 'Pan-India Sales Partner & Affiliate Hiring',
-    desc: 'Target promoters, freelancers, and event coordinators to earn flat 10% commission on every sale with instant payout upon lead monetization.',
+    desc: 'Target promoters, freelancers, and event coordinators to earn flat 10% commission on every sale (no fixed salary) with instant payout upon lead monetization.',
     imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
-    caption: `💼 HIRING: PAN-INDIA EVENT SALES PARTNER (10% Commission per Deal!)\n\nIntroduce Memento's Live QR Photo Wall to wedding planners, corporate event hosts & venues across India!\n\n💰 10% Flat Commission per Closed Booking\n⚡ INSTANT PAYOUT as soon as the lead is monetized (No waiting period!)\n🕒 Flexible Part-Time / Work-From-Anywhere Hours\n\nApply via WhatsApp: +91 9866161775 | Learn more at www.mymementoapp.com 🚀\n\n#CommissionJobs #EventJobs #PanIndiaHiring #InstantPayout #EventPromoter #MementoPartner`,
+    caption: `💼 HIRING: PAN-INDIA EVENT SALES PARTNER (100% COMMISSION BASIS - NO FIXED SALARY!)\n\nIntroduce Memento's Live QR Photo Wall to wedding planners, corporate event hosts & venues across India!\n\n💰 10% Flat Commission per Closed Booking (No Fixed Salary)\n⚡ INSTANT PAYOUT as soon as the lead is monetized (No waiting period!)\n🕒 Flexible Part-Time / Work-From-Anywhere Hours\n\n🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!\n\nApply via WhatsApp: +91 9866161775 | Learn more at www.mymementoapp.com 🚀\n\n#CommissionJobs #EventJobs #PanIndiaHiring #NoFixedSalary #InstantPayout #EventPromoter #MementoPartner`,
   },
 ];
 
+// Comprehensive Directory of India Facebook Hiring & Event Groups
 const FB_GROUPS = [
-  { id: '1', name: 'Event Job Seekers (Pan-India)', url: 'https://www.facebook.com/groups/248386401938561/', region: 'Pan-India', members: '120k' },
-  { id: '2', name: 'Events Manpower & Hostesses India', url: 'https://www.facebook.com/groups/1381368145455919/', region: 'Pan-India', members: '85k' },
-  { id: '3', name: 'All India Event Promoters & Sales Network', url: 'https://www.facebook.com/groups/1004386706399990/', region: 'Pan-India', members: '95k' },
-  { id: '4', name: 'Part Time Jobs & Event Crew India', url: 'https://www.facebook.com/groups/1429990143973634/', region: 'Pan-India', members: '110k' },
-  { id: '5', name: 'Wedding Planners & Event Coordinators India', url: 'https://www.facebook.com/groups/1329243007137536/', region: 'Pan-India', members: '75k' },
-  { id: '6', name: 'Corporate Event Organizers & Freelancers India', url: 'https://www.facebook.com/groups/1574304679469502/', region: 'Pan-India', members: '65k' },
+  { id: '1', name: 'Event Job Seekers (Pan-India)', url: 'https://www.facebook.com/groups/248386401938561/', category: 'Pan-India Events', members: '120k' },
+  { id: '2', name: 'Events Manpower & Hostesses India', url: 'https://www.facebook.com/groups/1381368145455919/', category: 'Pan-India Events', members: '85k' },
+  { id: '3', name: 'All India Event Promoters & Sales Network', url: 'https://www.facebook.com/groups/1004386706399990/', category: 'Sales & Promoters', members: '95k' },
+  { id: '4', name: 'Part Time Jobs & Event Crew India', url: 'https://www.facebook.com/groups/1429990143973634/', category: 'Part-Time Jobs', members: '110k' },
+  { id: '5', name: 'Wedding Planners & Event Coordinators India', url: 'https://www.facebook.com/groups/1329243007137536/', category: 'Wedding Network', members: '75k' },
+  { id: '6', name: 'Corporate Event Organizers & Freelancers India', url: 'https://www.facebook.com/groups/1574304679469502/', category: 'Corporate Events', members: '65k' },
+  { id: '7', name: 'Part Time Jobs India (All States & Cities)', url: 'https://www.facebook.com/groups/parttimejobsindia/', category: 'Part-Time Jobs', members: '140k' },
+  { id: '8', name: 'College Students Part-Time & Freelance Jobs', url: 'https://www.facebook.com/groups/collegestudentjobsindia/', category: 'Students & Youth', members: '90k' },
+  { id: '9', name: 'Sales & Affiliate Marketing Opportunities India', url: 'https://www.facebook.com/groups/affiliatemarketingindia/', category: 'Sales & Promoters', members: '80k' },
+  { id: '10', name: 'Event Management & Manpower Hiring India', url: 'https://www.facebook.com/groups/eventmanagementjobsindia/', category: 'Pan-India Events', members: '70k' },
+  { id: '11', name: 'Freelance Sales & Business Partners India', url: 'https://www.facebook.com/groups/freelancesalesindia/', category: 'Sales & Promoters', members: '60k' },
+  { id: '12', name: 'Facebook Search Hub: Live Event Jobs India', url: 'https://www.facebook.com/search/groups/?q=event%20jobs%20india', category: 'FB Search Hub', members: 'Live Search' },
 ];
 
 const JOB_ROLES = [
@@ -101,8 +111,16 @@ const JOB_ROLES = [
   { id: 'freelancer', title: 'Event Agency Referral Partner', defaultPay: '10% Referral Commission (No Fixed Salary)', desc: 'Refer wedding & corporate clients to Memento and get paid immediately when booked' },
 ];
 
+const DAILY_HOOKS = [
+  "💼 HIRING: PAN-INDIA EVENT SALES PARTNER (100% COMMISSION BASIS - NO FIXED SALARY)",
+  "🚀 WORK FROM ANYWHERE IN INDIA: Earn 10% Flat Commission per Deal + Instant Payout on Monetization!",
+  "⚡ EARN 10% ON EVERY EVENT BOOKING: Live QR Photo Wall Sales Partners Needed Nationwide!",
+  "🔥 PAN-INDIA FREELANCE OPPORTUNITY: 10% Commission per Deal (Paid Immediately on Monetization!)",
+  "💰 TURN YOUR EVENT & WEDDING NETWORK INTO REVENUE: 10% Flat Commission per Sale (No Fixed Salary)!"
+];
+
 export default function SocialCampaignStudio() {
-  const [activeTab, setActiveTab] = useState<'campaign' | 'job_launcher'>('job_launcher');
+  const [activeTab, setActiveTab] = useState<'job_launcher' | 'campaign'>('job_launcher');
 
   // Campaign State
   const [selectedPreset, setSelectedPreset] = useState(PRESETS[4]); // Default to 10% Hiring
@@ -120,7 +138,8 @@ export default function SocialCampaignStudio() {
   const [jobDate, setJobDate] = useState('Flexible / Freelance Hours (Work From Anywhere)');
   const [jobContact, setJobContact] = useState('+91 9866161775');
   const [jobExtraNote, setJobExtraNote] = useState('NO FIXED SALARY. 100% Commission Basis. Instant Payout released immediately upon lead monetization!');
-  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>(['1', '2', '3', '4']);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('All');
+  const [dailyHookIndex, setDailyHookIndex] = useState<number>(0);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
 
   const handleSelectPreset = (preset: typeof PRESETS[0]) => {
@@ -133,6 +152,10 @@ export default function SocialCampaignStudio() {
     const variation = generateRandomCampaign(selectedPreset.id);
     setCaption(variation.caption);
     setImageUrl(variation.imageUrl);
+  };
+
+  const handleRotateDailyCopy = () => {
+    setDailyHookIndex(prev => (prev + 1) % DAILY_HOOKS.length);
   };
 
   const handleTriggerAutoPilot = async () => {
@@ -184,9 +207,10 @@ export default function SocialCampaignStudio() {
     }
   };
 
-  // Pan-India & 10% Commission Job Offer Copy Generator
+  // Dynamic Daily Job Offer Copy Generator
   const getFormattedJobCopy = () => {
-    return `💼 HIRING: ${selectedRole.title.toUpperCase()} (100% COMMISSION BASIS - NO FIXED SALARY)
+    const currentHook = DAILY_HOOKS[dailyHookIndex];
+    return `${currentHook}
 
 📍 Target Location: All India (Work From Anywhere / Pan-India)
 💰 Commission Structure: ${jobPay}
@@ -213,23 +237,11 @@ Learn more about Memento: www.mymementoapp.com
 #CommissionJobs #EventJobs #PanIndiaJobs #10PercentCommission #NoFixedSalary #InstantPayout #EventPromoter #MementoPartner #AllIndiaHiring`;
   };
 
-  const toggleGroupSelection = (id: string) => {
-    setSelectedGroupIds(prev => 
-      prev.includes(id) ? prev.filter(g => g !== id) : [...prev, id]
-    );
-  };
-
-  const handleCopyAndLaunchFBGroups = () => {
+  const handleCopyJobText = () => {
     const postText = getFormattedJobCopy();
     navigator.clipboard.writeText(postText);
     setCopiedSuccess(true);
     setTimeout(() => setCopiedSuccess(false), 4000);
-
-    // Open selected Facebook groups in new tabs
-    const targetGroups = FB_GROUPS.filter(g => selectedGroupIds.includes(g.id));
-    targetGroups.forEach(group => {
-      window.open(group.url, '_blank');
-    });
   };
 
   const handleLaunchWhatsApp = () => {
@@ -237,6 +249,12 @@ Learn more about Memento: www.mymementoapp.com
     const encodedText = encodeURIComponent(postText);
     window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
   };
+
+  const filteredGroups = selectedCategoryFilter === 'All' 
+    ? FB_GROUPS 
+    : FB_GROUPS.filter(g => g.category === selectedCategoryFilter);
+
+  const categories = ['All', 'Pan-India Events', 'Sales & Promoters', 'Part-Time Jobs', 'Students & Youth', 'Wedding Network'];
 
   return (
     <div className="min-h-screen bg-[#07090E] text-slate-100 font-sans py-8 px-4 sm:px-6 lg:px-12 selection:bg-cyan-500/30">
@@ -258,11 +276,11 @@ Learn more about Memento: www.mymementoapp.com
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-black tracking-tight text-white">Social & Hiring Studio</h1>
                   <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[11px] font-black uppercase tracking-wider">
-                    PAN-INDIA HIRING & AUTO-POST
+                    DAILY COPY & FB GROUPS HUB
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  Broadcasting Pan-India campaigns to <span className="text-cyan-400 font-semibold">Facebook & Instagram</span> | 1-Click Hiring Ads with <span className="text-emerald-400 font-bold">10% Commission</span> & <span className="text-amber-400 font-bold">Instant Payout on Monetization</span>.
+                  Daily updated hiring copy blueprints for <span className="text-emerald-400 font-bold">10% Commission (No Fixed Salary)</span> & direct links to top India Facebook hiring groups.
                 </p>
               </div>
             </div>
@@ -302,7 +320,7 @@ Learn more about Memento: www.mymementoapp.com
             <div>
               <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">Commission Structure</div>
               <div className="text-sm font-black text-white mt-0.5">10% Flat Commission / Sale</div>
-              <div className="text-[11px] text-slate-400">High earning potential per booking</div>
+              <div className="text-[11px] text-slate-400">No Fixed Salary — 100% Commission Basis</div>
             </div>
           </div>
 
@@ -329,7 +347,7 @@ Learn more about Memento: www.mymementoapp.com
             }`}
           >
             <Briefcase className="w-4 h-4" />
-            <span>💼 1-Click Pan-India Hiring Launcher (10% Commission)</span>
+            <span>💼 Daily Copy & FB Hiring Groups Directory (India)</span>
           </button>
 
           <button
@@ -345,7 +363,7 @@ Learn more about Memento: www.mymementoapp.com
           </button>
         </div>
 
-        {/* TAB 1: 1-CLICK PAN-INDIA JOB LAUNCHER */}
+        {/* TAB 1: DAILY COPY & FB HIRING GROUPS DIRECTORY */}
         {activeTab === 'job_launcher' && (
           <div className="space-y-8">
             
@@ -355,8 +373,8 @@ Learn more about Memento: www.mymementoapp.com
                 <div className="flex items-center gap-3">
                   <CheckCircle2 size={20} className="text-cyan-400 shrink-0" />
                   <div>
-                    <span className="text-sm font-bold block">1-Click Pan-India Group Launch Triggered!</span>
-                    <span className="text-xs text-slate-300">Job post copy (10% Commission + Instant Payout) copied to clipboard. {selectedGroupIds.length} Pan-India Facebook Group tabs opened! Just press Ctrl+V to post.</span>
+                    <span className="text-sm font-bold block">Offer Copy Copied to Clipboard!</span>
+                    <span className="text-xs text-slate-300">Ready to paste into Facebook Groups, Messenger, WhatsApp or job pages!</span>
                   </div>
                 </div>
               </div>
@@ -364,23 +382,26 @@ Learn more about Memento: www.mymementoapp.com
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
-              {/* Left Column: Job Builder Form (5 Cols) */}
+              {/* Left Column: Offer Copy Builder & Daily Rotator (5 Cols) */}
               <div className="lg:col-span-5 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
                 <div>
                   <div className="flex items-center justify-between">
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
-                      <Briefcase className="w-5 h-5 text-cyan-400" /> Pan-India Job Offer Details
+                      <Briefcase className="w-5 h-5 text-cyan-400" /> Daily Offer Text Generator
                     </h3>
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                      WHOLE INDIA
-                    </span>
+                    <button
+                      onClick={handleRotateDailyCopy}
+                      className="px-3 py-1 bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[11px] font-bold rounded-lg hover:bg-cyan-500/30 transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      <RefreshCw size={12} /> Rotate Daily Hook #{dailyHookIndex + 1}
+                    </button>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">Design ads for Whole India with 10% Commission & Instant Lead Payout.</p>
+                  <p className="text-xs text-slate-400 mt-1">Generates unique copy daily highlighting 10% Commission (No Fixed Salary) & Instant Lead Payout.</p>
                 </div>
 
                 {/* Role Selector */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-300 block">Target Job Role:</label>
+                  <label className="text-xs font-bold text-slate-300 block">Target Role:</label>
                   <div className="grid grid-cols-1 gap-2">
                     {JOB_ROLES.map(role => {
                       const isSel = selectedRole.id === role.id;
@@ -422,7 +443,7 @@ Learn more about Memento: www.mymementoapp.com
 
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      💰 Commission Rate
+                      💰 Commission Structure
                     </label>
                     <input
                       type="text"
@@ -474,91 +495,116 @@ Learn more about Memento: www.mymementoapp.com
                   />
                 </div>
 
-              </div>
-
-              {/* Right Column: Groups Launcher & Post Preview (7 Cols) */}
-              <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
-                
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Users className="w-5 h-5 text-cyan-400" /> Select Pan-India Facebook Event Groups ({selectedGroupIds.length} Selected)
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">Select Pan-India hiring groups to broadcast your offer. 1-click will copy your copy and open group tabs!</p>
-                </div>
-
-                {/* Groups Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto p-1 pr-2">
-                  {FB_GROUPS.map(group => {
-                    const isChecked = selectedGroupIds.includes(group.id);
-                    return (
-                      <div
-                        key={group.id}
-                        onClick={() => toggleGroupSelection(group.id)}
-                        className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                          isChecked
-                            ? 'bg-cyan-500/15 border-cyan-400/40 text-white'
-                            : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 overflow-hidden">
-                          <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
-                            isChecked ? 'bg-cyan-500 border-cyan-400 text-slate-950' : 'border-slate-700'
-                          }`}>
-                            {isChecked && <Check size={12} className="stroke-[3]" />}
-                          </div>
-                          <div className="truncate">
-                            <p className="text-xs font-bold text-white truncate">{group.name}</p>
-                            <p className="text-[10px] text-cyan-400">{group.region} • {group.members} members</p>
-                          </div>
-                        </div>
-                        <a
-                          href={group.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                        >
-                          <ExternalLink size={12} />
-                        </a>
-                      </div>
-                    );
-                  })}
-                </div>
-
                 {/* Post Preview Box */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-300 block">Generated Pan-India Job Offer Text:</label>
+                    <label className="text-xs font-bold text-slate-300 block">Generated Daily Copy:</label>
                     <span className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1">
-                      <Zap size={12} /> Ready to Copy & Post (10% Commission)
+                      <Zap size={12} /> Hook #{dailyHookIndex + 1}
                     </span>
                   </div>
                   <textarea
-                    rows={8}
+                    rows={9}
                     readOnly
                     value={getFormattedJobCopy()}
                     className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none leading-relaxed shadow-inner"
                   />
                 </div>
 
-                {/* Main 1-Click Launch Action Buttons */}
-                <div className="pt-2 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
-                    onClick={handleCopyAndLaunchFBGroups}
-                    disabled={selectedGroupIds.length === 0}
-                    className="py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                    onClick={handleCopyJobText}
+                    className="py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all cursor-pointer"
                   >
-                    <Share2 className="w-4 h-4" />
-                    <span>Copy Text & Launch {selectedGroupIds.length} Pan-India Groups</span>
+                    <Copy className="w-4 h-4" />
+                    <span>Copy Offer Text</span>
                   </button>
 
                   <button
                     onClick={handleLaunchWhatsApp}
-                    className="py-4 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                    className="py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition-all cursor-pointer"
                   >
                     <MessageSquare className="w-4 h-4" />
-                    <span>Broadcast via WhatsApp</span>
+                    <span>Share on WhatsApp</span>
                   </button>
+                </div>
+
+              </div>
+
+              {/* Right Column: India Facebook Hiring Groups Directory (7 Cols) */}
+              <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+                
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-white flex items-center gap-2">
+                        <Users className="w-5 h-5 text-cyan-400" /> India Facebook Groups Directory ({filteredGroups.length} Links)
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">Direct links to top Facebook job groups & search hubs across India. Copy your text on the left, then click any link below to visit & post manually!</p>
+                    </div>
+                  </div>
+
+                  {/* Category Filter Bar */}
+                  <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategoryFilter(cat)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                          selectedCategoryFilter === cat
+                            ? 'bg-cyan-500/20 border border-cyan-400/50 text-cyan-300 shadow-sm'
+                            : 'bg-slate-950/80 border border-slate-800 text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Groups Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto p-1 pr-2">
+                  {filteredGroups.map(group => {
+                    return (
+                      <div
+                        key={group.id}
+                        className="p-4 rounded-xl border bg-slate-950/80 border-slate-800 hover:border-cyan-500/40 hover:bg-slate-900/90 transition-all flex flex-col justify-between gap-3 group shadow-md"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                              {group.category}
+                            </span>
+                            <span className="text-[11px] font-mono text-slate-400">{group.members} members</span>
+                          </div>
+                          <h4 className="text-xs font-bold text-white mt-2 group-hover:text-cyan-300 transition-colors">{group.name}</h4>
+                        </div>
+
+                        <a
+                          href={group.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-cyan-600 text-slate-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                        >
+                          <ExternalLink size={13} />
+                          <span>Visit Group on Facebook</span>
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Useful Tip Card */}
+                <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs space-y-1">
+                  <div className="font-bold flex items-center gap-1.5 text-white">
+                    <Sparkles size={14} className="text-cyan-400" /> Daily Manual Posting Tip:
+                  </div>
+                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                    1. Click <strong>"Copy Offer Text"</strong> on the left.<br />
+                    2. Click <strong>"Visit Group on Facebook"</strong> to open any group in a new tab.<br />
+                    3. Press <code className="px-1 py-0.5 rounded bg-slate-950 text-cyan-400 font-mono">Ctrl + V</code> in the Facebook post box and publish!
+                  </p>
                 </div>
 
               </div>
