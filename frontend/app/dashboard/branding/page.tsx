@@ -8,13 +8,28 @@ import { useRouter } from 'next/navigation';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import { 
   Building2, Image as ImageIcon, Palette, Globe, Shield, Save, CheckCircle2, 
-  Upload, Sparkles, ExternalLink, ArrowLeft, RefreshCw, Eye, Smartphone, HelpCircle
+  Upload, Sparkles, ExternalLink, ArrowLeft, RefreshCw, Eye, Smartphone, HelpCircle,
+  Users, UserCheck
 } from 'lucide-react';
 
+interface CustomerOption {
+  id: string;
+  full_name: string;
+  email: string;
+  plan: string;
+}
+
 export default function BrandingPage() {
-  const { user, profile, isLoading, isSuperAdmin } = useAuth();
+  const { user, profile, isLoading, isSuperAdmin, isAdmin } = useAuth();
   const router = useRouter();
-  const isPro = profile?.plan === 'whitelabel' || isSuperAdmin;
+  
+  const isUserAdmin = isAdmin || isSuperAdmin;
+  const isPro = profile?.plan === 'whitelabel' || isSuperAdmin || isUserAdmin;
+
+  // Customer selection for Admins
+  const [customers, setCustomers] = useState<CustomerOption[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<string>('self');
+  const [fetchingTargetUser, setFetchingTargetUser] = useState<boolean>(false);
 
   // Branding Form State
   const [brandName, setBrandName] = useState('Apex Event Media');
@@ -46,6 +61,7 @@ export default function BrandingPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<'identity' | 'domain' | 'colors' | 'whitelabel'>('identity');
 
+  // Fetch initial profile branding
   useEffect(() => {
     if (isLoading) return;
     if (!user) {
@@ -55,30 +71,75 @@ export default function BrandingPage() {
 
     const fetchBranding = async () => {
       setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      const metadata = user?.user_metadata;
-      if (metadata) {
-        if (metadata.brand_name) setBrandName(metadata.brand_name);
-        if (metadata.brand_tagline) setBrandTagline(metadata.brand_tagline);
-        if (metadata.brand_logo_url) setBrandLogoPreview(metadata.brand_logo_url);
-        if (metadata.favicon_url) {
-          setFaviconUrl(metadata.favicon_url);
-          setFaviconPreview(metadata.favicon_url);
-        }
-        if (metadata.custom_domain) setCustomDomain(metadata.custom_domain);
-        if (metadata.brand_colors?.primary) setPrimaryColor(metadata.brand_colors.primary);
-        if (metadata.brand_colors?.secondary) setSecondaryColor(metadata.brand_colors.secondary);
-        if (metadata.wall_theme) setWallTheme(metadata.wall_theme);
-        if (metadata.remove_watermark !== undefined) setRemoveWatermark(metadata.remove_watermark);
-        if (metadata.support_phone) setCustomSupportPhone(metadata.support_phone);
-        if (metadata.support_email) setCustomSupportEmail(metadata.support_email);
-        if (metadata.footer_copyright) setFooterCopyright(metadata.footer_copyright);
-      }
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      applyMetadata(currentUser?.user_metadata || {});
       setLoading(false);
     };
 
     fetchBranding();
   }, [user, isLoading, router]);
+
+  // Load customer list if Admin
+  useEffect(() => {
+    if (isUserAdmin) {
+      supabase
+        .from('profiles')
+        .select('id, full_name, email, plan')
+        .order('created_at', { ascending: false })
+        .then(({ data }) => {
+          if (data) setCustomers(data as CustomerOption[]);
+        });
+    }
+  }, [isUserAdmin]);
+
+  const applyMetadata = (metadata: any) => {
+    setBrandName(metadata.brand_name || 'Apex Event Media');
+    setBrandTagline(metadata.brand_tagline || 'Exclusive Live Memory Experiences');
+    setBrandLogoPreview(metadata.brand_logo_url || null);
+    setFaviconUrl(metadata.favicon_url || '');
+    setFaviconPreview(metadata.favicon_url || null);
+    setCustomDomain(metadata.custom_domain || 'live.apexevents.com');
+    setPrimaryColor(metadata.brand_colors?.primary || '#06b6d4');
+    setSecondaryColor(metadata.brand_colors?.secondary || '#a855f7');
+    setWallTheme(metadata.wall_theme || 'onyx');
+    setRemoveWatermark(metadata.remove_watermark !== undefined ? metadata.remove_watermark : true);
+    setCustomSupportPhone(metadata.support_phone || '+91 9866161775');
+    setCustomSupportEmail(metadata.support_email || 'support@apexevents.com');
+    setFooterCopyright(metadata.footer_copyright || '© 2026 Apex Event Media. All rights reserved.');
+  };
+
+  const loadTargetUserBranding = async (targetId: string) => {
+    setFetchingTargetUser(true);
+    try {
+      if (targetId === 'self') {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        applyMetadata(currentUser?.user_metadata || {});
+      } else {
+        const { data: { session } } = await supabase.auth.getSession();
+        const res = await fetch(`/api/admin/user-branding?userId=${targetId}`, {
+          headers: {
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          }
+        });
+        const data = await res.json();
+        if (data.success && data.metadata) {
+          applyMetadata(data.metadata);
+        } else {
+          alert(data.error || 'Failed to load customer branding settings');
+        }
+      }
+    } catch (err: any) {
+      console.error('Error fetching target user branding:', err);
+    } finally {
+      setFetchingTargetUser(false);
+    }
+  };
+
+  const handleSelectCustomer = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newId = e.target.value;
+    setSelectedUserId(newId);
+    loadTargetUserBranding(newId);
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,9 +150,11 @@ export default function BrandingPage() {
     setSaveSuccess(false);
 
     try {
+      const targetId = selectedUserId === 'self' ? user.id : selectedUserId;
+
       let logoUrl = brandLogoPreview;
       if (brandLogoFile) {
-        const filePath = `branding/${user.id}/logo_${Date.now()}`;
+        const filePath = `branding/${targetId}/logo_${Date.now()}`;
         const { error: uploadErr } = await supabase.storage.from('photos').upload(filePath, brandLogoFile, { upsert: true });
         if (!uploadErr) {
           logoUrl = supabase.storage.from('photos').getPublicUrl(filePath).data.publicUrl;
@@ -100,36 +163,56 @@ export default function BrandingPage() {
 
       let newFaviconUrl = faviconPreview;
       if (faviconFile) {
-        const filePath = `branding/${user.id}/favicon_${Date.now()}`;
+        const filePath = `branding/${targetId}/favicon_${Date.now()}`;
         const { error: uploadErr } = await supabase.storage.from('photos').upload(filePath, faviconFile, { upsert: true });
         if (!uploadErr) {
           newFaviconUrl = supabase.storage.from('photos').getPublicUrl(filePath).data.publicUrl;
         }
       }
 
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          ...user.user_metadata,
-          brand_name: brandName,
-          brand_tagline: brandTagline,
-          brand_logo_url: logoUrl,
-          favicon_url: newFaviconUrl,
-          custom_domain: customDomain,
-          brand_colors: { primary: primaryColor, secondary: secondaryColor },
-          wall_theme: wallTheme,
-          remove_watermark: removeWatermark,
-          support_phone: customSupportPhone,
-          support_email: customSupportEmail,
-          footer_copyright: footerCopyright,
-        },
-      });
+      const metadataPayload = {
+        brand_name: brandName,
+        brand_tagline: brandTagline,
+        brand_logo_url: logoUrl,
+        favicon_url: newFaviconUrl,
+        custom_domain: customDomain,
+        brand_colors: { primary: primaryColor, secondary: secondaryColor },
+        wall_theme: wallTheme,
+        remove_watermark: removeWatermark,
+        support_phone: customSupportPhone,
+        support_email: customSupportEmail,
+        footer_copyright: footerCopyright,
+      };
 
-      if (error) {
-        alert(`Failed to update branding settings: ${error.message}`);
+      if (selectedUserId === 'self') {
+        const { error } = await supabase.auth.updateUser({
+          data: {
+            ...user.user_metadata,
+            ...metadataPayload,
+          },
+        });
+        if (error) throw error;
       } else {
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 4000);
+        const { data: { session } } = await supabase.auth.getSession();
+        const res = await fetch('/api/admin/user-branding', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session?.access_token || ''}`
+          },
+          body: JSON.stringify({
+            userId: selectedUserId,
+            metadata: metadataPayload
+          })
+        });
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to save branding for customer');
+        }
       }
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 4000);
     } catch (err: any) {
       alert(`Error saving branding: ${err.message || err}`);
     } finally {
@@ -147,6 +230,8 @@ export default function BrandingPage() {
       </div>
     );
   }
+
+  const selectedCustomerInfo = customers.find(c => c.id === selectedUserId);
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-white relative overflow-x-hidden pt-20 pb-16 px-4 md:px-8 flex justify-center">
@@ -183,12 +268,90 @@ export default function BrandingPage() {
           </div>
         </div>
 
+        {/* Admin Whitelabel Customer Selector Bar */}
+        {isUserAdmin && (
+          <div className="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 border border-cyan-500/30 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                <Users size={20} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-white">Whitelabel & Customer Selector</h3>
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    ADMIN MODE
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Select any customer account to inspect or edit their White-Label branding configuration.
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
+              <select
+                value={selectedUserId}
+                onChange={handleSelectCustomer}
+                disabled={fetchingTargetUser}
+                className="w-full md:w-80 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-cyan-500/40 text-xs font-bold text-white focus:outline-none focus:border-cyan-400 shadow-lg cursor-pointer"
+              >
+                <option value="self">👤 My Admin Account ({user?.email})</option>
+                <optgroup label="👑 Whitelabel Customers">
+                  {customers.filter(c => c.plan === 'whitelabel').map(c => (
+                    <option key={c.id} value={c.id}>
+                      👑 {c.full_name || 'Whitelabel User'} ({c.email})
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="👥 All Other Accounts">
+                  {customers.filter(c => c.plan !== 'whitelabel').map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.full_name || 'User'} ({c.email}) — [{c.plan ? c.plan.toUpperCase() : 'STARTER'}]
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+              {fetchingTargetUser && (
+                <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin shrink-0" />
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Selected Customer Banner */}
+        {selectedUserId !== 'self' && selectedCustomerInfo && (
+          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <UserCheck size={16} />
+              <span>Editing White-Label settings for:</span>
+              <span className="underline font-mono">
+                {selectedCustomerInfo.full_name || selectedCustomerInfo.email}
+              </span>
+              <span className="text-[10px] uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200">
+                {selectedCustomerInfo.plan || 'STARTER'}
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => { setSelectedUserId('self'); loadTargetUserBranding('self'); }}
+              className="text-[11px] underline text-amber-200 hover:text-white"
+            >
+              Switch back to My Account
+            </button>
+          </div>
+        )}
+
         {/* Success Alert */}
         {saveSuccess && (
           <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-between shadow-xl">
             <div className="flex items-center gap-3">
               <CheckCircle2 size={20} />
-              <span className="text-sm font-bold">White-Label settings updated & synced across all client events!</span>
+              <span className="text-sm font-bold">
+                {selectedUserId === 'self' 
+                  ? 'White-Label settings updated & synced across all client events!'
+                  : `White-Label settings successfully updated for ${selectedCustomerInfo?.full_name || selectedCustomerInfo?.email || 'customer'}!`
+                }
+              </span>
             </div>
             <span className="text-xs font-mono opacity-80">Saved to Supabase</span>
           </div>
@@ -256,115 +419,97 @@ export default function BrandingPage() {
 
             <form onSubmit={handleUpdate} className="flex flex-col gap-6">
 
-              {/* TAB 1: BRAND IDENTITY & LOGO */}
+              {/* TAB 1: BRAND IDENTITY */}
               {activeTab === 'identity' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col gap-6">
+                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
                   <div>
-                    <h2 className="text-xl font-black text-white flex items-center gap-2">
-                      <Building2 className="text-cyan-400" size={20} />
-                      Brand Identity & Titles
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Building2 size={18} className="text-cyan-400" /> Agency Identity & Assets
                     </h2>
-                    <p className="text-slate-400 text-xs mt-1">
-                      Configure your agency name, tagline, logo, and icons shown on client galleries and QR cards.
+                    <p className="text-xs text-slate-400 mt-1">
+                      Upload custom agency logo, favicon, and primary brand titles used on client galleries.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Agency / Brand Name
-                      </label>
-                      <input
-                        type="text"
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-bold text-slate-300">Agency / Brand Name</label>
+                      <input 
+                        type="text" 
                         value={brandName}
                         onChange={(e) => setBrandName(e.target.value)}
                         placeholder="e.g. Apex Event Media"
-                        className="px-4 py-3 rounded-xl bg-slate-950 border border-white/15 text-white text-sm focus:border-cyan-400 focus:outline-none transition-all"
-                        required
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
                       />
-                      <span className="text-[10px] text-slate-400">Replaces 'Memento' across event titles and headers.</span>
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Tagline / Subtitle
-                      </label>
-                      <input
-                        type="text"
+                    <div>
+                      <label className="text-xs font-bold text-slate-300">Brand Tagline</label>
+                      <input 
+                        type="text" 
                         value={brandTagline}
                         onChange={(e) => setBrandTagline(e.target.value)}
-                        placeholder="e.g. Live Memory Wall Solutions"
-                        className="px-4 py-3 rounded-xl bg-slate-950 border border-white/15 text-white text-sm focus:border-cyan-400 focus:outline-none transition-all"
+                        placeholder="e.g. Premium Live Memory Experiences"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
                       />
-                      <span className="text-[10px] text-slate-400">Displayed on welcome screens and printable cards.</span>
-                    </div>
-                  </div>
-
-                  {/* Logo Upload Section */}
-                  <div className="p-6 rounded-2xl bg-slate-950/80 border border-white/10 flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                        <ImageIcon size={16} className="text-cyan-400" />
-                        Brand Logo (PNG / SVG)
-                      </label>
-                      <span className="text-[10px] font-mono text-cyan-400">Transparent PNG recommended</span>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-6">
-                      <div className="w-full flex-1">
-                        <input
-                          type="file"
-                          accept="image/png, image/jpeg, image/svg+xml"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0] || null;
-                            setBrandLogoFile(file);
-                            if (file) {
-                              setBrandLogoPreview(URL.createObjectURL(file));
-                            }
-                          }}
-                          className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all border border-white/10 rounded-xl p-2 bg-slate-900"
-                        />
-                      </div>
-
-                      {brandLogoPreview && (
-                        <div className="w-36 h-20 rounded-xl bg-black/60 border border-white/15 p-2 flex items-center justify-center shrink-0">
-                          <img src={brandLogoPreview} alt="Brand Logo Preview" className="max-h-full max-w-full object-contain" />
+                    {/* Logo Upload */}
+                    <div className="pt-2">
+                      <label className="text-xs font-bold text-slate-300">Brand Header Logo</label>
+                      <div className="mt-2 flex items-center gap-4">
+                        <div className="w-32 h-16 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center p-2 overflow-hidden">
+                          {brandLogoPreview ? (
+                            <img src={brandLogoPreview} alt="Logo preview" className="max-h-full max-w-full object-contain" />
+                          ) : (
+                            <span className="text-[10px] text-slate-500 font-mono">No Logo Uploaded</span>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Favicon Upload Section */}
-                  <div className="p-6 rounded-2xl bg-slate-950/80 border border-white/10 flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                        <ImageIcon size={16} className="text-cyan-400" />
-                        Favicon / Browser Tab Icon
-                      </label>
-                      <span className="text-[10px] font-mono text-cyan-400">.ICO or PNG</span>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row items-center gap-6">
-                      <div className="w-full flex-1">
-                        <input
-                          type="file"
-                          accept=".ico, image/png, image/jpeg"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0] || null;
-                            setFaviconFile(file);
-                            if (file) {
-                              setFaviconPreview(URL.createObjectURL(file));
-                            }
-                          }}
-                          className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer transition-all border border-white/10 rounded-xl p-2 bg-slate-900"
-                        />
+                        <label className="px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold hover:bg-cyan-500/20 cursor-pointer flex items-center gap-2 transition-all">
+                          <Upload size={14} /> Upload New Logo
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setBrandLogoFile(file);
+                                setBrandLogoPreview(URL.createObjectURL(file));
+                              }
+                            }}
+                          />
+                        </label>
                       </div>
+                    </div>
 
-                      {faviconPreview && (
-                        <div className="w-16 h-16 rounded-xl bg-black/60 border border-white/15 p-2 flex items-center justify-center shrink-0">
-                          <img src={faviconPreview} alt="Favicon Preview" className="max-h-full max-w-full object-contain" />
+                    {/* Favicon Upload */}
+                    <div className="pt-2">
+                      <label className="text-xs font-bold text-slate-300">Browser Favicon (.ico or .png)</label>
+                      <div className="mt-2 flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center p-2 overflow-hidden">
+                          {faviconPreview ? (
+                            <img src={faviconPreview} alt="Favicon preview" className="w-6 h-6 object-contain" />
+                          ) : (
+                            <Globe size={18} className="text-slate-600" />
+                          )}
                         </div>
-                      )}
+                        <label className="px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 text-xs font-bold hover:bg-slate-700 cursor-pointer flex items-center gap-2 transition-all">
+                          <Upload size={14} /> Choose Favicon
+                          <input 
+                            type="file" 
+                            accept="image/x-icon,image/png" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setFaviconFile(file);
+                                setFaviconPreview(URL.createObjectURL(file));
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -372,136 +517,116 @@ export default function BrandingPage() {
 
               {/* TAB 2: CUSTOM DOMAIN */}
               {activeTab === 'domain' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col gap-6">
+                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
                   <div>
-                    <h2 className="text-xl font-black text-white flex items-center gap-2">
-                      <Globe className="text-cyan-400" size={20} />
-                      Custom Domain Connection
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Globe size={18} className="text-cyan-400" /> Custom Domain Configuration
                     </h2>
-                    <p className="text-slate-400 text-xs mt-1">
-                      Host live event walls and guest upload portals directly on your agency's domain.
+                    <p className="text-xs text-slate-400 mt-1">
+                      Serve all client galleries under your agency sub-domain (CNAME setup required).
                     </p>
                   </div>
 
-                  <div className="p-6 rounded-2xl bg-slate-950/80 border border-white/10 flex flex-col gap-4">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Custom Subdomain / Hostname
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="text"
-                        value={customDomain}
-                        onChange={(e) => setCustomDomain(e.target.value)}
-                        placeholder="live.youragency.com"
-                        className="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-white/15 text-white text-sm font-mono focus:border-cyan-400 focus:outline-none transition-all"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => alert(`DNS check initiated for ${customDomain}`)}
-                        className="px-4 py-3 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-bold text-xs hover:bg-cyan-500/30 transition-all flex items-center gap-1.5"
-                      >
-                        <RefreshCw size={14} />
-                        <span>Verify DNS</span>
-                      </button>
+                  <div className="space-y-5">
+                    <div>
+                      <label className="text-xs font-bold text-slate-300">Target Agency Domain</label>
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          value={customDomain}
+                          onChange={(e) => setCustomDomain(e.target.value)}
+                          placeholder="e.g. live.youragency.com"
+                          className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
+                        />
+                        <button
+                          type="button"
+                          className="px-4 py-3 rounded-xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs font-bold shrink-0 hover:bg-cyan-500/30"
+                        >
+                          Check DNS
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="mt-2 p-4 rounded-xl bg-slate-900/90 border border-white/10 text-xs font-mono flex flex-col gap-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Record Type:</span>
-                        <span className="text-amber-400 font-bold">CNAME</span>
+                    {/* CNAME Instructions Card */}
+                    <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
+                      <div className="flex items-center justify-between text-xs font-bold text-white">
+                        <span>DNS CNAME Setup Instructions</span>
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                          RECORD READY
+                        </span>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Host / Alias:</span>
-                        <span className="text-cyan-400 font-bold">{customDomain.split('.')[0] || 'live'}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Target Destination:</span>
-                        <span className="text-emerald-400 font-bold">cname.mymementoapp.com</span>
+                      <div className="text-xs text-slate-400 font-mono space-y-1">
+                        <div>Type: <span className="text-white">CNAME</span></div>
+                        <div>Name: <span className="text-white">live</span> (or your subdomain)</div>
+                        <div>Value: <span className="text-cyan-400">cname.mymementoapp.com</span></div>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* TAB 3: COLORS & WALL THEME */}
+              {/* TAB 3: COLORS & THEME */}
               {activeTab === 'colors' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col gap-6">
+                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
                   <div>
-                    <h2 className="text-xl font-black text-white flex items-center gap-2">
-                      <Palette className="text-cyan-400" size={20} />
-                      Color Palette & Live Wall Aesthetic
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Palette size={18} className="text-cyan-400" /> Color Accent & Live Wall Aesthetic
                     </h2>
-                    <p className="text-slate-400 text-xs mt-1">
-                      Set accent colors for buttons, interactive animations, and live screen wallpaper presets.
+                    <p className="text-xs text-slate-400 mt-1">
+                      Customize color tokens applied to live wall headers, guest buttons, and moderation interfaces.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Primary Accent Color
-                      </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
+                      <label className="text-xs font-bold text-slate-300">Primary Brand Accent</label>
                       <div className="flex items-center gap-3">
-                        <input
-                          type="color"
+                        <input 
+                          type="color" 
                           value={primaryColor}
                           onChange={(e) => setPrimaryColor(e.target.value)}
-                          className="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-none"
+                          className="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer"
                         />
-                        <input
-                          type="text"
-                          value={primaryColor}
-                          onChange={(e) => setPrimaryColor(e.target.value)}
-                          className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-xs"
-                        />
+                        <span className="text-xs font-mono text-cyan-400 font-bold">{primaryColor}</span>
                       </div>
                     </div>
 
-                    <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Secondary Glow Color
-                      </label>
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
+                      <label className="text-xs font-bold text-slate-300">Secondary Highlight Color</label>
                       <div className="flex items-center gap-3">
-                        <input
-                          type="color"
+                        <input 
+                          type="color" 
                           value={secondaryColor}
                           onChange={(e) => setSecondaryColor(e.target.value)}
-                          className="w-10 h-10 rounded-xl cursor-pointer bg-transparent border-none"
+                          className="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer"
                         />
-                        <input
-                          type="text"
-                          value={secondaryColor}
-                          onChange={(e) => setSecondaryColor(e.target.value)}
-                          className="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-xs"
-                        />
+                        <span className="text-xs font-mono text-purple-400 font-bold">{secondaryColor}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Wall Theme Preset */}
-                  <div className="flex flex-col gap-3">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Live Screen Wall Wallpaper Preset
-                    </label>
+                  {/* Theme Presets */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-300 mb-2 block">Live Memory Wall Background Theme</label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
-                        { id: 'onyx', label: 'Dark Onyx', bg: 'bg-slate-950' },
-                        { id: 'midnight', label: 'Midnight Navy', bg: 'bg-slate-900' },
-                        { id: 'velvet', label: 'Velvet Gold', bg: 'bg-stone-900' },
-                        { id: 'minimal', label: 'Minimal Slate', bg: 'bg-zinc-900' },
-                      ].map((preset) => (
+                        { id: 'onyx', label: 'Onyx Dark', bg: 'bg-black' },
+                        { id: 'midnight', label: 'Midnight Blue', bg: 'bg-slate-950' },
+                        { id: 'velvet', label: 'Velvet Purple', bg: 'bg-purple-950' },
+                        { id: 'minimal', label: 'Minimal White', bg: 'bg-slate-100 text-slate-900' },
+                      ].map((t) => (
                         <button
-                          key={preset.id}
+                          key={t.id}
                           type="button"
-                          onClick={() => setWallTheme(preset.id as any)}
-                          className={`p-3 rounded-xl border text-xs font-bold transition-all flex flex-col items-center gap-2 cursor-pointer ${
-                            wallTheme === preset.id
-                              ? 'border-cyan-400 bg-cyan-500/10 text-cyan-400 shadow-md'
-                              : 'border-white/10 text-slate-400 hover:text-white'
+                          onClick={() => setWallTheme(t.id as any)}
+                          className={`p-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-2 transition-all cursor-pointer ${
+                            wallTheme === t.id
+                              ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
+                              : 'border-white/10 text-slate-400 hover:border-white/20'
                           }`}
                         >
-                          <div className={`w-full h-8 rounded-lg ${preset.bg} border border-white/10`} />
-                          <span>{preset.label}</span>
+                          <div className={`w-full h-8 rounded-lg ${t.bg} border border-white/20`} />
+                          <span>{t.label}</span>
                         </button>
                       ))}
                     </div>
@@ -511,92 +636,97 @@ export default function BrandingPage() {
 
               {/* TAB 4: WHITE-LABEL CONTROLS */}
               {activeTab === 'whitelabel' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col gap-6">
+                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
                   <div>
-                    <h2 className="text-xl font-black text-white flex items-center gap-2">
-                      <Shield className="text-cyan-400" size={20} />
-                      White-Label & Branding Removal
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Shield size={18} className="text-cyan-400" /> White-Label Overrides & Support Contact
                     </h2>
-                    <p className="text-slate-400 text-xs mt-1">
+                    <p className="text-xs text-slate-400 mt-1">
                       Remove default Memento branding and customize support details for your client base.
                     </p>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between gap-4">
-                    <div>
-                      <h4 className="text-sm font-bold text-white">Remove "Powered by Memento" Watermark</h4>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Completely hides Memento badges. Your custom Brand Logo (if uploaded) will be used as a replacement on live walls and printed cards.
-                      </p>
+                  <div className="space-y-5">
+                    {/* Watermark Toggle */}
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between">
+                      <div>
+                        <div className="text-xs font-bold text-white">Remove "Powered by Memento" Watermark</div>
+                        <div className="text-[11px] text-slate-400">Completely hides Memento logos from live walls and guest scan cards.</div>
+                      </div>
+                      <input 
+                        type="checkbox" 
+                        checked={removeWatermark}
+                        onChange={(e) => setRemoveWatermark(e.target.checked)}
+                        className="w-5 h-5 accent-cyan-500 cursor-pointer"
+                      />
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setRemoveWatermark(!removeWatermark)}
-                      className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 flex items-center cursor-pointer ${
-                        removeWatermark ? 'bg-cyan-500 justify-end' : 'bg-slate-800 justify-start'
-                      }`}
-                    >
-                      <div className="w-6 h-6 rounded-full bg-white shadow-md" />
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Custom Support WhatsApp / Phone
-                      </label>
-                      <input
-                        type="text"
+                    <div>
+                      <label className="text-xs font-bold text-slate-300">Custom Support Helpline Phone</label>
+                      <input 
+                        type="text" 
                         value={customSupportPhone}
                         onChange={(e) => setCustomSupportPhone(e.target.value)}
-                        className="px-4 py-3 rounded-xl bg-slate-950 border border-white/15 text-white text-sm focus:border-cyan-400 focus:outline-none transition-all"
+                        placeholder="e.g. +91 9866161775"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                        Custom Support Email
-                      </label>
-                      <input
-                        type="email"
+                    <div>
+                      <label className="text-xs font-bold text-slate-300">Custom Support Email</label>
+                      <input 
+                        type="email" 
                         value={customSupportEmail}
                         onChange={(e) => setCustomSupportEmail(e.target.value)}
-                        className="px-4 py-3 rounded-xl bg-slate-950 border border-white/15 text-white text-sm focus:border-cyan-400 focus:outline-none transition-all"
+                        placeholder="e.g. support@apexevents.com"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
                       />
                     </div>
-                  </div>
 
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Custom Footer Copyright Text
-                    </label>
-                    <input
-                      type="text"
-                      value={footerCopyright}
-                      onChange={(e) => setFooterCopyright(e.target.value)}
-                      className="px-4 py-3 rounded-xl bg-slate-950 border border-white/15 text-white text-sm focus:border-cyan-400 focus:outline-none transition-all"
-                    />
+                    <div>
+                      <label className="text-xs font-bold text-slate-300">Footer Copyright Notice</label>
+                      <input 
+                        type="text" 
+                        value={footerCopyright}
+                        onChange={(e) => setFooterCopyright(e.target.value)}
+                        placeholder="e.g. © 2026 Apex Event Media. All rights reserved."
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Submit Save Button */}
+              {/* Submit Button */}
               <div className="pt-2">
                 {isPro ? (
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-sm tracking-wider uppercase shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
                   >
-                    <Save size={18} />
-                    <span>{saving ? 'Saving All Settings...' : 'Save All Branding Settings'}</span>
+                    {saving ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Saving White-Label Configuration...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Save size={18} />
+                        <span>
+                          {selectedUserId === 'self'
+                            ? 'Save White-Label Branding Settings'
+                            : `Save White-Label Branding for ${selectedCustomerInfo?.full_name || selectedCustomerInfo?.email || 'Customer'}`
+                          }
+                        </span>
+                      </>
+                    )}
                   </button>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => router.push('/pricing')}
-                    className="w-full py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer border border-cyan-500/30 hover:border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)]"
+                    onClick={() => router.push('/checkout?plan=whitelabel')}
+                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Sparkles size={18} className="text-cyan-400" />
                     <span className="text-cyan-50">Upgrade to Professional to Save Branding</span>
