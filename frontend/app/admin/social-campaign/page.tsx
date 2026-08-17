@@ -16,15 +16,19 @@ import {
   Flame,
   CheckCircle,
   AlertCircle,
-  HelpCircle,
   Briefcase,
   Users,
-  Copy,
   MapPin,
   Calendar,
   Phone,
-  MessageSquare
+  MessageSquare,
+  Zap,
+  IndianRupee,
+  ShieldCheck,
+  TrendingUp,
+  Radio
 } from 'lucide-react';
+import { generateRandomCampaign } from '@/lib/metaSocial';
 
 const FacebookIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -43,7 +47,7 @@ const PRESETS = [
     id: 'wedding',
     badge: '💍 Luxury Weddings',
     title: 'Wedding Memory Wall',
-    desc: 'Target engaged couples & luxury wedding planners with instant live guest photo sharing.',
+    desc: 'Target engaged couples & luxury wedding planners across India with instant live guest photo sharing.',
     imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop',
     caption: `💍 Stop waiting 4 weeks for wedding photos! With Memento, guests scan a QR code at their table, snap photos on their phones, and watch them appear live on the big screen! \n\n✨ Custom branding\n✨ Zero app downloads required\n✨ Instant guest photo sharing\n\nBook your live QR wall today at www.mymementoapp.com 🥂❤️\n\n#WeddingInspiration #LivePhotoWall #WeddingTech #Memento #EventPlanner #WeddingPlanning #InteractiveWeddings`,
   },
@@ -51,7 +55,7 @@ const PRESETS = [
     id: 'corporate',
     badge: '🚀 B2B & Galas',
     title: 'Corporate Gala & Brand Activation',
-    desc: 'Target HR teams, event directors, and enterprise brand managers.',
+    desc: 'Target HR teams, event directors, and enterprise brand managers nationwide.',
     imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop',
     caption: `🚀 Transform corporate event engagement in 1 scan! Memento turns every attendee's smartphone into a live camera feed for your main stage screen.\n\n📈 3x higher guest participation\n🎨 Custom corporate branding & logo overlay\n🛡️ Real-time photo moderation\n\nElevate your brand experience at www.mymementoapp.com 🌟\n\n#CorporateEvents #EventMarketing #BrandActivation #EventPlanner #Memento #EventTech #LiveEngagement`,
   },
@@ -59,7 +63,7 @@ const PRESETS = [
     id: 'birthday',
     badge: '🎉 Parties & VIP',
     title: 'Birthday & Private Celebrations',
-    desc: 'Target birthday hosts, milestone anniversaries, and VIP parties.',
+    desc: 'Target birthday hosts, milestone anniversaries, and VIP parties across India.',
     imageUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop',
     caption: `🎉 Make your party unforgettable! Capture every angle of your celebration with Memento's live QR photo wall.\n\n📱 Guests just scan & upload\n✨ Live wall slideshow with animations\n💖 Download the full photo album after the party!\n\nSetup your wall in 2 minutes at www.mymementoapp.com 🥳\n\n#PartyIdeas #BirthdayCelebration #PhotoWall #MementoApp #LivePartyFeed #EventTech`,
   },
@@ -73,54 +77,49 @@ const PRESETS = [
   },
   {
     id: 'hiring',
-    badge: '💼 Commission Hiring',
-    title: 'Commission Sales & Partner Posting',
-    desc: 'Target freelancers, promoters, and event planners to earn 20-30% commission per booking.',
+    badge: '💼 10% Commission Hiring',
+    title: 'Pan-India Sales Partner & Affiliate Hiring',
+    desc: 'Target promoters, freelancers, and event coordinators to earn flat 10% commission on every sale with instant payout upon lead monetization.',
     imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
-    caption: `💼 JOIN AS AN EVENT SALES PARTNER (100% Commission Basis!)\n\nEarn ₹2,000 - ₹5,000 per booking by introducing Memento's Live QR Photo Wall to wedding planners, venues & event hosts!\n\n💰 High 20-30% Commission per Deal\n🕒 Flexible Part-Time / Freelance Hours\n⚡ Instant Payout upon Booking\n\nApply via WhatsApp: +91 9866161775 | Learn more at www.mymementoapp.com 🚀\n\n#CommissionJobs #EventJobs #PartTimeEarnings #EventPromoter #MementoPartner`,
+    caption: `💼 HIRING: PAN-INDIA EVENT SALES PARTNER (10% Commission per Deal!)\n\nIntroduce Memento's Live QR Photo Wall to wedding planners, corporate event hosts & venues across India!\n\n💰 10% Flat Commission per Closed Booking\n⚡ INSTANT PAYOUT as soon as the lead is monetized (No waiting period!)\n🕒 Flexible Part-Time / Work-From-Anywhere Hours\n\nApply via WhatsApp: +91 9866161775 | Learn more at www.mymementoapp.com 🚀\n\n#CommissionJobs #EventJobs #PanIndiaHiring #InstantPayout #EventPromoter #MementoPartner`,
   },
 ];
 
 const FB_GROUPS = [
   { id: '1', name: 'Event Job Seekers (Pan-India)', url: 'https://www.facebook.com/groups/248386401938561/', region: 'Pan-India', members: '120k' },
   { id: '2', name: 'Events Manpower & Hostesses India', url: 'https://www.facebook.com/groups/1381368145455919/', region: 'Pan-India', members: '85k' },
-  { id: '3', name: 'Delhi Events Manpower & Freelancers', url: 'https://www.facebook.com/groups/1004386706399990/', region: 'Delhi NCR', members: '45k' },
-  { id: '4', name: 'Events Part Time Jobs for Students', url: 'https://www.facebook.com/groups/1429990143973634/', region: 'Delhi NCR', members: '60k' },
-  { id: '5', name: 'Mumbai Event Jobs & Promoters', url: 'https://www.facebook.com/groups/1329243007137536/', region: 'Mumbai', members: '50k' },
-  { id: '6', name: 'Events & Promotional Jobs Mumbai', url: 'https://www.facebook.com/groups/1574304679469502/', region: 'Mumbai', members: '35k' },
-  { id: '7', name: 'Part Time Event Jobs Bangalore', url: 'https://www.facebook.com/groups/1659728477610636/', region: 'Bangalore', members: '40k' },
-  { id: '8', name: 'Pune Event Manpower & Crew', url: 'https://www.facebook.com/groups/1651813478440049/', region: 'Pune', members: '30k' },
+  { id: '3', name: 'All India Event Promoters & Sales Network', url: 'https://www.facebook.com/groups/1004386706399990/', region: 'Pan-India', members: '95k' },
+  { id: '4', name: 'Part Time Jobs & Event Crew India', url: 'https://www.facebook.com/groups/1429990143973634/', region: 'Pan-India', members: '110k' },
+  { id: '5', name: 'Wedding Planners & Event Coordinators India', url: 'https://www.facebook.com/groups/1329243007137536/', region: 'Pan-India', members: '75k' },
+  { id: '6', name: 'Corporate Event Organizers & Freelancers India', url: 'https://www.facebook.com/groups/1574304679469502/', region: 'Pan-India', members: '65k' },
 ];
 
 const JOB_ROLES = [
-  { id: 'partner', title: 'Event Sales Partner / Affiliate', defaultPay: '20% - 30% Commission / Deal', desc: 'Promote live QR photo walls to wedding planners, venues & event hosts' },
-  { id: 'promoter', title: 'Commission Event Promoter', defaultPay: 'Earn ₹2,000 - ₹5,000 / deal', desc: 'Pitch Memento to client leads and earn instant commission per closed event' },
-  { id: 'ambassador', title: 'Venue & College Brand Ambassador', defaultPay: '30% High Commission Basis', desc: 'Activate venue partnerships, clubs & private party bookings' },
-  { id: 'freelancer', title: 'Event Agency Referral Partner', defaultPay: '₹1,500 - ₹3,000 / Event Sold', desc: 'Refer wedding & corporate clients to Memento and get paid per booking' },
+  { id: 'partner', title: 'Event Sales Partner / Affiliate', defaultPay: '10% Commission / Deal', desc: 'Promote live QR photo walls to wedding planners, venues & event hosts across India' },
+  { id: 'promoter', title: 'Commission Event Promoter', defaultPay: '10% Direct Sales Commission', desc: 'Pitch Memento to client leads and receive instant payout upon lead monetization' },
+  { id: 'ambassador', title: 'Venue & Brand Ambassador', defaultPay: '10% Commission per Activated Lead', desc: 'Activate venue partnerships, clubs & private party bookings nationwide' },
+  { id: 'freelancer', title: 'Event Agency Referral Partner', defaultPay: '10% Referral Commission per Sale', desc: 'Refer wedding & corporate clients to Memento and get paid immediately when booked' },
 ];
 
-import { generateRandomCampaign } from '@/lib/metaSocial';
-
 export default function SocialCampaignStudio() {
-  const [activeTab, setActiveTab] = useState<'campaign' | 'job_launcher'>('campaign');
+  const [activeTab, setActiveTab] = useState<'campaign' | 'job_launcher'>('job_launcher');
 
   // Campaign State
-  const [selectedPreset, setSelectedPreset] = useState(PRESETS[0]);
-  const [caption, setCaption] = useState(PRESETS[0].caption);
-  const [imageUrl, setImageUrl] = useState(PRESETS[0].imageUrl);
+  const [selectedPreset, setSelectedPreset] = useState(PRESETS[4]); // Default to 10% Hiring
+  const [caption, setCaption] = useState(PRESETS[4].caption);
+  const [imageUrl, setImageUrl] = useState(PRESETS[4].imageUrl);
   const [target, setTarget] = useState<'both' | 'facebook' | 'instagram'>('both');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
 
-  // Job Launcher State
+  // Job Launcher State (Pan-India & 10% Commission Focus)
   const [selectedRole, setSelectedRole] = useState(JOB_ROLES[0]);
-  const [jobCity, setJobCity] = useState('Delhi NCR');
-  const [jobPay, setJobPay] = useState('20% - 30% Commission (Earn ₹2,000 - ₹5,000 / deal)');
-  const [jobDate, setJobDate] = useState('Flexible / Freelance Hours');
+  const [jobPay, setJobPay] = useState('10% Flat Commission per Closed Deal');
+  const [jobDate, setJobDate] = useState('Flexible / Freelance Hours (Work From Anywhere)');
   const [jobContact, setJobContact] = useState('+91 9866161775');
-  const [jobExtraNote, setJobExtraNote] = useState('Zero Fixed Salary. 100% High Commission & Instant Payout per Booking!');
+  const [jobExtraNote, setJobExtraNote] = useState('Instant Payout released immediately upon lead monetization. Zero waiting period!');
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>(['1', '2', '3', '4']);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
 
@@ -185,31 +184,32 @@ export default function SocialCampaignStudio() {
     }
   };
 
-  // Job Launcher Helpers
+  // Pan-India & 10% Commission Job Offer Copy Generator
   const getFormattedJobCopy = () => {
-    return `💼 HIRING: ${selectedRole.title.toUpperCase()} (100% COMMISSION BASIS)
+    return `💼 HIRING: ${selectedRole.title.toUpperCase()} (PAN-INDIA | 10% COMMISSION BASIS)
 
-📍 Target Location: ${jobCity}
-💰 Earnings Potential: ${jobPay} (No Fixed Salary)
+📍 Target Location: All India (Work From Anywhere / Pan-India)
+💰 Commission Structure: ${jobPay}
+⚡ Payout Schedule: INSTANT PAYOUT as soon as lead is monetized (No waiting period!)
 📅 Work Flexibility: ${jobDate}
 📞 WhatsApp Direct: ${jobContact}
 
 📋 Role & Opportunity:
 • ${selectedRole.desc}
-• Introduce Memento's Live QR Photo Wall to event planners, wedding hosts & venues.
-• Earn high recurring commission on every successful event booking!
+• Introduce Memento's Live QR Photo Wall to wedding planners, corporate event hosts & venues across India.
+• Earn 10% commission on every closed deal, transferred immediately when monetized!
 
-✨ Ideal Candidate:
-✔️ Passionate about events, sales, networking & social media
-✔️ Good connections with event hosts, wedding planners, or venues
+✨ Candidate Requirements:
+✔️ Open to anyone across India (Students, Freelancers, Event Planners & Sales Enthusiasts)
+✔️ Good communication or network in weddings, corporate galas & private parties
 ${jobExtraNote ? `✔️ ${jobExtraNote}\n` : ''}
-🎁 Benefits: Unlimited earning potential + Instant UPI/Bank transfer upon deal closure + Flexible hours!
+🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!
 
 👇 HOW TO APPLY:
-Send your Name, City & Experience via WhatsApp to ${jobContact} or DM us!
+Send your Name & State/City via WhatsApp to ${jobContact} or DM us!
 Learn more about Memento: www.mymementoapp.com
 
-#CommissionJobs #EventPromoter #FreelanceJobs #${jobCity.replace(/\s+/g, '')} #EventSales #AffiliatePartner #JobHiringIndia`;
+#CommissionJobs #EventJobs #PanIndiaJobs #10PercentCommission #InstantPayout #EventPromoter #MementoPartner #AllIndiaHiring`;
   };
 
   const toggleGroupSelection = (id: string) => {
@@ -238,32 +238,36 @@ Learn more about Memento: www.mymementoapp.com
   };
 
   return (
-    <div className="min-h-screen bg-[#07090E] text-slate-100 font-sans py-8 px-4 sm:px-6 lg:px-12 selection:bg-purple-500/30">
+    <div className="min-h-screen bg-[#07090E] text-slate-100 font-sans py-8 px-4 sm:px-6 lg:px-12 selection:bg-cyan-500/30">
       {/* Container */}
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Header Bar */}
-        <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
-          <div className="space-y-2">
+        <div className="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+            <Radio size={140} className="text-cyan-400" />
+          </div>
+
+          <div className="space-y-2 relative z-10">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 text-white shadow-lg shadow-purple-500/20">
+              <div className="p-3 rounded-xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 text-white shadow-lg shadow-cyan-500/20">
                 <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-2xl font-black tracking-tight text-white">Social & Hiring Studio</h1>
-                  <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[11px] font-semibold">
-                    AUTO-POST & GROUP LAUNCHER
+                  <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[11px] font-black uppercase tracking-wider">
+                    PAN-INDIA HIRING & AUTO-POST
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  Broadcasting campaigns to <span className="text-purple-400 font-medium">Facebook/Instagram</span> & launching 1-click job postings across FB hiring groups.
+                  Broadcasting Pan-India campaigns to <span className="text-cyan-400 font-semibold">Facebook & Instagram</span> | 1-Click Hiring Ads with <span className="text-emerald-400 font-bold">10% Commission</span> & <span className="text-amber-400 font-bold">Instant Payout on Monetization</span>.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-10">
             <div className="px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>Meta Graph API Connected</span>
@@ -277,8 +281,56 @@ Learn more about Memento: www.mymementoapp.com
           </div>
         </div>
 
+        {/* Highlight Cards: Pan-India, 10% Commission & Instant Monetization Payout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-cyan-950/40 border border-cyan-500/30 flex items-center gap-4 shadow-xl">
+            <div className="p-3 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0">
+              <Globe size={22} />
+            </div>
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">Target Coverage</div>
+              <div className="text-sm font-black text-white mt-0.5">Whole India (Pan-India)</div>
+              <div className="text-[11px] text-slate-400">Nationwide ads & remote promoters</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-emerald-950/40 border border-emerald-500/30 flex items-center gap-4 shadow-xl">
+            <div className="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+              <TrendingUp size={22} />
+            </div>
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-emerald-400">Commission Structure</div>
+              <div className="text-sm font-black text-white mt-0.5">10% Flat Commission / Sale</div>
+              <div className="text-[11px] text-slate-400">High earning potential per booking</div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-amber-950/40 border border-amber-500/30 flex items-center gap-4 shadow-xl">
+            <div className="p-3 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
+              <Zap size={22} />
+            </div>
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-400">Payout Schedule</div>
+              <div className="text-sm font-black text-white mt-0.5">Instant Payout on Monetization</div>
+              <div className="text-[11px] text-slate-400">Paid immediately as lead converts</div>
+            </div>
+          </div>
+        </div>
+
         {/* Tab Selector */}
         <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+          <button
+            onClick={() => setActiveTab('job_launcher')}
+            className={`px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'job_launcher'
+                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20 border border-cyan-400/30'
+                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+            }`}
+          >
+            <Briefcase className="w-4 h-4" />
+            <span>💼 1-Click Pan-India Hiring Launcher (10% Commission)</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('campaign')}
             className={`px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
@@ -290,21 +342,231 @@ Learn more about Memento: www.mymementoapp.com
             <Sparkles className="w-4 h-4" />
             <span>📢 Social Marketing Campaigns (Meta API)</span>
           </button>
-
-          <button
-            onClick={() => setActiveTab('job_launcher')}
-            className={`px-5 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'job_launcher'
-                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20 border border-cyan-400/30'
-                : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
-            }`}
-          >
-            <Briefcase className="w-4 h-4" />
-            <span>💼 1-Click Job Hiring Launcher & Groups</span>
-          </button>
         </div>
 
-        {/* TAB 1: SOCIAL CAMPAIGNS */}
+        {/* TAB 1: 1-CLICK PAN-INDIA JOB LAUNCHER */}
+        {activeTab === 'job_launcher' && (
+          <div className="space-y-8">
+            
+            {/* Notification Toast */}
+            {copiedSuccess && (
+              <div className="p-4 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 flex items-center justify-between shadow-2xl animate-fade-in">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 size={20} className="text-cyan-400 shrink-0" />
+                  <div>
+                    <span className="text-sm font-bold block">1-Click Pan-India Group Launch Triggered!</span>
+                    <span className="text-xs text-slate-300">Job post copy (10% Commission + Instant Payout) copied to clipboard. {selectedGroupIds.length} Pan-India Facebook Group tabs opened! Just press Ctrl+V to post.</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Column: Job Builder Form (5 Cols) */}
+              <div className="lg:col-span-5 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <Briefcase className="w-5 h-5 text-cyan-400" /> Pan-India Job Offer Details
+                    </h3>
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                      WHOLE INDIA
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">Design ads for Whole India with 10% Commission & Instant Lead Payout.</p>
+                </div>
+
+                {/* Role Selector */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-300 block">Target Job Role:</label>
+                  <div className="grid grid-cols-1 gap-2">
+                    {JOB_ROLES.map(role => {
+                      const isSel = selectedRole.id === role.id;
+                      return (
+                        <button
+                          key={role.id}
+                          onClick={() => {
+                            setSelectedRole(role);
+                            setJobPay(role.defaultPay);
+                          }}
+                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                            isSel
+                              ? 'bg-cyan-500/15 border-cyan-400/50 text-white shadow-md shadow-cyan-500/10'
+                              : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-white">{role.title}</span>
+                            <span className="text-[10px] font-mono text-emerald-400 font-bold">{role.defaultPay}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-400 mt-0.5">{role.desc}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Target Coverage (Whole India) & Commission Structure */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-cyan-400" /> Target Territory
+                    </label>
+                    <div className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-cyan-300 font-bold flex items-center justify-between">
+                      <span>🇮🇳 Whole India (Pan-India)</span>
+                      <ShieldCheck size={14} className="text-emerald-400" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      💰 Commission Rate
+                    </label>
+                    <input
+                      type="text"
+                      value={jobPay}
+                      onChange={(e) => setJobPay(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-emerald-400 font-mono font-bold focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                </div>
+
+                {/* Shift / Work Hours & Contact WhatsApp */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-cyan-400" /> Work Hours / Location
+                    </label>
+                    <input
+                      type="text"
+                      value={jobDate}
+                      onChange={(e) => setJobDate(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-cyan-400" /> WhatsApp Contact
+                    </label>
+                    <input
+                      type="text"
+                      value={jobContact}
+                      onChange={(e) => setJobContact(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                </div>
+
+                {/* Instant Payout / Monetization Note */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <Zap size={14} className="text-amber-400" /> Payout Terms (Instant Monetization)
+                  </label>
+                  <input
+                    type="text"
+                    value={jobExtraNote}
+                    onChange={(e) => setJobExtraNote(e.target.value)}
+                    placeholder="e.g. Paid immediately upon lead monetization"
+                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-amber-300 font-medium focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
+
+              </div>
+
+              {/* Right Column: Groups Launcher & Post Preview (7 Cols) */}
+              <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
+                
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Users className="w-5 h-5 text-cyan-400" /> Select Pan-India Facebook Event Groups ({selectedGroupIds.length} Selected)
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">Select Pan-India hiring groups to broadcast your offer. 1-click will copy your copy and open group tabs!</p>
+                </div>
+
+                {/* Groups Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto p-1 pr-2">
+                  {FB_GROUPS.map(group => {
+                    const isChecked = selectedGroupIds.includes(group.id);
+                    return (
+                      <div
+                        key={group.id}
+                        onClick={() => toggleGroupSelection(group.id)}
+                        className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                          isChecked
+                            ? 'bg-cyan-500/15 border-cyan-400/40 text-white'
+                            : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                          <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
+                            isChecked ? 'bg-cyan-500 border-cyan-400 text-slate-950' : 'border-slate-700'
+                          }`}>
+                            {isChecked && <Check size={12} className="stroke-[3]" />}
+                          </div>
+                          <div className="truncate">
+                            <p className="text-xs font-bold text-white truncate">{group.name}</p>
+                            <p className="text-[10px] text-cyan-400">{group.region} • {group.members} members</p>
+                          </div>
+                        </div>
+                        <a
+                          href={group.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                        >
+                          <ExternalLink size={12} />
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Post Preview Box */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-300 block">Generated Pan-India Job Offer Text:</label>
+                    <span className="text-[10px] text-emerald-400 font-mono font-bold flex items-center gap-1">
+                      <Zap size={12} /> Ready to Copy & Post (10% Commission)
+                    </span>
+                  </div>
+                  <textarea
+                    rows={8}
+                    readOnly
+                    value={getFormattedJobCopy()}
+                    className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none leading-relaxed shadow-inner"
+                  />
+                </div>
+
+                {/* Main 1-Click Launch Action Buttons */}
+                <div className="pt-2 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    onClick={handleCopyAndLaunchFBGroups}
+                    disabled={selectedGroupIds.length === 0}
+                    className="py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    <span>Copy Text & Launch {selectedGroupIds.length} Pan-India Groups</span>
+                  </button>
+
+                  <button
+                    onClick={handleLaunchWhatsApp}
+                    className="py-4 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Broadcast via WhatsApp</span>
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: SOCIAL CAMPAIGNS (META API) */}
         {activeTab === 'campaign' && (
           <>
             {/* Status Banner */}
@@ -348,7 +610,7 @@ Learn more about Memento: www.mymementoapp.com
                   <h2 className="text-base font-bold text-white flex items-center gap-2">
                     <Layers className="w-5 h-5 text-purple-400" /> Select Marketing Angle
                   </h2>
-                  <p className="text-xs text-slate-400 mt-1">Choose a preset blueprint tailored to your audience.</p>
+                  <p className="text-xs text-slate-400 mt-1">Choose a preset blueprint tailored to your audience across India.</p>
                 </div>
 
                 <div className="space-y-3">
@@ -383,7 +645,7 @@ Learn more about Memento: www.mymementoapp.com
                     <h3 className="text-base font-bold text-white flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-blue-400" /> Content Editor & Live Social Mockup
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Customize your text & image before broadcasting.</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Customize your text & image before broadcasting nationwide.</p>
                   </div>
                   <button
                     onClick={handleGenerateAIVariation}
@@ -456,227 +718,6 @@ Learn more about Memento: www.mymementoapp.com
 
             </div>
           </>
-        )}
-
-        {/* TAB 2: 1-CLICK JOB LAUNCHER */}
-        {activeTab === 'job_launcher' && (
-          <div className="space-y-8">
-            
-            {/* Notification Toast */}
-            {copiedSuccess && (
-              <div className="p-4 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 text-cyan-300 flex items-center justify-between shadow-2xl animate-fade-in">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 size={20} className="text-cyan-400 shrink-0" />
-                  <div>
-                    <span className="text-sm font-bold block">1-Click Group Launch Triggered!</span>
-                    <span className="text-xs text-slate-300">Job post copy has been copied to your clipboard. {selectedGroupIds.length} Facebook Group tabs opened! Just press Ctrl+V to post.</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
-              {/* Left Column: Job Builder Form (5 Cols) */}
-              <div className="lg:col-span-5 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-cyan-400" /> Job Offer Details
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">Configure role, daily pay, city, and date to generate copy.</p>
-                </div>
-
-                {/* Role Selector */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-300 block">Target Job Role:</label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {JOB_ROLES.map(role => {
-                      const isSel = selectedRole.id === role.id;
-                      return (
-                        <button
-                          key={role.id}
-                          onClick={() => {
-                            setSelectedRole(role);
-                            setJobPay(role.defaultPay);
-                          }}
-                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                            isSel
-                              ? 'bg-cyan-500/15 border-cyan-400/50 text-white'
-                              : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-white">{role.title}</span>
-                            <span className="text-[10px] font-mono text-cyan-400">{role.defaultPay}</span>
-                          </div>
-                          <p className="text-[11px] text-slate-400 mt-0.5">{role.desc}</p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* City & Pay Inputs */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Target City
-                    </label>
-                    <select
-                      value={jobCity}
-                      onChange={(e) => setJobCity(e.target.value)}
-                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400 font-medium"
-                    >
-                      <option value="Delhi NCR">Delhi NCR</option>
-                      <option value="Mumbai">Mumbai</option>
-                      <option value="Bangalore">Bangalore</option>
-                      <option value="Pune">Pune</option>
-                      <option value="Hyderabad">Hyderabad</option>
-                      <option value="Pan-India">Pan-India</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      💰 Commission Structure
-                    </label>
-                    <input
-                      type="text"
-                      value={jobPay}
-                      onChange={(e) => setJobPay(e.target.value)}
-                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
-                    />
-                  </div>
-                </div>
-
-                {/* Shift Date & Contact WhatsApp */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-cyan-400" /> Shift / Date
-                    </label>
-                    <input
-                      type="text"
-                      value={jobDate}
-                      onChange={(e) => setJobDate(e.target.value)}
-                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5 text-cyan-400" /> WhatsApp Contact
-                    </label>
-                    <input
-                      type="text"
-                      value={jobContact}
-                      onChange={(e) => setJobContact(e.target.value)}
-                      className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono focus:outline-none focus:border-cyan-400"
-                    />
-                  </div>
-                </div>
-
-                {/* Extra Perks / Notes */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-300 block">Extra Perks / Notes:</label>
-                  <input
-                    type="text"
-                    value={jobExtraNote}
-                    onChange={(e) => setJobExtraNote(e.target.value)}
-                    placeholder="e.g. Food provided on-site. Instant pay."
-                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
-                  />
-                </div>
-
-              </div>
-
-              {/* Right Column: Groups Launcher & Post Preview (7 Cols) */}
-              <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
-                
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Users className="w-5 h-5 text-cyan-400" /> Select Facebook Event Groups ({selectedGroupIds.length} Selected)
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">Check the groups you want to launch. Clicking the button below will copy your job offer and open these groups in tabs!</p>
-                </div>
-
-                {/* Groups Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto p-1 pr-2">
-                  {FB_GROUPS.map(group => {
-                    const isChecked = selectedGroupIds.includes(group.id);
-                    return (
-                      <div
-                        key={group.id}
-                        onClick={() => toggleGroupSelection(group.id)}
-                        className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                          isChecked
-                            ? 'bg-cyan-500/15 border-cyan-400/40 text-white'
-                            : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 overflow-hidden">
-                          <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 border ${
-                            isChecked ? 'bg-cyan-500 border-cyan-400 text-slate-950' : 'border-slate-700'
-                          }`}>
-                            {isChecked && <Check size={12} className="stroke-[3]" />}
-                          </div>
-                          <div className="truncate">
-                            <p className="text-xs font-bold text-white truncate">{group.name}</p>
-                            <p className="text-[10px] text-slate-400">{group.region} • {group.members} members</p>
-                          </div>
-                        </div>
-                        <a
-                          href={group.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                        >
-                          <ExternalLink size={12} />
-                        </a>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Post Preview Box */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-slate-300 block">Generated Job Offer Text:</label>
-                    <span className="text-[10px] text-cyan-400 font-mono">Ready to Copy & Paste</span>
-                  </div>
-                  <textarea
-                    rows={8}
-                    readOnly
-                    value={getFormattedJobCopy()}
-                    className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-slate-200 focus:outline-none leading-relaxed shadow-inner"
-                  />
-                </div>
-
-                {/* Main 1-Click Launch Action Buttons */}
-                <div className="pt-2 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button
-                    onClick={handleCopyAndLaunchFBGroups}
-                    disabled={selectedGroupIds.length === 0}
-                    className="py-4 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-                  >
-                    <Share2 className="w-4 h-4" />
-                    <span>Copy Text & Launch {selectedGroupIds.length} FB Groups</span>
-                  </button>
-
-                  <button
-                    onClick={handleLaunchWhatsApp}
-                    className="py-4 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Broadcast via WhatsApp</span>
-                  </button>
-                </div>
-
-              </div>
-
-            </div>
-          </div>
         )}
 
       </div>
