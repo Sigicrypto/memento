@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
+import { sendWhatsAppCloudMessage } from '@/lib/whatsapp';
 
 export async function POST(request: Request) {
   try {
     const { phone, businessName, templateMessage } = await request.json();
-
-    const pageToken = process.env.META_PAGE_ACCESS_TOKEN;
-    const whatsappPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
     if (!phone) {
       return NextResponse.json({ error: 'Lead phone number is required' }, { status: 400 });
@@ -13,40 +11,31 @@ export async function POST(request: Request) {
 
     const cleanPhone = phone.replace(/\D/g, '');
 
-    // Format direct WhatsApp chat link for instant zero-friction outreach
-    const whatsappWebUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(templateMessage)}`;
+    // 1. Direct WhatsApp Click-to-Chat Link (100% Free - Works Always)
+    const whatsappWebUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(templateMessage)}`;
 
-    if (!pageToken || !whatsappPhoneId) {
+    // 2. Attempt Background Automated Send via Meta Cloud API
+    const apiResult = await sendWhatsAppCloudMessage({
+      to: cleanPhone,
+      text: templateMessage,
+    });
+
+    if (apiResult.success) {
       return NextResponse.json({
         success: true,
-        mode: 'direct_chat_link',
+        mode: 'automated_cloud_api',
         whatsappWebUrl,
-        message: 'Direct WhatsApp link generated! Click to open chat in WhatsApp Web/App.',
+        apiResult,
+        message: 'Automated 24/7 background WhatsApp message sent via Meta Cloud API!',
       });
     }
 
-    // Call Meta WhatsApp Business Cloud API if WHATSAPP_PHONE_NUMBER_ID is configured
-    const waRes = await fetch(`https://graph.facebook.com/v20.0/${whatsappPhoneId}/messages`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${pageToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: cleanPhone,
-        type: 'text',
-        text: { body: templateMessage },
-      }),
-    });
-
-    const data = await waRes.json();
-
+    // Fallback to direct click-to-chat if API token is not configured yet
     return NextResponse.json({
       success: true,
-      mode: 'cloud_api',
+      mode: 'direct_click_to_chat',
       whatsappWebUrl,
-      result: data,
+      message: 'Direct WhatsApp 1-click link ready! Click to open chat in WhatsApp Web/App.',
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'WhatsApp dispatch failed' }, { status: 500 });
