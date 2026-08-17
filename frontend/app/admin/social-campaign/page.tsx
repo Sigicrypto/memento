@@ -95,10 +95,10 @@ const FB_GROUPS = [
 ];
 
 const JOB_ROLES = [
-  { id: 'partner', title: 'Event Sales Partner / Affiliate', defaultPay: '10% Commission / Deal', desc: 'Promote live QR photo walls to wedding planners, venues & event hosts across India' },
-  { id: 'promoter', title: 'Commission Event Promoter', defaultPay: '10% Direct Sales Commission', desc: 'Pitch Memento to client leads and receive instant payout upon lead monetization' },
-  { id: 'ambassador', title: 'Venue & Brand Ambassador', defaultPay: '10% Commission per Activated Lead', desc: 'Activate venue partnerships, clubs & private party bookings nationwide' },
-  { id: 'freelancer', title: 'Event Agency Referral Partner', defaultPay: '10% Referral Commission per Sale', desc: 'Refer wedding & corporate clients to Memento and get paid immediately when booked' },
+  { id: 'partner', title: 'Event Sales Partner / Affiliate', defaultPay: '10% Flat Commission / Deal (No Fixed Salary)', desc: 'Promote live QR photo walls to wedding planners, venues & event hosts across India' },
+  { id: 'promoter', title: 'Commission Event Promoter', defaultPay: '10% Direct Sales Commission (No Fixed Salary)', desc: 'Pitch Memento to client leads and receive instant payout upon lead monetization' },
+  { id: 'ambassador', title: 'Venue & Brand Ambassador', defaultPay: '10% Commission / Activated Lead (No Fixed Salary)', desc: 'Activate venue partnerships, clubs & private party bookings nationwide' },
+  { id: 'freelancer', title: 'Event Agency Referral Partner', defaultPay: '10% Referral Commission (No Fixed Salary)', desc: 'Refer wedding & corporate clients to Memento and get paid immediately when booked' },
 ];
 
 export default function SocialCampaignStudio() {
@@ -116,10 +116,10 @@ export default function SocialCampaignStudio() {
 
   // Job Launcher State (Pan-India & 10% Commission Focus)
   const [selectedRole, setSelectedRole] = useState(JOB_ROLES[0]);
-  const [jobPay, setJobPay] = useState('10% Flat Commission per Closed Deal');
+  const [jobPay, setJobPay] = useState('10% Flat Commission per Closed Deal (No Fixed Salary)');
   const [jobDate, setJobDate] = useState('Flexible / Freelance Hours (Work From Anywhere)');
   const [jobContact, setJobContact] = useState('+91 9866161775');
-  const [jobExtraNote, setJobExtraNote] = useState('Instant Payout released immediately upon lead monetization. Zero waiting period!');
+  const [jobExtraNote, setJobExtraNote] = useState('NO FIXED SALARY. 100% Commission Basis. Instant Payout released immediately upon lead monetization!');
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>(['1', '2', '3', '4']);
   const [copiedSuccess, setCopiedSuccess] = useState(false);
 
@@ -186,7 +186,7 @@ export default function SocialCampaignStudio() {
 
   // Pan-India & 10% Commission Job Offer Copy Generator
   const getFormattedJobCopy = () => {
-    return `💼 HIRING: ${selectedRole.title.toUpperCase()} (PAN-INDIA | 10% COMMISSION BASIS)
+    return `💼 HIRING: ${selectedRole.title.toUpperCase()} (100% COMMISSION BASIS - NO FIXED SALARY)
 
 📍 Target Location: All India (Work From Anywhere / Pan-India)
 💰 Commission Structure: ${jobPay}
@@ -202,6 +202,7 @@ export default function SocialCampaignStudio() {
 ✨ Candidate Requirements:
 ✔️ Open to anyone across India (Students, Freelancers, Event Planners & Sales Enthusiasts)
 ✔️ Good communication or network in weddings, corporate galas & private parties
+✔️ No Fixed Salary — Only Flat 10% Commission per Monetized Sale!
 ${jobExtraNote ? `✔️ ${jobExtraNote}\n` : ''}
 🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!
 
@@ -209,7 +210,7 @@ ${jobExtraNote ? `✔️ ${jobExtraNote}\n` : ''}
 Send your Name & State/City via WhatsApp to ${jobContact} or DM us!
 Learn more about Memento: www.mymementoapp.com
 
-#CommissionJobs #EventJobs #PanIndiaJobs #10PercentCommission #InstantPayout #EventPromoter #MementoPartner #AllIndiaHiring`;
+#CommissionJobs #EventJobs #PanIndiaJobs #10PercentCommission #NoFixedSalary #InstantPayout #EventPromoter #MementoPartner #AllIndiaHiring`;
   };
 
   const toggleGroupSelection = (id: string) => {
