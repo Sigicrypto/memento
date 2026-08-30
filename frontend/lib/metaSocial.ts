@@ -240,6 +240,8 @@ export async function publishToMeta({
     results.instagramContainer = containerRes;
 
     if (containerRes && containerRes.id) {
+      // Allow Meta servers time to download and process high-res media before publishing
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
       results.instagram = await securePost(publishUrl, {
         creation_id: containerRes.id,
