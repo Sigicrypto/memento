@@ -179,10 +179,12 @@ export async function securePost(url: string, body: any) {
 export async function publishToMeta({
   caption,
   imageUrl,
+  imageUrls,
   target = 'both',
 }: {
   caption: string;
-  imageUrl: string;
+  imageUrl?: string;
+  imageUrls?: string[];
   target?: 'both' | 'facebook' | 'instagram';
 }) {
   let pageToken = process.env.META_PAGE_ACCESS_TOKEN;
@@ -202,6 +204,9 @@ export async function publishToMeta({
     };
   }
 
+  const allImages = (imageUrls && imageUrls.length > 0) ? imageUrls : (imageUrl ? [imageUrl] : []);
+  const primaryImage = allImages[0] || '';
+
   const results: any = {
     hasToken: true,
     hasInstagramId: !!instagramId,
@@ -209,18 +214,18 @@ export async function publishToMeta({
 
   // 1. Post to Facebook Page
   if (target === 'facebook' || target === 'both') {
-    const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
-    const fbRes = await securePost(fbFeedUrl, {
-      message: caption,
-      link: imageUrl,
+    const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
+    const fbRes = await securePost(fbPhotoUrl, {
+      url: primaryImage,
+      caption: caption,
       access_token: pageToken,
     });
 
     if (fbRes.error) {
-      const fbPhotoUrl = `https://graph.facebook.com/v20.0/me/photos`;
-      results.facebook = await securePost(fbPhotoUrl, {
-        url: imageUrl,
-        caption: caption,
+      const fbFeedUrl = `https://graph.facebook.com/v20.0/me/feed`;
+      results.facebook = await securePost(fbFeedUrl, {
+        message: caption,
+        link: primaryImage,
         access_token: pageToken,
       });
     } else {
@@ -228,27 +233,64 @@ export async function publishToMeta({
     }
   }
 
-  // 2. Post to Instagram Business Account
+  // 2. Post to Instagram Business Account (Single or Carousel)
   if ((target === 'instagram' || target === 'both') && instagramId) {
-    const containerUrl = `https://graph.facebook.com/v20.0/${instagramId}/media`;
-    const containerRes = await securePost(containerUrl, {
-      image_url: imageUrl,
-      caption: caption,
-      access_token: pageToken,
-    });
+    if (allImages.length > 1) {
+      // Instagram Carousel
+      const itemContainerIds: string[] = [];
+      for (const imgUrl of allImages) {
+        const itemRes = await securePost(`https://graph.facebook.com/v20.0/${instagramId}/media`, {
+          image_url: imgUrl,
+          is_carousel_item: true,
+          access_token: pageToken,
+        });
+        if (itemRes && itemRes.id) {
+          itemContainerIds.push(itemRes.id);
+        }
+      }
 
-    results.instagramContainer = containerRes;
+      if (itemContainerIds.length > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+        const carouselContainerRes = await securePost(`https://graph.facebook.com/v20.0/${instagramId}/media`, {
+          media_type: 'CAROUSEL',
+          children: itemContainerIds,
+          caption: caption,
+          access_token: pageToken,
+        });
+        results.instagramContainer = carouselContainerRes;
 
-    if (containerRes && containerRes.id) {
-      // Allow Meta servers time to download and process high-res media before publishing
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
-      results.instagram = await securePost(publishUrl, {
-        creation_id: containerRes.id,
+        if (carouselContainerRes && carouselContainerRes.id) {
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
+          results.instagram = await securePost(publishUrl, {
+            creation_id: carouselContainerRes.id,
+            access_token: pageToken,
+          });
+        } else {
+          results.instagram = carouselContainerRes;
+        }
+      }
+    } else if (primaryImage) {
+      // Single Image
+      const containerUrl = `https://graph.facebook.com/v20.0/${instagramId}/media`;
+      const containerRes = await securePost(containerUrl, {
+        image_url: primaryImage,
+        caption: caption,
         access_token: pageToken,
       });
-    } else {
-      results.instagram = containerRes;
+
+      results.instagramContainer = containerRes;
+
+      if (containerRes && containerRes.id) {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        const publishUrl = `https://graph.facebook.com/v20.0/${instagramId}/media_publish`;
+        results.instagram = await securePost(publishUrl, {
+          creation_id: containerRes.id,
+          access_token: pageToken,
+        });
+      } else {
+        results.instagram = containerRes;
+      }
     }
   }
 
