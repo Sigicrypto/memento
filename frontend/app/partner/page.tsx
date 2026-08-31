@@ -184,15 +184,15 @@ Test the live interactive wall here:
       <BackgroundBeams />
       <ThemedNav />
 
-      <main className="min-h-screen bg-slate-950/90 text-white pt-24 pb-28 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30 overflow-x-hidden flex flex-col items-center relative z-10">
+      <main className="min-h-screen bg-slate-950/90 text-white pt-28 pb-36 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30 overflow-x-hidden flex flex-col items-center relative z-10 space-y-24 sm:space-y-32">
         
         {/* ══════════════════════════════════════════════════════════════
             1. HERO SECTION (SPLIT SCREEN LUXURY DESIGN)
         ══════════════════════════════════════════════════════════════ */}
-        <section className="w-full max-w-7xl pt-8 sm:pt-14 pb-16 lg:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <section className="w-full max-w-7xl pt-4 sm:pt-10 pb-8 sm:pb-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           {/* Left Column: Hero Headline & Fast Actions (7 Cols) */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
+          <div className="lg:col-span-7 flex flex-col items-start text-left space-y-7">
             
             {/* Status Pill Badge */}
             <motion.div
@@ -234,35 +234,35 @@ Test the live interactive wall here:
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full pt-2"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full pt-1"
             >
-              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-emerald-500/30 backdrop-blur-xl flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/30 backdrop-blur-xl flex items-center gap-3.5 shadow-lg">
+                <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
                   <TrendingUp size={18} />
                 </div>
                 <div>
                   <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Commission</div>
-                  <div className="text-xs font-black text-emerald-300">10% Flat / Deal</div>
+                  <div className="text-xs font-black text-emerald-300 mt-0.5">10% Flat / Deal</div>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-amber-500/30 backdrop-blur-xl flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-amber-500/30 backdrop-blur-xl flex items-center gap-3.5 shadow-lg">
+                <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
                   <Zap size={18} />
                 </div>
                 <div>
                   <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Payout Speed</div>
-                  <div className="text-xs font-black text-amber-300">Within 24 Hours</div>
+                  <div className="text-xs font-black text-amber-300 mt-0.5">Within 24 Hours</div>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-cyan-500/30 backdrop-blur-xl flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 shrink-0">
+              <div className="p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/30 backdrop-blur-xl flex items-center gap-3.5 shadow-lg">
+                <div className="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 shrink-0">
                   <Globe size={18} />
                 </div>
                 <div>
                   <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Location</div>
-                  <div className="text-xs font-black text-cyan-300">Whole India</div>
+                  <div className="text-xs font-black text-cyan-300 mt-0.5">Whole India</div>
                 </div>
               </div>
             </motion.div>
@@ -272,11 +272,11 @@ Test the live interactive wall here:
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-2"
+              className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto pt-2"
             >
               <button
                 onClick={copyPartnerLink}
-                className="w-full sm:w-auto py-3.5 px-7 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto py-4 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
               >
                 {copiedLink ? <Check size={18} className="text-slate-950 stroke-[3]" /> : <Copy size={18} />}
                 <span>{copiedLink ? '1-Click Link Copied!' : 'Copy My 1-Click Referral Link'}</span>
@@ -286,9 +286,9 @@ Test the live interactive wall here:
                 href={whatsappShareUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto py-3.5 px-6 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-white/15 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto py-4 px-7 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-white/15 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg"
               >
-                <MessageCircle size={16} className="text-emerald-400" />
+                <MessageCircle size={17} className="text-emerald-400" />
                 <span>Share on WhatsApp</span>
               </a>
             </motion.div>
@@ -302,45 +302,45 @@ Test the live interactive wall here:
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-5 relative"
           >
-            <div className="relative rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950 border-2 border-emerald-500/40 backdrop-blur-2xl shadow-[0_0_60px_rgba(16,185,129,0.2)] overflow-hidden space-y-6">
+            <div className="relative rounded-3xl p-7 sm:p-9 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950 border-2 border-emerald-500/40 backdrop-blur-2xl shadow-[0_0_70px_rgba(16,185,129,0.22)] overflow-hidden space-y-7">
               
               {/* Subtle metallic sheen line */}
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
               <div className="absolute -bottom-20 -right-20 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
 
               {/* Pass Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <div className="flex items-center justify-between pb-5 border-b border-white/10">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                     <Award size={18} />
                   </div>
                   <div>
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">MEMENTO AMBASSADOR PASS</span>
-                    <span className="text-xs font-bold text-white">Pan-India Sales Partner</span>
+                    <span className="text-xs font-bold text-white mt-0.5 block">Pan-India Sales Partner</span>
                   </div>
                 </div>
 
-                <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/40 flex items-center gap-1">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/40 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                   10% Active
                 </span>
               </div>
 
               {/* Partner ID Feature Display */}
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1.5 shadow-inner">
+              <div className="p-5 rounded-2xl bg-slate-950/85 border border-emerald-500/30 space-y-2 shadow-inner">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono font-bold uppercase text-slate-400">YOUR PARTNER ID</span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                     Lifetime Tracking
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-1">
                   <span className="text-2xl sm:text-3xl font-mono font-black text-emerald-400 tracking-wider">
                     {partnerId}
                   </span>
                   <button
                     onClick={copyPartnerId}
-                    className="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 transition-all cursor-pointer active:scale-95"
+                    className="p-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 transition-all cursor-pointer active:scale-95"
                     title="Copy Partner ID"
                   >
                     {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
@@ -349,7 +349,7 @@ Test the live interactive wall here:
               </div>
 
               {/* Live QR Card Preview */}
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-950/60 border border-white/10">
+              <div className="flex items-center gap-4 p-5 rounded-2xl bg-slate-950/60 border border-white/10">
                 <div className="w-20 h-20 bg-[#070a10] p-1.5 rounded-xl border border-emerald-500/40 shrink-0 flex items-center justify-center">
                   <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
@@ -357,7 +357,7 @@ Test the live interactive wall here:
                     className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <span className="text-xs font-bold text-white block">Digital Referral QR Card</span>
                   <p className="text-[11px] text-slate-400 leading-snug">Clients scan this code with any phone camera to join under your account.</p>
                   <a
@@ -373,7 +373,7 @@ Test the live interactive wall here:
               </div>
 
               {/* Status Note */}
-              <p className="text-[10px] text-center text-slate-400">
+              <p className="text-[10px] text-center text-slate-400 pt-1">
                 No sign-up required. Your partner link is generated and live on this device.
               </p>
             </div>
@@ -384,21 +384,21 @@ Test the live interactive wall here:
         {/* ══════════════════════════════════════════════════════════════
             2. AMBASSADOR COMMAND SUITE (BENTO HUB TABS)
         ══════════════════════════════════════════════════════════════ */}
-        <section className="w-full max-w-4xl mb-24" id="tools">
-          <div className="bg-slate-900/90 border-2 border-emerald-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(16,185,129,0.12)] relative overflow-hidden">
+        <section className="w-full max-w-4xl" id="tools">
+          <div className="bg-slate-900/90 border-2 border-emerald-500/30 rounded-3xl p-7 sm:p-10 backdrop-blur-2xl shadow-[0_0_80px_rgba(16,185,129,0.12)] relative overflow-hidden space-y-7">
             
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-6 border-b border-white/10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
                   AMBASSADOR TOOLKIT
                 </span>
-                <h2 className="text-2xl font-black text-white">Partner Control Dashboard</h2>
+                <h2 className="text-2xl sm:text-3xl font-black text-white">Partner Control Dashboard</h2>
               </div>
 
-              <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 border border-white/10 rounded-2xl">
+              <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 border border-white/10 rounded-2xl self-stretch sm:self-auto">
                 <button
                   onClick={() => setActiveTab('link')}
-                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex-1 sm:flex-initial py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     activeTab === 'link'
                       ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
                       : 'text-slate-400 hover:text-white'
@@ -408,7 +408,7 @@ Test the live interactive wall here:
                 </button>
                 <button
                   onClick={() => setActiveTab('qr')}
-                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex-1 sm:flex-initial py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     activeTab === 'qr'
                       ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
                       : 'text-slate-400 hover:text-white'
@@ -418,7 +418,7 @@ Test the live interactive wall here:
                 </button>
                 <button
                   onClick={() => setActiveTab('payout')}
-                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex-1 sm:flex-initial py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     activeTab === 'payout'
                       ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
                       : 'text-slate-400 hover:text-white'
@@ -431,19 +431,21 @@ Test the live interactive wall here:
 
             {/* TAB 1: 1-Click Link */}
             {activeTab === 'link' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                <div className="p-4 rounded-2xl bg-slate-950/90 border border-emerald-500/30 space-y-3">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                <div className="p-6 rounded-2xl bg-slate-950/90 border border-emerald-500/30 space-y-4 shadow-inner">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">YOUR 1-CLICK REFERRAL LINK</span>
-                    <span className="text-[10px] font-mono text-emerald-400">ID: {partnerId}</span>
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      ID: {partnerId}
+                    </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs sm:text-sm font-mono font-bold text-emerald-300 break-all select-all">
+                  <div className="p-4 rounded-xl bg-slate-900 border border-white/10 text-xs sm:text-sm font-mono font-bold text-emerald-300 break-all select-all">
                     {partnerLink}
                   </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                     <button
                       onClick={copyPartnerLink}
-                      className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                      className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                     >
                       {copiedLink ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
                       <span>{copiedLink ? 'Link Copied to Clipboard!' : 'Copy Referral Link'}</span>
@@ -452,7 +454,7 @@ Test the live interactive wall here:
                       href={whatsappShareUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer active:scale-95"
+                      className="w-full sm:flex-1 py-3.5 px-5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer active:scale-95"
                     >
                       <MessageCircle size={16} className="fill-slate-950" />
                       <span>Share on WhatsApp</span>
@@ -464,17 +466,17 @@ Test the live interactive wall here:
 
             {/* TAB 2: QR Poster */}
             {activeTab === 'qr' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
-                <div className="w-48 h-48 mx-auto bg-[#070a10] p-3 rounded-2xl border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)] flex items-center justify-center">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-6 py-3">
+                <div className="w-52 h-52 mx-auto bg-[#070a10] p-3.5 rounded-2xl border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)] flex items-center justify-center">
                   <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
                     alt={`Referral QR Code for ${partnerId}`}
                     className="w-full h-full object-contain rounded-xl"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <p className="text-xs font-bold text-white">Scan to Claim 10% Referral Tracking</p>
-                  <p className="text-[11px] font-mono text-emerald-300">{partnerLink}</p>
+                  <p className="text-[11px] font-mono text-emerald-300 font-bold">{partnerLink}</p>
                 </div>
                 <div className="pt-2">
                   <a
@@ -482,7 +484,7 @@ Test the live interactive wall here:
                     download={`Memento-Partner-QR-${partnerId}.png`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition-all"
+                    className="inline-flex items-center gap-2 py-3.5 px-7 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition-all"
                   >
                     <Download size={15} className="stroke-[3]" />
                     <span>Download Branded QR Poster (PNG)</span>
@@ -494,54 +496,54 @@ Test the live interactive wall here:
             {/* TAB 3: UPI Registration */}
             {activeTab === 'payout' && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                <form onSubmit={handleRegisterPromoter} className="space-y-4 bg-slate-950/80 p-5 rounded-2xl border border-white/10">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <form onSubmit={handleRegisterPromoter} className="space-y-5 bg-slate-950/80 p-6 sm:p-8 rounded-2xl border border-white/10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Full Name</label>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-2 uppercase tracking-wider">Full Name</label>
                       <input
                         type="text"
                         required
                         placeholder="e.g. Rahul Sharma"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
+                        className="w-full py-3 px-4 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">WhatsApp Number</label>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-2 uppercase tracking-wider">WhatsApp Number</label>
                       <input
                         type="tel"
                         required
                         placeholder="e.g. +91 98765 43210"
                         value={whatsappNumber}
                         onChange={(e) => setWhatsappNumber(e.target.value)}
-                        className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
+                        className="w-full py-3 px-4 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">UPI ID (GPay / PhonePe / Paytm / BHIM)</label>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-2 uppercase tracking-wider">UPI ID (GPay / PhonePe / Paytm / BHIM)</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. rahul@upi or 9876543210@ybl"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
-                      className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
+                      className="w-full py-3 px-4 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer"
+                    className="w-full py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer mt-2"
                   >
                     {isSubmitting ? <RefreshCw size={15} className="animate-spin" /> : <ShieldCheck size={16} />}
                     <span>{isSaved ? 'Update Payout Details' : 'Save & Verify UPI Profile'}</span>
                   </button>
                   {isSaved && (
-                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 text-xs">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-                      <span>Active! Commission for code <strong>{partnerId}</strong> will be sent to <strong>{upiId}</strong>.</span>
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2.5 text-emerald-300 text-xs mt-3">
+                      <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+                      <span>Active! Commission for code <strong className="text-white font-mono">{partnerId}</strong> will be sent to <strong className="text-white">{upiId}</strong>.</span>
                     </div>
                   )}
                 </form>
@@ -554,30 +556,30 @@ Test the live interactive wall here:
         {/* ══════════════════════════════════════════════════════════════
             3. INTERACTIVE 10% EARNINGS SIMULATOR
         ══════════════════════════════════════════════════════════════ */}
-        <section className="w-full max-w-5xl mb-24" id="calculator">
-          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl">
+        <section className="w-full max-w-5xl" id="calculator">
+          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-7 sm:p-12 backdrop-blur-xl shadow-2xl space-y-10">
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 pb-6 border-b border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-7 border-b border-white/10">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
                   EARNINGS SIMULATOR
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
+                <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2.5">
                   <IndianRupee className="w-6 h-6 text-emerald-400" />
                   <span>Interactive 10% Income Calculator</span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">Select a plan and move the slider to see your earning potential.</p>
+                <p className="text-xs text-slate-400 mt-1">Select a plan and move the slider to see your earning potential.</p>
               </div>
 
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-black font-mono self-start sm:self-auto">
+              <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-black font-mono self-start sm:self-auto">
                 Flat 10% / Closed Deal
               </span>
             </div>
 
             {/* Plan Tier Selector */}
-            <div className="space-y-3 mb-8">
+            <div className="space-y-4">
               <label className="text-xs font-bold text-slate-300 block">Select Average Event Plan Package:</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { id: 'event', label: 'Event Plan', price: 999, commission: 100, desc: 'Birthday / Private Party (1,000 photos)' },
                   { id: 'premium', label: 'Premium Plan (Most Popular)', price: 2999, commission: 300, desc: 'Weddings & Galas (5,000 photos + AI Wall)' },
@@ -589,16 +591,16 @@ Test the live interactive wall here:
                       key={pkg.id}
                       type="button"
                       onClick={() => setSelectedPlanPrice(pkg.price)}
-                      className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                      className={`p-5 rounded-2xl border text-left transition-all cursor-pointer ${
                         isSel
                           ? 'bg-emerald-500/15 border-emerald-400 text-white shadow-lg shadow-emerald-500/10 scale-[1.02]'
                           : 'bg-slate-950/60 border-white/10 text-slate-400 hover:border-white/20'
                       }`}
                     >
                       <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">{pkg.label}</div>
-                      <div className="text-xl font-mono font-black text-emerald-400 mt-1">₹{pkg.price}</div>
+                      <div className="text-xl font-mono font-black text-emerald-400 mt-1.5">₹{pkg.price}</div>
                       <div className="text-[10px] text-slate-400 mt-1">{pkg.desc}</div>
-                      <div className="mt-3 pt-3 border-t border-white/10 flex justify-between items-center text-xs">
+                      <div className="mt-4 pt-3.5 border-t border-white/10 flex justify-between items-center text-xs">
                         <span className="text-slate-400">10% Cut per Deal:</span>
                         <span className="font-mono font-black text-emerald-300">₹{pkg.commission}</span>
                       </div>
@@ -609,10 +611,10 @@ Test the live interactive wall here:
             </div>
 
             {/* Slider for Number of Deals */}
-            <div className="space-y-4 mb-8 bg-slate-950/80 p-5 rounded-2xl border border-white/10">
+            <div className="space-y-5 bg-slate-950/80 p-6 sm:p-8 rounded-2xl border border-white/10">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-300">Estimated Bookings / Month:</span>
-                <span className="text-base font-mono font-black text-cyan-400 bg-cyan-500/10 px-3.5 py-1 rounded-xl border border-cyan-500/30">
+                <span className="text-base font-mono font-black text-cyan-400 bg-cyan-500/10 px-4 py-1.5 rounded-xl border border-cyan-500/30">
                   {dealsCount} Closed Deals
                 </span>
               </div>
@@ -623,10 +625,10 @@ Test the live interactive wall here:
                 max="30"
                 value={dealsCount}
                 onChange={(e) => setDealsCount(Number(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400"
+                className="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400"
               />
 
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono">
+              <div className="flex justify-between text-[11px] text-slate-500 font-mono">
                 <span>1 Deal</span>
                 <span>10 Deals</span>
                 <span>20 Deals</span>
@@ -635,23 +637,23 @@ Test the live interactive wall here:
             </div>
 
             {/* Total Result Bar */}
-            <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-slate-950 to-teal-950/90 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+            <div className="p-7 sm:p-9 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-slate-950 to-teal-950/90 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
               <div>
                 <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest block">
                   PROJECTED MONTHLY PAYOUT
                 </span>
-                <div className="text-3xl sm:text-4xl font-mono font-black text-emerald-300 mt-0.5">
+                <div className="text-3xl sm:text-4xl font-mono font-black text-emerald-300 mt-1">
                   ₹{totalEstimatedEarnings.toLocaleString()}
                   <span className="text-xs font-sans text-slate-400 font-normal ml-2">direct to your UPI</span>
                 </div>
-                <span className="text-xs text-slate-400 block mt-1">
+                <span className="text-xs text-slate-400 block mt-1.5">
                   6-Month Potential: <strong className="text-white font-mono">₹{sixMonthsEarnings.toLocaleString()}</strong>
                 </span>
               </div>
 
-              <div className="text-xs text-slate-300 text-center sm:text-right">
+              <div className="text-xs text-slate-300 text-center sm:text-right space-y-1">
                 <span className="block text-slate-400">⚡ Transferred within 24h of each deal</span>
-                <span className="font-bold text-white mt-0.5 block">Zero deduction · 100% net earnings</span>
+                <span className="font-bold text-white block">Zero deduction · 100% net earnings</span>
               </div>
             </div>
 
@@ -661,24 +663,24 @@ Test the live interactive wall here:
         {/* ══════════════════════════════════════════════════════════════
             4. PROMOTER SALES TOOLKIT (TABBED READY-MADE PITCHES)
         ══════════════════════════════════════════════════════════════ */}
-        <section className="w-full max-w-5xl mb-24" id="pitch-kit">
-          <div className="text-center mb-10">
+        <section className="w-full max-w-5xl" id="pitch-kit">
+          <div className="text-center mb-12">
             <span className="text-[11px] font-black uppercase tracking-widest text-cyan-400 block mb-1">
               PROMOTER SALES TOOLKIT
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Ready-to-Send Client Pitch Scripts</h2>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl mx-auto">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1.5 max-w-xl mx-auto">
               Select your audience, copy the script with 1 click, and forward it on WhatsApp. Your personal referral link is automatically included!
             </p>
           </div>
 
-          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl">
+          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-7 sm:p-10 backdrop-blur-xl shadow-xl space-y-7">
             
             {/* Pitch Target Selector Tabs */}
-            <div className="flex items-center gap-2 p-1.5 bg-slate-950/80 border border-white/10 rounded-2xl mb-6 overflow-x-auto">
+            <div className="flex items-center gap-2.5 p-1.5 bg-slate-950/80 border border-white/10 rounded-2xl overflow-x-auto">
               <button
                 onClick={() => setActivePitchTab('wedding')}
-                className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                className={`flex-1 min-w-[160px] py-3.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   activePitchTab === 'wedding'
                     ? 'bg-pink-600 text-white font-black shadow-lg shadow-pink-500/20'
                     : 'text-slate-400 hover:text-white'
@@ -690,7 +692,7 @@ Test the live interactive wall here:
 
               <button
                 onClick={() => setActivePitchTab('corporate')}
-                className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                className={`flex-1 min-w-[160px] py-3.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   activePitchTab === 'corporate'
                     ? 'bg-cyan-600 text-white font-black shadow-lg shadow-cyan-500/20'
                     : 'text-slate-400 hover:text-white'
@@ -702,7 +704,7 @@ Test the live interactive wall here:
 
               <button
                 onClick={() => setActivePitchTab('planner')}
-                className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                className={`flex-1 min-w-[160px] py-3.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   activePitchTab === 'planner'
                     ? 'bg-purple-600 text-white font-black shadow-lg shadow-purple-500/20'
                     : 'text-slate-400 hover:text-white'
@@ -714,20 +716,20 @@ Test the live interactive wall here:
             </div>
 
             {/* Pitch Text Area & Copy Button */}
-            <div className="space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 text-xs sm:text-sm text-slate-200 font-sans whitespace-pre-line leading-relaxed select-all">
+            <div className="space-y-5">
+              <div className="p-6 rounded-2xl bg-slate-950 border border-white/10 text-xs sm:text-sm text-slate-200 font-sans whitespace-pre-line leading-relaxed select-all">
                 {activePitchTab === 'wedding' && weddingPitch}
                 {activePitchTab === 'corporate' && corporatePitch}
                 {activePitchTab === 'planner' && plannerPitch}
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3.5 pt-1">
                 <button
                   onClick={() => {
                     const textToCopy = activePitchTab === 'wedding' ? weddingPitch : activePitchTab === 'corporate' ? corporatePitch : plannerPitch;
                     handleCopyPitch(activePitchTab, textToCopy);
                   }}
-                  className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer active:scale-95"
+                  className="w-full sm:flex-1 py-4 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer active:scale-95"
                 >
                   {copiedPitchId === activePitchTab ? <Check size={18} /> : <Copy size={18} />}
                   <span>{copiedPitchId === activePitchTab ? 'Script Copied with Your Link!' : 'Copy Script with My Personal Link'}</span>
@@ -739,7 +741,7 @@ Test the live interactive wall here:
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto py-4 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
                 >
                   <MessageCircle size={16} className="text-emerald-400" />
                   <span>Open WhatsApp Directly</span>
@@ -753,50 +755,50 @@ Test the live interactive wall here:
         {/* ══════════════════════════════════════════════════════════════
             5. HOW IT WORKS (4-STEP TIMELINE)
         ══════════════════════════════════════════════════════════════ */}
-        <section className="w-full max-w-5xl mb-24">
-          <div className="text-center mb-10">
+        <section className="w-full max-w-5xl">
+          <div className="text-center mb-12">
             <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
               ZERO CONFUSION PROCESS
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">How You Earn in 4 Simple Steps</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 font-black text-sm flex items-center justify-center mb-4 border border-emerald-500/30">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-7 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 text-emerald-400 font-black text-sm flex items-center justify-center mb-5 border border-emerald-500/30">
                 01
               </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">Get Your Link</h3>
+              <h3 className="text-sm font-bold text-white mb-2">Get Your Link</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Your unique Partner ID (<strong className="text-emerald-400 font-mono">{partnerId}</strong>) is ready instantly. No interview wait time.
               </p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
-              <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 text-cyan-400 font-black text-sm flex items-center justify-center mb-4 border border-cyan-500/30">
+            <div className="p-7 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-11 h-11 rounded-2xl bg-cyan-500/20 text-cyan-400 font-black text-sm flex items-center justify-center mb-5 border border-cyan-500/30">
                 02
               </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">Share with Hosts</h3>
+              <h3 className="text-sm font-bold text-white mb-2">Share with Hosts</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Share your link with couples getting married, event planners, birthday hosts, or venues across India.
               </p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 font-black text-sm flex items-center justify-center mb-4 border border-purple-500/30">
+            <div className="p-7 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-11 h-11 rounded-2xl bg-purple-500/20 text-purple-400 font-black text-sm flex items-center justify-center mb-5 border border-purple-500/30">
                 03
               </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">Auto-Linked Profile</h3>
+              <h3 className="text-sm font-bold text-white mb-2">Auto-Linked Profile</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 When they click your link, our system permanently binds their event account to your partner code in the database.
               </p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 font-black text-sm flex items-center justify-center mb-4 border border-amber-500/30">
+            <div className="p-7 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-400 font-black text-sm flex items-center justify-center mb-5 border border-amber-500/30">
                 04
               </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">24h Direct UPI Payout</h3>
+              <h3 className="text-sm font-bold text-white mb-2">24h Direct UPI Payout</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Once the host books, your 10% cash bonus is transferred straight to your registered UPI ID within 24 hours.
               </p>
@@ -807,23 +809,23 @@ Test the live interactive wall here:
         {/* ══════════════════════════════════════════════════════════════
             6. FREQUENTLY ASKED QUESTIONS (ACCORDION)
         ══════════════════════════════════════════════════════════════ */}
-        <section className="w-full max-w-4xl mb-24" id="faq">
-          <div className="text-center mb-10">
+        <section className="w-full max-w-4xl" id="faq">
+          <div className="text-center mb-12">
             <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
               GOT QUESTIONS?
             </span>
             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Partner Program FAQ</h2>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1">Clear facts for all part-time promoters and sales affiliates</p>
+            <p className="text-slate-400 text-xs sm:text-sm mt-1.5">Clear facts for all part-time promoters and sales affiliates</p>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4 sm:space-y-5">
             {FAQS.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div key={idx} className="rounded-2xl bg-slate-900/70 border border-white/10 overflow-hidden transition-all">
+                <div key={idx} className="rounded-2xl bg-slate-900/70 border border-white/10 overflow-hidden transition-all shadow-md">
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm text-white hover:text-emerald-300 transition-colors cursor-pointer"
+                    className="w-full p-6 text-left flex items-center justify-between gap-4 font-bold text-sm text-white hover:text-emerald-300 transition-colors cursor-pointer"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
@@ -840,7 +842,7 @@ Test the live interactive wall here:
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <div className="px-5 pb-5 text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-3">
+                        <div className="px-6 pb-6 text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-4">
                           {faq.a}
                         </div>
                       </motion.div>
@@ -856,9 +858,9 @@ Test the live interactive wall here:
             7. VIP WHATSAPP PARTNER DESK CTA
         ══════════════════════════════════════════════════════════════ */}
         <section className="w-full max-w-4xl text-center">
-          <div className="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-teal-950/80 border-2 border-emerald-500/40 rounded-3xl p-8 sm:p-12 space-y-5 shadow-[0_0_60px_rgba(16,185,129,0.15)] relative overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-teal-950/80 border-2 border-emerald-500/40 rounded-3xl p-8 sm:p-14 space-y-7 shadow-[0_0_70px_rgba(16,185,129,0.18)] relative overflow-hidden">
             
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
               <MessageCircle size={14} className="fill-emerald-400 text-slate-950" />
               <span>Dedicated Partner Desk Hotline</span>
             </div>
@@ -874,7 +876,7 @@ Test the live interactive wall here:
                 href={partnerDeskWhatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 py-4 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2.5 py-4 px-9 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <MessageCircle size={18} className="fill-slate-950" />
                 <span>Chat with Partner Desk on WhatsApp (+91 9866161775)</span>
@@ -882,7 +884,7 @@ Test the live interactive wall here:
               </a>
             </div>
 
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-slate-400 pt-1">
               Your Partner ID <strong className="text-emerald-400 font-mono">{partnerId}</strong> will be pre-filled automatically.
             </p>
           </div>
