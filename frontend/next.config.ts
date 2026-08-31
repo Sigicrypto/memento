@@ -33,6 +33,35 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/partners',
+        destination: '/partner',
+        permanent: true,
+      },
+      {
+        source: '/affiliate',
+        destination: '/partner',
+        permanent: true,
+      },
+      {
+        source: '/affiliates',
+        destination: '/partner',
+        permanent: true,
+      },
+      {
+        source: '/promoter',
+        destination: '/partner',
+        permanent: true,
+      },
+      {
+        source: '/promoters',
+        destination: '/partner',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
