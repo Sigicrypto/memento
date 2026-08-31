@@ -35,9 +35,16 @@ export function usePartnerId() {
   const [origin, setOrigin] = useState<string>('https://mymementoapp.com');
 
   useEffect(() => {
-    setPartnerId(getOrCreatePartnerId());
+    const id = getOrCreatePartnerId();
+    setPartnerId(id);
     if (typeof window !== 'undefined') {
       setOrigin(window.location.origin);
+      // Auto-register partner ID in background so admin desk displays it
+      fetch('/api/promoters/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ partnerId: id }),
+      }).catch(() => {});
     }
   }, []);
 

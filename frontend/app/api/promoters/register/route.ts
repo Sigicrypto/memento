@@ -6,26 +6,33 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { partnerId, fullName, whatsappNumber, upiId } = body;
 
-    if (!partnerId || !fullName || !whatsappNumber || !upiId) {
-      return NextResponse.json({ error: 'Missing required promoter fields' }, { status: 400 });
+    if (!partnerId) {
+      return NextResponse.json({ error: 'Missing partnerId' }, { status: 400 });
     }
+
+    const formattedPartnerId = partnerId.toUpperCase();
 
     // Upsert into promoters table in Supabase
     try {
-      const { data, error } = await supabase
+      // Check if promoter already exists to preserve existing details if only pinging
+      const { data: existing } = await supabase
         .from('promoters')
-        .upsert(
-          {
-            partner_code: partnerId,
-            full_name: fullName,
-            whatsapp_number: whatsappNumber,
-            upi_id: upiId,
-            is_verified: true,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'partner_code' }
-        )
-        .select();
+        .select('*')
+        .eq('partner_code', formattedPartnerId)
+        .maybeSingle();
+
+      const upsertPayload: Record<string, any> = {
+        partner_code: formattedPartnerId,
+        full_name: fullName || existing?.full_name || 'Active Affiliate Partner',
+        whatsapp_number: whatsappNumber || existing?.whatsapp_number || null,
+        upi_id: upiId || existing?.upi_id || null,
+        is_verified: upiId ? true : (existing?.is_verified ?? false),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('promoters')
+        .upsert(upsertPayload, { onConflict: 'partner_code' });
 
       if (error) {
         console.warn('Supabase promoters upsert warning:', error.message);

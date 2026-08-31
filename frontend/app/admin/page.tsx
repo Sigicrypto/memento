@@ -29,6 +29,18 @@ interface UserRow {
   referrals_count?: number;
 }
 
+interface PartnerLinkRow {
+  code: string;
+  name: string;
+  email?: string;
+  whatsapp?: string;
+  upi?: string;
+  is_verified?: boolean;
+  referrals_count: number;
+  referred_users?: string[];
+  created_at?: string;
+}
+
 interface EventRow {
   id: string;
   name: string;
@@ -60,6 +72,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [stats, setStats] = useState<Stats>({ totalUsers: 0, totalEvents: 0, totalPhotos: 0, activeToday: 0, pendingApprovals: 0, paidUsers: 0 });
   const [users, setUsers] = useState<UserRow[]>([]);
+  const [partnerLinks, setPartnerLinks] = useState<PartnerLinkRow[]>([]);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -166,30 +179,77 @@ export default function AdminPage() {
         userEventCounts[e.owner_id] = (userEventCounts[e.owner_id] || 0) + 1;
       });
 
-      // Fetch verified promoter profiles
-      const { data: promotersData } = await supabase
-        .from('promoters')
-        .select('*');
-
-      const promoterMap: Record<string, any> = {};
-      promotersData?.forEach(p => {
-        if (p.partner_code) {
-          promoterMap[p.partner_code.toUpperCase()] = p;
-        }
-      });
-
-      // Calculate referral counts per partner ID
+      // Calculate referral counts and referred users per partner ID
       const referralCounts: Record<string, number> = {};
+      const referredUsersMap: Record<string, string[]> = {};
       (profiles || []).forEach(p => {
         if (p.referred_by_partner_id) {
           const code = p.referred_by_partner_id.toUpperCase();
           referralCounts[code] = (referralCounts[code] || 0) + 1;
+          if (!referredUsersMap[code]) referredUsersMap[code] = [];
+          referredUsersMap[code].push(p.full_name || p.email || 'Host');
         }
       });
 
+      // Fetch verified promoter profiles
+      const { data: promotersData } = await supabase
+        .from('promoters')
+        .select('*')
+        .order('updated_at', { ascending: false });
+
+      const promoterMap: Record<string, any> = {};
+      const partnersMap: Record<string, PartnerLinkRow> = {};
+
+      promotersData?.forEach(p => {
+        if (p.partner_code) {
+          const code = p.partner_code.toUpperCase();
+          promoterMap[code] = p;
+          partnersMap[code] = {
+            code,
+            name: p.full_name || 'Active Affiliate Partner',
+            whatsapp: p.whatsapp_number,
+            upi: p.upi_id,
+            is_verified: p.is_verified ?? Boolean(p.upi_id),
+            referrals_count: referralCounts[code] || 0,
+            referred_users: referredUsersMap[code] || [],
+            created_at: p.created_at || p.updated_at,
+          };
+        }
+      });
+
+      // Include partner codes from referred users if not yet in promoters
+      Object.keys(referralCounts).forEach(code => {
+        if (!partnersMap[code]) {
+          partnersMap[code] = {
+            code,
+            name: `Affiliate Partner (${code})`,
+            referrals_count: referralCounts[code],
+            referred_users: referredUsersMap[code] || [],
+          };
+        }
+      });
+
+      // Include default host user codes
+      (profiles || []).forEach(p => {
+        const defaultRefCode = `MEM-${p.id.substring(0, 4).toUpperCase()}`;
+        if (!partnersMap[defaultRefCode]) {
+          partnersMap[defaultRefCode] = {
+            code: defaultRefCode,
+            name: p.full_name || 'Host Account Partner',
+            email: p.email,
+            whatsapp: p.phone,
+            referrals_count: referralCounts[defaultRefCode] || 0,
+            referred_users: referredUsersMap[defaultRefCode] || [],
+          };
+        }
+      });
+
+      const allPartnerLinks = Object.values(partnersMap).sort((a, b) => (b.referrals_count || 0) - (a.referrals_count || 0));
+      setPartnerLinks(allPartnerLinks);
+
       const formatted: UserRow[] = (profiles || []).map(p => {
         const defaultRefCode = `MEM-${p.id.substring(0, 4).toUpperCase()}`;
-        const promoterProfile = promoterMap[defaultRefCode];
+        const promoterProfile = promoterMap[defaultRefCode] || promoterMap[(p.referred_by_partner_id || '').toUpperCase()];
 
         return {
           id: p.id,
@@ -825,8 +885,8 @@ export default function AdminPage() {
                 <div className={cardClass}>
                   <div className="p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">REGISTERED PROMOTERS</p>
-                    <p className="text-2xl font-black text-cyan-400 mt-1">0</p>
-                    <p className="text-[11px] text-slate-500 mt-1">Active verified UPI profiles</p>
+                    <p className="text-2xl font-black text-cyan-400 mt-1">{partnerLinks.length}</p>
+                    <p className="text-[11px] text-slate-500 mt-1">Active partner links & profiles</p>
                   </div>
                 </div>
 
@@ -864,10 +924,10 @@ export default function AdminPage() {
                     <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
                       <span>Generated Partner Referral Links Directory</span>
                       <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                        {users.length} Active Partner Links
+                        {partnerLinks.length} Active Partner Links
                       </span>
                     </h3>
-                    <p className="text-xs text-slate-400">Complete master list of generated 1-click referral links, promoter UPI IDs, and referred user counts.</p>
+                    <p className="text-xs text-slate-400">Complete master list of auto-generated 1-click referral links, promoter UPI IDs, and referred user counts.</p>
                   </div>
                 </div>
 
@@ -883,25 +943,25 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60 font-mono">
-                      {users.length === 0 ? (
+                      {partnerLinks.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="p-8 text-center text-slate-500 text-xs font-sans">
                             No partner referral links generated yet.
                           </td>
                         </tr>
                       ) : (
-                        users.map(u => {
-                          const refCode = `MEM-${u.id.substring(0, 4).toUpperCase()}`;
+                        partnerLinks.map(p => {
+                          const refCode = p.code;
                           const link = `https://mymementoapp.com/join?ref=${refCode}`;
-                          const cleanPhone = (u.promoter_whatsapp || u.phone || '').replace(/[^0-9]/g, '');
+                          const cleanPhone = (p.whatsapp || '').replace(/[^0-9]/g, '');
                           const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
                           return (
-                            <tr key={u.id} className="hover:bg-slate-800/30 transition">
+                            <tr key={p.code} className="hover:bg-slate-800/30 transition">
                               <td className="p-4">
                                 <span className="font-bold text-emerald-400 block">{refCode}</span>
-                                <span className="text-[11px] text-white font-sans font-bold block">{u.promoter_name || u.full_name || 'Host / Partner'}</span>
-                                <span className="text-[10px] text-slate-400 font-sans">{u.email}</span>
+                                <span className="text-[11px] text-white font-sans font-bold block">{p.name}</span>
+                                {p.email && <span className="text-[10px] text-slate-400 font-sans">{p.email}</span>}
                               </td>
 
                               <td className="p-4 font-mono text-slate-200">
@@ -909,22 +969,27 @@ export default function AdminPage() {
                               </td>
 
                               <td className="p-4 font-sans">
-                                {u.promoter_upi ? (
+                                {p.upi ? (
                                   <>
-                                    <span className="font-bold text-purple-300 block">{u.promoter_upi}</span>
-                                    <span className="text-[11px] text-slate-400 block">{u.promoter_whatsapp || u.phone || 'No phone'}</span>
+                                    <span className="font-bold text-purple-300 block">{p.upi}</span>
+                                    <span className="text-[11px] text-slate-400 block">{p.whatsapp || 'No phone'}</span>
                                   </>
                                 ) : (
-                                  <span className="text-slate-500 text-[11px] italic">Not registered yet</span>
+                                  <span className="text-slate-500 text-[11px] italic">Link active (Pending UPI profile)</span>
                                 )}
                               </td>
 
                               <td className="p-4 font-sans">
                                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                                  (u.referrals_count || 0) > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                  (p.referrals_count || 0) > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
                                 }`}>
-                                  👥 {u.referrals_count || 0} Referred Host{(u.referrals_count || 0) !== 1 ? 's' : ''}
+                                  👥 {p.referrals_count || 0} Referred Host{(p.referrals_count || 0) !== 1 ? 's' : ''}
                                 </span>
+                                {p.referred_users && p.referred_users.length > 0 && (
+                                  <span className="text-[10px] text-slate-400 block mt-1">
+                                    {p.referred_users.slice(0, 2).join(', ')}{p.referred_users.length > 2 ? ` +${p.referred_users.length - 2} more` : ''}
+                                  </span>
+                                )}
                               </td>
 
                               <td className="p-4 text-right font-sans space-x-2">
@@ -933,14 +998,14 @@ export default function AdminPage() {
                                     navigator.clipboard.writeText(link);
                                     showToast('Referral link copied to clipboard! ✅');
                                   }}
-                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition"
+                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition cursor-pointer"
                                 >
                                   📋 Copy Link
                                 </button>
 
                                 {cleanPhone && (
                                   <a
-                                    href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi ${u.promoter_name || u.full_name || 'Ambassador'}! 👋 Here is your official Memento Partner Referral Link: ${link}`)}`}
+                                    href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi ${p.name}! 👋 Here is your official Memento Partner Referral Link: ${link}`)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="px-2.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-[11px] hover:bg-emerald-400 transition inline-flex items-center gap-1"
