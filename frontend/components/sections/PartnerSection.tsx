@@ -67,20 +67,27 @@ export default function PartnerSection() {
           Recommend Memento to upcoming hosts & couples. 10% cash bonus credited directly to your UPI ID within 24 hours of booking.
         </motion.p>
 
-        {/* Primary Action Button (Reveals full modal on click) */}
+        {/* Action Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.15 }}
+          className="flex flex-col sm:flex-row items-center gap-3"
         >
           <button
             onClick={() => setIsModalOpen(true)}
             className="py-3 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <Sparkles className="w-4 h-4 fill-slate-950" />
-            <span>Earn 10% Referral Bonus ↗</span>
+            <span>Get Your Partner Code & Link ↗</span>
           </button>
+          <a
+            href="/partner"
+            className="py-3 px-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold text-xs sm:text-sm transition-all"
+          >
+            Learn Partner Program
+          </a>
         </motion.div>
 
       </div>

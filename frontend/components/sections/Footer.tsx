@@ -45,6 +45,9 @@ const Footer: React.FC = () => {
               </div>
 
               <div className="flex gap-6 md:gap-8 flex-wrap justify-center items-center">
+                <Link href="/partner" className="text-sm text-emerald-400 hover:text-emerald-300 font-semibold transition-colors duration-300">
+                  Partner Program (10% Commission)
+                </Link>
                 <Link href="/privacy" className="text-sm text-text-secondary hover:text-neon-cyan transition-colors duration-300">
                   Privacy Policy
                 </Link>

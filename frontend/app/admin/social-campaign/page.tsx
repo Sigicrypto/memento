@@ -76,7 +76,7 @@ const PRESETS = [
     title: 'Pan-India Sales Partner & Affiliate Hiring',
     desc: 'Target promoters, freelancers, and event coordinators to earn flat 10% commission on every sale (no fixed salary) with instant payout upon lead monetization.',
     imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop',
-    caption: `💼 HIRING: PAN-INDIA EVENT SALES PARTNER (100% COMMISSION BASIS - NO FIXED SALARY!)\n\nIntroduce Memento's Live QR Photo Wall to wedding planners, corporate event hosts & venues across India!\n\n💰 10% Flat Commission per Closed Booking (No Fixed Salary)\n⚡ INSTANT PAYOUT as soon as the lead is monetized (No waiting period!)\n🕒 Flexible Part-Time / Work-From-Anywhere Hours\n\n🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!\n\nApply via WhatsApp: +91 9866161775 | Learn more at www.mymementoapp.com 🚀\n\n#CommissionJobs #EventJobs #PanIndiaHiring #NoFixedSalary #InstantPayout #EventPromoter #MementoPartner`,
+    caption: `💼 HIRING: PAN-INDIA EVENT SALES PARTNER (100% COMMISSION BASIS - NO FIXED SALARY!)\n\nIntroduce Memento's Live QR Photo Wall to wedding planners, corporate event hosts & venues across India!\n\n💰 10% Flat Commission per Closed Booking (No Fixed Salary)\n⚡ INSTANT PAYOUT as soon as the lead is monetized (No waiting period!)\n🕒 Flexible Part-Time / Work-From-Anywhere Hours\n\n🎁 Benefits: Unlimited earning potential + 10% Flat Commission per Deal + INSTANT Payout on Monetization (UPI/Bank Transfer)!\n\nApply via WhatsApp: +91 9866161775 | Learn more & get partner code at www.mymementoapp.com/partner 🚀\n\n#CommissionJobs #EventJobs #PanIndiaHiring #NoFixedSalary #InstantPayout #EventPromoter #MementoPartner`,
   },
 ];
 
@@ -216,7 +216,7 @@ ${jobExtraNote ? `✔️ ${jobExtraNote}\n` : ''}
 
 👇 HOW TO APPLY:
 Send your Name & State/City via WhatsApp to ${jobContact} or DM us!
-Learn more about Memento: www.mymementoapp.com
+Learn more & get your partner code at: www.mymementoapp.com/partner
 
 #CommissionJobs #EventJobs #PanIndiaJobs #10PercentCommission #NoFixedSalary #InstantPayout #EventPromoter #MementoPartner #AllIndiaHiring`;
   };
@@ -326,7 +326,7 @@ Learn more about Memento: www.mymementoapp.com
       ctx.font = '900 34px sans-serif';
       ctx.fillText('📲 WhatsApp Name & City to +91 9866161775', 540, 930);
       ctx.font = 'bold 22px sans-serif';
-      ctx.fillText('www.mymementoapp.com', 540, 968);
+      ctx.fillText('www.mymementoapp.com/partner', 540, 968);
 
       // Copy Image Blob to Clipboard
       canvas.toBlob((blob) => {
@@ -704,7 +704,7 @@ Learn more about Memento: www.mymementoapp.com
                     {/* Bottom CTA Bar */}
                     <div className="p-3.5 rounded-xl bg-emerald-600 text-white font-black text-xs text-center uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl relative z-10">
                       <MessageSquare size={16} />
-                      <span>WhatsApp Name & City to +91 9866161775 | www.mymementoapp.com</span>
+                      <span>WhatsApp Name & City to +91 9866161775 | www.mymementoapp.com/partner</span>
                     </div>
                   </div>
                 </div>

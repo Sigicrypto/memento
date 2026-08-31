@@ -64,6 +64,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
     { label: 'Weddings', href: '/weddings' },
     { label: 'Professionals', href: '/professionals' },
     { label: 'Corporate', href: '/corporate-events' },
+    { label: 'Partner Program', href: '/partner' },
     { label: 'Pricing', href: '/#pricing' },
   ];
 
@@ -115,15 +116,14 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsPartnerModalOpen(true)}
-              className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold tracking-wider uppercase transition-all shrink-0 cursor-pointer"
+            <Link
+              href="/partner"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold tracking-wider uppercase transition-all shrink-0 cursor-pointer"
               title="Earn 10% Referral Bonus for each user referred"
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
               <span>10% Partner Bonus</span>
-            </button>
+            </Link>
 
             <ThemeToggle />
             
