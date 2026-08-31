@@ -27,13 +27,16 @@ import {
   Gift,
   Flame,
   CheckCircle,
-  Sliders,
-  Send,
   Building,
   Heart,
   PartyPopper,
+  Lock,
+  Smartphone,
+  ExternalLink,
+  ChevronRight,
 } from 'lucide-react';
 import { usePartnerId } from '@/hooks/usePartnerId';
+import { BackgroundBeams } from '@/components/BackgroundBeams';
 
 const ThemedNav = dynamic(() => import('@/components/ThemedNav'), { ssr: false });
 const Footer = dynamic(() => import('@/components/sections/Footer'), { ssr: false });
@@ -42,24 +45,24 @@ const WHATSAPP_NUMBER = '919866161775';
 
 const FAQS = [
   {
-    q: "Is there a fixed monthly salary for this role?",
-    a: "No. This is a 100% flexible, freelance commission opportunity. You earn a flat 10% cash bonus on every closed booking (₹300 to ₹800+ per deal) with unlimited earning potential and zero minimum targets.",
+    q: "Is there a fixed monthly salary for this partner role?",
+    a: "No. This is a 100% freelance commission role with a flat 10% cash bonus on every closed booking (₹300 to ₹800+ per deal). You have unlimited earning potential with zero minimum quotas and complete flexibility to work whenever and wherever you want.",
   },
   {
     q: "Where do I get my partner code and link?",
-    a: "Your unique Partner ID (e.g. MEM-XXXX) and 1-Click Referral Link are already generated at the top of this page. You don't have to wait for manual verification to start sharing.",
+    a: "Your unique Partner ID (e.g. MEM-XXXX) and 1-Click Referral Link are already generated right at the top of this page. You don't have to wait for manual approval or interview screening to start sharing.",
   },
   {
-    q: "How does the tracking work when I share my link?",
-    a: "When a potential client opens your link or scans your QR code, a 30-day tracking cookie and localStorage token lock your Partner ID to their session. When they create an account, their profile is permanently tagged with your code.",
+    q: "How does referral tracking work when I share my link?",
+    a: "When a potential client opens your link or scans your QR code, a 30-day tracking cookie and localStorage token automatically lock your Partner ID to their session. When they create an account, their profile is permanently tagged with your code in our database.",
   },
   {
-    q: "When and how do I receive my 10% commission?",
+    q: "When and how do I receive my 10% commission payout?",
     a: "Payouts are transferred directly to your registered UPI ID (Google Pay, PhonePe, Paytm, or BHIM) within 24 hours of the client's booking confirmation.",
   },
   {
     q: "Who are the best potential clients to reach out to?",
-    a: "Couples planning upcoming weddings, birthday hosts, corporate HR/event managers, wedding planners, event DJs, photographers, and banquet hall managers across India.",
+    a: "Couples planning upcoming weddings, birthday hosts, corporate HR/event managers, wedding planners, event DJs, photographers, banquet hall managers, and resort venues across India.",
   },
 ];
 
@@ -71,6 +74,7 @@ export default function PartnerPage() {
   const [dealsCount, setDealsCount] = useState<number>(8);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [copiedPitchId, setCopiedPitchId] = useState<string | null>(null);
+  const [activePitchTab, setActivePitchTab] = useState<'wedding' | 'corporate' | 'planner'>('wedding');
   
   // Registration Form State
   const [fullName, setFullName] = useState('');
@@ -99,6 +103,7 @@ export default function PartnerPage() {
 
   const commissionPerDeal = Math.round(selectedPlanPrice * 0.1);
   const totalEstimatedEarnings = commissionPerDeal * dealsCount;
+  const sixMonthsEarnings = totalEstimatedEarnings * 6;
 
   const handleRegisterPromoter = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,206 +165,289 @@ Check out the live interactive demo here:
 You can test a free live demo and set up an event in 2 minutes:
 👉 ${partnerLink}`;
 
+  const plannerPitch = `Hi! 👋 Partnering with event planners across India:
+
+Introduce Memento Live QR Photo Wall to your clients as an add-on service!
+• Give clients instant guest photo sharing on LED screens.
+• Full white-label branding with your agency name.
+• Zero hardware required — works on any smart TV or projector.
+
+Test the live interactive wall here:
+👉 ${partnerLink}`;
+
   const partnerDeskWhatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `Hi Memento Partner Desk! 👋 I am registered with Partner ID ${partnerId} (${fullName || 'Promoter'}). UPI ID: ${upiId || 'Not set'}. I want to connect regarding event client referrals!`
   )}`;
 
   return (
     <>
+      <BackgroundBeams />
       <ThemedNav />
-      <main className="min-h-screen bg-[#05070d] text-white pt-24 pb-24 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30 overflow-x-hidden flex flex-col items-center relative">
+
+      <main className="min-h-screen bg-slate-950/90 text-white pt-24 pb-28 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500/30 overflow-x-hidden flex flex-col items-center relative z-10">
         
-        {/* Background Visual Effects */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-gradient-to-b from-emerald-500/10 via-teal-500/5 to-transparent blur-[140px] rounded-full" />
-          <div className="absolute top-[30%] left-[10%] w-[450px] h-[450px] bg-cyan-500/8 blur-[120px] rounded-full" />
-          <div className="absolute top-[60%] right-[10%] w-[500px] h-[500px] bg-purple-500/8 blur-[130px] rounded-full" />
-          <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
-        </div>
-
-        {/* ══════════════════════ 1. HERO SECTION ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-5xl text-center pt-8 sm:pt-12 pb-12 flex flex-col items-center">
+        {/* ══════════════════════════════════════════════════════════════
+            1. HERO SECTION (SPLIT SCREEN LUXURY DESIGN)
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-7xl pt-8 sm:pt-14 pb-16 lg:pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Top Pill */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-widest mb-6 shadow-inner shadow-emerald-500/20"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Pan-India Event Partner Program • 100% Commission</span>
-          </motion.div>
-
-          {/* Main Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.12] max-w-4xl"
-          >
-            Turn Your Event & Wedding Network Into{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
-              10% Instant Cash Income.
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-sm sm:text-base lg:text-lg text-slate-300 max-w-2xl mt-5 font-normal leading-relaxed"
-          >
-            Work part-time from anywhere in India. Recommend Memento’s Live QR Photo Wall to wedding couples, party hosts, corporate planners, and venues. 
-            Receive <strong className="text-white font-bold">10% cash referral bonus</strong> on every booked event, credited directly to your UPI ID within 24 hours.
-          </motion.p>
-
-          {/* 3 Core Highlight Cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full max-w-3xl mt-8 text-left"
-          >
-            <div className="p-4 rounded-2xl bg-slate-900/80 border border-emerald-500/25 backdrop-blur-xl flex items-center gap-3.5 shadow-lg">
-              <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
-                <TrendingUp size={20} />
-              </div>
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Commission Rate</div>
-                <div className="text-sm font-black text-emerald-300">10% Flat / Closed Deal</div>
-                <div className="text-[11px] text-slate-400">No Fixed Salary · Unlimited Upside</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/80 border border-amber-500/25 backdrop-blur-xl flex items-center gap-3.5 shadow-lg">
-              <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
-                <Zap size={20} />
-              </div>
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Payout Speed</div>
-                <div className="text-sm font-black text-amber-300">Within 24 Hours</div>
-                <div className="text-[11px] text-slate-400">Instant UPI Direct Bank Transfer</div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/25 backdrop-blur-xl flex items-center gap-3.5 shadow-lg">
-              <div className="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 shrink-0">
-                <Globe size={20} />
-              </div>
-              <div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Location</div>
-                <div className="text-sm font-black text-cyan-300">All India (Pan-India)</div>
-                <div className="text-[11px] text-slate-400">Flexible Remote Freelance Hours</div>
-              </div>
-            </div>
-          </motion.div>
-        </section>
-
-        {/* ══════════════════════ 2. THE PARTNER COCKPIT CARD (HERO ELEMENT) ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-4xl mb-16">
-          <div className="bg-slate-900/90 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(16,185,129,0.16)] relative overflow-hidden">
+          {/* Left Column: Hero Headline & Fast Actions (7 Cols) */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left space-y-6">
             
-            {/* Ambient Corner Orbs */}
-            <div className="absolute -top-32 -right-32 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+            {/* Status Pill Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-widest shadow-inner shadow-emerald-500/20"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Pan-India Event Partner Program • 100% Commission</span>
+            </motion.div>
 
-            {/* Cockpit Top Bar */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10 relative z-10">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
-                    Live Partner Tracking Active
+            {/* Monumental Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl sm:text-6xl lg:text-[64px] font-black tracking-tight leading-[1.08] text-white"
+            >
+              Turn Your Event & Wedding Network Into{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">
+                Instant UPI Cash.
+              </span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-base sm:text-lg text-slate-300 max-w-2xl font-normal leading-relaxed"
+            >
+              Work part-time from anywhere in India. Recommend Memento’s Live QR Photo Wall to wedding couples, party hosts, corporate planners, and venues. 
+              Earn a flat <strong className="text-white font-bold">10% cash referral bonus</strong> per closed deal, sent straight to your UPI within 24 hours.
+            </motion.p>
+
+            {/* 3 Core Highlight Badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full pt-2"
+            >
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-emerald-500/30 backdrop-blur-xl flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
+                  <TrendingUp size={18} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Commission</div>
+                  <div className="text-xs font-black text-emerald-300">10% Flat / Deal</div>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-amber-500/30 backdrop-blur-xl flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 shrink-0">
+                  <Zap size={18} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Payout Speed</div>
+                  <div className="text-xs font-black text-amber-300">Within 24 Hours</div>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-cyan-500/30 backdrop-blur-xl flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 shrink-0">
+                  <Globe size={18} />
+                </div>
+                <div>
+                  <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Location</div>
+                  <div className="text-xs font-black text-cyan-300">Whole India</div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Quick Hero CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-2"
+            >
+              <button
+                onClick={copyPartnerLink}
+                className="w-full sm:w-auto py-3.5 px-7 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/25 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                {copiedLink ? <Check size={18} className="text-slate-950 stroke-[3]" /> : <Copy size={18} />}
+                <span>{copiedLink ? '1-Click Link Copied!' : 'Copy My 1-Click Referral Link'}</span>
+              </button>
+
+              <a
+                href={whatsappShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto py-3.5 px-6 rounded-2xl bg-slate-900/80 hover:bg-slate-800 border border-white/15 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={16} className="text-emerald-400" />
+                <span>Share on WhatsApp</span>
+              </a>
+            </motion.div>
+
+          </div>
+
+          {/* Right Column: Interactive Digital Ambassador Pass Mockup (5 Cols) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-5 relative"
+          >
+            <div className="relative rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-950 border-2 border-emerald-500/40 backdrop-blur-2xl shadow-[0_0_60px_rgba(16,185,129,0.2)] overflow-hidden space-y-6">
+              
+              {/* Subtle metallic sheen line */}
+              <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent" />
+              <div className="absolute -bottom-20 -right-20 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Pass Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <Award size={18} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">MEMENTO AMBASSADOR PASS</span>
+                    <span className="text-xs font-bold text-white">Pan-India Sales Partner</span>
+                  </div>
+                </div>
+
+                <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/40 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  10% Active
+                </span>
+              </div>
+
+              {/* Partner ID Feature Display */}
+              <div className="p-4 rounded-2xl bg-slate-950/80 border border-emerald-500/30 space-y-1.5 shadow-inner">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold uppercase text-slate-400">YOUR PARTNER ID</span>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    Lifetime Tracking
                   </span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-white">Your Partner Command Center</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Start sharing immediately. All registrations via your link are auto-tracked.</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl sm:text-3xl font-mono font-black text-emerald-400 tracking-wider">
+                    {partnerId}
+                  </span>
+                  <button
+                    onClick={copyPartnerId}
+                    className="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 transition-all cursor-pointer active:scale-95"
+                    title="Copy Partner ID"
+                  >
+                    {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                  </button>
+                </div>
               </div>
 
-              {/* Partner ID Display Badge */}
-              <div className="flex items-center gap-2 bg-slate-950/90 px-4 py-2.5 rounded-2xl border border-emerald-500/40 shadow-inner">
-                <span className="text-xs font-mono text-slate-400 uppercase font-bold">Partner Code:</span>
-                <span className="text-base font-mono font-black text-emerald-400 tracking-wider">{partnerId}</span>
+              {/* Live QR Card Preview */}
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-950/60 border border-white/10">
+                <div className="w-20 h-20 bg-[#070a10] p-1.5 rounded-xl border border-emerald-500/40 shrink-0 flex items-center justify-center">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
+                    alt="Referral QR"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-white block">Digital Referral QR Card</span>
+                  <p className="text-[11px] text-slate-400 leading-snug">Clients scan this code with any phone camera to join under your account.</p>
+                  <a
+                    href={`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
+                    download={`Memento-Partner-QR-${partnerId}.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 pt-1"
+                  >
+                    <Download size={12} /> Download HD QR Poster
+                  </a>
+                </div>
+              </div>
+
+              {/* Status Note */}
+              <p className="text-[10px] text-center text-slate-400">
+                No sign-up required. Your partner link is generated and live on this device.
+              </p>
+            </div>
+          </motion.div>
+
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════
+            2. AMBASSADOR COMMAND SUITE (BENTO HUB TABS)
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-4xl mb-24" id="tools">
+          <div className="bg-slate-900/90 border-2 border-emerald-500/30 rounded-3xl p-6 sm:p-8 backdrop-blur-2xl shadow-[0_0_80px_rgba(16,185,129,0.12)] relative overflow-hidden">
+            
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 pb-6 border-b border-white/10">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
+                  AMBASSADOR TOOLKIT
+                </span>
+                <h2 className="text-2xl font-black text-white">Partner Control Dashboard</h2>
+              </div>
+
+              <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 border border-white/10 rounded-2xl">
                 <button
-                  onClick={copyPartnerId}
-                  className="ml-1 p-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 transition-all cursor-pointer"
-                  title="Copy Partner ID"
+                  onClick={() => setActiveTab('link')}
+                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === 'link'
+                      ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
                 >
-                  {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                  1-Click Link
+                </button>
+                <button
+                  onClick={() => setActiveTab('qr')}
+                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === 'qr'
+                      ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  QR Poster
+                </button>
+                <button
+                  onClick={() => setActiveTab('payout')}
+                  className={`py-2 px-3.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    activeTab === 'payout'
+                      ? 'bg-emerald-500 text-slate-950 font-black shadow-md'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {isSaved ? 'UPI Active ✓' : 'Register UPI'}
                 </button>
               </div>
             </div>
 
-            {/* 3 Nav Tabs */}
-            <div className="flex items-center gap-2 p-1.5 bg-slate-950/80 border border-white/10 rounded-2xl mb-6 relative z-10">
-              <button
-                onClick={() => setActiveTab('link')}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  activeTab === 'link'
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Sparkles size={14} />
-                <span>1-Click Link</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('qr')}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  activeTab === 'qr'
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <QrCode size={14} />
-                <span>Referral QR Poster</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('payout')}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  activeTab === 'payout'
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Wallet size={14} />
-                <span>{isSaved ? 'UPI Payout Active ✓' : 'Register UPI Profile'}</span>
-              </button>
-            </div>
-
-            {/* TAB CONTENT 1: LINK & SHARE */}
+            {/* TAB 1: 1-Click Link */}
             {activeTab === 'link' && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-5 relative z-10"
-              >
-                <div className="bg-slate-950/90 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 space-y-3 shadow-inner">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                <div className="p-4 rounded-2xl bg-slate-950/90 border border-emerald-500/30 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                      YOUR UNIQUE 1-CLICK REFERRAL LINK
-                    </label>
-                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      30-Day Auto Tracking
-                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">YOUR 1-CLICK REFERRAL LINK</span>
+                    <span className="text-[10px] font-mono text-emerald-400">ID: {partnerId}</span>
                   </div>
-
-                  <div className="p-3.5 rounded-xl bg-slate-900 border border-white/10 text-xs sm:text-sm font-mono font-bold text-emerald-300 break-all select-all flex items-center justify-between gap-2">
-                    <span>{partnerLink}</span>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs sm:text-sm font-mono font-bold text-emerald-300 break-all select-all">
+                    {partnerLink}
                   </div>
-
-                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-1">
                     <button
                       onClick={copyPartnerLink}
                       className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                     >
                       {copiedLink ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-                      <span>{copiedLink ? 'Referral Link Copied!' : 'Copy 1-Click Referral Link'}</span>
+                      <span>{copiedLink ? 'Link Copied to Clipboard!' : 'Copy Referral Link'}</span>
                     </button>
-
                     <a
                       href={whatsappShareUrl}
                       target="_blank"
@@ -367,149 +455,93 @@ You can test a free live demo and set up an event in 2 minutes:
                       className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer active:scale-95"
                     >
                       <MessageCircle size={16} className="fill-slate-950" />
-                      <span>Share Directly on WhatsApp</span>
+                      <span>Share on WhatsApp</span>
                     </a>
                   </div>
-                </div>
-
-                {/* Quick Instruction Banner */}
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-3">
-                  <Sparkles className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    <strong>How to use this link:</strong> Send this link to anyone hosting an event. When they click and sign up, their account is permanently attached to your Partner ID <strong className="text-emerald-400 font-mono">{partnerId}</strong>. When they purchase any plan, your 10% commission is queued for UPI transfer.
-                  </p>
                 </div>
               </motion.div>
             )}
 
-            {/* TAB CONTENT 2: DIGITAL QR POSTER */}
+            {/* TAB 2: QR Poster */}
             {activeTab === 'qr' && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6 text-center relative z-10"
-              >
-                <div className="bg-slate-950/80 border border-emerald-500/30 rounded-2xl p-6 space-y-4">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                    <Award size={14} />
-                    <span>Official Memento Partner QR Poster</span>
-                  </div>
-
-                  {/* QR Code Container */}
-                  <div className="w-48 h-48 mx-auto bg-[#070a10] p-3 rounded-2xl border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)] flex items-center justify-center">
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
-                      alt={`Referral QR Code for ${partnerId}`}
-                      className="w-full h-full object-contain rounded-xl"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-white">Scan with Any Mobile Camera to Open Invite</p>
-                    <p className="text-[11px] font-mono text-emerald-300 font-bold">{partnerLink}</p>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-                    <a
-                      href={`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
-                      download={`Memento-Partner-QR-${partnerId}.png`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
-                    >
-                      <Download size={15} className="stroke-[3]" />
-                      <span>Download Branded QR Poster (HD PNG)</span>
-                    </a>
-
-                    <a
-                      href={whatsappShareUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
-                    >
-                      <MessageCircle size={15} className="text-emerald-400" />
-                      <span>Share QR on WhatsApp</span>
-                    </a>
-                  </div>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4">
+                <div className="w-48 h-48 mx-auto bg-[#070a10] p-3 rounded-2xl border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.25)] flex items-center justify-center">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
+                    alt={`Referral QR Code for ${partnerId}`}
+                    className="w-full h-full object-contain rounded-xl"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-white">Scan to Claim 10% Referral Tracking</p>
+                  <p className="text-[11px] font-mono text-emerald-300">{partnerLink}</p>
+                </div>
+                <div className="pt-2">
+                  <a
+                    href={`https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(partnerLink)}&color=10b981&bcolor=070a10`}
+                    download={`Memento-Partner-QR-${partnerId}.png`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 py-3 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition-all"
+                  >
+                    <Download size={15} className="stroke-[3]" />
+                    <span>Download Branded QR Poster (PNG)</span>
+                  </a>
                 </div>
               </motion.div>
             )}
 
-            {/* TAB CONTENT 3: UPI REGISTRATION */}
+            {/* TAB 3: UPI Registration */}
             {activeTab === 'payout' && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="relative z-10"
-              >
-                <form onSubmit={handleRegisterPromoter} className="bg-slate-950/80 border border-white/10 rounded-2xl p-5 sm:p-6 space-y-4">
-                  <div className="flex items-center gap-3 pb-3 border-b border-white/10">
-                    <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400">
-                      <UserCheck size={18} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Verified Partner Payout Profile</h3>
-                      <p className="text-[11px] text-slate-400">Register your UPI ID once to receive 10% commission payments automatically.</p>
-                    </div>
-                  </div>
-
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <form onSubmit={handleRegisterPromoter} className="space-y-4 bg-slate-950/80 p-5 rounded-2xl border border-white/10">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                        Full Name
-                      </label>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">Full Name</label>
                       <input
                         type="text"
                         required
                         placeholder="e.g. Rahul Sharma"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
+                        className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                        WhatsApp Number
-                      </label>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">WhatsApp Number</label>
                       <input
                         type="tel"
                         required
                         placeholder="e.g. +91 98765 43210"
                         value={whatsappNumber}
                         onChange={(e) => setWhatsappNumber(e.target.value)}
-                        className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
+                        className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
                       />
                     </div>
                   </div>
-
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
-                      UPI ID (Google Pay / PhonePe / Paytm / Bank VPA)
-                    </label>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1.5 uppercase tracking-wider">UPI ID (GPay / PhonePe / Paytm / BHIM)</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. rahul@upi or 9876543210@ybl"
                       value={upiId}
                       onChange={(e) => setUpiId(e.target.value)}
-                      className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 transition-colors"
+                      className="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
                     />
                   </div>
-
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer active:scale-95"
+                    className="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 cursor-pointer"
                   >
                     {isSubmitting ? <RefreshCw size={15} className="animate-spin" /> : <ShieldCheck size={16} />}
-                    <span>{isSaved ? 'Update Payout Details' : 'Save & Verify Payout Profile'}</span>
+                    <span>{isSaved ? 'Update Payout Details' : 'Save & Verify UPI Profile'}</span>
                   </button>
-
                   {isSaved && (
-                    <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2.5 text-emerald-300 text-xs font-medium">
-                      <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
-                      <span>Profile active! All bookings through code <strong className="text-white font-mono">{partnerId}</strong> will be paid to <strong className="text-white">{upiId}</strong>.</span>
+                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 text-xs">
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      <span>Active! Commission for code <strong>{partnerId}</strong> will be sent to <strong>{upiId}</strong>.</span>
                     </div>
                   )}
                 </form>
@@ -519,82 +551,27 @@ You can test a free live demo and set up an event in 2 minutes:
           </div>
         </section>
 
-        {/* ══════════════════════ 3. HOW IT WORKS (4-STEP TIMELINE) ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-5xl mb-20">
-          <div className="text-center mb-10">
-            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
-              Zero Confusion Process
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">How You Earn in 4 Simple Steps</h2>
-            <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl mx-auto">
-              From copying your link to receiving direct UPI bank transfers in 24 hours.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 font-black text-sm flex items-center justify-center mb-4 border border-emerald-500/30 group-hover:scale-110 transition-transform">
-                01
-              </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">Get Your Link</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Your unique Partner ID (<strong className="text-emerald-400 font-mono">{partnerId}</strong>) is ready instantly. No interview wait time.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 text-cyan-400 font-black text-sm flex items-center justify-center mb-4 border border-cyan-500/30 group-hover:scale-110 transition-transform">
-                02
-              </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">Pitch to Hosts & Planners</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Share your link with couples getting married, event planners, birthday hosts, or venues across India.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 font-black text-sm flex items-center justify-center mb-4 border border-purple-500/30 group-hover:scale-110 transition-transform">
-                03
-              </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">Auto-Linked Registration</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                When they click your link, our system permanently binds their event account to your partner code in the database.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left relative overflow-hidden group hover:border-emerald-500/30 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 font-black text-sm flex items-center justify-center mb-4 border border-amber-500/30 group-hover:scale-110 transition-transform">
-                04
-              </div>
-              <h3 className="text-sm font-bold text-white mb-1.5">24h Direct UPI Payout</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Once the host books, your 10% cash bonus is transferred straight to your registered UPI ID within 24 hours.
-              </p>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ══════════════════════ 4. INTERACTIVE 10% EARNINGS CALCULATOR ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-4xl mb-20">
-          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+        {/* ══════════════════════════════════════════════════════════════
+            3. INTERACTIVE 10% EARNINGS SIMULATOR
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-5xl mb-24" id="calculator">
+          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl">
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8 pb-6 border-b border-white/10">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
-                  COMMISSION ESTIMATOR
+                  EARNINGS SIMULATOR
                 </span>
-                <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                <h2 className="text-2xl sm:text-3xl font-black text-white flex items-center gap-2">
                   <IndianRupee className="w-6 h-6 text-emerald-400" />
-                  <span>Interactive 10% Earnings Calculator</span>
+                  <span>Interactive 10% Income Calculator</span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">Select plan packages and simulate your monthly referral income.</p>
+                <p className="text-xs text-slate-400 mt-0.5">Select a plan and move the slider to see your earning potential.</p>
               </div>
 
-              <div className="px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-black font-mono self-start sm:self-auto">
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-black font-mono self-start sm:self-auto">
                 Flat 10% / Closed Deal
-              </div>
+              </span>
             </div>
 
             {/* Plan Tier Selector */}
@@ -635,8 +612,8 @@ You can test a free live demo and set up an event in 2 minutes:
             <div className="space-y-4 mb-8 bg-slate-950/80 p-5 rounded-2xl border border-white/10">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-300">Estimated Bookings / Month:</span>
-                <span className="text-base font-mono font-black text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-xl border border-cyan-500/30">
-                  {dealsCount} Events
+                <span className="text-base font-mono font-black text-cyan-400 bg-cyan-500/10 px-3.5 py-1 rounded-xl border border-cyan-500/30">
+                  {dealsCount} Closed Deals
                 </span>
               </div>
 
@@ -658,7 +635,7 @@ You can test a free live demo and set up an event in 2 minutes:
             </div>
 
             {/* Total Result Bar */}
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-slate-950 to-teal-950/90 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/90 via-slate-950 to-teal-950/90 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
               <div>
                 <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest block">
                   PROJECTED MONTHLY PAYOUT
@@ -667,6 +644,9 @@ You can test a free live demo and set up an event in 2 minutes:
                   ₹{totalEstimatedEarnings.toLocaleString()}
                   <span className="text-xs font-sans text-slate-400 font-normal ml-2">direct to your UPI</span>
                 </div>
+                <span className="text-xs text-slate-400 block mt-1">
+                  6-Month Potential: <strong className="text-white font-mono">₹{sixMonthsEarnings.toLocaleString()}</strong>
+                </span>
               </div>
 
               <div className="text-xs text-slate-300 text-center sm:text-right">
@@ -678,79 +658,156 @@ You can test a free live demo and set up an event in 2 minutes:
           </div>
         </section>
 
-        {/* ══════════════════════ 5. READY-MADE CLIENT PITCH SCRIPTS (1-CLICK COPY) ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-5xl mb-20">
+        {/* ══════════════════════════════════════════════════════════════
+            4. PROMOTER SALES TOOLKIT (TABBED READY-MADE PITCHES)
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-5xl mb-24" id="pitch-kit">
           <div className="text-center mb-10">
             <span className="text-[11px] font-black uppercase tracking-widest text-cyan-400 block mb-1">
               PROMOTER SALES TOOLKIT
             </span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Ready-Made Client Pitch Templates</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Ready-to-Send Client Pitch Scripts</h2>
             <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl mx-auto">
-              Copy and forward these high-converting scripts to your clients. Your personal partner link is already included!
+              Select your audience, copy the script with 1 click, and forward it on WhatsApp. Your personal referral link is automatically included!
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl">
             
-            {/* Script 1: Weddings & Parties */}
-            <div className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col justify-between shadow-xl">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-xl bg-pink-500/20 text-pink-400">
-                      <Heart size={16} />
-                    </div>
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">For Wedding Couples & Party Hosts</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">WhatsApp Ready</span>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 text-xs text-slate-300 font-sans whitespace-pre-line leading-relaxed mb-4 select-all">
-                  {weddingPitch}
-                </div>
-              </div>
+            {/* Pitch Target Selector Tabs */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-950/80 border border-white/10 rounded-2xl mb-6 overflow-x-auto">
+              <button
+                onClick={() => setActivePitchTab('wedding')}
+                className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activePitchTab === 'wedding'
+                    ? 'bg-pink-600 text-white font-black shadow-lg shadow-pink-500/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Heart size={14} className={activePitchTab === 'wedding' ? 'fill-white' : ''} />
+                <span>Wedding Couples & Parties</span>
+              </button>
 
               <button
-                onClick={() => handleCopyPitch('wedding', weddingPitch)}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-pink-500/20 cursor-pointer active:scale-95"
+                onClick={() => setActivePitchTab('corporate')}
+                className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activePitchTab === 'corporate'
+                    ? 'bg-cyan-600 text-white font-black shadow-lg shadow-cyan-500/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
               >
-                {copiedPitchId === 'wedding' ? <Check size={16} /> : <Copy size={16} />}
-                <span>{copiedPitchId === 'wedding' ? 'Wedding Script Copied with Your Link!' : 'Copy Wedding Pitch Script'}</span>
+                <Building size={14} />
+                <span>Corporate Events & Galas</span>
+              </button>
+
+              <button
+                onClick={() => setActivePitchTab('planner')}
+                className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activePitchTab === 'planner'
+                    ? 'bg-purple-600 text-white font-black shadow-lg shadow-purple-500/20'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <Award size={14} />
+                <span>Planners, DJs & Venues</span>
               </button>
             </div>
 
-            {/* Script 2: Corporate & Planners */}
-            <div className="p-6 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col justify-between shadow-xl">
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-400">
-                      <Building size={16} />
-                    </div>
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">For Event Planners & Corporate Hosts</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">WhatsApp Ready</span>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 text-xs text-slate-300 font-sans whitespace-pre-line leading-relaxed mb-4 select-all">
-                  {corporatePitch}
-                </div>
+            {/* Pitch Text Area & Copy Button */}
+            <div className="space-y-4">
+              <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 text-xs sm:text-sm text-slate-200 font-sans whitespace-pre-line leading-relaxed select-all">
+                {activePitchTab === 'wedding' && weddingPitch}
+                {activePitchTab === 'corporate' && corporatePitch}
+                {activePitchTab === 'planner' && plannerPitch}
               </div>
 
-              <button
-                onClick={() => handleCopyPitch('corporate', corporatePitch)}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 cursor-pointer active:scale-95"
-              >
-                {copiedPitchId === 'corporate' ? <Check size={16} /> : <Copy size={16} />}
-                <span>{copiedPitchId === 'corporate' ? 'Corporate Script Copied with Your Link!' : 'Copy Corporate Pitch Script'}</span>
-              </button>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  onClick={() => {
+                    const textToCopy = activePitchTab === 'wedding' ? weddingPitch : activePitchTab === 'corporate' ? corporatePitch : plannerPitch;
+                    handleCopyPitch(activePitchTab, textToCopy);
+                  }}
+                  className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer active:scale-95"
+                >
+                  {copiedPitchId === activePitchTab ? <Check size={18} /> : <Copy size={18} />}
+                  <span>{copiedPitchId === activePitchTab ? 'Script Copied with Your Link!' : 'Copy Script with My Personal Link'}</span>
+                </button>
+
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                    activePitchTab === 'wedding' ? weddingPitch : activePitchTab === 'corporate' ? corporatePitch : plannerPitch
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageCircle size={16} className="text-emerald-400" />
+                  <span>Open WhatsApp Directly</span>
+                </a>
+              </div>
             </div>
 
           </div>
         </section>
 
-        {/* ══════════════════════ 6. FREQUENTLY ASKED QUESTIONS (ACCORDION) ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-4xl mb-20">
+        {/* ══════════════════════════════════════════════════════════════
+            5. HOW IT WORKS (4-STEP TIMELINE)
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-5xl mb-24">
+          <div className="text-center mb-10">
+            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
+              ZERO CONFUSION PROCESS
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">How You Earn in 4 Simple Steps</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 font-black text-sm flex items-center justify-center mb-4 border border-emerald-500/30">
+                01
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1.5">Get Your Link</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Your unique Partner ID (<strong className="text-emerald-400 font-mono">{partnerId}</strong>) is ready instantly. No interview wait time.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-500/20 text-cyan-400 font-black text-sm flex items-center justify-center mb-4 border border-cyan-500/30">
+                02
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1.5">Share with Hosts</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Share your link with couples getting married, event planners, birthday hosts, or venues across India.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 font-black text-sm flex items-center justify-center mb-4 border border-purple-500/30">
+                03
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1.5">Auto-Linked Profile</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                When they click your link, our system permanently binds their event account to your partner code in the database.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 backdrop-blur-xl flex flex-col items-start text-left">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 font-black text-sm flex items-center justify-center mb-4 border border-amber-500/30">
+                04
+              </div>
+              <h3 className="text-sm font-bold text-white mb-1.5">24h Direct UPI Payout</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Once the host books, your 10% cash bonus is transferred straight to your registered UPI ID within 24 hours.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════════════════════════════════
+            6. FREQUENTLY ASKED QUESTIONS (ACCORDION)
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-4xl mb-24" id="faq">
           <div className="text-center mb-10">
             <span className="text-[11px] font-black uppercase tracking-widest text-emerald-400 block mb-1">
               GOT QUESTIONS?
@@ -763,10 +820,7 @@ You can test a free live demo and set up an event in 2 minutes:
             {FAQS.map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
-                <div
-                  key={idx}
-                  className="rounded-2xl bg-slate-900/70 border border-white/10 overflow-hidden transition-all"
-                >
+                <div key={idx} className="rounded-2xl bg-slate-900/70 border border-white/10 overflow-hidden transition-all">
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
                     className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-sm text-white hover:text-emerald-300 transition-colors cursor-pointer"
@@ -774,9 +828,7 @@ You can test a free live demo and set up an event in 2 minutes:
                     <span>{faq.q}</span>
                     <ChevronDown
                       size={18}
-                      className={`text-slate-400 transition-transform duration-300 shrink-0 ${
-                        isOpen ? 'rotate-180 text-emerald-400' : ''
-                      }`}
+                      className={`text-slate-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-emerald-400' : ''}`}
                     />
                   </button>
 
@@ -800,8 +852,10 @@ You can test a free live demo and set up an event in 2 minutes:
           </div>
         </section>
 
-        {/* ══════════════════════ 7. VIP WHATSAPP PARTNER DESK CTA ══════════════════════ */}
-        <section className="relative z-10 w-full max-w-4xl text-center">
+        {/* ══════════════════════════════════════════════════════════════
+            7. VIP WHATSAPP PARTNER DESK CTA
+        ══════════════════════════════════════════════════════════════ */}
+        <section className="w-full max-w-4xl text-center">
           <div className="bg-gradient-to-r from-emerald-950/80 via-slate-900 to-teal-950/80 border-2 border-emerald-500/40 rounded-3xl p-8 sm:p-12 space-y-5 shadow-[0_0_60px_rgba(16,185,129,0.15)] relative overflow-hidden">
             
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider">
