@@ -48,14 +48,15 @@ function AuthPageContent() {
         if (!name.trim()) {
           throw new Error('Full name is required for sign up.');
         }
-        const { error: signUpError } = await signUp(email, password, phone, name);
+        const refToken = searchParams.get('ref') || (typeof window !== 'undefined' ? localStorage.getItem('memento_ref_token') : null);
+        const { data: signUpData, error: signUpError } = await signUp(email, password, phone, name, refToken || undefined);
         if (signUpError) throw signUpError;
 
-        // Save active referral token to profile if registered via 1-click partner link
-        const refToken = searchParams.get('ref') || (typeof window !== 'undefined' ? localStorage.getItem('memento_ref_token') : null);
-        if (refToken && user) {
+        // Also attempt direct update if user ID is available immediately
+        const createdUserId = signUpData?.user?.id;
+        if (refToken && createdUserId) {
           try {
-            await supabase.from('profiles').update({ referred_by_partner_id: refToken.toUpperCase() }).eq('id', user.id);
+            await supabase.from('profiles').update({ referred_by_partner_id: refToken.toUpperCase() }).eq('id', createdUserId);
           } catch (refErr) {
             console.log('Referral token binding note:', refErr);
           }

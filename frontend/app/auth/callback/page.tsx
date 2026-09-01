@@ -21,13 +21,27 @@ function AuthCallbackContent() {
         
         // Ensure profile exists/updates
         const plan = searchParams.get('plan');
-        await supabase.from('profiles').upsert({
+        const refToken = searchParams.get('ref') || 
+          session.user.user_metadata?.referred_by_partner_id || 
+          (typeof window !== 'undefined' ? localStorage.getItem('memento_ref_token') : null);
+
+        const profilePayload: Record<string, any> = {
           id: session.user.id,
           full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
           email: session.user.email || '',
           plan: plan || 'starter',
           is_approved: true,
-        });
+        };
+
+        if (refToken) {
+          profilePayload.referred_by_partner_id = refToken.toUpperCase();
+        }
+
+        try {
+          await supabase.from('profiles').upsert(profilePayload);
+        } catch (e) {
+          console.warn('Profile upsert note in callback:', e);
+        }
 
         if (plan && plan !== 'starter') {
           router.push(`/checkout?plan=${plan}`);

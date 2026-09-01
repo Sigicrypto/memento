@@ -14,6 +14,7 @@ export interface UserProfile {
   is_approved: boolean;
   approval_status: 'PENDING' | 'APPROVED' | 'REJECTED';
   created_at: string;
+  referred_by_partner_id?: string;
 }
 
 export const useAuth = () => {
@@ -98,12 +99,16 @@ export const useAuth = () => {
   const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
 
-  const signUp = (email: string, password: string, phone?: string, fullName?: string) =>
+  const signUp = (email: string, password: string, phone?: string, fullName?: string, referredByPartnerId?: string) =>
     supabase.auth.signUp({ 
       email, 
       password, 
       options: { 
-        data: { phone: phone || '', full_name: fullName || '' },
+        data: { 
+          phone: phone || '', 
+          full_name: fullName || '',
+          referred_by_partner_id: (referredByPartnerId || '').toUpperCase()
+        },
         emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`
       } 
     });

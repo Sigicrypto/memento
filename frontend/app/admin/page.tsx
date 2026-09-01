@@ -82,6 +82,21 @@ export default function AdminPage() {
   // PWA Installation prompt state
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
+  // Referral partner assignment modal state
+  const [referralModal, setReferralModal] = useState<{
+    open: boolean;
+    userId: string;
+    userName: string;
+    currentCode: string;
+  }>({
+    open: false,
+    userId: '',
+    userName: '',
+    currentCode: '',
+  });
+  const [partnerInput, setPartnerInput] = useState('');
+  const [sqlBannerOpen, setSqlBannerOpen] = useState(false);
+
   useEffect(() => {
     const handler = (e: any) => {
       e.preventDefault();
@@ -191,11 +206,37 @@ export default function AdminPage() {
         }
       });
 
-      // Fetch verified promoter profiles
-      const { data: promotersData } = await supabase
-        .from('promoters')
-        .select('*')
-        .order('updated_at', { ascending: false });
+      // Fetch verified promoter profiles from resilient API & Supabase
+      let promotersData: any[] = [];
+      try {
+        const promRes = await fetch('/api/promoters');
+        const promJson = await promRes.json();
+        if (promJson?.promoters && Array.isArray(promJson.promoters)) {
+          promotersData = promJson.promoters;
+        }
+      } catch (promErr) {
+        console.warn('API promoters fetch note:', promErr);
+      }
+
+      // Also try direct Supabase table if available
+      try {
+        const { data: dbPromoters } = await supabase
+          .from('promoters')
+          .select('*')
+          .order('updated_at', { ascending: false });
+
+        if (dbPromoters && Array.isArray(dbPromoters)) {
+          // Merge unique promoters
+          const existingCodes = new Set(promotersData.map(p => (p.partner_code || '').toUpperCase()));
+          dbPromoters.forEach(p => {
+            if (p.partner_code && !existingCodes.has(p.partner_code.toUpperCase())) {
+              promotersData.push(p);
+            }
+          });
+        }
+      } catch (dbErr) {
+        // Table might not exist yet
+      }
 
       const promoterMap: Record<string, any> = {};
       const partnersMap: Record<string, PartnerLinkRow> = {};
@@ -391,6 +432,21 @@ export default function AdminPage() {
     if (err) { showToast('Failed: ' + err, 'error'); return; }
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
     showToast(`Role updated to ${newRole} ✅`);
+    fetchUsers();
+  };
+
+  const handleUpdateReferralPartner = async (userId: string, partnerCode: string) => {
+    const formattedCode = partnerCode ? partnerCode.trim().toUpperCase() : '';
+    const err = await updateUserProfile(userId, { 
+      referred_by_partner_id: formattedCode || undefined,
+    });
+    if (err) { 
+      showToast('Failed to update referral partner: ' + err, 'error'); 
+      return; 
+    }
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, referred_by_partner_id: formattedCode || undefined } : u));
+    showToast(formattedCode ? `Assigned to Partner ${formattedCode} ✅` : 'Referral partner unlinked');
+    setReferralModal({ open: false, userId: '', userName: '', currentCode: '' });
     fetchUsers();
   };
 
@@ -775,24 +831,30 @@ export default function AdminPage() {
                             {/* Referral Link & Promoter Badges */}
                             <div className="flex items-center gap-2 flex-wrap mt-1.5 font-mono text-[10px]">
                               <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold">
-                                🔗 Link: mymementoapp.com/join?ref=MEM-{u.id.substring(0, 4).toUpperCase()}
-                              </span>
-
-                              <span className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold">
-                                👥 Referrals Generated: {u.referrals_count || 0}
+                                🔗 Code: MEM-{u.id.substring(0, 4).toUpperCase()}
                               </span>
 
                               {u.promoter_upi && (
                                 <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-300 font-bold">
-                                  💳 UPI: {u.promoter_upi} {u.promoter_whatsapp && `| 📲 ${u.promoter_whatsapp}`}
+                                  💳 UPI: {u.promoter_upi}
                                 </span>
                               )}
 
-                              {u.referred_by_partner_id && (
-                                <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-bold">
-                                  🎁 Referred by: {u.referred_by_partner_id}
-                                </span>
-                              )}
+                              <button
+                                onClick={() => {
+                                  setReferralModal({
+                                    open: true,
+                                    userId: u.id,
+                                    userName: u.full_name || u.email,
+                                    currentCode: u.referred_by_partner_id || '',
+                                  });
+                                  setPartnerInput(u.referred_by_partner_id || '');
+                                }}
+                                className="px-2 py-0.5 rounded bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 font-bold transition text-[10px] cursor-pointer flex items-center gap-1"
+                                title="Click to assign or change referral partner code"
+                              >
+                                <span>{u.referred_by_partner_id ? `🎁 Referred By: ${u.referred_by_partner_id}` : '🏷️ Assign Partner'}</span>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -850,260 +912,531 @@ export default function AdminPage() {
           )}
 
           {/* ═══════════════════ 3.5 10% PARTNER PAYOUT DESK TAB ═══════════════════ */}
-          {activeTab === 'referrals' && (
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-black tracking-tight text-white mb-1 flex items-center gap-2">
-                    <span>10% Event Partner Desk & UPI Payouts</span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
-                      Active
-                    </span>
-                  </h2>
-                  <p className="text-xs text-slate-400">Review promoter registrations, verify host-vs-promoter anti-fraud checks, and release UPI cash transfers.</p>
-                </div>
-              </div>
+          {activeTab === 'referrals' && (() => {
+            const referredHostsList = users.filter(u => u.referred_by_partner_id);
+            const pendingPayoutsList = users.filter(u => u.referred_by_partner_id && (u.payment_status === 'paid' || (u.plan && u.plan !== 'FREE' && u.plan !== 'STARTER')));
+            const totalPendingAmount = pendingPayoutsList.reduce((sum, u) => {
+              const p = (u.plan || '').toUpperCase();
+              if (p === 'PREMIUM') return sum + 300;
+              if (p === 'PROFESSIONAL' || p === 'WHITELABEL' || p === 'PRO') return sum + 800;
+              return sum + 100;
+            }, 0);
 
-              {/* Stat Summary Row (Reset to 0) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className={cardClass}>
-                  <div className="p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PENDING PAYOUTS</p>
-                    <p className="text-2xl font-black text-amber-400 mt-1">₹0</p>
-                    <p className="text-[11px] text-slate-500 mt-1">0 bookings awaiting UPI transfer</p>
-                  </div>
-                </div>
-
-                <div className={cardClass}>
-                  <div className="p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">TOTAL PAID OUT</p>
-                    <p className="text-2xl font-black text-emerald-400 mt-1">₹0</p>
-                    <p className="text-[11px] text-slate-500 mt-1">0 referral transfers</p>
-                  </div>
-                </div>
-
-                <div className={cardClass}>
-                  <div className="p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">REGISTERED PROMOTERS</p>
-                    <p className="text-2xl font-black text-cyan-400 mt-1">{partnerLinks.length}</p>
-                    <p className="text-[11px] text-slate-500 mt-1">Active partner links & profiles</p>
-                  </div>
-                </div>
-
-                <div className={cardClass}>
-                  <div className="p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">SELF-REFERRALS BLOCKED</p>
-                    <p className="text-2xl font-black text-purple-400 mt-1">0</p>
-                    <p className="text-[11px] text-slate-500 mt-1">Protected by Anti-Fraud Shield</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Referral Redemptions Queue (Clean Reset State) */}
-              <div className={cardClass}>
-                <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Referral Bonus Queue (Credited within 24h)</h3>
-                  <span className="text-xs text-slate-400 font-mono">0 Records Found</span>
-                </div>
-
-                <div className="p-12 text-center flex flex-col items-center justify-center space-y-3">
-                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
-                    🤝
-                  </div>
-                  <h4 className="text-base font-bold text-white">No Pending Referral Payouts</h4>
-                  <p className="text-xs text-slate-400 max-w-md leading-relaxed">
-                    When new users register via partner links (`mymementoapp.com/join?ref=MEM-XXXX`) and complete bookings, 10% referral bonus payouts will appear here for 1-click UPI approval.
-                  </p>
-                </div>
-              </div>
-
-              {/* 🔗 Generated Unique Partner Referral Links Directory */}
-              <div className={cardClass}>
-                <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            return (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <span>Generated Partner Referral Links Directory</span>
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                        {partnerLinks.length} Active Partner Links
+                    <h2 className="text-2xl font-black tracking-tight text-white mb-1 flex items-center gap-2">
+                      <span>10% Event Partner Desk & UPI Payouts</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+                        Active
                       </span>
-                    </h3>
-                    <p className="text-xs text-slate-400">Complete master list of auto-generated 1-click referral links, promoter UPI IDs, and referred user counts.</p>
+                    </h2>
+                    <p className="text-xs text-slate-400">Review promoter registrations, verify host-vs-promoter anti-fraud checks, and release UPI cash transfers.</p>
                   </div>
-                </div>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs text-slate-300">
-                    <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-                      <tr>
-                        <th className="p-4">Partner Code & Name</th>
-                        <th className="p-4">1-Click Referral Link</th>
-                        <th className="p-4">Registered UPI & WhatsApp</th>
-                        <th className="p-4">Referred Hosts</th>
-                        <th className="p-4 text-right">Quick Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono">
-                      {partnerLinks.length === 0 ? (
-                        <tr>
-                          <td colSpan={5} className="p-8 text-center text-slate-500 text-xs font-sans">
-                            No partner referral links generated yet.
-                          </td>
-                        </tr>
-                      ) : (
-                        partnerLinks.map(p => {
-                          const refCode = p.code;
-                          const link = `https://mymementoapp.com/join?ref=${refCode}`;
-                          const cleanPhone = (p.whatsapp || '').replace(/[^0-9]/g, '');
-                          const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
-
-                          return (
-                            <tr key={p.code} className="hover:bg-slate-800/30 transition">
-                              <td className="p-4">
-                                <span className="font-bold text-emerald-400 block">{refCode}</span>
-                                <span className="text-[11px] text-white font-sans font-bold block">{p.name}</span>
-                                {p.email && <span className="text-[10px] text-slate-400 font-sans">{p.email}</span>}
-                              </td>
-
-                              <td className="p-4 font-mono text-slate-200">
-                                <span className="text-emerald-300 font-bold block text-[11px] break-all">{link}</span>
-                              </td>
-
-                              <td className="p-4 font-sans">
-                                {p.upi ? (
-                                  <>
-                                    <span className="font-bold text-purple-300 block">{p.upi}</span>
-                                    <span className="text-[11px] text-slate-400 block">{p.whatsapp || 'No phone'}</span>
-                                  </>
-                                ) : (
-                                  <span className="text-slate-500 text-[11px] italic">Link active (Pending UPI profile)</span>
-                                )}
-                              </td>
-
-                              <td className="p-4 font-sans">
-                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                                  (p.referrals_count || 0) > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
-                                }`}>
-                                  👥 {p.referrals_count || 0} Referred Host{(p.referrals_count || 0) !== 1 ? 's' : ''}
-                                </span>
-                                {p.referred_users && p.referred_users.length > 0 && (
-                                  <span className="text-[10px] text-slate-400 block mt-1">
-                                    {p.referred_users.slice(0, 2).join(', ')}{p.referred_users.length > 2 ? ` +${p.referred_users.length - 2} more` : ''}
-                                  </span>
-                                )}
-                              </td>
-
-                              <td className="p-4 text-right font-sans space-x-2">
-                                <button
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(link);
-                                    showToast('Referral link copied to clipboard! ✅');
-                                  }}
-                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition cursor-pointer"
-                                >
-                                  📋 Copy Link
-                                </button>
-
-                                {cleanPhone && (
-                                  <a
-                                    href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi ${p.name}! 👋 Here is your official Memento Partner Referral Link: ${link}`)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="px-2.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-[11px] hover:bg-emerald-400 transition inline-flex items-center gap-1"
-                                  >
-                                    📲 WhatsApp
-                                  </a>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* 📲 1-Tap WhatsApp Referral Bonus Dispatch Assistant */}
-              <div className={`${cardClass} p-5 space-y-4`}>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                      📲
+                    <button
+                      onClick={() => setSqlBannerOpen(!sqlBannerOpen)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span>🗄️ Database Setup</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (users.length > 0) {
+                          setReferralModal({
+                            open: true,
+                            userId: users[0].id,
+                            userName: users[0].full_name || users[0].email,
+                            currentCode: users[0].referred_by_partner_id || '',
+                          });
+                          setPartnerInput(users[0].referred_by_partner_id || '');
+                        }
+                      }}
+                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition cursor-pointer"
+                    >
+                      <span>🏷️ Tag / Assign Referral</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Optional Supabase SQL Schema Banner (Collapsible) */}
+                {sqlBannerOpen && (
+                  <div className="p-5 rounded-2xl bg-slate-900 border border-purple-500/40 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-purple-300 uppercase tracking-wider">
+                        Supabase PostgreSQL Migration Snippet
+                      </span>
+                      <button
+                        onClick={() => {
+                          const sql = `-- 1. Add referred_by_partner_id column to profiles
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS referred_by_partner_id text;
+
+-- 2. Create promoters table
+CREATE TABLE IF NOT EXISTS promoters (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    partner_code text UNIQUE NOT NULL,
+    full_name text,
+    whatsapp_number text,
+    upi_id text,
+    is_verified boolean DEFAULT false,
+    created_at timestamptz DEFAULT now(),
+    updated_at timestamptz DEFAULT now()
+);
+
+-- 3. Enable RLS
+ALTER TABLE promoters ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read promoters" ON promoters FOR SELECT USING (true);
+CREATE POLICY "Allow public insert promoters" ON promoters FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update promoters" ON promoters FOR UPDATE USING (true);`;
+                          navigator.clipboard.writeText(sql);
+                          showToast('SQL snippet copied to clipboard! ✅');
+                        }}
+                        className="px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 text-xs font-bold transition"
+                      >
+                        📋 Copy SQL
+                      </button>
                     </div>
+                    <p className="text-[11px] text-slate-400">
+                      Paste this SQL in your <strong>Supabase SQL Editor</strong> to create the <code>promoters</code> table and <code>referred_by_partner_id</code> column in PostgreSQL.
+                    </p>
+                  </div>
+                )}
+
+                {/* Stat Summary Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className={cardClass}>
+                    <div className="p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PENDING PAYOUTS</p>
+                      <p className="text-2xl font-black text-amber-400 mt-1">₹{totalPendingAmount.toLocaleString()}</p>
+                      <p className="text-[11px] text-slate-500 mt-1">{pendingPayoutsList.length} bookings ready for UPI transfer</p>
+                    </div>
+                  </div>
+
+                  <div className={cardClass}>
+                    <div className="p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">TOTAL REFERRED HOSTS</p>
+                      <p className="text-2xl font-black text-emerald-400 mt-1">{referredHostsList.length}</p>
+                      <p className="text-[11px] text-slate-500 mt-1">Signed up with partner codes</p>
+                    </div>
+                  </div>
+
+                  <div className={cardClass}>
+                    <div className="p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">REGISTERED PROMOTERS</p>
+                      <p className="text-2xl font-black text-cyan-400 mt-1">{partnerLinks.length}</p>
+                      <p className="text-[11px] text-slate-500 mt-1">Active partner links & profiles</p>
+                    </div>
+                  </div>
+
+                  <div className={cardClass}>
+                    <div className="p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">CONVERTED DEALS</p>
+                      <p className="text-2xl font-black text-purple-400 mt-1">{pendingPayoutsList.length}</p>
+                      <p className="text-[11px] text-slate-500 mt-1">Paid referral bookings</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 1. Referral Redemptions & Bonus Queue */}
+                <div className={cardClass}>
+                  <div className="p-5 border-b border-slate-800 flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider">Automated WhatsApp Referral Bonus Dispatcher</h4>
-                      <p className="text-[11px] text-slate-400">Instantly send 1-click WhatsApp bonus credit alerts to ambassadors</p>
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <span>Referral Bonus Queue (Credited within 24h)</span>
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold">
+                          {pendingPayoutsList.length} Pending Approval
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-400">10% cash referral bonus due for paid bookings.</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-bold border border-emerald-500/30">
-                    Instant WhatsApp Dispatch
-                  </span>
+
+                  {pendingPayoutsList.length === 0 ? (
+                    <div className="p-10 text-center flex flex-col items-center justify-center space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                        🤝
+                      </div>
+                      <h4 className="text-sm font-bold text-white">No Pending Referral Payouts</h4>
+                      <p className="text-xs text-slate-400 max-w-md leading-relaxed">
+                        When users register via partner links (<code>mymementoapp.com/join?ref=MEM-XXXX</code>) and complete bookings, 10% referral bonus payouts appear here for 1-click UPI approval.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs text-slate-300">
+                        <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                          <tr>
+                            <th className="p-4">Referred Host</th>
+                            <th className="p-4">Referred By (Partner)</th>
+                            <th className="p-4">Plan & Status</th>
+                            <th className="p-4">10% Commission</th>
+                            <th className="p-4">Partner UPI ID</th>
+                            <th className="p-4 text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/60 font-mono">
+                          {pendingPayoutsList.map(u => {
+                            const bonus = (u.plan || '').toUpperCase() === 'PREMIUM' ? 300 : (u.plan || '').toUpperCase() === 'WHITELABEL' || (u.plan || '').toUpperCase() === 'PRO' ? 800 : 100;
+                            const partnerCode = (u.referred_by_partner_id || '').toUpperCase();
+                            const partnerInfo = partnerLinks.find(p => p.code === partnerCode);
+
+                            return (
+                              <tr key={u.id} className="hover:bg-slate-800/30 transition">
+                                <td className="p-4 font-sans">
+                                  <span className="font-bold text-white block">{u.full_name || 'Host'}</span>
+                                  <span className="text-[11px] text-slate-400 font-mono">{u.email}</span>
+                                </td>
+
+                                <td className="p-4">
+                                  <span className="font-bold text-emerald-400 block">{partnerCode}</span>
+                                  <span className="text-[11px] text-white font-sans">{partnerInfo?.name || u.promoter_name || 'Affiliate Partner'}</span>
+                                </td>
+
+                                <td className="p-4 font-sans">
+                                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 text-[10px]">
+                                    {u.plan}
+                                  </span>
+                                  <span className="text-[10px] text-emerald-400 block mt-1">💎 {u.payment_status}</span>
+                                </td>
+
+                                <td className="p-4">
+                                  <span className="text-base font-black text-amber-300">₹{bonus}</span>
+                                  <span className="text-[10px] text-slate-400 font-sans block">10% of deal</span>
+                                </td>
+
+                                <td className="p-4 font-sans">
+                                  {partnerInfo?.upi || u.promoter_upi ? (
+                                    <>
+                                      <span className="font-bold text-purple-300 font-mono block">{partnerInfo?.upi || u.promoter_upi}</span>
+                                      <span className="text-[10px] text-slate-400">{partnerInfo?.whatsapp || u.promoter_whatsapp || 'No phone'}</span>
+                                    </>
+                                  ) : (
+                                    <span className="text-slate-500 text-[11px] italic">Pending UPI profile</span>
+                                  )}
+                                </td>
+
+                                <td className="p-4 text-right font-sans space-x-2">
+                                  <button
+                                    onClick={() => {
+                                      if (partnerInfo?.upi || u.promoter_upi) {
+                                        navigator.clipboard.writeText(partnerInfo?.upi || u.promoter_upi || '');
+                                        showToast('UPI ID copied to clipboard! ✅');
+                                      } else {
+                                        showToast('Partner has not registered UPI yet', 'error');
+                                      }
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition"
+                                  >
+                                    📋 Copy UPI
+                                  </button>
+
+                                  <button
+                                    onClick={() => {
+                                      setReferralModal({
+                                        open: true,
+                                        userId: u.id,
+                                        userName: u.full_name || u.email,
+                                        currentCode: u.referred_by_partner_id || '',
+                                      });
+                                      setPartnerInput(u.referred_by_partner_id || '');
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] transition"
+                                  >
+                                    ✏️ Edit
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ambassador WhatsApp Phone</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 9876543210"
-                      id="notifyPhone"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
-                    />
+                {/* 2. Referred Host Signups Directory */}
+                <div className={cardClass}>
+                  <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <span>Referred Host Signups Directory</span>
+                        <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-bold">
+                          {referredHostsList.length} Referred Accounts
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-400">All registered users tagged with an active referral partner code.</p>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ambassador Name</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Rahul Sharma"
-                      id="notifyName"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500"
-                    />
-                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-slate-300">
+                      <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                        <tr>
+                          <th className="p-4">Referred Host</th>
+                          <th className="p-4">Referred By Partner</th>
+                          <th className="p-4">Plan & Status</th>
+                          <th className="p-4">10% Bonus Potential</th>
+                          <th className="p-4">Registered Date</th>
+                          <th className="p-4 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60 font-mono">
+                        {referredHostsList.length === 0 ? (
+                          <tr>
+                            <td colSpan={6} className="p-8 text-center text-slate-500 text-xs font-sans">
+                              No referred host signups found yet. Click <strong>"Tag / Assign Referral"</strong> above to link any user to a partner code.
+                            </td>
+                          </tr>
+                        ) : (
+                          referredHostsList.map(u => {
+                            const partnerCode = (u.referred_by_partner_id || '').toUpperCase();
+                            const partnerInfo = partnerLinks.find(p => p.code === partnerCode);
+                            const bonus = (u.plan || '').toUpperCase() === 'PREMIUM' ? 300 : (u.plan || '').toUpperCase() === 'WHITELABEL' || (u.plan || '').toUpperCase() === 'PRO' ? 800 : 100;
 
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referred Event & Host</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Ananya Wedding (Vikram)"
-                      id="notifyEvent"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500"
-                    />
-                  </div>
+                            return (
+                              <tr key={u.id} className="hover:bg-slate-800/30 transition">
+                                <td className="p-4 font-sans">
+                                  <span className="font-bold text-white block">{u.full_name || 'Host'}</span>
+                                  <span className="text-[11px] text-slate-400 font-mono">{u.email}</span>
+                                  {u.phone && <span className="text-[10px] text-slate-500 font-mono block">{u.phone}</span>}
+                                </td>
 
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referral Bonus (₹)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 300"
-                      id="notifyBonus"
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
-                    />
+                                <td className="p-4">
+                                  <span className="font-bold text-emerald-400 block">{partnerCode}</span>
+                                  <span className="text-[11px] text-white font-sans">{partnerInfo?.name || 'Affiliate Partner'}</span>
+                                </td>
+
+                                <td className="p-4 font-sans">
+                                  <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30 text-[10px]">
+                                    {u.plan}
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 block mt-1">Status: {u.payment_status}</span>
+                                </td>
+
+                                <td className="p-4">
+                                  <span className="text-sm font-black text-amber-300">₹{bonus}</span>
+                                  <span className="text-[10px] text-slate-400 font-sans block">{u.payment_status === 'paid' ? 'Eligible for Payout' : 'Pending Booking'}</span>
+                                </td>
+
+                                <td className="p-4 text-slate-400 text-[11px] font-sans">
+                                  {u.created_at ? new Date(u.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent'}
+                                </td>
+
+                                <td className="p-4 text-right font-sans space-x-2">
+                                  <button
+                                    onClick={() => {
+                                      setReferralModal({
+                                        open: true,
+                                        userId: u.id,
+                                        userName: u.full_name || u.email,
+                                        currentCode: u.referred_by_partner_id || '',
+                                      });
+                                      setPartnerInput(u.referred_by_partner_id || '');
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] transition"
+                                  >
+                                    ✏️ Change Partner
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-2">
-                  <button
-                    onClick={() => {
-                      const phone = (document.getElementById('notifyPhone') as HTMLInputElement)?.value || '919866161775';
-                      const name = (document.getElementById('notifyName') as HTMLInputElement)?.value || 'Ambassador';
-                      const event = (document.getElementById('notifyEvent') as HTMLInputElement)?.value || 'Hosted Event';
-                      const bonus = (document.getElementById('notifyBonus') as HTMLInputElement)?.value || '300';
+                {/* 3. Generated Partner Referral Links Directory */}
+                <div className={cardClass}>
+                  <div className="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <span>Generated Partner Referral Links Directory</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                          {partnerLinks.length} Active Partner Links
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-400">Complete master list of auto-generated 1-click referral links, promoter UPI IDs, and referred user counts.</p>
+                    </div>
+                  </div>
 
-                      const cleanPhone = phone.replace(/[^0-9]/g, '');
-                      const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
-                      const text = `🎉 Congratulations ${name}! Host ${event} just completed booking using your 1-Click Referral Link! Your ₹${bonus} Referral Bonus has been approved & queued for 24h UPI transfer. Thank you for partnering with Memento! 🚀`;
-                      
-                      window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`, '_blank');
-                    }}
-                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
-                  >
-                    <span>📲 Dispatch 1-Click WhatsApp Bonus Alert</span>
-                  </button>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-slate-300">
+                      <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+                        <tr>
+                          <th className="p-4">Partner Code & Name</th>
+                          <th className="p-4">1-Click Referral Link</th>
+                          <th className="p-4">Registered UPI & WhatsApp</th>
+                          <th className="p-4">Referred Hosts</th>
+                          <th className="p-4 text-right">Quick Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60 font-mono">
+                        {partnerLinks.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="p-8 text-center text-slate-500 text-xs font-sans">
+                              No partner referral links generated yet.
+                            </td>
+                          </tr>
+                        ) : (
+                          partnerLinks.map(p => {
+                            const refCode = p.code;
+                            const link = `https://mymementoapp.com/join?ref=${refCode}`;
+                            const cleanPhone = (p.whatsapp || '').replace(/[^0-9]/g, '');
+                            const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+
+                            return (
+                              <tr key={p.code} className="hover:bg-slate-800/30 transition">
+                                <td className="p-4">
+                                  <span className="font-bold text-emerald-400 block">{refCode}</span>
+                                  <span className="text-[11px] text-white font-sans font-bold block">{p.name}</span>
+                                  {p.email && <span className="text-[10px] text-slate-400 font-sans">{p.email}</span>}
+                                </td>
+
+                                <td className="p-4 font-mono text-slate-200">
+                                  <span className="text-emerald-300 font-bold block text-[11px] break-all">{link}</span>
+                                </td>
+
+                                <td className="p-4 font-sans">
+                                  {p.upi ? (
+                                    <>
+                                      <span className="font-bold text-purple-300 block">{p.upi}</span>
+                                      <span className="text-[11px] text-slate-400 block">{p.whatsapp || 'No phone'}</span>
+                                    </>
+                                  ) : (
+                                    <span className="text-slate-500 text-[11px] italic">Link active (Pending UPI profile)</span>
+                                  )}
+                                </td>
+
+                                <td className="p-4 font-sans">
+                                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                    (p.referrals_count || 0) > 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                                  }`}>
+                                    👥 {p.referrals_count || 0} Referred Host{(p.referrals_count || 0) !== 1 ? 's' : ''}
+                                  </span>
+                                  {p.referred_users && p.referred_users.length > 0 && (
+                                    <span className="text-[10px] text-slate-400 block mt-1">
+                                      {p.referred_users.slice(0, 2).join(', ')}{p.referred_users.length > 2 ? ` +${p.referred_users.length - 2} more` : ''}
+                                    </span>
+                                  )}
+                                </td>
+
+                                <td className="p-4 text-right font-sans space-x-2">
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(link);
+                                      showToast('Referral link copied to clipboard! ✅');
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition cursor-pointer"
+                                  >
+                                    📋 Copy Link
+                                  </button>
+
+                                  {cleanPhone && (
+                                    <a
+                                      href={`https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi ${p.name}! 👋 Here is your official Memento Partner Referral Link: ${link}`)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="px-2.5 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold text-[11px] hover:bg-emerald-400 transition inline-flex items-center gap-1"
+                                    >
+                                      📲 WhatsApp
+                                    </a>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* 4. Automated WhatsApp Referral Bonus Dispatch Assistant */}
+                <div className={`${cardClass} p-5 space-y-4`}>
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                        📲
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Automated WhatsApp Referral Bonus Dispatcher</h4>
+                        <p className="text-[11px] text-slate-400">Instantly send 1-click WhatsApp bonus credit alerts to ambassadors</p>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-bold border border-emerald-500/30">
+                      Instant WhatsApp Dispatch
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ambassador WhatsApp Phone</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 9876543210"
+                        id="notifyPhone"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ambassador Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Rahul Sharma"
+                        id="notifyName"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referred Event & Host</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Ananya Wedding (Vikram)"
+                        id="notifyEvent"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Referral Bonus (₹)</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. 300"
+                        id="notifyBonus"
+                        className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-2">
+                    <button
+                      onClick={() => {
+                        const phone = (document.getElementById('notifyPhone') as HTMLInputElement)?.value || '919866161775';
+                        const name = (document.getElementById('notifyName') as HTMLInputElement)?.value || 'Ambassador';
+                        const event = (document.getElementById('notifyEvent') as HTMLInputElement)?.value || 'Hosted Event';
+                        const bonus = (document.getElementById('notifyBonus') as HTMLInputElement)?.value || '300';
+
+                        const cleanPhone = phone.replace(/[^0-9]/g, '');
+                        const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+                        const text = `🎉 Congratulations ${name}! Host ${event} just completed booking using your 1-Click Referral Link! Your ₹${bonus} Referral Bonus has been approved & queued for 24h UPI transfer. Thank you for partnering with Memento! 🚀`;
+                        
+                        window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`, '_blank');
+                      }}
+                      className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
+                    >
+                      <span>📲 Dispatch 1-Click WhatsApp Bonus Alert</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ═══════════════════ 4. SOCIAL AUTO-PILOT TAB ═══════════════════ */}
           {activeTab === 'social' && (
@@ -1156,6 +1489,100 @@ export default function AdminPage() {
 
         </main>
       </div>
+
+      {/* ── Referral Partner Assignment Modal ── */}
+      {referralModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <span>🏷️ Assign Referral Partner</span>
+              </h3>
+              <button
+                onClick={() => setReferralModal({ open: false, userId: '', userName: '', currentCode: '' })}
+                className="text-slate-400 hover:text-white text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Host User:</span>
+                <p className="text-sm font-bold text-white mt-0.5">{referralModal.userName}</p>
+              </div>
+
+              <div>
+                <label className="text-[11px] text-slate-400 uppercase font-bold tracking-wider block mb-1.5">
+                  Partner Referral Code:
+                </label>
+                <input
+                  type="text"
+                  value={partnerInput}
+                  onChange={(e) => setPartnerInput(e.target.value.toUpperCase())}
+                  placeholder="e.g. MEM-9DCA or MEM-2H9C"
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-sm uppercase outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              {partnerLinks.length > 0 && (
+                <div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">
+                    Quick Pick Active Partner:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
+                    {partnerLinks.map(p => (
+                      <button
+                        key={p.code}
+                        type="button"
+                        onClick={() => setPartnerInput(p.code)}
+                        className={`px-2 py-1 rounded-lg text-[10px] font-mono font-bold border transition ${
+                          partnerInput === p.code
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500'
+                            : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-600'
+                        }`}
+                      >
+                        {p.code} ({p.name?.split(' ')[0]})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+              {referralModal.currentCode ? (
+                <button
+                  type="button"
+                  onClick={() => handleUpdateReferralPartner(referralModal.userId, '')}
+                  className="px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/30 transition cursor-pointer"
+                >
+                  Unlink Partner
+                </button>
+              ) : (
+                <div />
+              )}
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setReferralModal({ open: false, userId: '', userName: '', currentCode: '' })}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleUpdateReferralPartner(referralModal.userId, partnerInput)}
+                  className="px-4 py-2 rounded-xl text-xs font-black text-slate-950 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 transition cursor-pointer shadow-lg shadow-emerald-500/20"
+                >
+                  Save & Link Partner
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Bottom Navigation Bar for One-Thumb Switching */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 border-t border-slate-800 backdrop-blur-xl px-2 py-2 flex items-center justify-around">
