@@ -26,9 +26,9 @@ export default function BrandingFeaturePage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-24 md:pb-32 flex flex-col items-center">
         {/* HEADER */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 pt-8 pb-12 text-center animate-fade-in">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 pt-4 pb-16 md:pb-20 text-center animate-fade-in">
           <div className="mb-6 flex justify-center">
             <Link
               href="/features"
@@ -70,7 +70,7 @@ export default function BrandingFeaturePage() {
         </section>
 
         {/* 4 CORE ADVANTAGES */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-10">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-xl bg-pink-500/10 text-pink-600 flex items-center justify-center mb-4 mx-auto">
@@ -78,7 +78,7 @@ export default function BrandingFeaturePage() {
               </div>
               <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Couple Names & Monograms</h3>
               <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Add your names, wedding date, monogram crest, and custom hashtags directly onto the live display banner and guest upload header.
+                Overlay elegant calligraphic typography or minimalist modern wedding crests across the mobile camera and live presentation wall.
               </p>
             </div>
 
@@ -86,9 +86,9 @@ export default function BrandingFeaturePage() {
               <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-4 mx-auto">
                 <Building2 size={24} />
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Corporate Sponsor Overlays</h3>
+              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Corporate Sponsor Banners</h3>
               <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Seamlessly display title sponsor logos, booth numbers, and product promo banners around the presentation border for high-ROI event visibility.
+                Display rotating sponsor logos, booth signage, and event hashtags. Perfect for tech conferences, summits, and executive dinners.
               </p>
             </div>
 
@@ -96,17 +96,17 @@ export default function BrandingFeaturePage() {
               <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-4 mx-auto">
                 <Sliders size={24} />
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Tailored Color Accents</h3>
+              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Custom Hex Palette</h3>
               <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Match your wedding floral palette or brand style guide. Choose from curated gold, rose, emerald, midnight, and custom hex accents.
+                Match your exact wedding invitations or brand guide with custom primary and accent hex color styling on all guest touchpoints.
               </p>
             </div>
 
             <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-4 mx-auto">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4 mx-auto">
                 <Globe size={24} />
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">100% White-Label Domain</h3>
+              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">White-Label Custom Subdomains</h3>
               <p className="text-text-secondary text-sm leading-relaxed text-center">
                 For planners and agencies: map your own CNAME record (e.g. live.yourstudio.com). Remove all Memento branding so clients think you built it.
               </p>
@@ -115,7 +115,7 @@ export default function BrandingFeaturePage() {
         </section>
 
         {/* RELATED FEATURES */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12 border-t border-border mt-12 text-center flex flex-col items-center">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24 border-t border-border mt-16 text-center flex flex-col items-center">
           <h3 className="text-xl font-bold text-text-primary font-display mb-6 text-center">
             Explore More Capabilities
           </h3>

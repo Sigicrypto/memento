@@ -78,9 +78,9 @@ export default function WeddingsPage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-24 md:pb-32 flex flex-col items-center">
         {/* HERO */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 text-center pt-8 pb-16 animate-fade-in">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 text-center pt-4 pb-20 md:pb-24 animate-fade-in">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-500/10 border border-pink-500/25 text-pink-700 text-xs font-mono font-bold uppercase tracking-wider mb-6">
             <Heart size={14} className="fill-pink-600 text-pink-600" />
             Weddings & Sangeet Celebrations
@@ -111,7 +111,7 @@ export default function WeddingsPage() {
         </section>
 
         {/* 4-STEP WEDDING FLOW */}
-        <section className="w-full max-w-6xl mx-auto px-4 md:px-8 py-12 text-center flex flex-col items-center">
+        <section className="w-full max-w-6xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center flex flex-col items-center">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-black text-text-primary text-center">
               How Wedding Memento Works
@@ -147,7 +147,7 @@ export default function WeddingsPage() {
         </section>
 
         {/* PEACE OF MIND FEATURES */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24">
           <div className="bg-bg-subtle border border-border rounded-3xl p-8 sm:p-12">
             <div className="text-center max-w-xl mx-auto mb-10">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-accent">
@@ -174,7 +174,7 @@ export default function WeddingsPage() {
         </section>
 
         {/* BOTTOM CTA */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12 text-center">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
           <div className="bg-gradient-to-r from-pink-500/10 via-accent/15 to-rose-500/10 border border-accent/25 rounded-3xl p-8 sm:p-12">
             <h2 className="text-2xl sm:text-4xl font-black text-text-primary">
               Ready to Collect Every Wedding Memory?

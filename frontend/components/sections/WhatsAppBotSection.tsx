@@ -7,7 +7,7 @@ import SectionHeader from '@/components/sections/SectionHeader';
 
 export default function WhatsAppBotSection() {
   return (
-    <section className="py-20 md:py-24 relative z-10 w-full flex flex-col items-center justify-center border-y border-border bg-bg">
+    <section className="py-20 md:py-28 relative z-10 w-full flex flex-col items-center justify-center border-b border-border bg-bg">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
         <SectionHeader 
           title="Frictionless Entry via WhatsApp"

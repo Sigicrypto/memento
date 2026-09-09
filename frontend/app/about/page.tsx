@@ -50,9 +50,9 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-bg text-text-primary flex flex-col items-center w-full">
       <ThemedNav />
-      <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 flex flex-col items-center text-center">
+      <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 sm:pt-44 pb-28 md:pb-36 flex flex-col items-center text-center">
         {/* HERO */}
-        <section className="w-full text-center pb-16 flex flex-col items-center">
+        <section className="w-full text-center pb-20 md:pb-24 flex flex-col items-center">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-6 mx-auto">
             <Rocket size={14} className="text-accent" />
             An Early-Stage Event-Tech Startup
@@ -66,7 +66,7 @@ export default function AboutPage() {
         </section>
 
         {/* ORIGIN STORY */}
-        <section className="w-full py-10 flex flex-col items-center text-center">
+        <section className="w-full py-16 md:py-24 flex flex-col items-center text-center">
           <div className="bg-surface border border-border rounded-3xl p-8 sm:p-12 shadow-card grid grid-cols-1 md:grid-cols-2 gap-10 items-center text-center w-full">
             <div className="flex flex-col items-center text-center">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-accent mx-auto">
@@ -131,7 +131,7 @@ export default function AboutPage() {
         </section>
 
         {/* STARTUP PRINCIPLES & PRODUCT GUARANTEES */}
-        <section className="w-full py-12 flex flex-col items-center text-center">
+        <section className="w-full py-16 md:py-24 flex flex-col items-center text-center">
           <div className="text-center mb-10 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-black text-text-primary font-display text-center">
               Our Startup Product Standards
@@ -164,7 +164,7 @@ export default function AboutPage() {
         </section>
 
         {/* CALL TO ACTION */}
-        <section className="w-full py-12 text-center flex flex-col items-center">
+        <section className="w-full py-16 md:py-24 text-center flex flex-col items-center">
           <div className="bg-gradient-to-b from-bg-subtle to-surface border border-border rounded-3xl p-8 sm:p-12 shadow-card w-full max-w-3xl flex flex-col items-center text-center">
             <h2 className="text-2xl sm:text-4xl font-black text-text-primary font-display text-center">
               Ready for a Fresh Event Experience?

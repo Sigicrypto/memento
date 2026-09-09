@@ -42,7 +42,7 @@ export default function EmotionalValueSection() {
   ];
 
   return (
-    <section className="w-full py-20 px-4 md:px-8 bg-bg-subtle flex flex-col items-center justify-center">
+    <section className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg-subtle border-b border-border flex flex-col items-center justify-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
         
         <span className="inline-block px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold tracking-wider uppercase mb-4">

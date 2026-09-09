@@ -53,7 +53,7 @@ export default function Pricing({ isEmbedded = false, eventId }: PricingProps) {
   ];
 
   return (
-    <div className={`w-full ${isEmbedded ? "py-20 md:py-24" : "py-24"} bg-bg flex flex-col items-center justify-center text-center`}>
+    <div className={`w-full ${isEmbedded ? "py-20 md:py-28" : "pt-36 sm:pt-44 pb-24 md:pb-32"} bg-bg flex flex-col items-center justify-center text-center`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col items-center text-center">
         {/* Centered Pricing Header */}
         <div className="text-center mb-14 max-w-3xl mx-auto flex flex-col items-center">
@@ -91,7 +91,7 @@ export default function Pricing({ isEmbedded = false, eventId }: PricingProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl w-full mx-auto mb-16 pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl w-full mx-auto mb-20 pt-4">
           {GUEST_TIERS.map((tier) => (
             <div
               key={tier.id}
@@ -177,7 +177,7 @@ export default function Pricing({ isEmbedded = false, eventId }: PricingProps) {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto mb-20">
+        <div className="max-w-5xl mx-auto mb-24">
           <h2 className="text-3xl font-display font-bold text-center text-text-primary mb-10">
             Compare Event Tiers
           </h2>
@@ -219,7 +219,7 @@ export default function Pricing({ isEmbedded = false, eventId }: PricingProps) {
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto w-full text-center">
+        <div className="max-w-3xl mx-auto w-full text-center pb-8 md:pb-12">
           <h2 className="text-3xl font-display font-bold text-center text-text-primary mb-10 mx-auto">
             Why Per-Event?
           </h2>

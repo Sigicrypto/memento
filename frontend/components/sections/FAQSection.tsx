@@ -79,7 +79,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="w-full py-20 px-4 md:px-8 bg-bg flex flex-col items-center justify-center text-center">
+    <section id="faq" className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg border-b border-border flex flex-col items-center justify-center text-center">
       <div className="max-w-3xl w-full mx-auto flex flex-col items-center text-center">
         
         <span className="px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase mb-4 mx-auto">

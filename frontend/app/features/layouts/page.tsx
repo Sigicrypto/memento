@@ -27,9 +27,9 @@ export default function LayoutsFeaturePage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-24 md:pb-32 flex flex-col items-center">
         {/* HEADER */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 pt-8 pb-12 text-center animate-fade-in">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 pb-16 md:pb-20 text-center animate-fade-in">
           <div className="mb-6 flex justify-center">
             <Link
               href="/features"
@@ -71,52 +71,54 @@ export default function LayoutsFeaturePage() {
         </section>
 
         {/* 4 CORE LAYOUTS */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-4 mx-auto">
-                <Layers size={24} />
+        <section className="w-full bg-bg-subtle border-y border-border py-16 md:py-24">
+          <div className="max-w-5xl mx-auto px-4 md:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-4 mx-auto">
+                  <Layers size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Floating Polaroid Cards</h3>
+                <p className="text-text-secondary text-sm leading-relaxed text-center">
+                  Nostalgic retro charm. Photos float onto the screen styled as Polaroid prints with drop shadows, organic rotation angles, and guest captions.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Floating Polaroid Cards</h3>
-              <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Nostalgic retro charm. Photos float onto the screen styled as Polaroid prints with drop shadows, organic rotation angles, and guest captions.
-              </p>
-            </div>
 
-            <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-4 mx-auto">
-                <Grid size={24} />
+              <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-4 mx-auto">
+                  <Grid size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Dynamic Masonry Wall</h3>
+                <p className="text-text-secondary text-sm leading-relaxed text-center">
+                  Dense, high-energy photo mosaic. Intelligently calculates aspect ratios across portrait, landscape, and square uploads with smooth reflow animations.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Dynamic Masonry Wall</h3>
-              <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Dense, high-energy photo mosaic. Intelligently calculates aspect ratios across portrait, landscape, and square uploads with smooth reflow animations.
-              </p>
-            </div>
 
-            <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-4 mx-auto">
-                <Sparkles size={24} />
+              <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-xl bg-accent/10 text-accent flex items-center justify-center mb-4 mx-auto">
+                  <Sparkles size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Cinematic Ken Burns Slideshow</h3>
+                <p className="text-text-secondary text-sm leading-relaxed text-center">
+                  Smooth cinematic pan-and-zoom transitions. Ideal for wedding dinner banquets, black-tie galas, and romantic couple spotlight sessions.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Cinematic Ken Burns Slideshow</h3>
-              <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Smooth cinematic pan-and-zoom transitions. Ideal for wedding dinner banquets, black-tie galas, and romantic couple spotlight sessions.
-              </p>
-            </div>
 
-            <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4 mx-auto">
-                <Maximize2 size={24} />
+              <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4 mx-auto">
+                  <Maximize2 size={24} />
+                </div>
+                <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Full-Screen Spotlight Mode</h3>
+                <p className="text-text-secondary text-sm leading-relaxed text-center">
+                  Whenever a new photo arrives, it flashes full-screen for 5 seconds with uploader name before smoothly sliding into the ongoing live gallery stream.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-2 text-center">Full-Screen Spotlight Mode</h3>
-              <p className="text-text-secondary text-sm leading-relaxed text-center">
-                Whenever a new photo arrives, it flashes full-screen for 5 seconds with uploader name before smoothly sliding into the ongoing live gallery stream.
-              </p>
             </div>
           </div>
         </section>
 
         {/* RELATED FEATURES */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12 border-t border-border mt-12 text-center flex flex-col items-center">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center flex flex-col items-center">
           <h3 className="text-xl font-bold text-text-primary font-display mb-6 text-center">
             Explore More Capabilities
           </h3>

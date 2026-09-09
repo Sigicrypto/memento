@@ -30,7 +30,7 @@ export default function CookiePolicyPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="w-full max-w-4xl mx-auto px-4 md:px-8 pt-32 pb-20">
+      <main className="w-full max-w-4xl mx-auto px-4 md:px-8 pt-36 sm:pt-44 pb-24 md:pb-32">
         <div className="text-center mb-12">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-4">
             <Cookie size={14} />

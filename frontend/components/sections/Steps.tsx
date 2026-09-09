@@ -43,7 +43,7 @@ export default function Steps() {
   ];
 
   return (
-    <section id="how-it-works" className="w-full py-20 px-4 md:px-8 bg-bg-subtle flex flex-col items-center justify-center">
+    <section id="how-it-works" className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg border-b border-border flex flex-col items-center justify-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
         
         <span className="bg-primary/10 border border-primary/20 text-primary rounded-full uppercase tracking-wider text-xs font-bold px-3.5 py-1 mb-4">

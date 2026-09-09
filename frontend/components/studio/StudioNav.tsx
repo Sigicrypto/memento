@@ -14,7 +14,7 @@ export default function StudioNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-50 bg-surface/95 backdrop-blur-md border-b border-border">
+    <nav className="sticky top-0 z-50 w-full bg-surface/95 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}

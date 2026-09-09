@@ -14,7 +14,7 @@ export default function DSLRGuidePage() {
     <div className="min-h-screen bg-bg text-text-primary flex flex-col items-center w-full">
       <ThemedNav />
 
-      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-32 pb-24 flex flex-col items-center text-center">
+      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-36 sm:pt-44 pb-28 md:pb-36 flex flex-col items-center text-center">
         {/* Breadcrumb */}
         <div className="w-full flex justify-center mb-8">
           <Link

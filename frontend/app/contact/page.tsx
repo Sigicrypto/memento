@@ -86,10 +86,10 @@ export default function ContactPage() {
   return (
     <>
       <ThemedNav />
-      <div className="min-h-screen bg-bg text-text-primary pt-28 pb-20 px-4 md:px-8 flex flex-col items-center">
+      <div className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-28 md:pb-36 px-4 md:px-8 flex flex-col items-center">
         <div className="max-w-4xl w-full mx-auto">
           {/* Header */}
-          <div className="text-center mb-12 animate-fade-in">
+          <div className="text-center mb-16 animate-fade-in">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-4">
               <MessageSquare size={14} />
               Instant Event Consultation

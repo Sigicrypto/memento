@@ -124,7 +124,7 @@ function CheckoutContent() {
       </nav>
 
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen pt-24 pb-10 px-3.5 sm:px-6">
+      <div className="relative z-10 flex items-center justify-center min-h-screen pt-28 sm:pt-36 pb-16 md:pb-24 px-3.5 sm:px-6">
         {status === 'IDLE' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

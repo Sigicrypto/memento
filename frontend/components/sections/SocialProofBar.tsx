@@ -32,7 +32,7 @@ export default function SocialProofBar() {
   ];
 
   return (
-    <section className="w-full py-10 px-4 md:px-8 bg-surface border-y border-border flex flex-col items-center justify-center">
+    <section className="w-full py-12 md:py-14 px-4 md:px-8 bg-surface border-y border-border flex flex-col items-center justify-center">
       <div className="max-w-6xl w-full mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {highlights.map((item, index) => {

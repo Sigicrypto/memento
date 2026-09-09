@@ -304,7 +304,7 @@ export default function CreateEventPage() {
       </nav>
 
       {/* Main Container: Realigned Split Grid */}
-      <main className="max-w-6xl mx-auto pt-24 pb-16 px-4 sm:px-6">
+      <main className="max-w-6xl mx-auto pt-28 sm:pt-36 pb-20 md:pb-28 px-4 sm:px-6">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Create Event Photo Wall</h1>
           <p className="text-zinc-400 text-sm">Design your event space, customize sponsor branding, and generate modern QR print signs.</p>

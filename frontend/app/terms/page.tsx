@@ -1,10 +1,13 @@
 "use client";
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Shield, FileText, UserCheck, CreditCard, Scale, HelpCircle, Check, MessageCircle, Mail } from 'lucide-react';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import ThemeToggle from '@/components/ThemeToggle';
+
+const Footer = dynamic(() => import('@/components/sections/Footer'), { ssr: false });
 
 export default function TermsPage() {
   return (
@@ -51,8 +54,8 @@ export default function TermsPage() {
         width: '100%',
         maxWidth: '1100px',
         margin: '0 auto',
-        paddingTop: '120px',
-        paddingBottom: '80px',
+        paddingTop: '144px',
+        paddingBottom: '100px',
         paddingLeft: '24px',
         paddingRight: '24px',
         display: 'flex',
@@ -207,6 +210,9 @@ export default function TermsPage() {
             </div>
           </section>
         </motion.div>
+      </div>
+      <div className="w-full">
+        <Footer />
       </div>
     </div>
   );

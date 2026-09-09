@@ -33,9 +33,9 @@ export default function BlogIndexPage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-24 md:pb-32 flex flex-col items-center">
         {/* HERO */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 text-center pt-8 pb-12 animate-fade-in">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 text-center pb-16 md:pb-20 animate-fade-in">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-6">
             <BookOpen size={14} />
             Event Insights & Guides
@@ -68,7 +68,7 @@ export default function BlogIndexPage() {
 
         {/* FEATURED POST */}
         {selectedCategory === "All" && featuredPost && (
-          <section className="w-full max-w-5xl mx-auto px-4 md:px-8 mb-12">
+          <section className="w-full max-w-5xl mx-auto px-4 md:px-8 mb-16 md:mb-20">
             <Link
               href={`/blog/${featuredPost.slug}`}
               className="group block bg-surface border border-border hover:border-accent rounded-3xl p-8 sm:p-12 shadow-card transition-all duration-300 hover:shadow-card-hover"
@@ -103,7 +103,7 @@ export default function BlogIndexPage() {
         )}
 
         {/* ARTICLES GRID */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-6">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-10 md:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredPosts.map((post) => (
               <Link
@@ -143,7 +143,7 @@ export default function BlogIndexPage() {
         </section>
 
         {/* BOTTOM CTA */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12 text-center">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
           <div className="bg-gradient-to-r from-accent/15 via-purple-500/10 to-accent/15 border border-accent/20 rounded-3xl p-8 sm:p-12">
             <h2 className="text-2xl sm:text-4xl font-black text-text-primary font-display">
               Ready to Collect Every Guest Memory?

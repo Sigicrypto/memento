@@ -16,7 +16,7 @@ export default function PhotographersPage() {
       <ThemedNav />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center w-full">
+      <section className="pt-36 sm:pt-44 pb-24 md:pb-32 px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center w-full">
         <div className="flex justify-center gap-3 mb-8 flex-wrap mx-auto">
           <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-sm font-medium shadow-sm text-text-primary">100% No-App</span>
           <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-sm font-medium shadow-sm text-text-primary">Sub-2s Live Wall</span>

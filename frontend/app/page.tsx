@@ -87,7 +87,7 @@ export default function LandingPage() {
         <FAQSection />
 
         {/* Final CTA */}
-        <section className="w-full py-20 md:py-24 px-4 md:px-8 bg-gradient-to-b from-amber-50/50 to-bg flex flex-col items-center text-center">
+        <section className="w-full py-24 md:py-32 px-4 md:px-8 bg-gradient-to-b from-amber-50/50 to-bg flex flex-col items-center text-center border-b border-border">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary tracking-tight max-w-3xl">
             Ready to Capture Every Moment?
           </h2>

@@ -63,9 +63,9 @@ export default async function BlogPostPage({
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-28 md:pb-36 flex flex-col items-center">
         {/* ARTICLE HEADER */}
-        <article className="w-full max-w-4xl mx-auto px-4 md:px-8 pt-8">
+        <article className="w-full max-w-4xl mx-auto px-4 md:px-8">
           <div className="mb-8">
             <Link
               href="/blog"

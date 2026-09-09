@@ -12,7 +12,7 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
   const { openAuth } = useAuthModal();
 
   return (
-    <section className="relative overflow-hidden w-full flex flex-col items-center text-center pt-28 sm:pt-36 pb-16 md:pb-24 px-4 md:px-8 bg-bg animate-fade-in">
+    <section className="relative overflow-hidden w-full flex flex-col items-center text-center pt-32 sm:pt-40 pb-20 md:pb-28 px-4 md:px-8 bg-bg animate-fade-in">
       <div className="max-w-5xl w-full mx-auto flex flex-col items-center text-center">
         
         {/* Eyebrow pill */}

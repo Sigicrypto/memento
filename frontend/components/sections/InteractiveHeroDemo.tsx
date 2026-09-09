@@ -139,7 +139,7 @@ export default function InteractiveHeroDemo({ onOpenDemoModal }: InteractiveHero
   };
 
   return (
-    <section id="demo" className="w-full py-20 px-4 md:px-8 relative overflow-hidden bg-bg-subtle border-y border-border flex flex-col items-center justify-center">
+    <section id="demo" className="w-full py-20 md:py-28 px-4 md:px-8 relative overflow-hidden bg-bg-subtle border-y border-border flex flex-col items-center justify-center">
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center text-center">
         <div className="text-center mb-10 max-w-2xl mx-auto flex flex-col items-center">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-bold tracking-wider uppercase mb-4">

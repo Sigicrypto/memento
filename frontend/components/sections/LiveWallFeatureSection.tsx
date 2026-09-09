@@ -33,7 +33,7 @@ export default function LiveWallFeatureSection() {
   ];
 
   return (
-    <section className="w-full py-20 md:py-24 px-4 md:px-8 bg-bg flex flex-col items-center justify-center text-center">
+    <section className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg border-b border-border flex flex-col items-center justify-center text-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
         
         {/* Centered Header */}

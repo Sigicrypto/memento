@@ -44,7 +44,7 @@ export default function TrustSecuritySection() {
   ];
 
   return (
-    <section className="w-full py-20 px-4 md:px-8 bg-bg-subtle flex flex-col items-center justify-center text-center">
+    <section className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg-subtle border-b border-border flex flex-col items-center justify-center text-center">
       <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
         
         <span className="px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase mb-4 mx-auto">

@@ -61,9 +61,9 @@ export default function CorporateEventsPage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-24 md:pb-32 flex flex-col items-center">
         {/* HERO */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 text-center pt-8 pb-16 animate-fade-in">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 text-center pt-4 pb-20 md:pb-24 animate-fade-in">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-700 text-xs font-mono font-bold uppercase tracking-wider mb-6">
             <Building2 size={14} className="text-blue-600" />
             Corporate Galas, Conferences & Launches
@@ -94,7 +94,7 @@ export default function CorporateEventsPage() {
         </section>
 
         {/* CAPABILITIES GRID */}
-        <section className="w-full max-w-6xl mx-auto px-4 md:px-8 py-12 text-center flex flex-col items-center">
+        <section className="w-full max-w-6xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center flex flex-col items-center">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-black text-text-primary text-center">
               Enterprise-Grade Capabilities
@@ -127,7 +127,7 @@ export default function CorporateEventsPage() {
         </section>
 
         {/* BOTTOM B2B CONSULTATION CTA */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12 text-center">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
           <div className="bg-gradient-to-r from-blue-500/10 via-accent/15 to-emerald-500/10 border border-accent/25 rounded-3xl p-8 sm:p-12">
             <h2 className="text-2xl sm:text-4xl font-black text-text-primary">
               Planning an Executive Gala or Annual Meet?

@@ -28,9 +28,9 @@ export default function ModerationFeaturePage() {
   return (
     <>
       <ThemedNav />
-      <main className="min-h-screen bg-bg text-text-primary pt-28 pb-20 flex flex-col items-center">
+      <main className="min-h-screen bg-bg text-text-primary pt-36 sm:pt-44 pb-24 md:pb-32 flex flex-col items-center">
         {/* HEADER */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 pt-8 pb-12 text-center animate-fade-in">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 pt-4 pb-16 md:pb-20 text-center animate-fade-in">
           <div className="mb-6 flex justify-center">
             <Link
               href="/features"
@@ -72,7 +72,7 @@ export default function ModerationFeaturePage() {
         </section>
 
         {/* 4 CORE ADVANTAGES */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-10">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-surface border border-border rounded-2xl p-7 shadow-card flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4 mx-auto">
@@ -117,7 +117,7 @@ export default function ModerationFeaturePage() {
         </section>
 
         {/* RELATED FEATURES */}
-        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-12 border-t border-border mt-12 text-center flex flex-col items-center">
+        <section className="w-full max-w-5xl mx-auto px-4 md:px-8 py-16 md:py-24 border-t border-border mt-16 text-center flex flex-col items-center">
           <h3 className="text-xl font-bold text-text-primary font-display mb-6 text-center">
             Explore More Capabilities
           </h3>
