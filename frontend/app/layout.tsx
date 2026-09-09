@@ -32,11 +32,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Memento — Capture Every Moment",
+    default: "Memento — Live Photo Wall for Wedding Photographers & Studios",
     template: "%s | Memento"
   },
-  description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
-  keywords: ["photo sharing", "event photos", "wedding photo wall", "live gallery", "QR photo upload", "event app"],
+  description: "The live photo sharing add-on for wedding photographers and studios. Guests scan QR, candid photos stream to venue screens in real time, all branded under your studio.",
+  keywords: ["wedding photographer tools", "live photo wall", "wedding studio add-on", "DSLR live sync", "wedding guest photos", "white-label photo wall", "event live wall"],
   authors: [{ name: "Memento Team" }],
   creator: "Memento",
   publisher: "Memento",
@@ -50,25 +50,25 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Memento — Capture Every Moment",
-    description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
+    title: "Memento — Live Photo Wall for Wedding Photographers & Studios",
+    description: "The live photo sharing add-on for wedding photographers and studios. Guests scan QR, candid photos stream to venue screens in real time, all branded under your studio.",
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com',
     siteName: 'Memento',
     images: [
       {
-        url: '/og-image.jpg', // User should add this to public/
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Memento - Live Event Photo Sharing',
+        alt: 'Memento - Live Photo Wall for Wedding Photographers & Studios',
       },
     ],
-    locale: 'en_US',
+    locale: 'en_IN',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Memento — Capture Every Moment",
-    description: "QR-based live photo sharing for events, weddings, and parties. Guests scan, upload, and relive memories together in real-time.",
+    title: "Memento — Live Photo Wall for Wedding Photographers & Studios",
+    description: "The live photo sharing add-on for wedding photographers and studios. Guests scan QR, candid photos stream to venue screens in real time, all branded under your studio.",
     images: ['/og-image.jpg'],
   },
   manifest: '/manifest.json',

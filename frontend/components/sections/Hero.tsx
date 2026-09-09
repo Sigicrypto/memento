@@ -17,17 +17,17 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
         
         {/* Eyebrow pill */}
         <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-accent/10 text-accent text-xs sm:text-sm font-mono font-bold tracking-wider uppercase mb-6 mx-auto">
-          QR-POWERED LIVE PHOTO SHARING
+          FOR WEDDING & EVENT PHOTOGRAPHERS
         </div>
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight text-text-primary font-display mb-6 max-w-4xl mx-auto">
-          Turn Every Guest's Phone Into Your Event Camera
+          Add a Live Photo Wall to Every Wedding You Shoot.
         </h1>
 
         {/* Subheadline */}
         <p className="text-text-secondary text-lg sm:text-xl font-medium leading-relaxed max-w-2xl mx-auto mb-10">
-          Guests scan a QR code, capture moments in their browser, and every photo appears live on your venue screen — in seconds. No app. No login. Just memories.
+          Guests scan your branded QR code, candid photos stream live to venue screens in real time, and you deliver 10x more memories under your own studio brand — without extra crew or gear.
         </p>
 
         {/* CTA buttons row */}
@@ -36,7 +36,7 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
             onClick={() => openAuth("signup")}
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-accent text-white font-bold text-sm sm:text-base tracking-wide hover:bg-[#D9932B] active:scale-95 transition-all shadow-[0_2px_8px_rgba(242,169,59,0.3)] hover:shadow-[0_4px_16px_rgba(242,169,59,0.4)] flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Create Your Free Event</span>
+            <span>Add Memento to Your Studio</span>
             <ArrowRight size={18} />
           </button>
 
@@ -52,19 +52,19 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
         {/* Trust strip */}
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm text-text-secondary font-medium mx-auto mb-14">
           <span className="flex items-center gap-1.5">
-            <Shield size={14} className="text-accent" /> Private & Secure
+            <Shield size={14} className="text-accent" /> Your Studio Brand
           </span>
           <span className="text-border hidden sm:inline">·</span>
           <span className="flex items-center gap-1.5">
-            <Smartphone size={14} className="text-accent" /> No App Required
+            <Smartphone size={14} className="text-accent" /> Zero Guest App Installs
           </span>
           <span className="text-border hidden sm:inline">·</span>
           <span className="flex items-center gap-1.5">
-            <Check size={14} className="text-accent" /> Works on Any Phone
+            <Check size={14} className="text-accent" /> DSLR / Mirrorless Sync
           </span>
           <span className="text-border hidden sm:inline">·</span>
           <span className="flex items-center gap-1.5">
-            <Radio size={14} className="text-accent" /> Real-Time Sync
+            <Radio size={14} className="text-accent" /> Real-Time Venue Wall
           </span>
         </div>
 

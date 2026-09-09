@@ -56,12 +56,11 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   };
 
   const navItems = [
-    { label: 'How It Works', href: '/how-it-works' },
-    { label: 'Weddings', href: '/weddings' },
-    { label: 'Parties', href: '/parties' },
-    { label: 'Corporate', href: '/corporate-events' },
     { label: 'For Photographers', href: '/photographers' },
+    { label: 'How It Works', href: '/how-it-works' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'DSLR Guide', href: '/photographers/dslr-guide' },
+    { label: 'Weddings', href: '/weddings' },
     { label: 'Contact', href: '/contact' },
   ];
 
@@ -162,7 +161,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                       onClick={() => openAuth('signup')}
                       className="px-4 py-2 rounded-full bg-accent hover:bg-[#D9932B] text-white text-xs font-bold tracking-wide shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap cursor-pointer"
                     >
-                      Create Event
+                      Add to Your Studio
                     </button>
                   </>
                 )}

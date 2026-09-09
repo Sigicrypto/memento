@@ -86,29 +86,32 @@ export default function LandingPage() {
         {/* FAQ: answer remaining questions */}
         <FAQSection />
 
-        {/* Final CTA */}
+        {/* Final CTA: Photographer & Studio Onboarding */}
         <section className="w-full py-24 md:py-32 px-4 md:px-8 bg-gradient-to-b from-amber-50/50 to-bg flex flex-col items-center text-center border-b border-border">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary tracking-tight max-w-3xl">
-            Ready to Capture Every Moment?
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-bold tracking-wider uppercase mb-4 mx-auto">
+            FOUNDING STUDIOS COHORT
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary tracking-tight max-w-3xl font-display">
+            Ready to Add Live Photo Sharing to Your Next Wedding?
           </h2>
-          <p className="text-text-secondary text-base md:text-lg mt-4 max-w-xl">
-            Create your event in 30 seconds. No credit card required.
+          <p className="text-text-secondary text-base md:text-lg mt-4 max-w-2xl leading-relaxed">
+            Join our founding studio cohort. Offer your couples 360° guest coverage and live venue projection under your own studio brand — with simple wholesale per-event pricing.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 mx-auto w-full max-w-md sm:max-w-none">
             <button
               onClick={() => openAuth("signup")}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-accent hover:bg-[#D9932B] text-white font-semibold text-base shadow-[0_2px_8px_rgba(242,169,59,0.3)] hover:shadow-[0_4px_16px_rgba(242,169,59,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-accent hover:bg-[#D9932B] text-white font-bold text-base shadow-[0_2px_8px_rgba(242,169,59,0.3)] hover:shadow-[0_4px_16px_rgba(242,169,59,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
             >
-              <span>Create Your Free Event</span>
+              <span>Add Memento to Your Studio</span>
               <ArrowRight size={18} />
             </button>
             <a
-              href="https://wa.me/919866161775?text=Hi%2C%20I%20want%20to%20learn%20more%20about%20Memento%20for%20my%20event"
+              href="https://wa.me/919866161775?text=Hi%2C%20I%27m%20a%20wedding%20photographer%2Fstudio%20owner%20interested%20in%20adding%20Memento%20to%20my%20packages."
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-transparent border-2 border-border text-text-primary hover:border-accent hover:text-accent font-semibold text-base transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-4 rounded-full bg-surface border-2 border-border text-text-primary hover:border-accent hover:text-accent font-semibold text-base transition-all flex items-center justify-center gap-2.5 cursor-pointer"
             >
-              Talk to Us About Your Event
+              Talk Directly with Founder (WhatsApp)
             </a>
           </div>
         </section>
@@ -125,9 +128,9 @@ export default function LandingPage() {
         <div className="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-border py-3 px-4 z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] md:hidden flex items-center gap-2">
           <button
             onClick={() => openAuth("signup")}
-            className="flex-1 py-3 rounded-full bg-accent text-white font-semibold text-sm shadow-[0_2px_8px_rgba(200,150,62,0.3)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 rounded-full bg-accent text-white font-bold text-sm shadow-[0_2px_8px_rgba(200,150,62,0.3)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Create Your Free Event</span>
+            <span>Add Memento to Your Studio</span>
             <ArrowRight size={16} />
           </button>
           <button

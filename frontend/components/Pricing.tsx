@@ -63,9 +63,12 @@ export default function Pricing({ isEmbedded = false, eventId }: PricingProps) {
           <h2 className="text-3xl md:text-5xl font-display font-bold text-text-primary mb-4 tracking-tight text-center">
             Simple, Per-Event Pricing
           </h2>
-          <p className="text-base md:text-lg text-text-secondary max-w-2xl mx-auto mb-8 text-center leading-relaxed">
-            Pay once per event. No recurring subscriptions. All pro features included at every tier.
+          <p className="text-base md:text-lg text-text-secondary max-w-2xl mx-auto mb-3 text-center leading-relaxed">
+            Wholesale per-event pricing built for wedding photographers & studios. All pro features included at every tier.
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs sm:text-sm font-semibold mb-8">
+            <span>💰 Studios bundle & resell Memento for ₹3,000 – ₹8,000+ per wedding</span>
+          </div>
           
           <div className="inline-flex items-center p-1 bg-bg-subtle rounded-full border border-border shadow-sm mx-auto">
             <button
