@@ -17,90 +17,152 @@ export interface Plan {
   badge?: string;
 }
 
+// Legacy plans kept for backward compatibility with existing dashboard
 export const PLANS: Plan[] = [
   {
-    id: 'free',
-    name: 'FREE',
-    price: { inr: '₹0', usd: '$0' },
-    iconColor: 'text-slate-400',
-    description: 'Great for trying out Memento',
-    tagline: 'Basic photo collection for small gatherings.',
-    stats: 'Up to 30 photos',
+    id: 'small',
+    name: 'SMALL EVENT',
+    price: { inr: '₹999', usd: '$15' },
+    period: '/event',
+    iconColor: 'text-cyan-400',
+    description: 'Up to 100 guests',
+    tagline: 'Ideal for intimate weddings, dinners, and private birthday parties.',
+    stats: 'Up to 100 Guests',
     features: [
-      { label: 'Collect guest photos instantly', included: true },
-      { label: 'Basic photo gallery view', included: true },
-      { label: 'Event QR code sharing', included: true },
-      { label: 'Memento watermark branding', included: true },
-      { label: '24 Hours cloud storage', included: true },
-      { label: 'Live Wall presentation mode', included: false },
-      { label: 'Host photo moderation', included: false },
-      { label: 'Full-resolution ZIP download', included: false },
-      { label: 'Custom branding removal', included: false },
+      { label: 'Unlimited photos & videos', included: true },
+      { label: 'Interactive Live Photo Wall', included: true },
+      { label: 'Host moderation console', included: true },
+      { label: 'Custom couple & studio branding', included: true },
+      { label: '1-Click full-resolution ZIP download', included: true },
+      { label: 'Printable QR table cards & posters', included: true },
+      { label: '30 Days high-speed cloud archive', included: true },
     ],
   },
   {
-    id: 'event',
-    name: 'EVENT',
-    price: { inr: '₹999', usd: '$12' },
+    id: 'medium',
+    name: 'MEDIUM EVENT',
+    price: { inr: '₹1,999', usd: '$29' },
     period: '/event',
     highlight: true,
-    badge: '⭐ Most Popular',
-    iconColor: 'text-cyan-400',
-    description: 'Perfect for weddings, birthdays & celebrations',
-    tagline: 'Complete live memory experience for your special day.',
-    stats: 'Up to 1,000 photos + videos',
-    features: [
-      { label: 'Everything in Free +', included: true },
-      { label: '1,000 photo & video uploads', included: true },
-      { label: 'Interactive Live Photo Wall', included: true },
-      { label: 'High-res ZIP album download', included: true },
-      { label: 'Private password-protected gallery', included: true },
-      { label: 'Printable QR card asset suite', included: true },
-      { label: '7 Days secure cloud storage', included: true },
-      { label: 'Custom branding & live wall theme', included: false },
-      { label: 'AI Memory highlights', included: false },
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'PREMIUM',
-    price: { inr: '₹2,999', usd: '$39' },
-    period: '/event',
-    badge: '🔥 Best Value',
+    badge: '⭐ Most Popular for Weddings',
     iconColor: 'text-amber-400',
-    description: 'For luxury weddings & multi-day events',
-    tagline: 'Generous memories with total moderation and custom branding.',
-    stats: 'Up to 5,000 photos + videos',
+    description: '100 – 300 guests',
+    tagline: 'Designed for standard weddings, receptions, and corporate galas.',
+    stats: '100 – 300 Guests',
     features: [
-      { label: 'Everything in Event +', included: true },
-      { label: '5,000 photos & 4K video clips', included: true },
-      { label: 'Premium Live Wall with background music', included: true },
-      { label: 'Host moderation (approve/reject uploads)', included: true },
-      { label: 'Custom wall branding & couple logo', included: true },
-      { label: 'Extended 30 Days cloud storage', included: true },
-      { label: 'Memento Pro Camera & manual controls', included: true },
-      { label: 'AI Highlights preview & auto-albums', included: true },
-      { label: 'White-label custom domain', included: false },
+      { label: 'Everything in Small tier', included: true },
+      { label: 'Up to 300 contributing guests', included: true },
+      { label: 'Multi-screen live wall display mode', included: true },
+      { label: 'Curated acoustic & party background audio', included: true },
+      { label: 'Priority real-time sync bandwidth', included: true },
+      { label: 'WhatsApp fast-join bot integration', included: true },
+      { label: '60 Days cloud archive storage', included: true },
     ],
   },
   {
-    id: 'professional',
-    name: 'PROFESSIONAL',
-    price: { inr: '₹7,999', usd: '$99' },
-    period: '/month',
+    id: 'large',
+    name: 'LARGE EVENT',
+    price: { inr: '₹3,499', usd: '$49' },
+    period: '/event',
+    badge: 'Grand Celebrations',
     iconColor: 'text-purple-400',
-    description: 'For photographers, planners & agencies',
-    tagline: 'Multi-event white-label platform for event businesses.',
-    stats: '10,000 photos per event',
+    description: '300+ guests',
+    tagline: 'Built for grand luxury weddings, multi-day celebrations, and conferences.',
+    stats: '300+ Guests',
     features: [
-      { label: 'Everything in Premium +', included: true },
-      { label: '10,000 photos per event (unlimited events)', included: true },
-      { label: 'Full white-label branding removal', included: true },
-      { label: 'Client dashboard management', included: true },
-      { label: 'Custom domain connection', included: true },
-      { label: 'Corporate sponsor branding', included: true },
-      { label: 'Extended 90 Days cloud storage', included: true },
+      { label: 'Everything in Medium tier', included: true },
+      { label: 'Supports 300 to 1,000+ guests', included: true },
+      { label: 'Full white-label agency mode', included: true },
+      { label: 'Tethered DSLR / Camera auto-import support', included: true },
+      { label: 'Multi-hall & multi-stage sync', included: true },
+      { label: 'VIP dedicated concierge support on WhatsApp', included: true },
+      { label: '90 Days extended cloud archive', included: true },
     ],
   },
 ];
 
+// ── New Guest-Tier Pricing Model ─────────────────────────────────
+export interface GuestTier {
+  id: 'SMALL' | 'MEDIUM' | 'LARGE';
+  name: string;
+  guestRange: string;
+  guestLimit: number;
+  price: { inr: number; usd: number };
+  badge?: string;
+  highlight?: boolean;
+  tagline: string;
+  features: string[];
+}
+
+export const GUEST_TIERS: GuestTier[] = [
+  {
+    id: 'SMALL',
+    name: 'Small Event',
+    guestRange: 'Up to 100 Guests',
+    guestLimit: 100,
+    price: { inr: 999, usd: 15 },
+    tagline: 'Ideal for intimate weddings, dinners, and private birthday parties.',
+    features: [
+      'Unlimited photos & videos',
+      'Interactive Live Photo Wall',
+      'Host moderation console',
+      'Custom couple & studio branding',
+      '1-Click full-resolution ZIP download',
+      'Printable QR table cards & posters',
+      '30 Days high-speed cloud archive',
+    ],
+  },
+  {
+    id: 'MEDIUM',
+    name: 'Medium Event',
+    guestRange: '100 – 300 Guests',
+    guestLimit: 300,
+    price: { inr: 1999, usd: 29 },
+    highlight: true,
+    badge: '⭐ Most Popular for Weddings',
+    tagline: 'Designed for standard weddings, receptions, and corporate galas.',
+    features: [
+      'Everything in Small tier',
+      'Up to 300 contributing guests',
+      'Multi-screen live wall display mode',
+      'Curated acoustic & party background audio',
+      'Priority real-time sync bandwidth',
+      'WhatsApp fast-join bot integration',
+      '60 Days cloud archive storage',
+    ],
+  },
+  {
+    id: 'LARGE',
+    name: 'Large Event',
+    guestRange: '300+ Guests',
+    guestLimit: 1000,
+    price: { inr: 3499, usd: 49 },
+    badge: 'Grand Celebrations',
+    tagline: 'Built for grand luxury weddings, multi-day celebrations, and conferences.',
+    features: [
+      'Everything in Medium tier',
+      'Supports 300 to 1,000+ guests',
+      'Full white-label agency mode',
+      'Tethered DSLR / Camera auto-import support',
+      'Multi-hall & multi-stage sync',
+      'VIP dedicated concierge support on WhatsApp',
+      '90 Days extended cloud archive',
+    ],
+  },
+];
+
+// Helper: get tier by ID
+export function getTierById(id: string): GuestTier | undefined {
+  return GUEST_TIERS.find((t) => t.id === id.toUpperCase());
+}
+
+// Helper: determine tier from guest count
+export function getTierForGuestCount(count: number): GuestTier {
+  if (count <= 100) return GUEST_TIERS[0];
+  if (count <= 300) return GUEST_TIERS[1];
+  return GUEST_TIERS[2];
+}
+
+// Multi-event discount
+export const MULTI_EVENT_DISCOUNT_THRESHOLD = 5;
+export const MULTI_EVENT_DISCOUNT_PERCENT = 15;

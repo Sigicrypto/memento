@@ -27,7 +27,7 @@ export const ShimmerButton = React.forwardRef<
       shimmerSize = "0.05em",
       shimmerDuration = "3s",
       borderRadius = "100px",
-      background = "rgba(0, 0, 0, 1)",
+      background,
       className,
       children,
       paddingX = 24,
@@ -36,6 +36,7 @@ export const ShimmerButton = React.forwardRef<
     },
     ref
   ) => {
+    const resolvedBackground = background ?? (className?.includes("bg-white") ? "#ffffff" : "rgba(0, 0, 0, 1)");
     return (
       <button
         style={
@@ -45,7 +46,7 @@ export const ShimmerButton = React.forwardRef<
             "--radius": borderRadius,
             "--speed": shimmerDuration,
             "--cut": shimmerSize,
-            "--bg": background,
+            "--bg": resolvedBackground,
             paddingLeft: `${paddingX}px`,
             paddingRight: `${paddingX}px`,
             paddingTop: `${paddingY}px`,

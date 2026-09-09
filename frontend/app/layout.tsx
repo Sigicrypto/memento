@@ -27,7 +27,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#07080B",
+  themeColor: "#FAFAF9",
 };
 
 export const metadata: Metadata = {
@@ -91,7 +91,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen w-full antialiased font-sans" suppressHydrationWarning>
+      <body className="min-h-screen w-full antialiased font-sans bg-bg text-text-primary" suppressHydrationWarning>
         <AppProviders>
           <ErrorBoundary>
             <LayoutShell>

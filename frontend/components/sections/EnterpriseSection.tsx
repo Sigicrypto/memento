@@ -1,110 +1,136 @@
+"use client";
+
 import React from 'react';
-import { Building2, ShieldCheck, Palette, Server, ArrowRight } from 'lucide-react';
+import { Camera, ShieldCheck, Palette, KeyRound, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EnterpriseSection() {
   return (
-    <section className="py-24 px-4 md:px-8 bg-slate-900/50 border-t border-white/5 relative overflow-hidden w-full flex justify-center">
-      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
-      
-      <div className="w-full max-w-7xl relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-extrabold tracking-wider uppercase mb-6">
-              <Building2 size={14} />
-              For Event Professionals
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
-              Built for <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Agencies & Planners</span>
-            </h2>
-            <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-              Scale your event business with our enterprise-grade white-label platform. Deliver premium, moderated live experiences to your corporate and luxury wedding clients under your own brand.
+    <section className="py-20 md:py-24 px-4 md:px-8 bg-bg-subtle border-t border-border relative overflow-hidden w-full flex flex-col items-center justify-center text-center">
+      <div className="w-full max-w-6xl relative z-10 mx-auto flex flex-col items-center text-center">
+        
+        {/* Centered Header */}
+        <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase mb-4 mx-auto">
+          <Camera size={14} />
+          For Wedding Studios & Agencies
+        </span>
+        <h2 className="text-3xl md:text-5xl font-black text-text-primary leading-tight mb-4 font-display max-w-3xl mx-auto">
+          Built for <span className="text-primary">Professional Studios</span>
+        </h2>
+        <p className="text-text-secondary text-base md:text-lg mb-12 leading-relaxed max-w-2xl mx-auto">
+          Scale your wedding photography business with our studio-grade white-label platform. Deliver premium, moderated live experiences to your couples under your own studio brand.
+        </p>
+
+        {/* 3 Pro Features in Centered Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12 text-center">
+          <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-surface border border-border shadow-card hover:shadow-card-hover transition-all">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 mx-auto shrink-0">
+              <Palette size={22} />
+            </div>
+            <h3 className="text-text-primary font-bold text-lg mb-2 text-center">100% Studio White-Labeling</h3>
+            <p className="text-text-secondary text-sm leading-relaxed text-center">
+              Replace Memento branding with your studio logo, colors, and dedicated subdomain. Couples and guests see only your brand.
             </p>
-            
-            <div className="space-y-6 mb-10">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
-                  <Palette className="text-purple-400" size={24} />
+          </div>
+
+          <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-surface border border-border shadow-card hover:shadow-card-hover transition-all">
+            <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-accent mb-4 mx-auto shrink-0">
+              <ShieldCheck size={22} />
+            </div>
+            <h3 className="text-text-primary font-bold text-lg mb-2 text-center">Safety-First Moderation</h3>
+            <p className="text-text-secondary text-sm leading-relaxed text-center">
+              Default-on review queue prevents inappropriate screen content. Swipe right to approve in under 2 seconds, or enable 1-tap Auto-Approve.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-surface border border-border shadow-card hover:shadow-card-hover transition-all">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 mx-auto shrink-0">
+              <KeyRound size={22} />
+            </div>
+            <h3 className="text-text-primary font-bold text-lg mb-2 text-center">Team PIN & 4K Delivery</h3>
+            <p className="text-text-secondary text-sm leading-relaxed text-center">
+              Generate 4-digit Event PINs for 2nd shooters to moderate or tether without extra paid accounts. Download full-res 4K ZIPs in 1 click.
+            </p>
+          </div>
+        </div>
+
+        {/* Studio Console Mockup Centered */}
+        <div className="w-full max-w-3xl mx-auto relative mb-10">
+          <div className="absolute -inset-4 bg-gradient-to-tr from-primary/10 via-accent/5 to-transparent blur-3xl rounded-full opacity-60"></div>
+          
+          <div className="relative bg-surface border border-border rounded-2xl p-6 shadow-card overflow-hidden text-left">
+            <div className="flex items-center justify-between pb-5 border-b border-border mb-6 flex-wrap gap-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black">
+                  RM
                 </div>
                 <div>
-                  <h3 className="text-white font-bold text-lg mb-1">100% White-Label Branding</h3>
-                  <p className="text-slate-400 text-sm">Remove all Memento branding. Host galleries on your custom domain (e.g., live.youragency.com).</p>
+                  <div className="text-text-primary font-bold text-sm">Royal Moments Studio</div>
+                  <div className="text-text-muted text-xs font-mono">live.royalmoments.com</div>
                 </div>
               </div>
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="text-cyan-400" size={24} />
+              <div className="px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-200 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                Live Event Active
+              </div>
+            </div>
+
+            <div className="space-y-3.5">
+              <div className="p-4 rounded-xl bg-bg-subtle border border-border flex items-center gap-4">
+                <div className="w-14 h-11 rounded-lg bg-gradient-to-br from-amber-200 to-rose-200 flex-shrink-0 shadow-inner" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-text-primary truncate">Table 4 Toast 🥂</p>
+                  <p className="text-[11px] text-text-muted">by Vikram R. · 4s ago</p>
                 </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg mb-1">Advanced Host Moderation</h3>
-                  <p className="text-slate-400 text-sm">Dedicated moderation dashboard to approve or reject photos in real-time before they hit the live screen.</p>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center gap-1">
+                    <Check size={12} /> Approved
+                  </span>
                 </div>
               </div>
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                  <Server className="text-emerald-400" size={24} />
+
+              <div className="p-4 rounded-xl bg-bg-subtle border border-border flex items-center gap-4">
+                <div className="w-14 h-11 rounded-lg bg-gradient-to-bl from-sky-200 to-indigo-200 flex-shrink-0 shadow-inner" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-text-primary truncate">Bride & Groom First Dance ✨</p>
+                  <p className="text-[11px] text-text-muted">by Priya S. · 12s ago</p>
                 </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg mb-1">Enterprise Privacy & GDPR</h3>
-                  <p className="text-slate-400 text-sm">Strict data retention rules, password-protected vaults, and compliance for corporate peace of mind.</p>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-accent/15 text-accent text-xs font-bold">
+                    ⭐ Pinned
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-bg-subtle border border-border flex items-center gap-4">
+                <div className="w-14 h-11 rounded-lg bg-gradient-to-tr from-emerald-200 to-teal-200 flex-shrink-0 shadow-inner" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-text-primary truncate">Stage Fireworks 🎉</p>
+                  <p className="text-[11px] text-text-muted">by Second Shooter (Tethered)</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                    4K DSLR Sync
+                  </span>
                 </div>
               </div>
             </div>
 
-            <Link href="/professionals" className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold transition-all hover:scale-105">
-              Explore Professional Features <ArrowRight size={18} />
-            </Link>
-          </div>
-          
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/20 to-cyan-500/20 blur-3xl rounded-full"></div>
-            <div className="relative bg-slate-900 border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-cyan-500"></div>
-              <div className="bg-slate-950 rounded-xl p-6 border border-white/5">
-                <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-                      <Building2 size={20} className="text-slate-400" />
-                    </div>
-                    <div>
-                      <div className="text-white font-bold">Agency Dashboard</div>
-                      <div className="text-slate-500 text-xs">live.youragency.com</div>
-                    </div>
-                  </div>
-                  <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
-                    Live Event Active
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="h-24 rounded-lg bg-slate-900 border border-white/5 flex items-center px-6 gap-6 relative overflow-hidden">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-500"></div>
-                    <div className="w-16 h-12 rounded bg-slate-800"></div>
-                    <div className="flex-1">
-                      <div className="h-3 w-24 bg-slate-700 rounded mb-2"></div>
-                      <div className="h-2 w-32 bg-slate-800 rounded"></div>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">Approve</div>
-                      <div className="px-4 py-1.5 rounded-full bg-rose-500/10 text-rose-400 text-xs font-bold">Reject</div>
-                    </div>
-                  </div>
-                  <div className="h-24 rounded-lg bg-slate-900 border border-white/5 flex items-center px-6 gap-6">
-                    <div className="w-16 h-12 rounded bg-slate-800"></div>
-                    <div className="flex-1">
-                      <div className="h-3 w-20 bg-slate-700 rounded mb-2"></div>
-                      <div className="h-2 w-28 bg-slate-800 rounded"></div>
-                    </div>
-                    <div className="flex gap-2">
-                      <div className="px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">Approve</div>
-                      <div className="px-4 py-1.5 rounded-full bg-rose-500/10 text-rose-400 text-xs font-bold">Reject</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="mt-5 pt-4 border-t border-border flex items-center justify-between text-xs text-text-secondary">
+              <span className="font-medium">184 / 300 Guests Active</span>
+              <span className="text-primary font-bold">Medium Tier (Safe Buffer)</span>
             </div>
           </div>
         </div>
+
+        {/* Centered CTA */}
+        <Link
+          href="/photographers"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-primary hover:opacity-90 text-white font-bold text-sm sm:text-base transition-all shadow-sm hover:scale-105 active:scale-95 mx-auto"
+        >
+          <span>Explore Studio Solutions</span>
+          <ArrowRight size={18} />
+        </Link>
       </div>
     </section>
   );

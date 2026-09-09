@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 interface FAQItem {
   q: string;
@@ -53,6 +53,22 @@ const FAQS: FAQItem[] = [
     q: "Can photographers or event planners use Memento for multiple clients?",
     a: "Yes! The Professional plan gives agencies, planners, and photographers a multi-event dashboard with white-label capabilities.",
   },
+  {
+    q: "Is there a limit to how many guests can scan and contribute?",
+    a: "There is no limit on guest headcount. Whether you host 30 guests at an intimate dinner or 1,500 attendees at a festival, everyone can scan and contribute at the same time.",
+  },
+  {
+    q: "How long are photos stored, and can I delete them completely?",
+    a: "Your event memories are securely preserved based on your plan tier (up to 30 or 90 days). You can download everything in high resolution as a ZIP file anytime, and hosts have permanent one-click data deletion rights.",
+  },
+  {
+    q: "Can guests participate via WhatsApp?",
+    a: "Yes! In addition to scanning QR codes, guests can text your event hashtag to our dedicated WhatsApp bot to instantly receive a deep-linked camera session with zero signups.",
+  },
+  {
+    q: "How does the venue projector or TV connect to Memento Live?",
+    a: "Simply open your private Live Wall link on any laptop or TV connected via HDMI, AirPlay, or Chromecast. Press F11 for full-screen and let the live slideshow run automatically.",
+  },
 ];
 
 export default function FAQSection() {
@@ -63,43 +79,40 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="w-full py-20 px-4 md:px-8 relative bg-slate-950/90 border-b border-white/5 flex flex-col items-center justify-center">
-      <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
+    <section id="faq" className="w-full py-20 px-4 md:px-8 bg-bg flex flex-col items-center justify-center text-center">
+      <div className="max-w-3xl w-full mx-auto flex flex-col items-center text-center">
         
-        <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-extrabold tracking-wider uppercase mb-4">
-          Frequently Asked Questions
+        <span className="px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase mb-4 mx-auto">
+          FAQ
         </span>
 
-        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight text-center mb-10">
+        <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tight text-center mb-10 max-w-2xl mx-auto">
           Everything You Need to Know
         </h2>
 
-        <div className="max-w-4xl w-full mx-auto space-y-4">
+        <div className="w-full text-center">
           {FAQS.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <div
                 key={faq.q}
-                className="rounded-2xl bg-slate-900/60 border border-white/10 overflow-hidden transition-all"
+                className="border-b border-border transition-all"
               >
                 <button
                   onClick={() => toggle(index)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-white text-sm md:text-base hover:text-cyan-300 transition-colors"
+                  className="w-full py-5 flex items-center justify-center text-center text-text-primary font-bold text-base md:text-lg hover:text-accent transition-colors relative px-10 cursor-pointer"
                 >
-                  <span className="flex items-center gap-3">
-                    <HelpCircle size={18} className="text-cyan-400 shrink-0" />
-                    {faq.q}
-                  </span>
+                  <span className="text-center mx-auto">{faq.q}</span>
                   <ChevronDown
-                    size={18}
-                    className={`text-slate-400 shrink-0 transition-transform duration-300 ${
-                      isOpen ? "rotate-180 text-cyan-400" : ""
+                    size={20}
+                    className={`text-text-secondary shrink-0 transition-transform duration-300 absolute right-2 sm:right-4 ${
+                      isOpen ? "rotate-180 text-accent" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-slate-300 text-xs md:text-sm leading-relaxed border-t border-white/5">
+                  <div className="pb-5 text-text-secondary text-base leading-relaxed text-center max-w-2xl mx-auto">
                     {faq.a}
                   </div>
                 )}

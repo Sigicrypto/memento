@@ -8,7 +8,8 @@ import { DemoMedia, upsertDemoPhoto } from '@/lib/demoWall';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import FloatingParticles from '@/components/FloatingParticles';
 import WhatsAppViralBanner from '@/components/WhatsAppViralBanner';
-import { Upload, Camera } from 'lucide-react';
+import Webcam from 'react-webcam';
+import { Upload, Camera, Image as ImageIcon, Video, Film, X, RefreshCw } from 'lucide-react';
 
 const MAX_IMAGES = 5;
 const MAX_VIDEOS = 1;
@@ -18,6 +19,18 @@ const ACCEPTED_IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'heic', 'heif']
 const ACCEPTED_VIDEO_EXTENSIONS = new Set(['mp4', 'mov', 'webm', 'm4v']);
 
 const getDemoChannelName = (demoId: string) => `demo-${demoId}`;
+
+function dataURLtoFile(dataurl: string, filename: string): File {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime, lastModified: Date.now() });
+}
 
 function getFileExtension(fileName: string) {
   return fileName.split('.').pop()?.toLowerCase() || '';
@@ -125,6 +138,21 @@ function DemoUploadContent() {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
+  // Dedicated inputs for camera vs gallery
+  const cameraPhotoInputRef = useRef<HTMLInputElement>(null);
+  const galleryPhotoInputRef = useRef<HTMLInputElement>(null);
+  const cameraVideoInputRef = useRef<HTMLInputElement>(null);
+  const galleryVideoInputRef = useRef<HTMLInputElement>(null);
+
+  // Desktop In-Browser Live Webcam state
+  const [showCameraModal, setShowCameraModal] = useState(false);
+  const [cameraFacingMode, setCameraFacingMode] = useState<'user' | 'environment'>('user');
+  const [capturedPreview, setCapturedPreview] = useState<string | null>(null);
+  const webcamRef = useRef<Webcam>(null);
+
+  // Source Choice Sheet Modal ('photo' | 'video' | null)
+  const [sourceModalType, setSourceModalType] = useState<'photo' | 'video' | null>(null);
+
   // Load lifetime quota from localStorage once demoId is known
   useEffect(() => {
     if (!demoId) return;
@@ -151,6 +179,76 @@ function DemoUploadContent() {
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     processPhotoFiles(files);
+    e.target.value = ''; // Reset so the user can select/capture another photo
+  };
+
+  const handleCameraPhotoClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const totalUsed = lifetimePhotos + uploadPhotos.length;
+    if (totalUsed >= MAX_IMAGES) {
+      setError(`Photo limit reached (${MAX_IMAGES}/${MAX_IMAGES} used)`);
+      setTimeout(() => setError(null), 4000);
+      return;
+    }
+    const isMobile = typeof window !== 'undefined' && (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || ('ontouchstart' in window && window.innerWidth < 768));
+    if (isMobile) {
+      cameraPhotoInputRef.current?.click();
+    } else {
+      setShowCameraModal(true);
+    }
+  };
+
+  const handleGalleryPhotoClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const totalUsed = lifetimePhotos + uploadPhotos.length;
+    if (totalUsed >= MAX_IMAGES) {
+      setError(`Photo limit reached (${MAX_IMAGES}/${MAX_IMAGES} used)`);
+      setTimeout(() => setError(null), 4000);
+      return;
+    }
+    galleryPhotoInputRef.current?.click();
+  };
+
+  const handleRecordVideoClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const totalUsed = lifetimeVideos + uploadVideos.length;
+    if (totalUsed >= MAX_VIDEOS) {
+      setError(`Video limit reached (${MAX_VIDEOS}/${MAX_VIDEOS} used)`);
+      setTimeout(() => setError(null), 4000);
+      return;
+    }
+    cameraVideoInputRef.current?.click();
+  };
+
+  const handleGalleryVideoClick = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const totalUsed = lifetimeVideos + uploadVideos.length;
+    if (totalUsed >= MAX_VIDEOS) {
+      setError(`Video limit reached (${MAX_VIDEOS}/${MAX_VIDEOS} used)`);
+      setTimeout(() => setError(null), 4000);
+      return;
+    }
+    galleryVideoInputRef.current?.click();
+  };
+
+  const handleSnapPhoto = () => {
+    if (!webcamRef.current) return;
+    const screenshot = webcamRef.current.getScreenshot();
+    if (screenshot) {
+      setCapturedPreview(screenshot);
+    }
+  };
+
+  const handleConfirmCapturedPhoto = () => {
+    if (!capturedPreview) return;
+    const file = dataURLtoFile(capturedPreview, `camera_${Date.now()}.jpg`);
+    processPhotoFiles([file]);
+    setCapturedPreview(null);
+    setShowCameraModal(false);
   };
 
   const processPhotoFiles = (files: File[]) => {
@@ -184,6 +282,7 @@ function DemoUploadContent() {
   const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     processVideoFiles(files);
+    e.target.value = ''; // Reset so the user can pick/record another video
   };
 
   const processVideoFiles = (files: File[]) => {
@@ -299,6 +398,10 @@ function DemoUploadContent() {
       setUploadSuccess(true);
       if (photoInputRef.current) photoInputRef.current.value = '';
       if (videoInputRef.current) videoInputRef.current.value = '';
+      if (cameraPhotoInputRef.current) cameraPhotoInputRef.current.value = '';
+      if (galleryPhotoInputRef.current) galleryPhotoInputRef.current.value = '';
+      if (cameraVideoInputRef.current) cameraVideoInputRef.current.value = '';
+      if (galleryVideoInputRef.current) galleryVideoInputRef.current.value = '';
       setTimeout(() => setUploadSuccess(false), 5000);
     } catch (err: any) {
       setError(err.message || 'Upload failed. Please try again.');
@@ -822,6 +925,14 @@ function DemoUploadContent() {
                 ✓&nbsp;{totalUploaded} sent
               </span>
             )}
+            <Link
+              href={`/demo?id=${demoId}`}
+              target="_blank"
+              className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all flex items-center gap-1 border border-white/15 ml-1"
+            >
+              <span>View Wall</span>
+              <span>↗</span>
+            </Link>
           </div>
         </nav>
 
@@ -983,45 +1094,80 @@ function DemoUploadContent() {
                     onDragOver={e => { e.preventDefault(); if (totalUsed < MAX_IMAGES) setPhotoDragOver(true); }}
                     onDragLeave={() => setPhotoDragOver(false)}
                     onDrop={totalUsed < MAX_IMAGES ? handlePhotoDrop : (e => { e.preventDefault(); setPhotoDragOver(false); })}
+                    onClick={() => {
+                      if (totalUsed < MAX_IMAGES && !uploading) {
+                        setSourceModalType('photo');
+                      }
+                    }}
                   >
-                    <div className="drop-zone-icon">{uploadPhotos.length === 0 && lifetimePhotos === 0 ? '🖼️' : '➕'}</div>
+                    {/* Hidden Native Inputs */}
+                    <input
+                      ref={cameraPhotoInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handlePhotoSelect}
+                      className="hidden"
+                      title="Take photo with camera"
+                    />
+                    <input
+                      ref={galleryPhotoInputRef}
+                      type="file"
+                      accept="image/*,image/heic,image/heif"
+                      multiple
+                      onChange={handlePhotoSelect}
+                      className="hidden"
+                      title="Choose photos from gallery"
+                    />
+
+                    <div className="drop-zone-icon">{uploadPhotos.length === 0 && lifetimePhotos === 0 ? '📷' : '➕'}</div>
                     <p className="drop-zone-text">
                       {totalUsed === 0
-                        ? 'Select photos below'
+                        ? 'Take a photo or choose from gallery'
                         : totalUsed >= MAX_IMAGES
                           ? 'Ready to upload (Limit reached)'
                           : `Add more — ${slotsLeft} slot${slotsLeft !== 1 ? 's' : ''} left`}
                     </p>
-                    <div className="w-full relative mt-4 flex gap-2 z-30">
-                      <label className={`btn btn-secondary flex-1 m-0 flex items-center justify-center ${totalUsed >= MAX_IMAGES ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                        {!uploading && totalUsed < MAX_IMAGES && (
-                          <input
-                            type="file"
-                            accept="image/*,image/heic,image/heif"
-                            multiple
-                            onChange={handlePhotoSelect}
-                            className="hidden"
-                            title="Choose photos"
-                          />
-                        )}
-                        {totalUsed === 0 ? 'Select Photos' : totalUsed >= MAX_IMAGES ? 'Limit Reached' : 'Add Photos'}
-                      </label>
+
+                    <div className="w-full relative mt-3 flex flex-wrap sm:flex-nowrap gap-2 z-30" onClick={e => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={handleCameraPhotoClick}
+                        disabled={uploading || totalUsed >= MAX_IMAGES}
+                        className={`btn btn-secondary flex-1 m-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-border hover:border-accent text-xs font-bold ${totalUsed >= MAX_IMAGES ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        title="Take photo with camera"
+                      >
+                        <Camera size={15} className="text-amber-500 flex-shrink-0" />
+                        <span>Take Photo</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleGalleryPhotoClick}
+                        disabled={uploading || totalUsed >= MAX_IMAGES}
+                        className={`btn btn-secondary flex-1 m-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-border hover:border-accent text-xs font-bold ${totalUsed >= MAX_IMAGES ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        title="Choose from photo library"
+                      >
+                        <ImageIcon size={15} className="text-cyan-500 flex-shrink-0" />
+                        <span>Choose Gallery</span>
+                      </button>
+
                       {uploadPhotos.length > 0 && (
                         <button 
                           type="button" 
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUpload(); }} 
                           disabled={uploading}
-                          className="btn-glow flex items-center justify-center w-12 h-12 flex-shrink-0 rounded-xl pointer-events-auto"
+                          className="btn-glow flex items-center justify-center w-11 h-11 flex-shrink-0 rounded-xl pointer-events-auto"
                           title="Upload Photos"
                         >
-                          <Upload size={20} />
+                          <Upload size={18} />
                         </button>
                       )}
                     </div>
                     <p className="drop-zone-hint mt-2">
                       {lifetimePhotos > 0
                         ? `${lifetimePhotos} already uploaded · ${totalUsed >= MAX_IMAGES ? '0 remaining' : slotsLeft + ' remaining'}`
-                        : `JPG, PNG, HEIC — up to ${MAX_IMAGES} total`}
+                        : `Camera or Gallery (JPG, PNG, HEIC) — up to ${MAX_IMAGES} total`}
                     </p>
                   </div>
                 );
@@ -1082,31 +1228,66 @@ function DemoUploadContent() {
                     onDragOver={e => { e.preventDefault(); if (totalUsed < MAX_VIDEOS) setVideoDragOver(true); }}
                     onDragLeave={() => setVideoDragOver(false)}
                     onDrop={totalUsed < MAX_VIDEOS ? handleVideoDrop : (e => { e.preventDefault(); setVideoDragOver(false); })}
+                    onClick={() => {
+                      if (totalUsed < MAX_VIDEOS && !uploading) {
+                        setSourceModalType('video');
+                      }
+                    }}
                   >
-                    {!uploading && totalUsed < MAX_VIDEOS && (
-                      <input
-                        type="file"
-                        accept="video/*"
-                        onChange={handleVideoSelect}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        title="Choose video"
-                      />
-                    )}
+                    {/* Hidden Video Inputs */}
+                    <input
+                      ref={cameraVideoInputRef}
+                      type="file"
+                      accept="video/*"
+                      capture="environment"
+                      onChange={handleVideoSelect}
+                      className="hidden"
+                      title="Record video with camera"
+                    />
+                    <input
+                      ref={galleryVideoInputRef}
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoSelect}
+                      className="hidden"
+                      title="Choose video from files"
+                    />
+
                     <div className="drop-zone-icon">🎬</div>
-                    <p className="drop-zone-text">{totalUsed >= MAX_VIDEOS ? 'Ready to upload' : 'Tap to select a video'}</p>
-                    <div className="w-full relative mt-4 flex gap-2 z-30 pointer-events-none">
-                      <button type="button" className={`btn btn-secondary flex-1 ${totalUsed >= MAX_VIDEOS ? 'opacity-50' : ''}`}>
-                        {totalUsed >= MAX_VIDEOS ? 'Limit Reached' : 'Select Video'}
+                    <p className="drop-zone-text">{totalUsed >= MAX_VIDEOS ? 'Ready to upload' : 'Record with camera or choose video'}</p>
+                    
+                    <div className="w-full relative mt-3 flex flex-wrap sm:flex-nowrap gap-2 z-30" onClick={e => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={handleRecordVideoClick}
+                        disabled={uploading || totalUsed >= MAX_VIDEOS}
+                        className={`btn btn-secondary flex-1 m-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-border hover:border-accent text-xs font-bold ${totalUsed >= MAX_VIDEOS ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        title="Record video with camera"
+                      >
+                        <Video size={15} className="text-rose-500 flex-shrink-0" />
+                        <span>Record Video</span>
                       </button>
+
+                      <button
+                        type="button"
+                        onClick={handleGalleryVideoClick}
+                        disabled={uploading || totalUsed >= MAX_VIDEOS}
+                        className={`btn btn-secondary flex-1 m-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-border hover:border-accent text-xs font-bold ${totalUsed >= MAX_VIDEOS ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                        title="Choose video file"
+                      >
+                        <Film size={15} className="text-purple-500 flex-shrink-0" />
+                        <span>Choose File</span>
+                      </button>
+
                       {uploadVideos.length > 0 && (
                         <button 
                           type="button" 
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleUpload(); }} 
                           disabled={uploading}
-                          className="btn-glow flex items-center justify-center w-12 h-12 flex-shrink-0 rounded-xl pointer-events-auto"
+                          className="btn-glow flex items-center justify-center w-11 h-11 flex-shrink-0 rounded-xl pointer-events-auto"
                           title="Upload Video"
                         >
-                          <Upload size={20} />
+                          <Upload size={18} />
                         </button>
                       )}
                     </div>
@@ -1217,26 +1398,271 @@ function DemoUploadContent() {
           )}
 
 
-          
+            {/* ── Prominent Primary Submit Button ── */}
+            <div className="w-full mt-2">
+              <button
+                type="button"
+                onClick={handleUpload}
+                disabled={uploading || totalFiles === 0}
+                className={`w-full py-4 px-6 rounded-2xl font-black text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-2xl ${
+                  totalFiles > 0
+                    ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-black hover:brightness-110 active:scale-[0.98] shadow-amber-500/30 cursor-pointer animate-pulse'
+                    : 'bg-white/10 text-white/40 border border-white/10 cursor-not-allowed'
+                }`}
+              >
+                <Upload size={18} />
+                <span>
+                  {uploading
+                    ? 'Posting to Live Wall…'
+                    : totalFiles > 0
+                      ? `Post ${totalFiles} ${totalFiles === 1 ? 'Memory' : 'Memories'} to Live Wall ⚡`
+                      : 'Select a Photo or Video to Post'}
+                </span>
+              </button>
+              {totalFiles > 0 && (
+                <p className="text-[11px] text-center text-white/60 mt-2 font-medium">
+                  Photos appear on the venue live screen in under 2 seconds.
+                </p>
+              )}
+            </div>
+
           </div>
         </div>
-      </div>
 
-        {/* ── Footer Nav for Live Demo Wall ── */}
-        <footer style={{
-           position: 'fixed', bottom: 0, left: 0, right: 0, height: '6rem',
-           borderTop: '1px solid rgba(255, 255, 255, 0.1)', background: 'rgba(24, 24, 27, 0.95)',
-           backdropFilter: 'blur(12px)', zIndex: 100, display: 'flex', alignItems: 'center',
-           justifyContent: 'center', paddingBottom: '1rem'
-        }}>
-           <Link href={`/demo?id=${demoId}`} style={{
-              display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem',
-              fontWeight: 700, color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none'
-           }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-              View Wall Experience
-           </Link>
+        {/* ── Clean Static Footer (Non-blocking) ── */}
+        <footer className="w-full py-12 mt-12 border-t border-white/10 flex items-center justify-center">
+          <Link
+            href={`/demo?id=${demoId}`}
+            className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-white transition-colors"
+          >
+            <span>← Return to Live Wall Screen</span>
+          </Link>
         </footer>
+
+      {/* ── Desktop In-Browser Webcam Modal ── */}
+      {showCameraModal && (
+        <div className="fixed inset-0 z-[200] bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#18181b] border border-white/15 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 px-5 border-b border-white/10 bg-white/5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <Camera size={16} />
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-white block">Event Camera</span>
+                  <span className="text-[10px] text-white/50 block">Snap a photo to post directly to the wall</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowCameraModal(false); setCapturedPreview(null); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Viewfinder or Captured Preview */}
+            <div className="relative aspect-[4/3] w-full bg-black flex items-center justify-center overflow-hidden">
+              {capturedPreview ? (
+                <img src={capturedPreview} alt="Captured preview" className="w-full h-full object-cover" />
+              ) : (
+                <>
+                  <Webcam
+                    ref={webcamRef}
+                    audio={false}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={{
+                      facingMode: cameraFacingMode,
+                      width: { ideal: 1280 },
+                      height: { ideal: 720 },
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setCameraFacingMode(prev => prev === 'user' ? 'environment' : 'user')}
+                    className="absolute top-3 right-3 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/90 transition-colors backdrop-blur-md border border-white/20"
+                    title="Flip camera"
+                  >
+                    <RefreshCw size={15} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Modal Controls */}
+            <div className="p-4 px-5 flex items-center justify-between gap-3 bg-white/5 border-t border-white/10">
+              {capturedPreview ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setCapturedPreview(null)}
+                    className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition-colors"
+                  >
+                    Retake
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmCapturedPhoto}
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-extrabold text-xs transition-all shadow-lg shadow-amber-500/20"
+                  >
+                    Use This Photo ✓
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCameraModal(false);
+                      galleryPhotoInputRef.current?.click();
+                    }}
+                    className="text-xs text-white/60 hover:text-white underline underline-offset-2"
+                  >
+                    Choose file instead
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSnapPhoto}
+                    className="py-3 px-6 rounded-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-black font-extrabold text-xs uppercase tracking-wider flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-amber-500/25"
+                  >
+                    <Camera size={16} />
+                    <span>Snap Photo</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Source Choice Modal (When dropzone is tapped) ── */}
+      {sourceModalType && (
+        <div 
+          className="fixed inset-0 z-[190] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setSourceModalType(null)}
+        >
+          <div 
+            className="bg-[#18181b] border border-white/15 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-base font-bold text-white">
+                {sourceModalType === 'photo' ? 'Add Photos to Wall' : 'Add Video to Wall'}
+              </h4>
+              <button 
+                type="button"
+                onClick={() => setSourceModalType(null)} 
+                className="text-white/60 hover:text-white p-1 rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p className="text-xs text-white/60 mb-5">
+              {sourceModalType === 'photo'
+                ? 'Capture a real-time memory or select photos from your device:'
+                : 'Record a real-time video or choose a clip from your device:'}
+            </p>
+
+            <div className="flex flex-col gap-3">
+              {sourceModalType === 'photo' ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSourceModalType(null);
+                      handleCameraPhotoClick();
+                    }}
+                    className="w-full p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/50 flex items-center gap-3.5 transition-all text-left group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <Camera size={22} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">
+                        Take Photo with Camera
+                      </p>
+                      <p className="text-[11px] text-white/50">
+                        Launch phone camera or laptop webcam
+                      </p>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSourceModalType(null);
+                      galleryPhotoInputRef.current?.click();
+                    }}
+                    className="w-full p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-400/50 flex items-center gap-3.5 transition-all text-left group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <ImageIcon size={22} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">
+                        Choose from Photo Gallery
+                      </p>
+                      <p className="text-[11px] text-white/50">
+                        Select multiple JPG, PNG, or HEIC files
+                      </p>
+                    </div>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSourceModalType(null);
+                      handleRecordVideoClick();
+                    }}
+                    className="w-full p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-rose-400/50 flex items-center gap-3.5 transition-all text-left group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <Video size={22} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white group-hover:text-rose-400 transition-colors">
+                        Record Video with Camera
+                      </p>
+                      <p className="text-[11px] text-white/50">
+                        Record a live cheer or video message
+                      </p>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSourceModalType(null);
+                      galleryVideoInputRef.current?.click();
+                    }}
+                    className="w-full p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 flex items-center gap-3.5 transition-all text-left group"
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                      <Film size={22} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white group-hover:text-purple-400 transition-colors">
+                        Choose Video File
+                      </p>
+                      <p className="text-[11px] text-white/50">
+                        Pick an MP4, MOV, or WEBM clip
+                      </p>
+                    </div>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      </div>
 
       </div>
     </>

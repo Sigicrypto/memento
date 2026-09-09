@@ -124,11 +124,7 @@ function CheckoutContent() {
       </nav>
 
       {/* Main Content */}
-      <div style={{
-        position: 'relative', zIndex: 10,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '100vh', padding: '96px 20px 40px',
-      }}>
+      <div className="relative z-10 flex items-center justify-center min-h-screen pt-24 pb-10 px-3.5 sm:px-6">
         {status === 'IDLE' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -145,12 +141,8 @@ function CheckoutContent() {
               overflow: 'hidden',
             }}>
               {/* Card Header — Plan Summary */}
-              <div style={{
-                padding: '36px 36px 28px',
-                borderBottom: '1px solid var(--border)',
-                background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent-cyan) 6%, var(--surface)), var(--surface))',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <div className="p-6 sm:p-9 border-b border-border bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-cyan)_6%,var(--surface)),var(--surface))]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                   <div>
                     <p style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: '4px' }}>
                       Selected Plan
@@ -164,6 +156,7 @@ function CheckoutContent() {
                     borderRadius: '16px',
                     background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)',
                     border: '1px solid color-mix(in srgb, var(--accent-cyan) 25%, transparent)',
+                    alignSelf: 'flex-start',
                   }}>
                     <span style={{ fontSize: '24px', fontWeight: 800, color: 'var(--accent-cyan)' }}>{prices.IN}</span>
                     <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginLeft: '4px' }}>/event</span>
@@ -197,11 +190,11 @@ function CheckoutContent() {
               </div>
 
               {/* Features Included */}
-              <div style={{ padding: '28px 36px', borderBottom: '1px solid var(--border)' }}>
+              <div className="p-6 sm:p-9 border-b border-border">
                 <p style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '16px' }}>
                   What&apos;s Included
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {features.map((feature, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Check size={14} style={{ color: 'var(--success)', flexShrink: 0 }} />
@@ -212,7 +205,7 @@ function CheckoutContent() {
               </div>
 
               {/* Partner Referral Code Input Section */}
-              <div style={{ padding: '20px 36px', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--surface) 95%, var(--border))' }}>
+              <div className="px-6 py-5 sm:px-9 border-b border-border bg-[color-mix(in_srgb,var(--surface)_95%,var(--border))]">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', gap: '10px' }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '6px' }}>
@@ -246,7 +239,7 @@ function CheckoutContent() {
               </div>
 
               {/* Payment Section */}
-              <div style={{ padding: '32px 36px' }}>
+              <div className="p-6 sm:p-9">
                 <p style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)', marginBottom: '20px' }}>
                   How to Purchase
                 </p>

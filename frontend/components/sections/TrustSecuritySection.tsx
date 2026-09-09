@@ -1,72 +1,82 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, Lock, EyeOff, Trash2, Key, HardDrive } from "lucide-react";
+import { ShieldCheck, Lock, EyeOff, Trash2, KeyRound, FileCheck } from "lucide-react";
 
 export default function TrustSecuritySection() {
   const trustPoints = [
     {
-      icon: <Lock className="w-5 h-5 text-cyan-400" />,
-      title: "Private Event Galleries",
-      description: "Only guests with your QR code or access PIN can view and upload to your event gallery.",
+      icon: <Lock className="w-5 h-5 text-primary" />,
+      bg: "bg-primary/10 border border-primary/20",
+      title: "Private by Default",
+      description: "Only guests with your specific QR code can view or upload to your gallery.",
     },
     {
-      icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
-      title: "Host Moderation & Filtering",
-      description: "Complete control over uploaded media. Approve or reject photos before they appear on screen.",
+      icon: <ShieldCheck className="w-5 h-5 text-primary" />,
+      bg: "bg-primary/10 border border-primary/20",
+      title: "Host Moderation",
+      description: "You approve every photo before it goes live on the big screen with 1 tap.",
     },
     {
-      icon: <EyeOff className="w-5 h-5 text-purple-400" />,
-      title: "Access Control & Close Event",
-      description: "Lock upload access at any time or turn galleries view-only after the event ends.",
+      icon: <KeyRound className="w-5 h-5 text-accent" />,
+      bg: "bg-accent/10 border border-accent/20",
+      title: "Encrypted Cloud Vault",
+      description: "Enterprise-grade SSL/TLS in transit and AES-256 encrypted storage at rest.",
     },
     {
-      icon: <HardDrive className="w-5 h-5 text-amber-400" />,
-      title: "Protected Storage Cloud",
-      description: "Photos are stored securely with automated lifecycle protection and non-public storage paths.",
+      icon: <Trash2 className="w-5 h-5 text-text-secondary" />,
+      bg: "bg-bg-subtle border border-border",
+      title: "Full Deletion Rights",
+      description: "Delete any individual photo, video clip, or your entire event album anytime.",
     },
     {
-      icon: <Trash2 className="w-5 h-5 text-red-400" />,
-      title: "Host Data Deletion",
-      description: "Event hosts retain full rights to delete photos or remove entire galleries at any time.",
+      icon: <EyeOff className="w-5 h-5 text-primary" />,
+      bg: "bg-primary/10 border border-primary/20",
+      title: "No Third-Party Sharing",
+      description: "We never monetize, train AI on, or share your private event memories. Ever.",
     },
     {
-      icon: <Key className="w-5 h-5 text-blue-400" />,
-      title: "Secure Session Tokens",
-      description: "CSRF protection, rate limiting, and encrypted session cookies safeguard host and guest flows.",
+      icon: <FileCheck className="w-5 h-5 text-accent" />,
+      bg: "bg-accent/10 border border-accent/20",
+      title: "Original Full-Res Quality",
+      description: "Zero compression or downscaling. All original high-res photos and EXIF preserved.",
     },
   ];
 
   return (
-    <section className="w-full py-20 px-4 md:px-8 relative bg-slate-950/80 border-b border-white/5 flex flex-col items-center justify-center">
-      <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
+    <section className="w-full py-20 px-4 md:px-8 bg-bg-subtle flex flex-col items-center justify-center text-center">
+      <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
         
-        <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold tracking-wider uppercase mb-4">
-          Privacy & Control
+        <span className="px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase mb-4 mx-auto">
+          PRIVACY & CONTROL
         </span>
 
-        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight max-w-3xl">
-          Your Memories, <span className="text-emerald-400">Strictly Private</span>
+        <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tight text-center mb-12 max-w-3xl mx-auto">
+          Your Memories Belong to You. Period.
         </h2>
 
-        <p className="text-slate-300 text-sm md:text-base max-w-2xl mt-4 font-medium">
-          Built with host control at the core. Your photos stay strictly within your event.
-        </p>
-
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-12 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-12 text-center">
           {trustPoints.map((tp) => (
             <div
               key={tp.title}
-              className="p-6 rounded-2xl bg-slate-900/60 border border-white/10 hover:border-emerald-500/30 transition-all shadow-xl flex flex-col items-center text-center"
+              className="p-6 rounded-2xl bg-surface border border-border flex flex-col items-center text-center shadow-card hover:shadow-card-hover transition-all h-full"
             >
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+              <div className={`w-12 h-12 rounded-xl ${tp.bg} flex items-center justify-center mb-4 mx-auto`}>
                 {tp.icon}
               </div>
-              <h3 className="text-white font-extrabold text-base mb-2">{tp.title}</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">{tp.description}</p>
+              <h3 className="text-text-primary font-bold text-lg mb-2 text-center">{tp.title}</h3>
+              <p className="text-text-secondary text-sm leading-relaxed text-center">{tp.description}</p>
             </div>
           ))}
+        </div>
+
+        {/* Callout */}
+        <div className="bg-surface border border-border rounded-xl p-6 mt-4 max-w-2xl w-full mx-auto shadow-sm text-center">
+          <h4 className="font-bold text-text-primary text-lg mb-2 text-center">Q: "Who can see my photos?"</h4>
+          <p className="text-text-secondary text-base leading-relaxed text-center">
+            A: "Only people with your unique event QR code or event link. Galleries are private by default and you can lock them at any time."
+          </p>
         </div>
 
       </div>

@@ -19,10 +19,20 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
+  --color-accent-coral: var(--accent-coral);
   --color-accent-cyan: var(--accent-cyan);
   --color-accent-warm: var(--accent-warm);
   --color-error: var(--error);
   --color-success: var(--success);
+
+  --color-brand-teal: #0E6B6B;
+  --color-brand-amber: #F2A93B;
+  --color-brand-coral: #FF7A59;
+  --color-brand-gold: #F2A93B;
+  --color-brand-gold-light: #FEF3C7;
+  --color-brand-cyan: #0E6B6B;
+  --color-brand-cyan-light: #E6F4F4;
+  --color-warning: #D97706;
 
   --animate-shimmer: shimmer 1.5s infinite;
   --animate-marquee: marquee 30s linear infinite;
@@ -53,44 +63,69 @@
   }
 }
 
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s ease-out both;
+}
+
+/* Staggered delays for children */
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+
 :root {
-  /* -- Light Mode Palette : "Daylight Scan" -- */
-  --bg: #F6F8FB;
-  --bg-subtle: #ECF0F5;
-  --surface: #FFFFFF;
-  --border: rgba(11, 15, 25, 0.08);
-  --border-hover: rgba(11, 15, 25, 0.16);
-  --border-focus: #0891A8;
+  /* ── Light-First Photographer Studio Palette ── */
+  --bg: #FAFAF9;              /* Neutral 50 Warm-White */
+  --bg-subtle: #F5F5F4;       /* Neutral 100 Subtle */
+  --surface: #FFFFFF;         /* Crisp White Card Surface */
+  --border: #E7E5E4;          /* Neutral 200 Border */
+  --border-hover: #D6D3D1;    /* Neutral 300 Hover */
+  --border-focus: #0E6B6B;    /* Deep Teal Focus */
 
-  --text-primary: #0B0D12;
-  --text-secondary: #5B6472;
-  --text-muted: #9AA3B2;
+  --text-primary: #1C1917;    /* Neutral 900 Heading */
+  --text-secondary: #57534E;  /* Neutral 600 Body */
+  --text-muted: #A8A29E;      /* Neutral 400 Muted */
 
-  --primary: #0B0D12;
-  --secondary: #334155;
-  --accent: #0891A8;
-  --accent-cyan: #0891A8;
-  --accent-warm: #D6491E;
-  --error: #DC2626;
-  --success: #16A34A;
+  --primary: #0E6B6B;         /* Deep Teal */
+  --secondary: #57534E;       /* Warm Slate */
+  --accent: #F2A93B;          /* Warm Amber */
+  --accent-coral: #FF7A59;    /* Coral (Moderation/Featured) */
+  --accent-cyan: #0E6B6B;     /* Deep Teal Accent */
+  --accent-warm: #F2A93B;     /* Warm Amber */
+  --error: #DC2626;           /* Operational Warning/Error */
+  --success: #2F9E44;         /* Trustworthy Green */
 
-  /* -- Border Radius -- */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  /* ── Border Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
   --radius-full: 9999px;
 
-  /* -- Typography Scale -- */
-  --fs-display: 3.25rem; /* 52px */
-  --fs-h1: 2.375rem; /* 38px */
-  --fs-h2: 1.5rem; /* 24px */
-  --fs-h3: 1.25rem; /* 20px */
-  --fs-body: 0.875rem; /* 14px */
-  --fs-small: 0.8125rem; /* 13px */
-  --fs-xs: 0.75rem; /* 12px */
+  /* ── Typography Scale ── */
+  --fs-display: 3.5rem;
+  --fs-h1: 2.5rem;
+  --fs-h2: 1.75rem;
+  --fs-h3: 1.25rem;
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-xs: 0.75rem;
 
-  /* -- Spacing Scale -- */
+  /* ── Spacing Scale ── */
   --space-1: 4px;
   --space-1-5: 6px;
   --space-2: 8px;
@@ -103,34 +138,45 @@
   --space-10: 64px;
   --space-container: 24px;
 
-  /* -- Shadow -- */
-  --shadow-card: 0 1px 3px rgba(11,15,25,0.03), 0 8px 24px -4px rgba(11,15,25,0.06);
-  --shadow-card-hover: 0 4px 6px rgba(11,15,25,0.03), 0 16px 32px -8px rgba(11,15,25,0.10);
+  /* ── Soft Ambient Studio Shadows ── */
+  --shadow-card: 0 1px 3px 0 rgba(28, 25, 23, 0.03), 0 4px 16px -2px rgba(28, 25, 23, 0.05);
+  --shadow-card-hover: 0 12px 30px -4px rgba(28, 25, 23, 0.08), 0 4px 12px -2px rgba(28, 25, 23, 0.04);
+}
+
+/* ── Context 2: Reception Live Wall & Dim-Venue Dark ── */
+.live-wall-theme {
+  --wall-bg: #1C1917;         /* Neutral 900 Dim-Venue */
+  --wall-surface: #292524;    /* Neutral 800 Surface */
+  --wall-text: #FAFAF9;       /* Neutral 50 Text */
+  --wall-pulse: #F2A93B;      /* Warm Amber New Photo Pulse */
+  --wall-featured: #FF7A59;   /* Coral Featured/Pinned Photo Tag */
+  --wall-brand: #0E6B6B;      /* Deep Teal Studio Monogram */
 }
 
 .dark {
-  /* -- Dark Mode Palette : "Night Scan" -- */
-  --bg: #07080B;
-  --bg-subtle: #0D0F13;
-  --surface: #121319;
-  --border: rgba(94, 230, 255, 0.10);
-  --border-hover: rgba(94, 230, 255, 0.26);
-  --border-focus: #5EE6FF;
+  /* ── Dedicated Dark Mode Photographer Studio Palette ── */
+  --bg: #12100E;              /* Deep Warm Near-Black / Obsidian */
+  --bg-subtle: #1C1917;       /* Neutral 900 Dim-Venue */
+  --surface: #24201D;         /* Neutral 850 Card Surface */
+  --border: #38332E;          /* Subtle Warm Border */
+  --border-hover: #524C44;    /* Border on Hover */
+  --border-focus: #14B8A6;    /* Luminous Teal Focus */
 
-  --text-primary: #EDEFF3;
-  --text-secondary: #8A93A3;
-  --text-muted: #4B5261;
+  --text-primary: #FAFAF9;    /* Neutral 50 Warm Heading */
+  --text-secondary: #D6D3D1;  /* Neutral 300 Body Text */
+  --text-muted: #A8A29E;      /* Neutral 400 Muted */
 
-  --primary: #EDEFF3;
-  --secondary: #C7CCD6;
-  --accent: #5EE6FF;
-  --accent-cyan: #5EE6FF;
-  --accent-warm: #FF6A4D;
-  --success: #4ADE80;
-  --error: #FF5470;
+  --primary: #14B8A6;         /* Luminous Teal for Dark Mode */
+  --secondary: #D6D3D1;       /* Warm Silver Secondary */
+  --accent: #F2A93B;          /* Warm Amber */
+  --accent-coral: #FF7A59;    /* Coral */
+  --accent-cyan: #14B8A6;     /* Luminous Teal */
+  --accent-warm: #F2A93B;     /* Warm Amber */
+  --error: #EF4444;           /* Coral-Red Error */
+  --success: #34D399;         /* Emerald Success */
 
-  --shadow-card: 0 1px 2px rgba(0,0,0,0.6), 0 8px 32px -8px rgba(0,0,0,0.8);
-  --shadow-card-hover: 0 0 0 1px rgba(94,230,255,0.08), 0 16px 48px -12px rgba(0,0,0,0.9), 0 0 40px -18px rgba(94,230,255,0.35);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 4px 16px -2px rgba(0, 0, 0, 0.5);
+  --shadow-card-hover: 0 12px 30px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
 }
 
 * {

@@ -4,10 +4,14 @@ import { rateLimit } from '@/lib/rateLimit';
 
 const PRICES_INR: Record<string, number> = {
   STARTER: 2499, STANDARD: 4999, PREMIUM: 7499, WHITE_LABEL: 9999,
+  SMALL: 999, MEDIUM: 1999, LARGE: 3499,
+  EVENT: 999,
 };
 const PLAN_NAMES: Record<string, string> = {
   STARTER: 'Memento Starter', STANDARD: 'Memento Standard',
   PREMIUM: 'Memento Premium', WHITE_LABEL: 'Memento White Label',
+  SMALL: 'Small Event (≤100 Guests)', MEDIUM: 'Medium Event (100–300 Guests)',
+  LARGE: 'Large Event (300+ Guests)', EVENT: 'Memento Event',
 };
 
 export async function POST(req: NextRequest) {

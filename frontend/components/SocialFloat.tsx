@@ -22,14 +22,16 @@ export default function SocialFloat() {
 
   if (pathname?.startsWith('/admin') || 
       pathname?.startsWith('/system') || 
-      pathname?.startsWith('/wall/') || 
-      pathname?.startsWith('/mobile/') ||
+      pathname?.startsWith('/wall') || 
+      pathname?.startsWith('/mobile') ||
+      pathname?.startsWith('/demo') ||
+      pathname?.startsWith('/studio') ||
       pathname?.startsWith('/dashboard') ||
       pathname?.startsWith('/create')
   ) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 sm:left-6 sm:right-auto z-50 flex items-center gap-3">
+    <div className="fixed bottom-20 right-4 sm:bottom-6 sm:left-6 sm:right-auto z-50 flex items-center gap-2 sm:gap-3">
       <a 
         href="https://www.facebook.com/1270689629459999" 
         target="_blank" 

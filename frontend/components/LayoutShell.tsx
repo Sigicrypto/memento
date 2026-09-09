@@ -22,7 +22,8 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   const isStandaloneRoute =
     pathname === '/' ||
     pathname?.startsWith('/weddings') ||
-    pathname?.startsWith('/professionals') ||
+    pathname?.startsWith('/photographers') ||
+    pathname?.startsWith('/studio') ||
     pathname?.startsWith('/corporate-events') ||
     pathname?.startsWith('/pricing') ||
     pathname?.startsWith('/privacy') ||

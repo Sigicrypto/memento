@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { validateCSRF } from '@/lib/csrf';
 
-const VALID_PLANS = ['STARTER', 'STANDARD', 'PREMIUM', 'WHITE_LABEL'];
+const VALID_PLANS = ['STARTER', 'STANDARD', 'PREMIUM', 'WHITE_LABEL', 'SMALL', 'MEDIUM', 'LARGE', 'EVENT'];
 
 function isValidPlan(plan: string): boolean {
   return VALID_PLANS.includes(plan?.toUpperCase?.());

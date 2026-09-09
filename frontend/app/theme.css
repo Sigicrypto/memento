@@ -20,12 +20,12 @@
   height: 64px;
 }
 .glass-nav.scrolled {
-  background: rgba(246, 248, 251, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .dark .glass-nav.scrolled {
-  background: rgba(7, 8, 11, 0.82);
+  background: rgba(18, 16, 14, 0.94);
 }
 
 /* ── Viewfinder corner brackets (signature motif) ── */
@@ -62,7 +62,7 @@
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   box-shadow: var(--shadow-card);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s ease;
   position: relative;
 }
 
@@ -71,14 +71,14 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(94, 230, 255, 0.03) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(242, 169, 59, 0.03) 0%, transparent 60%);
   pointer-events: none;
 }
 
 .gcard:hover {
   border-color: var(--border-hover);
   box-shadow: var(--shadow-card-hover);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .gcard-accent::after {
@@ -89,7 +89,7 @@
   width: 100%;
   height: 2px;
   border-radius: inherit;
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
   opacity: 0.4;
   transition: opacity 0.3s;
 }

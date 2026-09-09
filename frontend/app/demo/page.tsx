@@ -230,6 +230,7 @@ const Confetti = ({ trigger }: { trigger: boolean }) => {
 type ViewMode = 'grid' | 'polaroid' | 'slideshow';
 
 function DemoWallInner() {
+  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
   const [demoId, setDemoId] = useState<string>('');
   const [photos, setPhotos] = useState<DemoMedia[]>([]);
@@ -264,6 +265,10 @@ function DemoWallInner() {
   // Floating Reactions State
   const [floatingReactions, setFloatingReactions] = useState<{ id: string; emoji: string; x: number }[]>([]);
   const [reactionsMap, setReactionsMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // 1. Initialize Demo Session & Seed Data
   useEffect(() => {
@@ -461,10 +466,18 @@ function DemoWallInner() {
     }, 2500);
   };
 
-  const uploadUrl = typeof window !== 'undefined' ? `${window.location.origin}/demo/upload?id=${demoId}` : '';
+  const uploadUrl = mounted && typeof window !== 'undefined' ? `${window.location.origin}/demo/upload?id=${demoId}` : '';
 
   // Always render audio tag so music continues across view modes
   const audioNode = <audio ref={audioRef} loop src={TRACKS[currentTrackIndex].file} />;
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#07080b]">
+        <div className="w-10 h-10 border-2 border-white/10 border-t-accent-cyan rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   // ── SLIDESHOW VIEW ──────────────────────────────────────────
   if (viewMode === 'slideshow') {
@@ -770,20 +783,21 @@ function DemoWallInner() {
 
           {/* QR Code Upload Button */}
           <ShimmerButton
-            shimmerColor="#ffffff"
+            shimmerColor="#00E5FF"
+            background="#ffffff"
             onClick={() => setShowMobileQR(true)}
             paddingX={18}
             paddingY={8}
-            className="hidden sm:flex items-center gap-2 text-xs font-extrabold text-black bg-white rounded-full shadow-xl shrink-0"
+            className="hidden sm:flex items-center gap-2 text-xs font-extrabold text-black bg-white rounded-full shadow-xl shrink-0 border border-white hover:brightness-105"
           >
-            <QrCode size={14} className="text-black" />
+            <QrCode size={14} className="text-black shrink-0" />
             <span className="text-black font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">SCAN QR</span>
           </ShimmerButton>
         </div>
       </nav>
 
       {/* Main Wall Body */}
-      <main className="relative z-10 pt-28 px-6 sm:px-12 md:px-20 max-w-[1700px] mx-auto w-full flex-grow pb-32">
+      <main className="relative z-10 pt-28 px-4 sm:px-12 md:px-20 max-w-[1700px] mx-auto w-full flex-grow pb-32">
         {/* Wall Title & Toolbar */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
@@ -797,10 +811,10 @@ function DemoWallInner() {
           </div>
 
           {/* View Mode Selector Tabs */}
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-1.5 rounded-2xl">
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 p-1.5 rounded-2xl overflow-x-auto max-w-full no-scrollbar flex-nowrap shrink-0">
             <button
               onClick={() => { setPrevViewMode(viewMode); setViewMode('polaroid'); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                 viewMode === 'polaroid' ? 'bg-accent-cyan text-black shadow-lg' : 'text-text-muted hover:text-white'
               }`}
             >
@@ -808,7 +822,7 @@ function DemoWallInner() {
             </button>
             <button
               onClick={() => { setPrevViewMode(viewMode); setViewMode('slideshow'); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                 (viewMode as string) === 'slideshow' ? 'bg-accent-cyan text-black shadow-lg' : 'text-text-muted hover:text-white'
               }`}
             >
@@ -816,7 +830,7 @@ function DemoWallInner() {
             </button>
             <button
               onClick={() => { setPrevViewMode(viewMode); setViewMode('grid'); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                 viewMode === 'grid' ? 'bg-accent-cyan text-black shadow-lg' : 'text-text-muted hover:text-white'
               }`}
             >
@@ -1006,16 +1020,28 @@ function DemoWallInner() {
         )}
       </AnimatePresence>
 
-      {/* Floating Sticky Upload FAB Button for 1-Tap Photo Upload */}
+      {/* Persistent Scan-to-Join QR Card (TV Corner Display) */}
       {uploadUrl && (
-        <div className="fixed bottom-6 left-6 z-[110]">
-          <Link
-            href={uploadUrl}
-            className="flex items-center gap-2.5 px-5 py-3.5 rounded-full bg-accent-cyan text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_10px_30px_rgba(0,229,255,0.4)] hover:scale-105 active:scale-95 transition-all border border-cyan-300/40"
-          >
-            <Camera size={18} />
-            <span>+ Upload Photo</span>
-          </Link>
+        <div className="fixed bottom-8 left-8 z-[110] hidden sm:flex flex-col items-center">
+          <div className="p-4 bg-[#0b0f19]/90 backdrop-blur-2xl rounded-2xl border border-white/15 shadow-2xl flex flex-col items-center gap-2.5 text-center group transition-all hover:border-accent-cyan/40">
+            <div className="p-3 bg-white rounded-xl shadow-inner">
+              <QRCode value={uploadUrl} size={130} bgColor="#ffffff" fgColor="#000000" qrStyle="dots" eyeRadius={10} />
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="text-[10px] font-black uppercase tracking-widest text-accent-cyan flex items-center gap-1.5">
+                <QrCode size={12} /> Scan with Phone
+              </p>
+              <p className="text-[9px] text-white/60 mt-0.5">Point camera at this screen</p>
+            </div>
+            <Link
+              href={uploadUrl}
+              target="_blank"
+              className="mt-1 px-3 py-1.5 rounded-full bg-accent-cyan/15 hover:bg-accent-cyan text-accent-cyan hover:text-black border border-accent-cyan/30 text-[10px] font-extrabold tracking-wider uppercase transition-all flex items-center gap-1"
+            >
+              <Camera size={12} />
+              <span>Or click to test ↗</span>
+            </Link>
+          </div>
         </div>
       )}
     </div>

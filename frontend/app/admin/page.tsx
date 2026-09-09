@@ -599,6 +599,17 @@ export default function AdminPage() {
             ))}
 
             <Link
+              href="/studio"
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-amber-400 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20"
+            >
+              <span className="flex items-center gap-3">
+                <span className="text-base">📸</span>
+                <span>Studio Dashboard</span>
+              </span>
+              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">STUDIO</span>
+            </Link>
+
+            <Link
               href="/dashboard/branding"
               className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20"
             >
@@ -682,10 +693,19 @@ export default function AdminPage() {
               <div className={cardClass}>
                 <div className="p-6 space-y-4">
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Command Hub Launchers</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <Link
+                      href="/studio"
+                      className="p-4 bg-amber-950/30 border border-amber-500/30 hover:border-amber-500/60 rounded-xl text-left transition-all group block"
+                    >
+                      <span className="text-xl block mb-1">📸</span>
+                      <p className="text-xs font-bold text-white group-hover:text-amber-300">Studio Command Center</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">Manage client events, guest tiers, and 4K ZIPs.</p>
+                    </Link>
+
                     <button
                       onClick={() => setActiveTab('social')}
-                      className="p-4 bg-purple-950/30 border border-purple-500/30 hover:border-purple-500/60 rounded-xl text-left transition-all group"
+                      className="p-4 bg-purple-950/30 border border-purple-500/30 hover:border-purple-500/60 rounded-xl text-left transition-all group cursor-pointer"
                     >
                       <span className="text-xl block mb-1">📣</span>
                       <p className="text-xs font-bold text-white group-hover:text-purple-300">Social Auto-Pilot Studio</p>
@@ -694,7 +714,7 @@ export default function AdminPage() {
 
                     <button
                       onClick={() => setActiveTab('leads')}
-                      className="p-4 bg-emerald-950/30 border border-emerald-500/30 hover:border-emerald-500/60 rounded-xl text-left transition-all group"
+                      className="p-4 bg-emerald-950/30 border border-emerald-500/30 hover:border-emerald-500/60 rounded-xl text-left transition-all group cursor-pointer"
                     >
                       <span className="text-xl block mb-1">💬</span>
                       <p className="text-xs font-bold text-white group-hover:text-emerald-300">B2B Leads & WhatsApp</p>
@@ -703,10 +723,10 @@ export default function AdminPage() {
 
                     <button
                       onClick={() => setActiveTab('events')}
-                      className="p-4 bg-amber-950/30 border border-amber-500/30 hover:border-amber-500/60 rounded-xl text-left transition-all group"
+                      className="p-4 bg-cyan-950/30 border border-cyan-500/30 hover:border-cyan-500/60 rounded-xl text-left transition-all group cursor-pointer"
                     >
                       <span className="text-xl block mb-1">🎉</span>
-                      <p className="text-xs font-bold text-white group-hover:text-amber-300">Live Photo Walls</p>
+                      <p className="text-xs font-bold text-white group-hover:text-cyan-300">Live Photo Walls</p>
                       <p className="text-[11px] text-slate-400 mt-0.5">Manage live event streams, lock/unlock feeds.</p>
                     </button>
                   </div>
@@ -1585,19 +1605,26 @@ CREATE POLICY "Allow public update promoters" ON promoters FOR UPDATE USING (tru
       )}
 
       {/* Mobile Bottom Navigation Bar for One-Thumb Switching */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 border-t border-slate-800 backdrop-blur-xl px-2 py-2 flex items-center justify-around">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 border-t border-slate-800 backdrop-blur-xl px-2 py-1.5 flex items-center overflow-x-auto no-scrollbar gap-1">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center gap-1 p-2 rounded-lg text-center transition-all ${
-              activeTab === tab.id ? 'text-amber-400 font-bold' : 'text-slate-400'
+            className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-center transition-all shrink-0 min-w-[58px] cursor-pointer ${
+              activeTab === tab.id ? 'text-amber-400 font-bold bg-white/5' : 'text-slate-400'
             }`}
           >
-            <span className="text-lg">{tab.icon}</span>
-            <span className="text-[10px] truncate max-w-[56px]">{tab.label.split(' ')[0]}</span>
+            <span className="text-base">{tab.icon}</span>
+            <span className="text-[10px] truncate whitespace-nowrap">{tab.label.split(' ')[0]}</span>
           </button>
         ))}
+        <Link
+          href="/studio"
+          className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-center transition-all shrink-0 min-w-[58px] text-amber-400 hover:bg-white/5"
+        >
+          <span className="text-base">📸</span>
+          <span className="text-[10px] truncate whitespace-nowrap">Studio</span>
+        </Link>
       </nav>
 
     </div>

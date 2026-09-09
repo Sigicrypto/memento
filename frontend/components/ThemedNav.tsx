@@ -6,11 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
-import { LogOut, Menu, X, Sparkles } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
+import { LogOut, Menu, X, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ThemeToggle from '@/components/ThemeToggle';
-
-import PartnerProgramModal from '@/components/PartnerProgramModal';
 
 interface ThemedNavProps {
   showAuthButtons?: boolean;
@@ -25,7 +23,6 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -59,13 +56,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   };
 
   const navItems = [
-    { label: 'Product', href: '/#product' },
-    { label: 'How It Works', href: '/#how-it-works' },
+    { label: 'How It Works', href: '/how-it-works' },
     { label: 'Weddings', href: '/weddings' },
-    { label: 'Professionals', href: '/professionals' },
+    { label: 'Parties', href: '/parties' },
     { label: 'Corporate', href: '/corporate-events' },
-    { label: 'Partner Program', href: '/partner' },
-    { label: 'Pricing', href: '/#pricing' },
+    { label: 'For Photographers', href: '/photographers' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Contact', href: '/contact' },
   ];
 
   return (
@@ -76,39 +73,36 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           opacity: hidden && !isMobileMenuOpen ? 0 : 1,
         }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1480px] z-[9999] rounded-full transition-all duration-500 ${
+        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1480px] z-[9999] rounded-full transition-all duration-300 ${
           scrolled
-            ? 'bg-slate-950/95 dark:bg-[#0a0a0a]/95 backdrop-blur-2xl border border-slate-800 dark:border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.4)]'
-            : 'bg-slate-950/80 dark:bg-[#0a0a0a]/50 backdrop-blur-md border border-slate-800/80 dark:border-white/[0.06]'
+            ? 'bg-surface/95 backdrop-blur-2xl border border-border shadow-[0_8px_30px_rgb(28,25,23,0.04)]'
+            : 'bg-surface/85 backdrop-blur-xl border border-border/80 shadow-[0_4px_20px_rgb(28,25,23,0.02)]'
         }`}
       >
-        {/* subtle top gradient accent line */}
-        <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-
-        <div className="h-16 md:h-20 flex items-center justify-between px-6 md:px-8">
+        <div className="h-16 md:h-20 flex items-center justify-between px-4 sm:px-6 md:px-8">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               className="flex items-center flex-shrink-0 cursor-pointer"
             >
-              <div className="w-28 h-28 md:w-36 md:h-36 flex items-center justify-center overflow-hidden">
-                <AnimatedLogo width={180} height={180} />
+              <div className="h-10 md:h-12 flex items-center justify-center overflow-hidden">
+                <AnimatedLogo width={140} height={44} />
               </div>
             </motion.div>
           </Link>
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="group relative text-xs xl:text-sm font-medium text-slate-200 dark:text-white/80 hover:text-white transition-colors duration-200"
+                  className="group relative text-xs xl:text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors duration-200"
                 >
                   {item.label}
-                  <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-cyan-400 transition-all duration-300 group-hover:w-full" />
+                  <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
             </nav>
@@ -116,30 +110,35 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/partner"
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold tracking-wider uppercase transition-all shrink-0 cursor-pointer"
-              title="Earn 10% Referral Bonus for each user referred"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>10% Partner Bonus</span>
-            </Link>
-
             <ThemeToggle />
+            <Link
+              href="/photographers"
+              className="hidden xl:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 hover:bg-primary/15 border border-primary/25 text-primary text-xs font-bold tracking-wide transition-all shrink-0 cursor-pointer"
+              title="Studio White-Labeling & Live Photo Walls"
+            >
+              <Camera className="w-3.5 h-3.5 text-primary" />
+              <span>For Photographers</span>
+            </Link>
             
             {!mini && showAuthButtons && (
-              <div className="hidden md:flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-2.5">
                 {user ? (
                   <>
                     <Link
-                      href="/dashboard"
-                      className="px-4 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-extrabold tracking-wide transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:scale-105 active:scale-95 whitespace-nowrap"
+                      href="/studio"
+                      className="px-4 py-2 rounded-full bg-primary hover:opacity-90 text-white text-xs font-bold tracking-wide transition-all shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap"
                     >
-                      Dashboard
+                      Studio Portal
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      className="px-3.5 py-2 rounded-full text-text-secondary hover:text-text-primary text-xs font-bold transition-all whitespace-nowrap"
+                    >
+                      My Events
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="text-white/50 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+                      className="text-text-secondary hover:text-text-primary transition-colors p-2 rounded-full hover:bg-bg-subtle cursor-pointer"
                       title="Sign out"
                     >
                       <LogOut size={18} />
@@ -149,13 +148,19 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <>
                     <button
                       onClick={() => openAuth('login')}
-                      className="px-4 py-2 rounded-full text-white/90 hover:text-white hover:bg-white/10 text-xs font-bold transition-all"
+                      className="px-3.5 py-2 rounded-full text-text-primary hover:text-primary text-xs font-bold transition-all cursor-pointer"
                     >
                       Log in
                     </button>
+                    <Link
+                      href="/studio"
+                      className="px-3.5 py-2 rounded-full border border-primary/30 text-primary hover:bg-primary/5 text-xs font-bold transition-all cursor-pointer"
+                    >
+                      Studio Portal
+                    </Link>
                     <button
                       onClick={() => openAuth('signup')}
-                      className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-extrabold tracking-wide shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+                      className="px-4 py-2 rounded-full bg-accent hover:bg-[#D9932B] text-white text-xs font-bold tracking-wide shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap cursor-pointer"
                     >
                       Create Event
                     </button>
@@ -167,7 +172,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             {/* Hamburger Toggle */}
             {!mini && (
               <button
-                className="lg:hidden relative z-[101] p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+                className="lg:hidden relative z-[101] min-w-[44px] min-h-[44px] flex items-center justify-center text-text-primary hover:bg-bg-subtle rounded-full transition-colors cursor-pointer"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -185,20 +190,20 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-[#050505]/98 backdrop-blur-md lg:hidden overflow-y-auto flex flex-col"
+            className="fixed inset-0 z-[100] bg-surface/98 backdrop-blur-md lg:hidden overflow-y-auto flex flex-col"
           >
             <div className="flex flex-col flex-1 pt-28 px-6 pb-8">
-              <nav className="flex flex-col gap-5">
+              <nav className="flex flex-col gap-3">
                 {navItems.map((item, i) => (
                   <motion.div
                     key={item.label}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 + i * 0.05 }}
+                    transition={{ delay: 0.03 + i * 0.03 }}
                   >
                     <Link
                       href={item.href}
-                      className="text-xl font-semibold text-white hover:text-cyan-400 transition-colors"
+                      className="min-h-[44px] flex items-center text-lg font-bold text-text-primary hover:text-primary transition-colors py-1"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {item.label}
@@ -207,30 +212,49 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                 ))}
               </nav>
 
-              <div className="mt-6 mb-4">
-                <button
-                  type="button"
-                  onClick={() => { setIsPartnerModalOpen(true); setIsMobileMenuOpen(false); }}
-                  className="w-full py-3.5 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-sm flex items-center justify-center gap-2"
+              <div className="mt-6 mb-4 flex flex-col gap-3">
+                <Link
+                  href="/photographers"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full min-h-[44px] py-3 px-4 rounded-xl bg-primary/10 border border-primary/25 text-primary font-bold text-sm flex items-center justify-center gap-2"
                 >
-                  <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span>Earn 10% Referral Bonus</span>
-                </button>
+                  <Camera className="w-4 h-4 text-primary" />
+                  <span>For Photographers & Studios</span>
+                </Link>
+                <Link
+                  href="/studio"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full min-h-[44px] py-3 px-4 rounded-xl bg-primary text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <span>Studio Portal</span>
+                </Link>
+                
+                <div className="flex items-center justify-between py-2.5 px-4 rounded-xl bg-bg-subtle border border-border mt-1">
+                  <span className="text-sm font-semibold text-text-primary">Appearance</span>
+                  <ThemeToggle />
+                </div>
               </div>
 
-              <div className="mt-auto space-y-3 pt-6 border-t border-white/10">
+              <div className="mt-auto space-y-3 pt-6 border-t border-border">
                 {user ? (
                   <>
                     <Link
-                      href="/dashboard"
-                      className="w-full block py-3.5 rounded-xl border border-white/20 text-center text-white font-bold text-sm"
+                      href="/studio"
+                      className="w-full min-h-[44px] flex items-center justify-center py-3.5 rounded-xl bg-primary text-white font-bold text-sm"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Dashboard
+                      Studio Console
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      className="w-full min-h-[44px] flex items-center justify-center py-3.5 rounded-xl border border-border text-center text-text-primary font-bold text-sm"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Events Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="w-full py-3.5 rounded-xl bg-white/5 text-white/70 font-semibold text-sm"
+                      className="w-full min-h-[44px] flex items-center justify-center py-3.5 rounded-xl bg-bg-subtle text-text-secondary font-semibold text-sm cursor-pointer"
                     >
                       Sign Out
                     </button>
@@ -239,13 +263,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <div className="flex flex-col gap-3">
                     <button
                       onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}
-                      className="w-full py-3.5 rounded-xl border border-white/20 text-white font-bold text-sm"
+                      className="w-full min-h-[44px] flex items-center justify-center py-3.5 rounded-xl border border-border text-text-primary font-bold text-sm cursor-pointer"
                     >
                       Log in
                     </button>
                     <button
                       onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
-                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-sm shadow-lg"
+                      className="w-full min-h-[44px] flex items-center justify-center py-3.5 rounded-xl bg-accent text-white font-bold text-sm shadow-md cursor-pointer"
                     >
                       Create Event
                     </button>
@@ -256,10 +280,6 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           </motion.div>
         )}
       </AnimatePresence>
-      <PartnerProgramModal
-        isOpen={isPartnerModalOpen}
-        onClose={() => setIsPartnerModalOpen(false)}
-      />
     </>
   );
 }
