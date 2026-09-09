@@ -1,49 +1,49 @@
 import { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { MonitorPlay, Layers, Download, ShieldCheck, LayoutDashboard, Palette, Camera } from 'lucide-react';
 import ProfitCalculator from './ProfitCalculator';
+import ThemedNav from '@/components/ThemedNav';
+import Footer from '@/components/sections/Footer';
 
 export const metadata: Metadata = {
   title: 'For Photographers & Studios | Memento — Per-Event Photo Sharing',
   description: 'Collect every guest photo, run a live wall, and white-label it as your own. Simple per-event pricing from ₹999. No app installs for guests.',
 };
 
-const ThemedNav = dynamic(() => import('@/components/ThemedNav'));
-const Footer = dynamic(() => import('@/components/sections/Footer'));
-
 export default function PhotographersPage() {
   return (
-    <div className="min-h-screen bg-bg text-text-primary font-sans">
+    <div className="min-h-screen bg-bg text-text-primary font-sans flex flex-col items-center w-full">
       <ThemedNav />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="flex justify-center gap-4 mb-8 flex-wrap">
+      <section className="pt-32 pb-20 px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center w-full">
+        <div className="flex justify-center gap-3 mb-8 flex-wrap mx-auto">
           <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-sm font-medium shadow-sm text-text-primary">100% No-App</span>
           <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-sm font-medium shadow-sm text-text-primary">Sub-2s Live Wall</span>
           <span className="px-4 py-1.5 rounded-full bg-surface border border-border text-sm font-medium shadow-sm text-text-primary">From ₹999/event</span>
         </div>
-        <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight text-text-primary max-w-4xl mx-auto mb-6">
+        <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tight text-text-primary max-w-4xl mx-auto mb-6 text-center">
           Collect every guest photo, run a live wall, and look like a hero—without extra gear.
         </h1>
-        <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-10">
+        <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto mb-10 text-center">
           No-app QR flow guests actually use. Studio white-labeling. Multi-event dashboard. Simple per-event pricing.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/create" className="px-8 py-4 bg-accent hover:bg-[#D9932B] text-white rounded-full font-semibold shadow-sm transition-all w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mx-auto w-full sm:w-auto">
+          <Link href="/create" className="px-8 py-4 bg-accent hover:bg-[#D9932B] text-white rounded-full font-semibold shadow-sm transition-all w-full sm:w-auto text-center">
             Start Your Free Event
           </Link>
-          <Link href="/pricing" className="px-8 py-4 bg-surface border border-border text-text-primary rounded-full font-semibold hover:bg-bg-subtle transition-colors w-full sm:w-auto">
+          <Link href="/pricing" className="px-8 py-4 bg-surface border border-border text-text-primary rounded-full font-semibold hover:bg-bg-subtle transition-colors w-full sm:w-auto text-center">
             View Pricing
           </Link>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="py-20 md:py-28 px-6 lg:px-8 bg-bg-subtle border-y border-border">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
-          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-16 text-text-primary">How It Works for Studios</h2>
+      <section className="py-20 md:py-28 px-6 lg:px-8 bg-bg-subtle border-y border-border w-full flex flex-col items-center">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center w-full">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-16 text-text-primary">
+            How It Works for Studios
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 w-full">
             {[
               { title: "Create Event", desc: "Set up your client's event in 60 seconds. Name, date, venue, guest tier." },
@@ -65,9 +65,11 @@ export default function PhotographersPage() {
       </section>
 
       {/* Features */}
-      <section className="py-20 md:py-28 px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center">
-        <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-16 text-text-primary">Features Built for Pros</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+      <section className="py-20 md:py-28 px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center w-full">
+        <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-16 text-text-primary">
+          Features Built for Pros
+        </h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl mx-auto">
           {[
             { icon: <Palette className="w-6 h-6 text-primary" />, title: "Studio White-Labeling", desc: "Your logo, your colors, your brand on every touchpoint. Clients never see 'Memento'." },
             { icon: <LayoutDashboard className="w-6 h-6 text-primary" />, title: "Multi-Event Dashboard", desc: "Manage all your client events from one command center. Track guests, photos, and revenue." },
@@ -107,9 +109,11 @@ export default function PhotographersPage() {
       </section>
 
       {/* Pricing Summary */}
-      <section className="py-20 md:py-28 px-6 lg:px-8 bg-bg-subtle border-y border-border text-center flex flex-col items-center">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center w-full">
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-16 text-text-primary text-center">Per-Event Pricing Summary</h2>
+      <section className="py-20 md:py-28 px-6 lg:px-8 bg-bg-subtle border-y border-border text-center flex flex-col items-center w-full">
+        <div className="max-w-5xl mx-auto flex flex-col items-center text-center w-full">
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-16 text-text-primary text-center">
+            Per-Event Pricing Summary
+          </h2>
           <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6 max-w-4xl w-full mx-auto mb-10 pt-4">
             {[
               { name: "Small", price: "₹999", desc: "Up to 100 Guests" },
@@ -124,11 +128,11 @@ export default function PhotographersPage() {
             ))}
           </div>
           <p className="text-base md:text-lg text-text-secondary mb-6 text-center">All features included at every tier. No hidden charges.</p>
-          <div className="inline-block px-6 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent font-bold text-sm mb-10 mx-auto">
+          <div className="inline-block px-6 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent font-bold text-sm mb-10 mx-auto text-center">
             Studio Bundle: Book 5+ events → Save 15%
           </div>
-          <div className="flex justify-center">
-            <Link href="/pricing" className="inline-flex px-8 py-4 bg-surface border border-border text-text-primary rounded-full font-semibold hover:bg-bg-subtle transition-colors shadow-sm">
+          <div className="flex justify-center mx-auto">
+            <Link href="/pricing" className="inline-flex px-8 py-4 bg-surface border border-border text-text-primary rounded-full font-semibold hover:bg-bg-subtle transition-colors shadow-sm text-center">
               See Full Pricing
             </Link>
           </div>
@@ -136,30 +140,38 @@ export default function PhotographersPage() {
       </section>
 
       {/* Profit Calculator Section */}
-      <section className="py-20 md:py-28 px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-text-primary">Calculate Your Studio ROI</h2>
-          <p className="text-text-secondary text-lg">See how much extra revenue you can generate by offering Memento live walls to your clients.</p>
+      <section className="py-20 md:py-28 px-6 lg:px-8 max-w-7xl mx-auto flex flex-col items-center text-center w-full">
+        <div className="max-w-3xl mx-auto text-center mb-12 flex flex-col items-center">
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 text-text-primary text-center">
+            Calculate Your Studio ROI
+          </h2>
+          <p className="text-text-secondary text-base md:text-lg text-center">
+            See how much extra revenue you can generate by offering Memento live walls to your clients.
+          </p>
         </div>
         <ProfitCalculator />
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-amber-50/50 to-bg border-t border-border text-center">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-display font-black text-text-primary mb-6 tracking-tight">Ready to add live photo sharing to every event?</h2>
-          <p className="text-xl text-text-secondary mb-10">Join 500+ photographers and studios already using Memento.</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+      <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-amber-50/50 to-bg border-t border-border text-center flex flex-col items-center w-full">
+        <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
+          <h2 className="text-4xl md:text-5xl font-display font-black text-text-primary mb-6 tracking-tight text-center">
+            Ready to add live photo sharing to every event?
+          </h2>
+          <p className="text-lg sm:text-xl text-text-secondary mb-10 text-center max-w-2xl">
+            Empower your studio with real-time live photo walls that clients and guests will love.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mx-auto">
             <a 
               href="https://wa.me/919866161775?text=Hi,%20I'm%20a%20photographer%20interested%20in%20Memento%20for%20my%20studio.%20I'd%20like%20a%20demo." 
               target="_blank" 
               rel="noopener noreferrer"
-              className="px-8 py-4 bg-[#25D366] hover:bg-[#20b858] text-white rounded-full font-bold shadow-sm transition-colors w-full sm:w-auto"
+              className="px-8 py-4 bg-[#25D366] hover:bg-[#20b858] text-white rounded-full font-bold shadow-sm transition-colors w-full sm:w-auto text-center"
             >
               Book a Free Demo
             </a>
             <span className="text-text-muted text-sm">or</span>
-            <Link href="/create" className="text-primary font-bold hover:underline transition-all">
+            <Link href="/create" className="text-primary font-bold hover:underline transition-all text-center">
               Start with a free event →
             </Link>
           </div>

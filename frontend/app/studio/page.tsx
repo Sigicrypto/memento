@@ -10,13 +10,12 @@ import {
   TrendingUp,
   Search,
   Filter,
-  MoreVertical,
   ExternalLink,
   Copy,
   Radio,
-  Archive,
   FileEdit,
   ChevronRight,
+  Sparkles,
 } from 'lucide-react';
 import { getStatusConfig, type StudioEvent } from '@/lib/studio';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,78 +23,27 @@ import { supabase } from '@/lib/supabase';
 
 type FilterTab = 'all' | 'live' | 'upcoming' | 'past';
 
-// Demo data — displayed if no database events exist yet
-const DEMO_EVENTS: StudioEvent[] = [
-  {
-    id: '1',
-    studio_id: 'demo-studio',
-    event_name: 'Sharma-Patel Wedding Reception',
-    event_date: '2025-02-14',
-    venue: 'Taj Palace, New Delhi',
-    client_name: 'Priya Sharma',
-    client_email: 'priya@email.com',
-    client_phone: '+919876543210',
-    guest_tier: 'MEDIUM',
-    guest_limit: 300,
-    current_guest_count: 187,
-    status: 'ACTIVE',
-    is_white_labeled: true,
-    slug: 'sharma-patel-reception',
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    studio_id: 'demo-studio',
-    event_name: 'Gupta 50th Anniversary',
-    event_date: '2025-03-20',
-    venue: 'ITC Grand, Mumbai',
-    client_name: 'Rahul Gupta',
-    client_email: 'rahul@email.com',
-    client_phone: '+919876543211',
-    guest_tier: 'SMALL',
-    guest_limit: 100,
-    current_guest_count: 0,
-    status: 'DRAFT',
-    is_white_labeled: false,
-    slug: 'gupta-anniversary',
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: '3',
-    studio_id: 'demo-studio',
-    event_name: 'Reddy-Nair Wedding',
-    event_date: '2025-01-10',
-    venue: 'Leela Palace, Bangalore',
-    client_name: 'Sneha Reddy',
-    client_email: 'sneha@email.com',
-    client_phone: '+919876543212',
-    guest_tier: 'LARGE',
-    guest_limit: 1000,
-    current_guest_count: 456,
-    status: 'CLOSED',
-    is_white_labeled: true,
-    slug: 'reddy-nair-wedding',
-    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
 export default function StudioDashboard() {
   const { user, isAdmin, isSuperAdmin } = useAuth();
   const [filter, setFilter] = useState<FilterTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [events, setEvents] = useState<StudioEvent[]>(DEMO_EVENTS);
+  const [events, setEvents] = useState<StudioEvent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 
   // Load real events from Supabase
   useEffect(() => {
     async function loadEvents() {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       try {
         let query = supabase.from('events').select('*').order('created_at', { ascending: false });
         if (!isAdmin && !isSuperAdmin) {
           query = query.eq('owner_id', user.id);
         }
-        const { data } = await query;
+        const { data, error } = await query;
         if (data && data.length > 0) {
           const mapped: StudioEvent[] = data.map((e) => {
             const tier = (e.guest_tier || (e.plan_type === 'PREMIUM' ? 'LARGE' : e.plan_type === 'STANDARD' ? 'MEDIUM' : 'SMALL')) as 'SMALL' | 'MEDIUM' | 'LARGE';
@@ -119,9 +67,14 @@ export default function StudioDashboard() {
             };
           });
           setEvents(mapped);
+        } else {
+          setEvents([]);
         }
       } catch (err) {
         console.error('Error fetching studio events:', err);
+        setEvents([]);
+      } finally {
+        setLoading(false);
       }
     }
     loadEvents();
@@ -144,31 +97,9 @@ export default function StudioDashboard() {
         if (data.event) {
           setEvents((prev) => [data.event, ...prev]);
         }
-      } else {
-        // Fallback local clone for demo
-        const cloned: StudioEvent = {
-          ...eventToClone,
-          id: `clone-${Date.now()}`,
-          event_name: `${eventToClone.event_name || 'Event'} (Copy)`,
-          current_guest_count: 0,
-          status: 'DRAFT',
-          slug: `${eventToClone.slug}-copy-${Math.random().toString(36).substring(2, 5)}`,
-          created_at: new Date().toISOString(),
-        };
-        setEvents((prev) => [cloned, ...prev]);
       }
-    } catch {
-      // Local fallback
-      const cloned: StudioEvent = {
-        ...eventToClone,
-        id: `clone-${Date.now()}`,
-        event_name: `${eventToClone.event_name || 'Event'} (Copy)`,
-        current_guest_count: 0,
-        status: 'DRAFT',
-        slug: `${eventToClone.slug}-copy-${Math.random().toString(36).substring(2, 5)}`,
-        created_at: new Date().toISOString(),
-      };
-      setEvents((prev) => [cloned, ...prev]);
+    } catch (err) {
+      console.error('Error duplicating event:', err);
     } finally {
       setDuplicatingId(null);
     }
@@ -192,7 +123,7 @@ export default function StudioDashboard() {
     return true;
   });
 
-  // Calculate metrics
+  // Calculate real metrics
   const totalGuests = events.reduce((sum, e) => sum + e.current_guest_count, 0);
   const activeEvents = events.filter((e) => e.status === 'ACTIVE').length;
   const totalEvents = events.length;
@@ -201,7 +132,7 @@ export default function StudioDashboard() {
     { label: 'Total Events', value: totalEvents, icon: Calendar, color: 'text-accent' },
     { label: 'Active Now', value: activeEvents, icon: Radio, color: 'text-green-600' },
     { label: 'Total Guests', value: totalGuests.toLocaleString(), icon: Users, color: 'text-primary' },
-    { label: 'Photos Collected', value: '2,847', icon: Image, color: 'text-purple-600' },
+    { label: 'Live Walls', value: activeEvents, icon: Image, color: 'text-purple-600' },
   ];
 
   const FILTER_TABS: { key: FilterTab; label: string; count: number }[] = [
@@ -212,39 +143,39 @@ export default function StudioDashboard() {
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight font-display">
-              Studio Dashboard
-            </h1>
-            {(isAdmin || isSuperAdmin) && (
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
-                title="Go to Super Admin Command Center"
-              >
-                <span>⚡ Admin Command</span>
-              </Link>
-            )}
-          </div>
-          <p className="text-text-secondary text-sm mt-1">
-            Manage your client events, track guest engagement, and deliver memories.
-          </p>
+    <div className="space-y-10 max-w-5xl mx-auto flex flex-col items-center w-full">
+      {/* Centered Header */}
+      <div className="flex flex-col items-center text-center max-w-2xl mx-auto w-full">
+        <div className="flex items-center justify-center gap-2.5 flex-wrap">
+          <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight font-display text-center">
+            Studio Dashboard
+          </h1>
+          {(isAdmin || isSuperAdmin) && (
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 border border-amber-500/30 hover:bg-amber-500/20 transition-colors"
+              title="Go to Super Admin Command Center"
+            >
+              <span>⚡ Admin Command</span>
+            </Link>
+          )}
         </div>
-        <Link
-          href="/studio/new-event"
-          className="inline-flex items-center gap-2 bg-accent hover:bg-[#D9932B] text-white font-bold text-sm px-5 py-3 rounded-full shadow-sm transition-all duration-200"
-        >
-          <PlusCircle size={18} />
-          Create New Event
-        </Link>
+        <p className="text-text-secondary text-sm sm:text-base mt-2 text-center max-w-md">
+          Manage client events, monitor guest engagement, and white-label live walls.
+        </p>
+        <div className="mt-6 flex justify-center">
+          <Link
+            href="/studio/new-event"
+            className="inline-flex items-center gap-2 bg-accent hover:bg-[#D9932B] text-white font-bold text-sm px-6 py-3 rounded-full shadow-sm transition-all duration-200"
+          >
+            <PlusCircle size={18} />
+            Create New Event
+          </Link>
+        </div>
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl mx-auto">
         {METRICS.map((metric) => {
           const Icon = metric.icon;
           return (
@@ -268,9 +199,9 @@ export default function StudioDashboard() {
         })}
       </div>
 
-      {/* Filter Tabs + Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-1 bg-bg-subtle p-1 rounded-xl border border-border overflow-x-auto max-w-full no-scrollbar flex-nowrap shrink-0">
+      {/* Filter Tabs + Search - Centered */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
+        <div className="flex items-center justify-center gap-1 bg-bg-subtle p-1 rounded-xl border border-border overflow-x-auto max-w-full no-scrollbar flex-nowrap shrink-0">
           {FILTER_TABS.map((tab) => (
             <button
               key={tab.key}
@@ -287,34 +218,41 @@ export default function StudioDashboard() {
           ))}
         </div>
 
-        <div className="relative">
+        <div className="relative w-full sm:w-64">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
             placeholder="Search events..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-4 py-2.5 rounded-xl border border-border bg-surface text-text-primary text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-text-muted"
+            className="pl-9 pr-4 py-2 rounded-xl border border-border bg-surface text-text-primary text-sm w-full focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-text-muted text-center sm:text-left"
           />
         </div>
       </div>
 
-      {/* Events List */}
-      <div className="space-y-3">
-        {filteredEvents.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-surface p-12 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-bg-subtle border border-border flex items-center justify-center mx-auto mb-4">
-              <Calendar size={24} className="text-text-muted" />
+      {/* Events List / Empty State */}
+      <div className="w-full max-w-4xl mx-auto space-y-3">
+        {loading ? (
+          <div className="rounded-2xl border border-border bg-surface p-12 text-center flex flex-col items-center justify-center">
+            <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-text-secondary text-sm">Loading studio events...</p>
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-surface p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto mb-4 text-accent">
+              <Calendar size={28} />
             </div>
-            <h3 className="text-lg font-bold text-text-primary mb-2">No events found</h3>
-            <p className="text-text-secondary text-sm mb-6">
+            <h3 className="text-xl font-bold text-text-primary mb-2 text-center font-display">
+              {filter !== 'all' ? `No ${filter} Events Found` : 'No Events Created Yet'}
+            </h3>
+            <p className="text-text-secondary text-sm mb-6 text-center max-w-sm">
               {filter !== 'all'
-                ? `No ${filter} events. Try a different filter.`
-                : 'Create your first event to get started.'}
+                ? `There are no ${filter} events matching your criteria. Try another filter or create a new event.`
+                : 'Create your first client event to launch an interactive live photo wall, generate table QR cards, and track guest uploads.'}
             </p>
             <Link
               href="/studio/new-event"
-              className="inline-flex items-center gap-2 bg-accent hover:bg-[#B8882F] text-white font-bold text-sm px-5 py-3 rounded-full shadow-sm transition-all"
+              className="inline-flex items-center gap-2 bg-accent hover:bg-[#D9932B] text-white font-bold text-sm px-6 py-3 rounded-full shadow-sm transition-all"
             >
               <PlusCircle size={16} />
               Create Your First Event
@@ -368,7 +306,7 @@ export default function StudioDashboard() {
                         </span>
                       )}
                       {event.venue && (
-                        <span className="truncate max-w-[200px]">{event.venue}</span>
+                        <span className="truncate max-w-[200px]">📍 {event.venue}</span>
                       )}
                     </div>
                   </div>
@@ -406,7 +344,7 @@ export default function StudioDashboard() {
                     </span>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => handleDuplicate(event)}
@@ -432,15 +370,15 @@ export default function StudioDashboard() {
         )}
       </div>
 
-      {/* Quick Actions Footer */}
-      <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8">
-        <h3 className="text-lg font-bold text-text-primary mb-4 font-display">Quick Actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {/* Quick Actions Footer - Centered */}
+      <div className="w-full max-w-4xl mx-auto rounded-2xl border border-border bg-surface p-6 sm:p-8 flex flex-col items-center text-center">
+        <h3 className="text-lg font-bold text-text-primary mb-6 font-display text-center">Quick Actions</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
           <Link
             href="/studio/new-event"
-            className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all group/action"
+            className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3.5 p-4 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all group/action"
           >
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
               <PlusCircle size={18} className="text-accent" />
             </div>
             <div>
@@ -450,9 +388,9 @@ export default function StudioDashboard() {
           </Link>
           <Link
             href="/studio/settings"
-            className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all"
+            className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3.5 p-4 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
               <FileEdit size={18} className="text-accent" />
             </div>
             <div>
@@ -464,9 +402,9 @@ export default function StudioDashboard() {
             href="https://api.whatsapp.com/send?phone=919866161775&text=Hi%2C%20I%20need%20help%20with%20my%20Memento%20studio%20account."
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-4 rounded-xl border border-border hover:border-green-300 hover:bg-green-50 transition-all"
+            className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3.5 p-4 rounded-xl border border-border hover:border-green-300 hover:bg-green-50 transition-all"
           >
-            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
               <ExternalLink size={18} className="text-green-600" />
             </div>
             <div>

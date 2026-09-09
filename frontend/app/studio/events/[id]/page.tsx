@@ -38,25 +38,8 @@ export default function StudioEventDetail({ params }: PageProps) {
   const [isHandoffOpen, setIsHandoffOpen] = useState(false);
   const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
   const [downloadingZip, setDownloadingZip] = useState(false);
-
-  // Fallback demo event if fetching from supabase is empty/local
-  const [event, setEvent] = useState<StudioEvent>({
-    id: eventId,
-    studio_id: 'studio-1',
-    event_name: 'Sharma-Patel Wedding Reception',
-    event_date: '2025-02-14',
-    venue: 'Taj Palace, New Delhi',
-    client_name: 'Priya & Arjun Sharma',
-    client_email: 'priya@example.com',
-    client_phone: '+919876543210',
-    guest_tier: 'SMALL',
-    guest_limit: 100,
-    current_guest_count: 84, // 84% usage for demoing soft threshold
-    status: 'ACTIVE',
-    is_white_labeled: true,
-    slug: 'sharma-patel-reception',
-    created_at: new Date().toISOString(),
-  });
+  const [loading, setLoading] = useState(true);
+  const [event, setEvent] = useState<StudioEvent | null>(null);
 
   useEffect(() => {
     try {
@@ -67,10 +50,13 @@ export default function StudioEventDetail({ params }: PageProps) {
     } catch {}
   }, []);
 
-  // Fetch real event data if not demo IDs
+  // Fetch real event data from Supabase
   useEffect(() => {
     async function fetchEvent() {
-      if (!eventId || eventId === '1' || eventId === '2' || eventId === '3') return;
+      if (!eventId) {
+        setLoading(false);
+        return;
+      }
       try {
         const { data, error } = await supabase
           .from('events')
@@ -101,12 +87,15 @@ export default function StudioEventDetail({ params }: PageProps) {
         }
       } catch (err) {
         console.warn('Could not fetch specific event:', err);
+      } finally {
+        setLoading(false);
       }
     }
     fetchEvent();
   }, [eventId]);
 
   const handleDownloadZip = async () => {
+    if (!event) return;
     setDownloadingZip(true);
     try {
       const { data: photos, error } = await supabase
@@ -122,11 +111,14 @@ export default function StudioEventDetail({ params }: PageProps) {
 
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
-      const folder = zip.folder(`${event.slug}-photos`);
+      const folder = zip.folder(`${event.slug}-memories`);
 
       for (const p of photos) {
         try {
-          const publicUrl = supabase.storage.from('photos').getPublicUrl(p.storage_path).data.publicUrl;
+          const publicUrl = p.storage_path.startsWith('http') 
+            ? p.storage_path 
+            : `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/photos/${p.storage_path}`;
+          
           const res = await fetch(publicUrl);
           const blob = await res.blob();
           folder?.file(`${p.uploader_name || 'guest'}-${p.id.slice(0, 6)}.jpg`, blob);
@@ -149,15 +141,41 @@ export default function StudioEventDetail({ params }: PageProps) {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-md mx-auto py-24 text-center flex flex-col items-center justify-center">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-text-secondary text-sm">Loading event details...</p>
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="max-w-md mx-auto py-16 text-center flex flex-col items-center justify-center rounded-2xl border border-border bg-surface p-8 shadow-card">
+        <h2 className="text-xl font-bold text-text-primary mb-2 font-display">Event Not Found</h2>
+        <p className="text-text-secondary text-sm mb-6 max-w-xs">
+          This event does not exist or has been removed from your dashboard.
+        </p>
+        <Link
+          href="/studio"
+          className="inline-flex items-center gap-2 bg-accent hover:bg-[#D9932B] text-white font-bold text-xs px-5 py-2.5 rounded-full shadow-sm"
+        >
+          <ArrowLeft size={14} /> Back to Studio Dashboard
+        </Link>
+      </div>
+    );
+  }
+
   const currentTier = getTierById(event.guest_tier) || GUEST_TIERS[0];
   const usagePercent = getGuestUsagePercent(event.current_guest_count, event.guest_limit);
   const guestStatus = getGuestStatus(event.current_guest_count, event.guest_limit);
   const statusConfig = getStatusConfig(event.status);
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto flex flex-col items-center w-full">
       {/* Top Bar Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <Link
           href="/studio"
           className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
@@ -186,7 +204,7 @@ export default function StudioEventDetail({ params }: PageProps) {
       </div>
 
       {/* Header Info */}
-      <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card">
+      <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card w-full">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2 flex-wrap">

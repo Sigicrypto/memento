@@ -51,7 +51,7 @@ export default function StudioBrandingPreview({
             {/* Title & QR Code */}
             <div className="flex flex-col items-center my-auto">
               <h4 className="font-bold text-xs mb-1">Scan to Share Photos</h4>
-              <p className="text-[9px] text-neutral-500 mb-2">Priya & Arjun's Wedding</p>
+              <p className="text-[9px] text-neutral-500 mb-2">Your Client's Event</p>
               <div
                 className="w-24 h-24 rounded-lg p-2 border flex items-center justify-center bg-neutral-50"
                 style={{ borderColor: primaryColor }}
@@ -84,7 +84,7 @@ export default function StudioBrandingPreview({
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                 <span className="font-bold tracking-wider">LIVE GALLERY</span>
               </div>
-              <span className="text-neutral-400">Priya & Arjun</span>
+              <span className="text-neutral-400">Client Event</span>
             </div>
 
             {/* Center mockup grid */}

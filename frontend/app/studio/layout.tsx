@@ -11,9 +11,9 @@ export default function StudioLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg flex flex-col items-center w-full">
       <StudioNav />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex flex-col items-center">
         {children}
       </main>
     </div>

@@ -41,12 +41,12 @@ export default function WhatsAppBotSection() {
                 {/* Bot Reply */}
                 <div className="self-start bg-white text-[#111B21] rounded-2xl rounded-tl-none px-3.5 py-2.5 max-w-[85%] shadow-sm text-sm border border-black/5">
                   <p className="font-semibold text-xs text-[#008069] mb-1">Memento Assistant</p>
-                  🎉 Welcome to Priya & Arjun's Sangeet!
+                  🎉 Welcome to the Celebration!
                   <br/><br/>
                   Tap the private link below to open your camera right now and send candid moments to the big screen:
                   <br/><br/>
                   <span className="text-primary font-bold underline cursor-pointer">
-                    memento.events/sharma-patel-reception
+                    memento.events/your-event-name
                   </span>
                   <p className="text-[11px] text-neutral-500 mt-2">No app install required. Works on any phone camera.</p>
                   <span className="text-[10px] text-neutral-400 ml-2 float-right mt-1">7:42 PM</span>

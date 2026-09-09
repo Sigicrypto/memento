@@ -147,20 +147,22 @@ export default function NewEventWizard() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto flex flex-col items-center w-full">
       {/* Header */}
-      <div className="mb-8">
-        <Link
-          href="/studio"
-          className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors mb-4"
-        >
-          <ArrowLeft size={16} />
-          Back to Dashboard
-        </Link>
-        <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight font-display">
+      <div className="mb-8 text-center flex flex-col items-center w-full">
+        <div className="w-full flex justify-start mb-4">
+          <Link
+            href="/studio"
+            className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Back to Dashboard
+          </Link>
+        </div>
+        <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight font-display text-center">
           Create New Event
         </h1>
-        <p className="text-text-secondary text-sm mt-1">
+        <p className="text-text-secondary text-sm mt-1 text-center">
           Set up your client&apos;s event in just a few steps.
         </p>
       </div>
@@ -290,7 +292,7 @@ export default function NewEventWizard() {
                     type="text"
                     value={eventName}
                     onChange={(e) => setEventName(e.target.value)}
-                    placeholder="e.g. Sharma-Patel Wedding Reception"
+                    placeholder="e.g. Annual Gala or Wedding Celebration"
                     className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-bg text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all placeholder:text-text-muted"
                   />
                 </div>
