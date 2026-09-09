@@ -12,11 +12,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 32px 64px' }}>
-        {children}
-      </div>
+    <div className="min-h-screen bg-bg text-text-primary">
+      {children}
       <DashboardWhatsApp />
     </div>
   );
 }
+

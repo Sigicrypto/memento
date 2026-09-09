@@ -127,8 +127,7 @@ export default function AnalyticsPage() {
   const maxCount = Math.max(...hourlyData.map(d => d.count), 1);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 32px 64px' }}>
+    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
         {/* ── TOP NAV BAR ── */}
         <div
@@ -367,8 +366,6 @@ export default function AnalyticsPage() {
             </div>
           )}
         </div>
-
-      </div>
-    </div>
+    </main>
   );
 }

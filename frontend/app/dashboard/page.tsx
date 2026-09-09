@@ -178,7 +178,7 @@ export default function DashboardPage() {
   const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <>
+    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       {/* ── TOP NAV BAR ── */}
       <div
         style={{
@@ -527,7 +527,7 @@ export default function DashboardPage() {
           </div>
           {currentPlan !== 'whitelabel' && (
             <Link
-              href="/#pricing"
+              href="/pricing"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -1053,6 +1053,6 @@ export default function DashboardPage() {
           eventSlug={activeQrKitEvent.slug}
         />
       )}
-    </>
+    </main>
   );
 }

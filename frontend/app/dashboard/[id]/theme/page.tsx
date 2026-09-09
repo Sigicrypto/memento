@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Palette, ArrowLeft, Check, Layout, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -45,10 +46,10 @@ export default function ThemeCustomizationPage() {
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen p-8">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-text-primary mb-8 transition-colors">
+    <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+      <Link href="/dashboard" className="inline-flex items-center gap-2 text-text-muted hover:text-black dark:hover:text-text-primary mb-8 transition-colors text-sm font-semibold">
         <ArrowLeft size={16} /> Back to Dashboard
-      </button>
+      </Link>
 
       <div className="flex justify-between items-end mb-10">
         <div>
@@ -149,6 +150,6 @@ export default function ThemeCustomizationPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -340,7 +340,7 @@ export default function CreateEventPage() {
                   <div className="flex justify-between items-center mb-1.5">
                     <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider">Custom Event URL</label>
                     {plan === 'starter' && (
-                      <Link href="/#pricing" className="text-[11px] font-bold text-cyan-400 hover:underline">
+                      <Link href="/pricing" className="text-[11px] font-bold text-cyan-400 hover:underline">
                         Upgrade for Custom Link
                       </Link>
                     )}

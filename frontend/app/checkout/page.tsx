@@ -115,7 +115,7 @@ function CheckoutContent() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 24px',
       }}>
-        <Link href="/#pricing" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}>
+        <Link href="/pricing" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}>
           <ArrowLeft size={18} />
           <span className="hidden sm:inline">Back to Pricing</span>
         </Link>
@@ -343,7 +343,7 @@ function CheckoutContent() {
             {/* Cancel Link */}
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
               <Link
-                href="/#pricing"
+                href="/pricing"
                 style={{ fontSize: '13px', color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 600 }}
               >
                 ← Back to Pricing
