@@ -283,29 +283,31 @@ export default function CreateEventPage() {
 
   // ── Create Form & Live Print Poster Preview ──
   return (
-    <div className="min-h-screen bg-bg text-text-primary relative overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-bg text-text-primary relative overflow-x-hidden font-sans flex flex-col items-center w-full">
       {/* Navigation Header */}
-      <nav className="fixed top-0 inset-x-0 z-50 h-16 bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-between px-6">
-        <Link href="/dashboard" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-xs font-bold">
-          <ArrowRight size={16} className="rotate-180" />
-          <span>Back to Dashboard</span>
-        </Link>
-        
-        <AnimatedLogo width={120} height={30} />
+      <nav className="fixed top-0 inset-x-0 z-50 h-16 bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-center">
+        <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 flex items-center justify-between">
+          <Link href="/dashboard" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-xs font-bold">
+            <ArrowRight size={16} className="rotate-180" />
+            <span>Back to Dashboard</span>
+          </Link>
+          
+          <AnimatedLogo width={120} height={30} />
 
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 
       {/* Main Container: Realigned Split Grid */}
-      <main className="max-w-6xl mx-auto pt-24 sm:pt-32 pb-20 md:pb-28 px-4 sm:px-6 flex flex-col items-center w-full">
+      <main className="max-w-5xl mx-auto pt-24 sm:pt-32 pb-20 md:pb-28 px-4 sm:px-6 flex flex-col items-center w-full">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-text-primary font-display">Create Event Photo Wall</h1>
           <p className="text-text-secondary text-sm">Design your event space, customize sponsor branding, and generate modern QR print signs.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
           
           {/* Left Column: Realigned Form */}
           <div className="lg:col-span-7 bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-card space-y-6">

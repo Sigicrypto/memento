@@ -11,21 +11,23 @@ const Footer = dynamic(() => import("@/components/sections/Footer"), { ssr: fals
 
 export default function CookiePolicyPage() {
   return (
-    <div className="min-h-screen bg-bg text-text-primary flex flex-col items-center">
+    <div className="min-h-screen bg-bg text-text-primary flex flex-col items-center w-full">
       {/* Fixed Top Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-between px-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
-        >
-          <ArrowLeft size={16} />
-          <span className="hidden sm:inline">Back to Home</span>
-        </Link>
+      <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-center">
+        <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 flex items-center justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <ArrowLeft size={16} />
+            <span className="hidden sm:inline">Back to Home</span>
+          </Link>
 
-        <AnimatedLogo width={110} height={28} />
+          <AnimatedLogo width={110} height={28} />
 
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 

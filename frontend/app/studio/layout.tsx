@@ -13,7 +13,7 @@ export default function StudioLayout({
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center w-full">
       <StudioNav />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 w-full flex flex-col items-center">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 w-full flex flex-col items-center">
         {children}
       </main>
     </div>

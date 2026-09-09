@@ -239,19 +239,11 @@ export default function DashboardPage() {
       </div>
 
       {/* ── WELCOME HEADER ── */}
-      <motion.div
+      <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          gap: '16px',
-          marginBottom: '40px',
-          width: '100%',
-        }}
+        className="w-full max-w-5xl mx-auto py-8 sm:py-10 border-b border-border/60 flex flex-col items-center text-center gap-4"
       >
         <div style={{ position: 'relative' }}>
           <div
@@ -414,18 +406,12 @@ export default function DashboardPage() {
             <span>Studio Portal</span>
           </Link>
         </div>
-      </motion.div>
+      </motion.section>
 
       {/* ── KPI STATS (CENTERED) ── */}
-      <div
-        className="w-full max-w-5xl mb-12"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '24px',
-        }}
-      >
-        {/* Active Photo Walls */}
+      <section className="w-full max-w-5xl mx-auto py-8 sm:py-10 border-b border-border/60 flex flex-col items-center">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Active Photo Walls */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -553,21 +539,12 @@ export default function DashboardPage() {
             </Link>
           )}
         </motion.div>
-      </div>
+        </div>
+      </section>
 
       {/* ── EVENTS SECTION (CENTERED) ── */}
-      <section className="w-full max-w-5xl">
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-            gap: '16px',
-            marginBottom: '32px',
-            width: '100%',
-          }}
-        >
+      <section className="w-full max-w-5xl mx-auto py-8 sm:py-10 flex flex-col items-center">
+        <div className="flex flex-col items-center text-center gap-4 mb-8 w-full">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.01em', fontFamily: 'var(--font-display, inherit)' }}>
               Your Photo Walls
@@ -706,13 +683,7 @@ export default function DashboardPage() {
           </div>
         ) : viewMode === 'grid' ? (
           /* ── GRID VIEW ── */
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-              gap: '24px',
-            }}
-          >
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
               {filteredEvents.map((event, i) => (
                 <motion.div

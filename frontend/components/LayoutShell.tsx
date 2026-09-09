@@ -1,69 +1,33 @@
 "use client";
 
 import { usePathname } from 'next/navigation';
-import Navbar from "@/components/Navbar";
-import MainContent from "@/components/MainContent";
 import SocialFloat from "@/components/SocialFloat";
-import CustomCursor from "@/components/CustomCursor";
 import CookieBanner from "@/components/CookieBanner";
-import { BackgroundBeams } from "@/components/BackgroundBeams";
-import "@/styles/cursor.css";
 
 /**
- * LayoutShell — Conditionally renders the full site chrome (navbar, footer,
- * background, floating buttons) for user-facing pages, or a bare shell
- * for admin routes so /admin is completely standalone.
+ * LayoutShell — Provides site-wide floating utilities (WhatsApp, Cookie banner)
+ * without injecting redundant navbars or extra wrapping containers that cause
+ * layout skew or double navbars on pages.
  */
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdminRoute = pathname.startsWith('/admin');
-
-  // Pages that render their own complete layout (nav, background, etc.)
-  const isStandaloneRoute =
-    pathname === '/' ||
-    pathname?.startsWith('/weddings') ||
-    pathname?.startsWith('/photographers') ||
-    pathname?.startsWith('/studio') ||
-    pathname?.startsWith('/corporate-events') ||
-    pathname?.startsWith('/pricing') ||
-    pathname?.startsWith('/privacy') ||
-    pathname?.startsWith('/terms') ||
-    pathname?.startsWith('/checkout') ||
-    pathname?.startsWith('/system') ||
-    pathname?.startsWith('/demo') ||
+  const isBareRoute =
+    pathname?.startsWith('/admin') ||
     pathname?.startsWith('/wall') ||
     pathname?.startsWith('/mobile') ||
-    pathname?.startsWith('/create') ||
-    pathname?.startsWith('/dashboard');
+    pathname?.startsWith('/camera');
 
-  // ── Admin routes: bare shell, no site chrome ──
-  if (isAdminRoute) {
+  // Bare routes (Admin, Live Wall, Guest Mobile Camera): no overlays
+  if (isBareRoute) {
     return <>{children}</>;
   }
 
-  // ── Standalone routes: custom layout, but still need floating socials ──
-  if (isStandaloneRoute) {
-    return (
-      <>
-        {children}
-        <SocialFloat />
-      </>
-    );
-  }
-
-  // ── All other routes: full site chrome ──
+  // All public & dashboard routes: render children directly + floating helpers
   return (
     <>
-      <BackgroundBeams />
-      <div className="min-h-screen w-full flex flex-col relative z-10">
-        <Navbar />
-        <MainContent>
-          {children}
-        </MainContent>
-        <SocialFloat />
-        <CookieBanner />
-      </div>
-      <CustomCursor />
+      {children}
+      <SocialFloat />
+      <CookieBanner />
     </>
   );
 }

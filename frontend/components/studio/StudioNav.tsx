@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, PlusCircle, Settings, Camera, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Settings, ArrowLeft } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const NAV_ITEMS = [
   { href: '/studio', label: 'Dashboard', icon: LayoutDashboard },
@@ -15,7 +16,7 @@ export default function StudioNav() {
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-surface/95 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <div className="flex items-center gap-4">
@@ -41,28 +42,32 @@ export default function StudioNav() {
             </Link>
           </div>
 
-          {/* Nav Links */}
-          <div className="flex items-center gap-1">
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href ||
-                (item.href !== '/studio' && pathname.startsWith(item.href));
-              const Icon = item.icon;
+          {/* Nav Links + Theme Toggle */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1">
+              {NAV_ITEMS.map((item) => {
+                const isActive = pathname === item.href ||
+                  (item.href !== '/studio' && pathname.startsWith(item.href));
+                const Icon = item.icon;
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                    isActive
-                      ? 'bg-accent/10 text-accent border border-accent/20'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
-                  }`}
-                >
-                  <Icon size={16} />
-                  <span className="hidden sm:inline">{item.label}</span>
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                      isActive
+                        ? 'bg-accent/10 text-accent border border-accent/20'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-subtle'
+                    }`}
+                  >
+                    <Icon size={16} />
+                    <span className="hidden sm:inline">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="w-px h-5 bg-border hidden sm:block" />
+            <ThemeToggle />
           </div>
         </div>
       </div>

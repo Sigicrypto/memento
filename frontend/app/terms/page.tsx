@@ -32,18 +32,20 @@ export default function TermsPage() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         height: '64px', background: 'var(--surface)', backdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--border)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '0 24px',
       }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}>
-          <ArrowLeft size={18} />
-          <span className="hidden sm:inline">Back to Home</span>
-        </Link>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', fontWeight: 600 }}>
+            <ArrowLeft size={18} />
+            <span className="hidden sm:inline">Back to Home</span>
+          </Link>
 
-        <AnimatedLogo width={110} height={28} />
+          <AnimatedLogo width={110} height={28} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <ThemeToggle />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <ThemeToggle />
+          </div>
         </div>
       </nav>
 

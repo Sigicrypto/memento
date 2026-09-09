@@ -20,9 +20,9 @@ export default function StudioSettingsPage() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8">
+    <div className="w-full max-w-5xl mx-auto space-y-8 flex flex-col items-center">
       {/* Top Breadcrumb */}
-      <div>
+      <div className="w-full">
         <Link
           href="/studio"
           className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors mb-4"

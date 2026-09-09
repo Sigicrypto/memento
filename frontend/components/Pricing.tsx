@@ -157,7 +157,7 @@ export default function Pricing({ isEmbedded = false, eventId }: PricingProps) {
           ))}
         </div>
 
-        <div className="max-w-3xl mx-auto mb-20 bg-surface border border-border rounded-2xl p-8 border-l-4 border-l-accent shadow-card">
+        <div className="max-w-5xl w-full mx-auto mb-20 bg-surface border border-border rounded-2xl p-8 border-l-4 border-l-accent shadow-card">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h4 className="text-xl font-display font-bold text-text-primary flex items-center mb-2">

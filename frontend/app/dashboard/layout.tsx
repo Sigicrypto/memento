@@ -12,10 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-bg text-text-primary">
+    <div className="min-h-screen bg-bg text-text-primary flex flex-col items-center w-full">
       {children}
       <DashboardWhatsApp />
     </div>
   );
 }
-

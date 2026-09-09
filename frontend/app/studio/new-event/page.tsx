@@ -147,7 +147,7 @@ export default function NewEventWizard() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+    <div className="w-full max-w-5xl mx-auto flex flex-col items-center">
       {/* Top Breadcrumb Bar */}
       <div className="w-full flex items-center justify-between mb-6">
         <Link

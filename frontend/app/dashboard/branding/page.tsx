@@ -237,7 +237,7 @@ export default function BrandingPage() {
   return (
     <div className="min-h-screen w-full bg-bg text-text-primary relative overflow-x-hidden pt-8 md:pt-12 pb-20 px-4 md:px-8 flex flex-col items-center">
       
-      <div className="w-full max-w-6xl flex flex-col items-center gap-8">
+      <div className="w-full max-w-5xl flex flex-col items-center gap-8">
         
         {/* Navigation Bar */}
         <div className="w-full p-4 rounded-2xl bg-surface border border-border shadow-card flex items-center justify-between gap-4">

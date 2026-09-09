@@ -72,7 +72,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           opacity: hidden && !isMobileMenuOpen ? 0 : 1,
         }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1480px] z-[9999] rounded-full transition-all duration-300 ${
+        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-7xl z-[9999] rounded-full transition-all duration-300 ${
           scrolled
             ? 'bg-surface/95 backdrop-blur-2xl border border-border shadow-[0_8px_30px_rgb(28,25,23,0.04)]'
             : 'bg-surface/85 backdrop-blur-xl border border-border/80 shadow-[0_4px_20px_rgb(28,25,23,0.02)]'
