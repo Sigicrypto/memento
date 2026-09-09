@@ -27,12 +27,16 @@ export default function StudioNav() {
               <span className="text-xs font-medium hidden sm:inline">Back to Site</span>
             </Link>
             <div className="w-px h-6 bg-border" />
-            <Link href="/studio" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
-                <Camera size={16} className="text-accent" />
+            <Link href="/studio" className="flex items-center gap-2.5">
+              <div className="h-9 px-2 rounded-lg bg-[#141210] border border-[#292524] shadow-sm flex items-center justify-center">
+                <img
+                  src="/CC logo.png"
+                  alt="Memento Logo"
+                  className="h-6 w-auto object-contain"
+                />
               </div>
-              <span className="font-bold text-text-primary text-sm tracking-tight">
-                Memento <span className="text-accent">Studio</span>
+              <span className="font-bold text-text-primary text-sm tracking-tight hidden sm:inline">
+                Studio <span className="text-accent">Hub</span>
               </span>
             </Link>
           </div>

@@ -11,22 +11,22 @@ export const metadata: Metadata = {
 
 export default function DSLRGuidePage() {
   return (
-    <div className="min-h-screen bg-bg text-text-primary">
+    <div className="min-h-screen bg-bg text-text-primary flex flex-col items-center w-full">
       <ThemedNav />
 
-      <main className="max-w-4xl mx-auto px-6 pt-32 pb-24 flex flex-col items-center text-center">
+      <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-32 pb-24 flex flex-col items-center text-center">
         {/* Breadcrumb */}
         <div className="w-full flex justify-center mb-8">
           <Link
             href="/photographers"
-            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary transition-colors mx-auto"
           >
             <ArrowLeft size={14} /> Back to For Photographers
           </Link>
         </div>
 
         {/* Hero Header */}
-        <div className="mb-12 text-center flex flex-col items-center">
+        <div className="mb-12 text-center flex flex-col items-center w-full max-w-3xl mx-auto">
           <span className="px-3.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-mono font-bold uppercase tracking-wider mb-4 inline-block mx-auto">
             Professional Studio Guide
           </span>
@@ -46,92 +46,102 @@ export default function DSLRGuidePage() {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center w-full">
-            <div className="p-4 rounded-xl bg-bg-subtle border border-border flex flex-col items-center text-center">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-bold text-sm mb-2 mx-auto">
+            <div className="p-5 rounded-xl bg-bg-subtle border border-border flex flex-col items-center text-center">
+              <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center font-bold text-base mb-3 mx-auto">
                 1
               </div>
               <h3 className="font-bold text-sm text-text-primary mb-1 text-center">Shoot & Rate</h3>
-              <p className="text-xs text-text-secondary text-center">Flag your best shots with in-camera 5-star ratings or lock button.</p>
+              <p className="text-xs text-text-secondary text-center leading-relaxed">
+                Flag your best shots with in-camera 5-star ratings or lock button.
+              </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-bg-subtle border border-border flex flex-col items-center text-center">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-bold text-sm mb-2 mx-auto">
+            <div className="p-5 rounded-xl bg-bg-subtle border border-border flex flex-col items-center text-center">
+              <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center font-bold text-base mb-3 mx-auto">
                 2
               </div>
               <h3 className="font-bold text-sm text-text-primary mb-1 text-center">Wireless Sync</h3>
-              <p className="text-xs text-text-secondary text-center">Camera transfers selects via FTP / Wi-Fi to a folder or web uploader.</p>
+              <p className="text-xs text-text-secondary text-center leading-relaxed">
+                Camera transfers selects via FTP / Wi-Fi to a folder or web uploader.
+              </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-bg-subtle border border-border flex flex-col items-center text-center">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center font-bold text-sm mb-2 mx-auto">
+            <div className="p-5 rounded-xl bg-bg-subtle border border-border flex flex-col items-center text-center">
+              <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent flex items-center justify-center font-bold text-base mb-3 mx-auto">
                 3
               </div>
               <h3 className="font-bold text-sm text-text-primary mb-1 text-center">Instant Wall Sync</h3>
-              <p className="text-xs text-text-secondary text-center">Photos render in under 2s with your studio watermark or monogram.</p>
+              <p className="text-xs text-text-secondary text-center leading-relaxed">
+                Photos render in under 2s with your studio watermark or monogram.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Setup Methods */}
-        <div className="space-y-8 mb-16 w-full text-center flex flex-col items-center">
-          <h2 className="text-2xl font-bold text-text-primary font-display text-center">3 Battle-Tested Setup Methods</h2>
+        <div className="space-y-8 mb-16 w-full text-center flex flex-col items-center max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-text-primary font-display text-center">
+            2 Battle-Tested Setup Methods
+          </h2>
 
           {/* Method 1 */}
           <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card w-full flex flex-col items-center text-center">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-center">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mx-auto">
-                <Laptop size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-text-primary text-center">Method A: Tethered Laptop + Auto-Upload</h3>
-                <span className="text-xs text-text-muted text-center">Recommended for receptions, studio booths & key ceremonies</span>
-              </div>
+            <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mx-auto mb-3">
+              <Laptop size={24} />
             </div>
-            <p className="text-sm text-text-secondary leading-relaxed mb-4 text-center max-w-xl mx-auto">
+            <h3 className="text-lg sm:text-xl font-bold text-text-primary text-center">
+              Method A: Tethered Laptop + Auto-Upload
+            </h3>
+            <span className="text-xs text-text-muted text-center block mt-1 mb-3">
+              Recommended for receptions, studio booths & key ceremonies
+            </span>
+            <p className="text-sm text-text-secondary leading-relaxed mb-6 text-center max-w-xl mx-auto">
               Connect your camera via USB-C to an assistant's laptop running Capture One, Lightroom Tether, or Sony Imaging Edge. Set the export destination to an auto-sync web folder or drag selects into the Host Upload Portal.
             </p>
-            <ul className="space-y-2 text-xs text-text-secondary flex flex-col items-center">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-green-600" />
+            <div className="flex flex-col items-center gap-2.5 max-w-md mx-auto text-center w-full">
+              <div className="inline-flex items-center gap-2 text-xs text-text-secondary text-center justify-center">
+                <CheckCircle2 size={15} className="text-green-600 shrink-0" />
                 <span>Zero wireless latency — 100% reliable in packed reception halls</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-green-600" />
+              </div>
+              <div className="inline-flex items-center gap-2 text-xs text-text-secondary text-center justify-center">
+                <CheckCircle2 size={15} className="text-green-600 shrink-0" />
                 <span>Instant color grading presets applied before hitting the Live Wall</span>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
 
           {/* Method 2 */}
           <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card w-full flex flex-col items-center text-center">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4 text-center">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mx-auto">
-                <Wifi size={20} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-text-primary text-center">Method B: Camera Wi-Fi / FTP Direct Transfer</h3>
-                <span className="text-xs text-text-muted text-center">For Sony (A7 IV, A1), Canon (R5, R6), Nikon (Z8, Z9)</span>
-              </div>
+            <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mx-auto mb-3">
+              <Wifi size={24} />
             </div>
-            <p className="text-sm text-text-secondary leading-relaxed mb-4 text-center max-w-xl mx-auto">
+            <h3 className="text-lg sm:text-xl font-bold text-text-primary text-center">
+              Method B: Camera Wi-Fi / FTP Direct Transfer
+            </h3>
+            <span className="text-xs text-text-muted text-center block mt-1 mb-3">
+              For Sony (A7 IV, A1), Canon (R5, R6), Nikon (Z8, Z9)
+            </span>
+            <p className="text-sm text-text-secondary leading-relaxed mb-6 text-center max-w-xl mx-auto">
               Modern mirrorless bodies support background FTP upload over Wi-Fi. Tether your camera to a mobile 5G hotspot and configure background transfer of tagged photos.
             </p>
-            <ul className="space-y-2 text-xs text-text-secondary flex flex-col items-center">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-green-600" />
+            <div className="flex flex-col items-center gap-2.5 max-w-md mx-auto text-center w-full">
+              <div className="inline-flex items-center gap-2 text-xs text-text-secondary text-center justify-center">
+                <CheckCircle2 size={15} className="text-green-600 shrink-0" />
                 <span>Roam untethered across the entire venue</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-green-600" />
+              </div>
+              <div className="inline-flex items-center gap-2 text-xs text-text-secondary text-center justify-center">
+                <CheckCircle2 size={15} className="text-green-600 shrink-0" />
                 <span>Transmit medium-size JPEGs in seconds while keeping RAWs on your SD card</span>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* CTA Box */}
-        <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8 text-center w-full">
-          <h3 className="text-xl font-bold text-text-primary mb-2 font-display text-center">Need Custom Tethering Setup Assistance?</h3>
+        <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8 sm:p-10 text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
+          <h3 className="text-xl font-bold text-text-primary mb-2 font-display text-center">
+            Need Custom Tethering Setup Assistance?
+          </h3>
           <p className="text-text-secondary text-sm max-w-lg mx-auto mb-6 text-center">
             Our photographer concierge can help configure your camera model, presets, and live wall resolution for your upcoming wedding.
           </p>
@@ -139,7 +149,7 @@ export default function DSLRGuidePage() {
             href="https://api.whatsapp.com/send?phone=919866161775&text=Hi%2C%20I%20am%20a%20photographer%20and%20want%20to%20set%20up%20DSLR%20sync%20with%20Memento."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-accent hover:bg-[#B8882F] text-white font-bold text-sm shadow-md transition-all cursor-pointer mx-auto"
+            className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-accent hover:bg-[#B8882F] text-white font-bold text-sm shadow-md transition-all cursor-pointer mx-auto text-center"
           >
             <span>Chat on WhatsApp (+91 9866161775)</span>
             <ExternalLink size={16} />

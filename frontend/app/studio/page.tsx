@@ -144,8 +144,18 @@ export default function StudioDashboard() {
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto flex flex-col items-center w-full">
-      {/* Centered Header */}
+      {/* Centered Header with Brand Logo */}
       <div className="flex flex-col items-center text-center max-w-2xl mx-auto w-full">
+        <div className="mb-4 flex justify-center">
+          <div className="inline-flex items-center justify-center rounded-2xl bg-[#141210] border border-[#292524] shadow-md px-4 py-2">
+            <img
+              src="/CC logo.png"
+              alt="Memento Logo"
+              className="h-10 sm:h-12 w-auto object-contain"
+            />
+          </div>
+        </div>
+
         <div className="flex items-center justify-center gap-2.5 flex-wrap">
           <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight font-display text-center">
             Studio Dashboard
@@ -376,40 +386,40 @@ export default function StudioDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
           <Link
             href="/studio/new-event"
-            className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3.5 p-4 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all group/action"
+            className="flex flex-col items-center text-center gap-3 p-5 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all group/action justify-center"
           >
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-              <PlusCircle size={18} className="text-accent" />
+            <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+              <PlusCircle size={20} className="text-accent" />
             </div>
             <div>
-              <p className="text-sm font-bold text-text-primary">Create Event</p>
-              <p className="text-xs text-text-secondary">Set up a new client event</p>
+              <p className="text-sm font-bold text-text-primary text-center">Create Event</p>
+              <p className="text-xs text-text-secondary text-center mt-0.5">Set up a new client event</p>
             </div>
           </Link>
           <Link
             href="/studio/settings"
-            className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3.5 p-4 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all"
+            className="flex flex-col items-center text-center gap-3 p-5 rounded-xl border border-border hover:border-accent/30 hover:bg-accent/5 transition-all justify-center"
           >
-            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-              <FileEdit size={18} className="text-accent" />
+            <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+              <FileEdit size={20} className="text-accent" />
             </div>
             <div>
-              <p className="text-sm font-bold text-text-primary">Studio Branding</p>
-              <p className="text-xs text-text-secondary">Logo, colors & defaults</p>
+              <p className="text-sm font-bold text-text-primary text-center">Studio Branding</p>
+              <p className="text-xs text-text-secondary text-center mt-0.5">Logo, colors & defaults</p>
             </div>
           </Link>
           <a
             href="https://api.whatsapp.com/send?phone=919866161775&text=Hi%2C%20I%20need%20help%20with%20my%20Memento%20studio%20account."
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-3.5 p-4 rounded-xl border border-border hover:border-green-300 hover:bg-green-50 transition-all"
+            className="flex flex-col items-center text-center gap-3 p-5 rounded-xl border border-border hover:border-green-300 hover:bg-green-50 transition-all justify-center"
           >
-            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-              <ExternalLink size={18} className="text-green-600" />
+            <div className="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+              <ExternalLink size={20} className="text-green-600" />
             </div>
             <div>
-              <p className="text-sm font-bold text-text-primary">Get Support</p>
-              <p className="text-xs text-text-secondary">WhatsApp concierge</p>
+              <p className="text-sm font-bold text-text-primary text-center">Get Support</p>
+              <p className="text-xs text-text-secondary text-center mt-0.5">WhatsApp concierge</p>
             </div>
           </a>
         </div>
