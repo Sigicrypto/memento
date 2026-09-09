@@ -147,28 +147,33 @@ export default function NewEventWizard() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col items-center w-full">
-      {/* Header */}
-      <div className="mb-8 text-center flex flex-col items-center w-full">
-        <div className="w-full flex justify-start mb-4">
-          <Link
-            href="/studio"
-            className="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Back to Dashboard
-          </Link>
-        </div>
-        <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight font-display text-center">
+    <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+      {/* Top Breadcrumb Bar */}
+      <div className="w-full flex items-center justify-between mb-6">
+        <Link
+          href="/studio"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
+        >
+          <ArrowLeft size={14} />
+          Back to Dashboard
+        </Link>
+        <span className="text-xs font-mono font-semibold text-text-muted">
+          Step {currentStepIndex + 1} of {STEPS.length}
+        </span>
+      </div>
+
+      {/* Centered Title */}
+      <div className="text-center mb-8 w-full">
+        <h1 className="text-2xl sm:text-3xl font-black text-text-primary tracking-tight font-display">
           Create New Event
         </h1>
-        <p className="text-text-secondary text-sm mt-1 text-center">
+        <p className="text-text-secondary text-sm mt-1.5 max-w-md mx-auto">
           Set up your client&apos;s event in just a few steps.
         </p>
       </div>
 
       {/* Step Indicator */}
-      <div className="flex items-center justify-between mb-10 px-2">
+      <div className="w-full max-w-2xl mx-auto flex items-center justify-between mb-10 px-2">
         {STEPS.map((s, i) => {
           const Icon = s.icon;
           const isActive = i === currentStepIndex;
@@ -214,7 +219,7 @@ export default function NewEventWizard() {
       </div>
 
       {/* Step Content */}
-      <div className="rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card">
+      <div className="w-full rounded-2xl border border-border bg-surface p-6 sm:p-8 shadow-card">
         {/* Step 1: Client Info */}
         {step === 'client' && (
           <div className="space-y-6">
@@ -375,7 +380,7 @@ export default function NewEventWizard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-3">
               {GUEST_TIERS.map((tier) => {
                 const isSelected = selectedTier.id === tier.id;
                 const price = calculateTierPrice(tier, currency);
@@ -384,31 +389,37 @@ export default function NewEventWizard() {
                   <button
                     key={tier.id}
                     onClick={() => setSelectedTier(tier)}
-                    className={`relative text-left rounded-2xl border-2 p-5 transition-all duration-200 cursor-pointer ${
+                    className={`relative text-left rounded-2xl border-2 pt-7 pb-5 px-5 flex flex-col justify-between transition-all duration-200 cursor-pointer h-full ${
                       isSelected
-                        ? 'border-accent bg-accent/5 ring-2 ring-accent/10 shadow-md'
+                        ? 'border-accent bg-accent/5 ring-2 ring-accent/15 shadow-md'
                         : 'border-border hover:border-accent/30 bg-surface'
                     }`}
                   >
                     {tier.badge && (
-                      <span className="absolute -top-2.5 left-4 px-2.5 py-0.5 rounded-full bg-accent text-white text-[10px] font-bold uppercase tracking-wider">
-                        {tier.badge}
-                      </span>
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 whitespace-nowrap">
+                        <span className="px-3 py-0.5 rounded-full bg-accent text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                          {tier.badge}
+                        </span>
+                      </div>
                     )}
                     {isSelected && (
-                      <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                      <div className="absolute top-3.5 right-3.5 w-6 h-6 rounded-full bg-accent flex items-center justify-center z-10 shadow-sm">
                         <Check size={14} className="text-white" />
                       </div>
                     )}
-                    <h3 className="text-base font-bold text-text-primary mt-1">{tier.name}</h3>
-                    <p className="text-text-secondary text-xs mt-0.5">{tier.guestRange}</p>
-                    <div className="mt-3">
-                      <span className="text-2xl font-black text-text-primary tracking-tight font-display">
-                        {formatPrice(price.unitPrice, currency)}
-                      </span>
-                      <span className="text-text-muted text-xs ml-1">/event</span>
+                    <div>
+                      <h3 className="text-base font-bold text-text-primary pr-6">{tier.name}</h3>
+                      <p className="text-text-secondary text-xs mt-0.5 font-medium">{tier.guestRange}</p>
+                      <div className="mt-3">
+                        <span className="text-2xl font-black text-text-primary tracking-tight font-display">
+                          {formatPrice(price.unitPrice, currency)}
+                        </span>
+                        <span className="text-text-muted text-xs ml-1">/event</span>
+                      </div>
                     </div>
-                    <p className="text-text-secondary text-xs mt-2 leading-relaxed">{tier.tagline}</p>
+                    <p className="text-text-secondary text-xs mt-3 pt-3 border-t border-border/70 leading-relaxed">
+                      {tier.tagline}
+                    </p>
                   </button>
                 );
               })}

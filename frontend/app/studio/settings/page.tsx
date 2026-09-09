@@ -20,7 +20,7 @@ export default function StudioSettingsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="w-full max-w-4xl mx-auto space-y-8">
       {/* Top Breadcrumb */}
       <div>
         <Link
