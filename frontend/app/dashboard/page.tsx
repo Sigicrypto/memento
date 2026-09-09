@@ -178,7 +178,7 @@ export default function DashboardPage() {
   const filteredEvents = events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col items-center">
       {/* ── TOP NAV BAR ── */}
       <div
         style={{
@@ -188,10 +188,11 @@ export default function DashboardPage() {
           marginBottom: '32px',
           padding: '14px 24px',
           borderRadius: '20px',
-          background: '#0b0f19',
-          border: '1px solid rgba(255, 255, 255, 0.12)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
-          color: '#ffffff',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          boxShadow: 'var(--shadow-card)',
+          color: 'var(--text-primary)',
+          width: '100%',
         }}
       >
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
@@ -199,6 +200,12 @@ export default function DashboardPage() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link
+            href="/studio"
+            className="text-xs font-bold text-accent hover:underline hidden sm:inline-block"
+          >
+            Studio Command →
+          </Link>
           <ThemeToggle />
           <button
             onClick={handleLogout}
@@ -238,111 +245,110 @@ export default function DashboardPage() {
         transition={{ duration: 0.5 }}
         style={{
           display: 'flex',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '24px',
+          textAlign: 'center',
+          gap: '16px',
           marginBottom: '40px',
+          width: '100%',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {/* Avatar */}
-          <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }}>
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, var(--accent), var(--accent-cyan))',
+              padding: '2px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <div
               style={{
-                width: '56px',
-                height: '56px',
+                width: '100%',
+                height: '100%',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, #a855f7, #ec4899, var(--accent-cyan))',
-                padding: '2px',
+                background: 'var(--bg)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                fontSize: '24px',
+                fontWeight: 900,
+                color: 'var(--text-primary)',
               }}
             >
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: '50%',
-                  background: 'var(--bg)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '20px',
-                  fontWeight: 900,
-                  color: 'var(--text-primary)',
-                }}
-              >
-                {initial}
-              </div>
+              {initial}
             </div>
+          </div>
+          <span
+            style={{
+              position: 'absolute',
+              bottom: '0',
+              right: '0',
+              width: '16px',
+              height: '16px',
+              background: 'var(--success)',
+              border: '2px solid var(--bg)',
+              borderRadius: '50%',
+            }}
+          />
+        </div>
+
+        <div>
+          <h1
+            style={{
+              fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)',
+              fontWeight: 800,
+              lineHeight: 1.2,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+              fontFamily: 'var(--font-display, inherit)',
+            }}
+          >
+            Welcome back, {firstName}
+          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              {profile?.email || user?.email}
+            </span>
             <span
               style={{
-                position: 'absolute',
-                bottom: '0',
-                right: '0',
-                width: '14px',
-                height: '14px',
-                background: 'var(--success)',
-                border: '2px solid var(--bg)',
-                borderRadius: '50%',
-              }}
-            />
-          </div>
-
-          <div>
-            <h1
-              style={{
-                fontSize: 'clamp(1.25rem, 3vw, 1.75rem)',
+                fontSize: '11px',
                 fontWeight: 800,
-                lineHeight: 1.2,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.02em',
+                textTransform: 'uppercase',
+                padding: '2px 10px',
+                borderRadius: '999px',
+                background: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
+                color: 'var(--accent)',
+                letterSpacing: '0.05em',
               }}
             >
-              Welcome back, {firstName}
-            </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                {profile?.email || user?.email}
-              </span>
+              {planInfo.name} Plan
+            </span>
+            {isSuperAdmin && (
               <span
                 style={{
-                  fontSize: '10px',
-                  fontWeight: 800,
+                  fontSize: '11px',
+                  fontWeight: 700,
                   textTransform: 'uppercase',
-                  padding: '2px 10px',
-                  borderRadius: '999px',
-                  background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)',
-                  border: '1px solid color-mix(in srgb, var(--accent-cyan) 25%, transparent)',
-                  color: 'var(--accent-cyan)',
-                  letterSpacing: '0.05em',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  background: 'rgba(168, 85, 247, 0.15)',
+                  color: '#c084fc',
+                  border: '1px solid rgba(168, 85, 247, 0.3)',
                 }}
               >
-                {planInfo.name} Plan
+                Super Admin
               </span>
-              {isSuperAdmin && (
-                <span
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    background: 'rgba(168, 85, 247, 0.15)',
-                    color: '#c084fc',
-                    border: '1px solid rgba(168, 85, 247, 0.3)',
-                  }}
-                >
-                  Super Admin
-                </span>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', marginTop: '8px' }}>
           <Link
             href="/dashboard/branding"
             className="btn btn-secondary"
@@ -355,15 +361,14 @@ export default function DashboardPage() {
               fontWeight: 700,
               borderRadius: '14px',
               whiteSpace: 'nowrap',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
               color: 'var(--text-primary)',
+              boxShadow: 'var(--shadow-card)',
               transition: 'all 0.2s ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
           >
-            <Sparkles size={18} className="text-cyan-400" />
+            <Sparkles size={18} className="text-accent" />
             <span>White-Label</span>
           </Link>
 
@@ -379,21 +384,45 @@ export default function DashboardPage() {
               fontWeight: 700,
               borderRadius: '14px',
               whiteSpace: 'nowrap',
+              background: 'var(--accent)',
+              color: '#ffffff',
+              boxShadow: '0 2px 8px rgba(242,169,59,0.3)',
             }}
           >
             <Plus size={18} />
             <span>Create New Wall</span>
           </Link>
+
+          <Link
+            href="/studio"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: 700,
+              borderRadius: '14px',
+              whiteSpace: 'nowrap',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <Camera size={18} className="text-primary" />
+            <span>Studio Portal</span>
+          </Link>
         </div>
       </motion.div>
 
-      {/* ── KPI STATS ── */}
+      {/* ── KPI STATS (CENTERED) ── */}
       <div
+        className="w-full max-w-5xl mb-12"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px',
-          marginBottom: '48px',
         }}
       >
         {/* Active Photo Walls */}
@@ -406,27 +435,25 @@ export default function DashboardPage() {
             borderRadius: '20px',
             border: '1px solid var(--border)',
             background: 'var(--surface)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)' }}>
-              Active Photo Walls
-            </span>
-            <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.2)', color: '#a855f7' }}>
-              <Layout size={18} />
-            </div>
+          <div style={{ padding: '12px', borderRadius: '14px', background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.2)', color: '#a855f7', marginBottom: '12px' }}>
+            <Layout size={22} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '40px', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>{activeEventsCount}</span>
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              active ({closedEventsCount} closed)
-            </span>
+          <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+            Active Photo Walls
+          </span>
+          <div style={{ fontSize: '40px', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1 }}>
+            {activeEventsCount}
           </div>
-          <div style={{ marginTop: '16px', height: '40px', display: 'flex', alignItems: 'flex-end', gap: '4px', opacity: 0.7 }}>
-            {[35, 45, 30, 65, 80, 55, 90, 75, 100].map((h, i) => (
-              <div key={i} style={{ flex: 1, height: `${h}%`, background: 'linear-gradient(to top, #a855f7, #22d3ee)', borderRadius: '3px 3px 0 0' }} />
-            ))}
-          </div>
+          <span style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '6px' }}>
+            active ({closedEventsCount} closed)
+          </span>
         </motion.div>
 
         {/* Total Photos */}
@@ -439,47 +466,39 @@ export default function DashboardPage() {
             borderRadius: '20px',
             border: '1px solid var(--border)',
             background: 'var(--surface)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)' }}>
-              Total Photos Collected
-            </span>
-            <div style={{ padding: '10px', borderRadius: '12px', background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-cyan) 25%, transparent)', color: 'var(--accent-cyan)' }}>
-              <ImageIcon size={18} />
-            </div>
+          <div style={{ padding: '12px', borderRadius: '14px', background: 'color-mix(in srgb, var(--accent) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)', color: 'var(--accent)', marginBottom: '12px' }}>
+            <ImageIcon size={22} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '40px', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>{totalPhotos}</span>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                padding: '3px 10px',
-                borderRadius: '999px',
-                background: 'color-mix(in srgb, var(--success) 12%, transparent)',
-                border: '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
-                color: 'var(--success)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-              }}
-            >
-              <Sparkles size={10} /> Live Synced
-            </span>
+          <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+            Total Photos Collected
+          </span>
+          <div style={{ fontSize: '40px', fontWeight: 900, letterSpacing: '-0.03em', color: 'var(--text-primary)', lineHeight: 1 }}>
+            {totalPhotos}
           </div>
-          <div style={{ marginTop: '16px', height: '40px' }}>
-            <svg viewBox="0 0 100 30" style={{ width: '100%', height: '100%', overflow: 'visible', opacity: 0.7 }}>
-              <defs>
-                <linearGradient id="photoGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent-cyan)" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="var(--accent-cyan)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d="M0,30 L0,22 L15,25 L30,12 L45,18 L60,8 L75,15 L90,5 L100,10 L100,30 Z" fill="url(#photoGrad)" />
-              <path d="M0,22 L15,25 L30,12 L45,18 L60,8 L75,15 L90,5 L100,10" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
+          <span
+            style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              padding: '3px 10px',
+              borderRadius: '999px',
+              background: 'color-mix(in srgb, var(--success) 12%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--success) 25%, transparent)',
+              color: 'var(--success)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              marginTop: '8px',
+            }}
+          >
+            <Sparkles size={10} /> Live Synced
+          </span>
         </motion.div>
 
         {/* Plan Tier */}
@@ -492,35 +511,26 @@ export default function DashboardPage() {
             borderRadius: '20px',
             border: '1px solid var(--border)',
             background: 'var(--surface)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            boxShadow: 'var(--shadow-card)',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-primary)' }}>
-              <div style={{ padding: '8px', borderRadius: '10px', background: 'color-mix(in srgb, var(--accent-cyan) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-cyan) 25%, transparent)', color: 'var(--accent-cyan)' }}>
-                {planInfo.icon}
-              </div>
-              <span style={{ fontSize: '16px', fontWeight: 700 }}>{planInfo.name} Tier</span>
-            </div>
-            <span
-              style={{
-                fontSize: '10px',
-                fontWeight: 900,
-                textTransform: 'uppercase',
-                padding: '3px 10px',
-                borderRadius: '999px',
-                background: 'color-mix(in srgb, var(--success) 15%, transparent)',
-                color: 'var(--success)',
-                border: '1px solid color-mix(in srgb, var(--success) 30%, transparent)',
-                letterSpacing: '0.1em',
-              }}
-            >
-              Active
-            </span>
+          <div style={{ padding: '12px', borderRadius: '14px', background: 'color-mix(in srgb, var(--primary) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--primary) 25%, transparent)', color: 'var(--primary)', marginBottom: '12px' }}>
+            {planInfo.icon}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', margin: '8px 0' }}>
-            {planInfo.features.slice(0, 3).map((f, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                <CheckCircle size={14} style={{ color: 'var(--accent-cyan)', flexShrink: 0 }} />
+          <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+            Account Tier
+          </span>
+          <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)' }}>
+            {planInfo.name} Tier
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', margin: '10px 0', alignItems: 'center' }}>
+            {planInfo.features.slice(0, 2).map((f, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                <CheckCircle size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />
                 <span>{f}</span>
               </div>
             ))}
@@ -534,54 +544,53 @@ export default function DashboardPage() {
                 gap: '6px',
                 fontSize: '13px',
                 fontWeight: 700,
-                color: 'var(--accent-cyan)',
-                marginTop: '16px',
+                color: 'var(--accent)',
+                marginTop: '4px',
                 textDecoration: 'none',
               }}
             >
-              <span>Upgrade Plan</span> <ArrowRight size={13} />
+              <span>Upgrade Tier</span> <ArrowRight size={13} />
             </Link>
           )}
         </motion.div>
       </div>
 
-      {/* ── EVENTS SECTION ── */}
-      <section>
+      {/* ── EVENTS SECTION (CENTERED) ── */}
+      <section className="w-full max-w-5xl">
         <div
           style={{
             display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
             alignItems: 'center',
+            textAlign: 'center',
             gap: '16px',
-            marginBottom: '28px',
+            marginBottom: '32px',
+            width: '100%',
           }}
         >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-              <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-                Your Events
-              </h2>
-              <span
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  padding: '2px 12px',
-                  borderRadius: '999px',
-                  background: 'var(--border)',
-                  color: 'var(--text-primary)',
-                  border: '1px solid var(--border-hover)',
-                }}
-              >
-                {filteredEvents.length}
-              </span>
-            </div>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-              Manage and monitor all your interactive photo walls.
-            </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.01em', fontFamily: 'var(--font-display, inherit)' }}>
+              Your Photo Walls
+            </h2>
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                padding: '2px 12px',
+                borderRadius: '999px',
+                background: 'var(--border)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-hover)',
+              }}
+            >
+              {filteredEvents.length}
+            </span>
           </div>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto' }}>
+            Manage and monitor all your interactive live photo walls.
+          </p>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '4px' }}>
             {/* Search */}
             <div style={{ position: 'relative' }}>
               <Search size={15} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -589,7 +598,7 @@ export default function DashboardPage() {
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search events..."
+                placeholder="Search walls..."
                 className="input"
                 style={{
                   paddingLeft: '38px',
@@ -597,7 +606,7 @@ export default function DashboardPage() {
                   paddingTop: '10px',
                   paddingBottom: '10px',
                   fontSize: '13px',
-                  width: '240px',
+                  width: '260px',
                   borderRadius: '12px',
                   background: 'var(--surface)',
                   border: '1px solid var(--border)',
@@ -621,9 +630,9 @@ export default function DashboardPage() {
                 style={{
                   padding: '8px',
                   borderRadius: '8px',
-                  border: viewMode === 'grid' ? '1px solid color-mix(in srgb, var(--accent-cyan) 30%, transparent)' : '1px solid transparent',
-                  background: viewMode === 'grid' ? 'color-mix(in srgb, var(--accent-cyan) 15%, transparent)' : 'transparent',
-                  color: viewMode === 'grid' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                  border: viewMode === 'grid' ? '1px solid color-mix(in srgb, var(--accent) 30%, transparent)' : '1px solid transparent',
+                  background: viewMode === 'grid' ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+                  color: viewMode === 'grid' ? 'var(--accent)' : 'var(--text-muted)',
                   cursor: 'pointer',
                   display: 'flex',
                 }}
@@ -636,9 +645,9 @@ export default function DashboardPage() {
                 style={{
                   padding: '8px',
                   borderRadius: '8px',
-                  border: viewMode === 'table' ? '1px solid color-mix(in srgb, var(--accent-cyan) 30%, transparent)' : '1px solid transparent',
-                  background: viewMode === 'table' ? 'color-mix(in srgb, var(--accent-cyan) 15%, transparent)' : 'transparent',
-                  color: viewMode === 'table' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                  border: viewMode === 'table' ? '1px solid color-mix(in srgb, var(--accent) 30%, transparent)' : '1px solid transparent',
+                  background: viewMode === 'table' ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
+                  color: viewMode === 'table' ? 'var(--accent)' : 'var(--text-muted)',
                   cursor: 'pointer',
                   display: 'flex',
                 }}

@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AnimatedLogo from '@/components/AnimatedLogo';
+import ThemeToggle from '@/components/ThemeToggle';
 import { 
   Building2, Image as ImageIcon, Palette, Globe, Shield, Save, CheckCircle2, 
   Upload, Sparkles, ExternalLink, ArrowLeft, RefreshCw, Eye, Smartphone, HelpCircle,
@@ -222,10 +223,10 @@ export default function BrandingPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-bg text-text-primary flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" />
-          <span className="text-xs font-mono text-slate-400">Loading White-Label Portal...</span>
+          <div className="w-10 h-10 border-4 border-accent/20 border-t-accent rounded-full animate-spin" />
+          <span className="text-xs font-mono text-text-secondary">Loading White-Label Portal...</span>
         </div>
       </div>
     );
@@ -234,55 +235,64 @@ export default function BrandingPage() {
   const selectedCustomerInfo = customers.find(c => c.id === selectedUserId);
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-white relative overflow-x-hidden pt-20 pb-16 px-4 md:px-8 flex justify-center">
-      {/* Background ambient lighting */}
-      <div className="fixed top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none z-0" />
-      <div className="fixed top-2/3 right-1/4 w-[500px] h-[500px] bg-purple-500/10 blur-[140px] rounded-full pointer-events-none z-0" />
-
-      <div className="relative z-10 w-full max-w-6xl flex flex-col gap-8">
+    <div className="min-h-screen w-full bg-bg text-text-primary relative overflow-x-hidden pt-8 md:pt-12 pb-20 px-4 md:px-8 flex flex-col items-center">
+      
+      <div className="w-full max-w-6xl flex flex-col items-center gap-8">
         
         {/* Navigation Bar */}
-        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-white/10 pb-6">
-          <div className="flex items-start gap-3">
+        <div className="w-full p-4 rounded-2xl bg-surface border border-border shadow-card flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <Link 
               href="/dashboard" 
-              className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-300 hover:text-white hover:border-cyan-400/40 transition-all mt-1"
+              className="p-2.5 rounded-xl bg-bg-subtle border border-border text-text-secondary hover:text-text-primary hover:border-accent transition-all"
+              title="Back to Dashboard"
             >
               <ArrowLeft size={18} />
             </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">White-Label Management</h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-400 text-[10px] font-black uppercase tracking-wider">
-                  PRO AGENCY
-                </span>
-              </div>
-              <p className="text-slate-400 text-xs mt-1">
-                Customize agency logos, domain titles, color palettes, and remove Memento branding on live walls & cards.
-              </p>
-            </div>
+            <Link href="/" className="flex items-center">
+              <AnimatedLogo width={120} height={32} />
+            </Link>
           </div>
 
-          <div className="flex items-start gap-3 mt-1 sm:mt-2">
-            <AnimatedLogo width={120} height={38} />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/studio"
+              className="text-xs font-bold text-accent hover:underline hidden sm:inline-block"
+            >
+              Studio Command →
+            </Link>
+            <ThemeToggle />
           </div>
+        </div>
+
+        {/* Centered Page Header */}
+        <div className="flex flex-col items-center text-center max-w-2xl mx-auto w-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider mb-3">
+            <Sparkles size={14} /> PRO STUDIO SUITE
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight font-display text-center">
+            White-Label Management
+          </h1>
+          <p className="text-text-secondary text-sm sm:text-base mt-2 max-w-xl text-center leading-relaxed">
+            Completely replace Memento with your studio's brand. Your logo, colors, and monogram on live screens, mobile uploaders, and printable QR cards.
+          </p>
         </div>
 
         {/* Admin Whitelabel Customer Selector Bar */}
         {isUserAdmin && (
-          <div className="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-cyan-950/40 to-slate-900 border border-cyan-500/30 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="w-full p-4 md:p-5 rounded-2xl bg-surface border border-border shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+              <div className="p-2.5 rounded-xl bg-accent/10 text-accent border border-accent/20">
                 <Users size={20} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white">Whitelabel & Customer Selector</h3>
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  <h3 className="text-sm font-bold text-text-primary">Whitelabel Customer Selector</h3>
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 border border-amber-500/20">
                     ADMIN MODE
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-text-secondary mt-0.5">
                   Select any customer account to inspect or edit their White-Label branding configuration.
                 </p>
               </div>
@@ -293,7 +303,7 @@ export default function BrandingPage() {
                 value={selectedUserId}
                 onChange={handleSelectCustomer}
                 disabled={fetchingTargetUser}
-                className="w-full md:w-80 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-cyan-500/40 text-xs font-bold text-white focus:outline-none focus:border-cyan-400 shadow-lg cursor-pointer"
+                className="w-full md:w-80 px-3.5 py-2.5 rounded-xl bg-bg-subtle border border-border text-xs font-bold text-text-primary focus:outline-none focus:border-accent shadow-sm cursor-pointer"
               >
                 <option value="self">👤 My Admin Account ({user?.email})</option>
                 <optgroup label="👑 Whitelabel Customers">
@@ -312,7 +322,7 @@ export default function BrandingPage() {
                 </optgroup>
               </select>
               {fetchingTargetUser && (
-                <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin shrink-0" />
+                <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin shrink-0" />
               )}
             </div>
           </div>
@@ -320,21 +330,21 @@ export default function BrandingPage() {
 
         {/* Selected Customer Banner */}
         {selectedUserId !== 'self' && selectedCustomerInfo && (
-          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-between">
+          <div className="w-full p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 text-xs font-bold flex items-center justify-between">
             <span className="flex items-center gap-2">
               <UserCheck size={16} />
               <span>Editing White-Label settings for:</span>
               <span className="underline font-mono">
                 {selectedCustomerInfo.full_name || selectedCustomerInfo.email}
               </span>
-              <span className="text-[10px] uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200">
+              <span className="text-[10px] uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-900">
                 {selectedCustomerInfo.plan || 'STARTER'}
               </span>
             </span>
             <button
               type="button"
               onClick={() => { setSelectedUserId('self'); loadTargetUserBranding('self'); }}
-              className="text-[11px] underline text-amber-200 hover:text-white"
+              className="text-[11px] underline text-amber-800 hover:text-amber-950 cursor-pointer"
             >
               Switch back to My Account
             </button>
@@ -343,9 +353,9 @@ export default function BrandingPage() {
 
         {/* Success Alert */}
         {saveSuccess && (
-          <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-between shadow-xl">
+          <div className="w-full p-4 rounded-2xl bg-green-50 border border-green-200 text-green-800 flex items-center justify-between shadow-card">
             <div className="flex items-center gap-3">
-              <CheckCircle2 size={20} />
+              <CheckCircle2 size={20} className="text-green-600" />
               <span className="text-sm font-bold">
                 {selectedUserId === 'self' 
                   ? 'White-Label settings updated & synced across all client events!'
@@ -357,23 +367,23 @@ export default function BrandingPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Main Controls Form (8 Cols) */}
           <div className="lg:col-span-8 flex flex-col gap-6">
 
             {/* Tab Selector */}
-            <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-white/10 flex-wrap">
+            <div className="flex items-center justify-center sm:justify-start gap-2 p-1.5 rounded-2xl bg-bg-subtle border border-border flex-wrap">
               <button
                 type="button"
                 onClick={() => setActiveTab('identity')}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === 'identity'
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-surface text-text-primary shadow-sm border border-border'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                <Building2 size={15} />
+                <Building2 size={15} className="text-primary" />
                 <span>Brand & Logo</span>
               </button>
 
@@ -382,11 +392,11 @@ export default function BrandingPage() {
                 onClick={() => setActiveTab('domain')}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === 'domain'
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-surface text-text-primary shadow-sm border border-border'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                <Globe size={15} />
+                <Globe size={15} className="text-accent" />
                 <span>Custom Domain</span>
               </button>
 
@@ -395,11 +405,11 @@ export default function BrandingPage() {
                 onClick={() => setActiveTab('colors')}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === 'colors'
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-surface text-text-primary shadow-sm border border-border'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                <Palette size={15} />
+                <Palette size={15} className="text-primary" />
                 <span>Colors & Wall Theme</span>
               </button>
 
@@ -408,11 +418,11 @@ export default function BrandingPage() {
                 onClick={() => setActiveTab('whitelabel')}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   activeTab === 'whitelabel'
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-surface text-text-primary shadow-sm border border-border'
+                    : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                <Shield size={15} />
+                <Shield size={15} className="text-accent" />
                 <span>White-Label Controls</span>
               </button>
             </div>
@@ -421,52 +431,52 @@ export default function BrandingPage() {
 
               {/* TAB 1: BRAND IDENTITY */}
               {activeTab === 'identity' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
+                <div className="p-6 md:p-8 rounded-3xl bg-surface border border-border shadow-card flex flex-col gap-6">
                   <div>
-                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Building2 size={18} className="text-cyan-400" /> Agency Identity & Assets
+                    <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                      <Building2 size={18} className="text-primary" /> Studio Identity & Assets
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Upload custom agency logo, favicon, and primary brand titles used on client galleries.
+                    <p className="text-xs text-text-secondary mt-1">
+                      Upload custom studio logo, favicon, and primary brand titles used on client galleries.
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-300">Agency / Brand Name</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Studio / Brand Name</label>
                       <input 
                         type="text" 
                         value={brandName}
                         onChange={(e) => setBrandName(e.target.value)}
-                        placeholder="e.g. Apex Event Media"
-                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
+                        placeholder="e.g. Royal Moments Studio"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-bg-subtle border border-border text-sm font-medium text-text-primary focus:outline-none focus:border-accent focus:bg-surface"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-300">Brand Tagline</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Brand Tagline</label>
                       <input 
                         type="text" 
                         value={brandTagline}
                         onChange={(e) => setBrandTagline(e.target.value)}
-                        placeholder="e.g. Premium Live Memory Experiences"
-                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
+                        placeholder="e.g. Luxury Wedding & Event Photography"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-bg-subtle border border-border text-sm font-medium text-text-primary focus:outline-none focus:border-accent focus:bg-surface"
                       />
                     </div>
 
                     {/* Logo Upload */}
                     <div className="pt-2">
-                      <label className="text-xs font-bold text-slate-300">Brand Header Logo</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Brand Header Logo</label>
                       <div className="mt-2 flex items-center gap-4">
-                        <div className="w-32 h-16 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center p-2 overflow-hidden">
+                        <div className="w-32 h-16 rounded-xl bg-bg-subtle border border-border flex items-center justify-center p-2 overflow-hidden">
                           {brandLogoPreview ? (
                             <img src={brandLogoPreview} alt="Logo preview" className="max-h-full max-w-full object-contain" />
                           ) : (
-                            <span className="text-[10px] text-slate-500 font-mono">No Logo Uploaded</span>
+                            <span className="text-[10px] text-text-muted font-mono">No Logo Uploaded</span>
                           )}
                         </div>
-                        <label className="px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold hover:bg-cyan-500/20 cursor-pointer flex items-center gap-2 transition-all">
-                          <Upload size={14} /> Upload New Logo
+                        <label className="px-4 py-2.5 rounded-xl bg-surface border border-border text-text-primary text-xs font-bold hover:border-accent cursor-pointer flex items-center gap-2 transition-all shadow-sm">
+                          <Upload size={14} className="text-accent" /> Upload Studio Logo
                           <input 
                             type="file" 
                             accept="image/*" 
@@ -485,17 +495,17 @@ export default function BrandingPage() {
 
                     {/* Favicon Upload */}
                     <div className="pt-2">
-                      <label className="text-xs font-bold text-slate-300">Browser Favicon (.ico or .png)</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Browser Favicon (.ico or .png)</label>
                       <div className="mt-2 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-slate-950 border border-white/10 flex items-center justify-center p-2 overflow-hidden">
+                        <div className="w-12 h-12 rounded-xl bg-bg-subtle border border-border flex items-center justify-center p-2 overflow-hidden">
                           {faviconPreview ? (
                             <img src={faviconPreview} alt="Favicon preview" className="w-6 h-6 object-contain" />
                           ) : (
-                            <Globe size={18} className="text-slate-600" />
+                            <Globe size={18} className="text-text-muted" />
                           )}
                         </div>
-                        <label className="px-4 py-2.5 rounded-xl bg-slate-800 border border-white/10 text-slate-300 text-xs font-bold hover:bg-slate-700 cursor-pointer flex items-center gap-2 transition-all">
-                          <Upload size={14} /> Choose Favicon
+                        <label className="px-4 py-2.5 rounded-xl bg-surface border border-border text-text-primary text-xs font-bold hover:border-accent cursor-pointer flex items-center gap-2 transition-all shadow-sm">
+                          <Upload size={14} className="text-accent" /> Choose Favicon
                           <input 
                             type="file" 
                             accept="image/x-icon,image/png" 
@@ -517,30 +527,30 @@ export default function BrandingPage() {
 
               {/* TAB 2: CUSTOM DOMAIN */}
               {activeTab === 'domain' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
+                <div className="p-6 md:p-8 rounded-3xl bg-surface border border-border shadow-card flex flex-col gap-6">
                   <div>
-                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Globe size={18} className="text-cyan-400" /> Custom Domain Configuration
+                    <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                      <Globe size={18} className="text-accent" /> Custom Domain Configuration
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Serve all client galleries under your agency sub-domain (CNAME setup required).
+                    <p className="text-xs text-text-secondary mt-1">
+                      Serve all client galleries under your studio sub-domain (CNAME setup required).
                     </p>
                   </div>
 
                   <div className="space-y-5">
                     <div>
-                      <label className="text-xs font-bold text-slate-300">Target Agency Domain</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Target Studio Domain</label>
                       <div className="mt-1.5 flex items-center gap-2">
                         <input 
                           type="text" 
                           value={customDomain}
                           onChange={(e) => setCustomDomain(e.target.value)}
-                          placeholder="e.g. live.youragency.com"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-400"
+                          placeholder="e.g. live.royalmoments.com"
+                          className="w-full px-4 py-3 rounded-xl bg-bg-subtle border border-border text-xs sm:text-sm font-mono text-text-primary focus:outline-none focus:border-accent focus:bg-surface"
                         />
                         <button
                           type="button"
-                          className="px-4 py-3 rounded-xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs font-bold shrink-0 hover:bg-cyan-500/30"
+                          className="px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold shrink-0 hover:bg-primary/20 transition-colors"
                         >
                           Check DNS
                         </button>
@@ -548,17 +558,17 @@ export default function BrandingPage() {
                     </div>
 
                     {/* CNAME Instructions Card */}
-                    <div className="p-5 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                      <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <div className="p-5 rounded-2xl bg-bg-subtle border border-border flex flex-col gap-3">
+                      <div className="flex items-center justify-between text-xs font-bold text-text-primary">
                         <span>DNS CNAME Setup Instructions</span>
-                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <span className="text-[10px] font-mono text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">
                           RECORD READY
                         </span>
                       </div>
-                      <div className="text-xs text-slate-400 font-mono space-y-1">
-                        <div>Type: <span className="text-white">CNAME</span></div>
-                        <div>Name: <span className="text-white">live</span> (or your subdomain)</div>
-                        <div>Value: <span className="text-cyan-400">cname.mymementoapp.com</span></div>
+                      <div className="text-xs text-text-secondary font-mono space-y-1">
+                        <div>Type: <span className="font-bold text-text-primary">CNAME</span></div>
+                        <div>Name: <span className="font-bold text-text-primary">live</span> (or your subdomain)</div>
+                        <div>Value: <span className="font-bold text-accent">cname.mymementoapp.com</span></div>
                       </div>
                     </div>
                   </div>
@@ -567,19 +577,19 @@ export default function BrandingPage() {
 
               {/* TAB 3: COLORS & THEME */}
               {activeTab === 'colors' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
+                <div className="p-6 md:p-8 rounded-3xl bg-surface border border-border shadow-card flex flex-col gap-6">
                   <div>
-                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Palette size={18} className="text-cyan-400" /> Color Accent & Live Wall Aesthetic
+                    <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                      <Palette size={18} className="text-primary" /> Brand Colors & Live Wall Aesthetic
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Customize color tokens applied to live wall headers, guest buttons, and moderation interfaces.
+                    <p className="text-xs text-text-secondary mt-1">
+                      Customize color tokens applied to live wall headers, guest buttons, and moderation consoles.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                      <label className="text-xs font-bold text-slate-300">Primary Brand Accent</label>
+                    <div className="p-4 rounded-2xl bg-bg-subtle border border-border flex flex-col gap-3">
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Primary Studio Brand Accent</label>
                       <div className="flex items-center gap-3">
                         <input 
                           type="color" 
@@ -587,12 +597,12 @@ export default function BrandingPage() {
                           onChange={(e) => setPrimaryColor(e.target.value)}
                           className="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer"
                         />
-                        <span className="text-xs font-mono text-cyan-400 font-bold">{primaryColor}</span>
+                        <span className="text-xs font-mono text-accent font-bold">{primaryColor}</span>
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                      <label className="text-xs font-bold text-slate-300">Secondary Highlight Color</label>
+                    <div className="p-4 rounded-2xl bg-bg-subtle border border-border flex flex-col gap-3">
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Secondary Highlight Color</label>
                       <div className="flex items-center gap-3">
                         <input 
                           type="color" 
@@ -600,20 +610,20 @@ export default function BrandingPage() {
                           onChange={(e) => setSecondaryColor(e.target.value)}
                           className="w-10 h-10 rounded-xl bg-transparent border-0 cursor-pointer"
                         />
-                        <span className="text-xs font-mono text-purple-400 font-bold">{secondaryColor}</span>
+                        <span className="text-xs font-mono text-primary font-bold">{secondaryColor}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Theme Presets */}
                   <div>
-                    <label className="text-xs font-bold text-slate-300 mb-2 block">Live Memory Wall Background Theme</label>
+                    <label className="text-xs font-bold text-text-secondary mb-2 block uppercase tracking-wider">Live Reception Wall Background Theme</label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
-                        { id: 'onyx', label: 'Onyx Dark', bg: 'bg-black' },
-                        { id: 'midnight', label: 'Midnight Blue', bg: 'bg-slate-950' },
-                        { id: 'velvet', label: 'Velvet Purple', bg: 'bg-purple-950' },
-                        { id: 'minimal', label: 'Minimal White', bg: 'bg-slate-100 text-slate-900' },
+                        { id: 'onyx', label: 'Onyx Dark', bg: 'bg-[#141210]' },
+                        { id: 'midnight', label: 'Midnight Blue', bg: 'bg-[#0f172a]' },
+                        { id: 'velvet', label: 'Velvet Purple', bg: 'bg-[#1e1b4b]' },
+                        { id: 'minimal', label: 'Minimal Ivory', bg: 'bg-[#f5f5f4] text-text-primary' },
                       ].map((t) => (
                         <button
                           key={t.id}
@@ -621,11 +631,11 @@ export default function BrandingPage() {
                           onClick={() => setWallTheme(t.id as any)}
                           className={`p-3 rounded-xl border text-xs font-bold flex flex-col items-center gap-2 transition-all cursor-pointer ${
                             wallTheme === t.id
-                              ? 'border-cyan-400 bg-cyan-500/10 text-cyan-300'
-                              : 'border-white/10 text-slate-400 hover:border-white/20'
+                              ? 'border-accent bg-accent/10 text-accent'
+                              : 'border-border text-text-secondary hover:border-border-hover'
                           }`}
                         >
-                          <div className={`w-full h-8 rounded-lg ${t.bg} border border-white/20`} />
+                          <div className={`w-full h-8 rounded-lg ${t.bg} border border-border`} />
                           <span>{t.label}</span>
                         </button>
                       ))}
@@ -636,61 +646,61 @@ export default function BrandingPage() {
 
               {/* TAB 4: WHITE-LABEL CONTROLS */}
               {activeTab === 'whitelabel' && (
-                <div className="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-white/10 backdrop-blur-xl flex flex-col gap-6 shadow-2xl">
+                <div className="p-6 md:p-8 rounded-3xl bg-surface border border-border shadow-card flex flex-col gap-6">
                   <div>
-                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                      <Shield size={18} className="text-cyan-400" /> White-Label Overrides & Support Contact
+                    <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                      <Shield size={18} className="text-accent" /> White-Label Overrides & Support Contact
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Remove default Memento branding and customize support details for your client base.
+                    <p className="text-xs text-text-secondary mt-1">
+                      Remove default Memento branding and customize client support details.
                     </p>
                   </div>
 
                   <div className="space-y-5">
                     {/* Watermark Toggle */}
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex items-center justify-between">
+                    <div className="p-4 rounded-2xl bg-bg-subtle border border-border flex items-center justify-between">
                       <div>
-                        <div className="text-xs font-bold text-white">Remove "Powered by Memento" Watermark</div>
-                        <div className="text-[11px] text-slate-400">Completely hides Memento logos from live walls and guest scan cards.</div>
+                        <div className="text-xs font-bold text-text-primary">Remove "Powered by Memento" Watermark</div>
+                        <div className="text-[11px] text-text-secondary">Completely hides Memento logos from live walls, guest uploaders, and scan cards.</div>
                       </div>
                       <input 
                         type="checkbox" 
                         checked={removeWatermark}
                         onChange={(e) => setRemoveWatermark(e.target.checked)}
-                        className="w-5 h-5 accent-cyan-500 cursor-pointer"
+                        className="w-5 h-5 accent-accent cursor-pointer"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-300">Custom Support Helpline Phone</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Custom Support Helpline Phone</label>
                       <input 
                         type="text" 
                         value={customSupportPhone}
                         onChange={(e) => setCustomSupportPhone(e.target.value)}
                         placeholder="e.g. +91 9866161775"
-                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-bg-subtle border border-border text-xs sm:text-sm font-medium text-text-primary focus:outline-none focus:border-accent focus:bg-surface"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-300">Custom Support Email</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Custom Support Email</label>
                       <input 
                         type="email" 
                         value={customSupportEmail}
                         onChange={(e) => setCustomSupportEmail(e.target.value)}
-                        placeholder="e.g. support@apexevents.com"
-                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
+                        placeholder="e.g. contact@royalmoments.com"
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-bg-subtle border border-border text-xs sm:text-sm font-medium text-text-primary focus:outline-none focus:border-accent focus:bg-surface"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs font-bold text-slate-300">Footer Copyright Notice</label>
+                      <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Footer Copyright Notice</label>
                       <input 
                         type="text" 
                         value={footerCopyright}
                         onChange={(e) => setFooterCopyright(e.target.value)}
-                        placeholder="e.g. © 2026 Apex Event Media. All rights reserved."
-                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs font-medium text-white focus:outline-none focus:border-cyan-400"
+                        placeholder="e.g. © 2026 Royal Moments Studio. All rights reserved."
+                        className="w-full mt-1.5 px-4 py-3 rounded-xl bg-bg-subtle border border-border text-xs sm:text-sm font-medium text-text-primary focus:outline-none focus:border-accent focus:bg-surface"
                       />
                     </div>
                   </div>
@@ -703,7 +713,7 @@ export default function BrandingPage() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
+                    className="w-full py-4 px-6 rounded-2xl bg-accent hover:opacity-90 text-white font-bold text-sm shadow-card transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
                   >
                     {saving ? (
                       <>
@@ -726,10 +736,10 @@ export default function BrandingPage() {
                   <button
                     type="button"
                     onClick={() => router.push('/checkout?plan=whitelabel')}
-                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-4 px-6 rounded-2xl bg-accent hover:opacity-90 text-white font-bold text-sm shadow-card transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Sparkles size={18} className="text-cyan-400" />
-                    <span className="text-cyan-50">Upgrade to Professional to Save Branding</span>
+                    <Sparkles size={18} />
+                    <span>Upgrade to Professional to Save Branding</span>
                   </button>
                 )}
               </div>
@@ -739,25 +749,25 @@ export default function BrandingPage() {
 
           {/* Right Column: Live Realtime Preview Card (4 Cols) */}
           <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
-            <div className="p-6 rounded-3xl bg-slate-900/90 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col gap-5">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <span className="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold flex items-center gap-1.5">
+            <div className="p-6 rounded-3xl bg-surface border border-border shadow-card flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b border-border pb-4">
+                <span className="text-xs font-mono uppercase tracking-widest text-accent font-bold flex items-center gap-1.5">
                   <Eye size={14} /> Live Client Preview
                 </span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
                   REAL-TIME
                 </span>
               </div>
 
               {/* Header Preview */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                <span className="text-[10px] font-mono text-slate-500 uppercase">Guest Upload Header</span>
+              <div className="p-4 rounded-2xl bg-bg-subtle border border-border flex flex-col gap-3">
+                <span className="text-[10px] font-mono text-text-muted uppercase">Guest Upload Screen</span>
                 <div className="flex items-center justify-between pt-1">
                   <div className="flex items-center gap-2">
                     {brandLogoPreview ? (
                       <img src={brandLogoPreview} alt="Logo" className="h-6 w-auto object-contain" />
                     ) : (
-                      <span className="text-base font-black text-white">{brandName}</span>
+                      <span className="text-base font-black text-text-primary font-display">{brandName}</span>
                     )}
                   </div>
                   <span 
@@ -770,16 +780,16 @@ export default function BrandingPage() {
               </div>
 
               {/* Live Wall Header Preview */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-3">
-                <span className="text-[10px] font-mono text-slate-500 uppercase">Live Screen Watermark Preview</span>
-                <div className="p-3 rounded-xl bg-black border border-white/10 flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-300">Live Memory Wall</span>
+              <div className="p-4 rounded-2xl bg-bg-subtle border border-border flex flex-col gap-3">
+                <span className="text-[10px] font-mono text-text-muted uppercase">Live Screen Watermark Preview</span>
+                <div className="p-3 rounded-xl bg-[#141210] border border-[#282522] flex items-center justify-between text-white">
+                  <span className="text-xs font-bold text-zinc-300">Live Reception Wall</span>
                   {removeWatermark ? (
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-                      Watermark Removed
+                    <span className="text-[10px] font-mono text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
+                      Studio Branded
                     </span>
                   ) : (
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className="text-[10px] font-mono text-zinc-400">
                       Powered by Memento
                     </span>
                   )}
@@ -787,15 +797,15 @@ export default function BrandingPage() {
               </div>
 
               {/* Support Details Preview */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 flex flex-col gap-2 text-xs">
-                <span className="text-[10px] font-mono text-slate-500 uppercase">Client Support Footer</span>
-                <div className="text-slate-300 font-medium">{brandName} Support</div>
-                <div className="text-cyan-400 font-mono text-[11px]">{customSupportPhone}</div>
-                <div className="text-slate-400 text-[11px] truncate">{customSupportEmail}</div>
+              <div className="p-4 rounded-2xl bg-bg-subtle border border-border flex flex-col gap-2 text-xs">
+                <span className="text-[10px] font-mono text-text-muted uppercase">Client Support Footer</span>
+                <div className="text-text-primary font-bold">{brandName} Support</div>
+                <div className="text-accent font-mono text-[11px]">{customSupportPhone}</div>
+                <div className="text-text-secondary text-[11px] truncate">{customSupportEmail}</div>
               </div>
 
-              <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[11px] flex items-center gap-2">
-                <Sparkles size={14} className="shrink-0" />
+              <div className="p-3 rounded-xl bg-accent/10 border border-accent/20 text-text-primary text-[11px] flex items-center gap-2">
+                <Sparkles size={14} className="shrink-0 text-accent" />
                 <span>Changes apply instantly to all active client event links and live walls.</span>
               </div>
             </div>

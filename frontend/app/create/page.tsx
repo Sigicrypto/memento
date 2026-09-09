@@ -179,8 +179,8 @@ export default function CreateEventPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-white">
-        <div className="w-10 h-10 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-bg text-text-primary">
+        <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -188,23 +188,21 @@ export default function CreateEventPage() {
   // ── Success View ──
   if (createdSlug) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-zinc-950 text-white relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/20 via-zinc-950 to-zinc-950" />
-        
+      <div className="min-h-screen flex items-center justify-center p-6 bg-bg text-text-primary relative">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 w-full max-w-2xl bg-zinc-900/90 border border-zinc-800 backdrop-blur-2xl rounded-3xl p-8 sm:p-12 text-center shadow-2xl space-y-6"
+          className="relative z-10 w-full max-w-2xl bg-surface border border-border rounded-3xl p-8 sm:p-12 text-center shadow-card space-y-6"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-50 text-green-700 text-xs font-bold border border-green-200">
             <CheckCircle size={16} /> Photo Wall Live & Ready
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Your Event Space is Ready!</h1>
-          <p className="text-zinc-400 text-sm max-w-md mx-auto">Share your QR code poster or URL link with guests to start receiving real-time photos.</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight font-display">Your Event Space is Ready!</h1>
+          <p className="text-text-secondary text-sm max-w-md mx-auto">Share your QR code poster or URL link with guests to start receiving real-time photos.</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center p-6 bg-zinc-950/80 rounded-2xl border border-zinc-800 text-left">
-            <div className="flex flex-col items-center p-4 bg-black rounded-2xl border border-zinc-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center p-6 bg-bg-subtle rounded-2xl border border-border text-left">
+            <div className="flex flex-col items-center p-4 bg-surface rounded-2xl border border-border shadow-sm">
               <QRCodeSVG 
                 value={uploadUrl} 
                 size={180} 
@@ -216,19 +214,19 @@ export default function CreateEventPage() {
               <div style={{ display: 'none' }}>
                 <QRCodeCanvas ref={qrCanvasRef} value={uploadUrl} size={600} bgColor="#000000" fgColor={activeQrTheme.fg} level="H" />
               </div>
-              <p className="mt-3 text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-widest">Scan to Join Wall</p>
+              <p className="mt-3 text-[11px] font-mono font-bold text-accent uppercase tracking-widest">Scan to Join Wall</p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Direct Event Link</label>
+                <label className="text-[11px] font-bold text-text-secondary uppercase tracking-wider block mb-1.5">Direct Event Link</label>
                 <div className="flex gap-2">
-                  <input type="text" readOnly value={uploadUrl} className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-white focus:outline-none" />
+                  <input type="text" readOnly value={uploadUrl} className="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-border text-xs font-mono text-text-primary focus:outline-none" />
                   <button 
                     onClick={() => copyToClipboard(uploadUrl)} 
-                    className="px-3.5 py-2.5 rounded-xl bg-zinc-800 text-zinc-200 hover:text-white font-bold text-xs flex items-center gap-1.5 transition-colors"
+                    className="px-3.5 py-2.5 rounded-xl bg-surface border border-border text-text-primary hover:border-accent font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
                   >
-                    {copiedLink ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                    {copiedLink ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
                   </button>
                 </div>
               </div>
@@ -248,14 +246,14 @@ export default function CreateEventPage() {
                       }
                     });
                   }} 
-                  className="py-2.5 px-3 rounded-xl bg-zinc-800 text-zinc-200 font-bold text-xs hover:bg-zinc-700 transition-colors flex items-center justify-center gap-1.5"
+                  className="py-2.5 px-3 rounded-xl bg-surface border border-border text-text-primary font-bold text-xs hover:bg-bg-subtle transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <ImageIcon size={14} /> PNG QR Code
                 </button>
 
                 <button 
                   onClick={generatePDFPoster} 
-                  className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-black font-extrabold text-xs shadow-md hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
+                  className="py-2.5 px-3 rounded-xl bg-accent text-white font-extrabold text-xs shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Printer size={14} /> Print PDF Sign
                 </button>
@@ -266,14 +264,14 @@ export default function CreateEventPage() {
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <button 
               onClick={() => router.push(`/wall/${createdSlug}`)} 
-              className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-black font-extrabold text-sm shadow-xl hover:brightness-110 transition-all flex items-center justify-center gap-2"
+              className="flex-1 py-4 rounded-2xl bg-accent text-white font-extrabold text-sm shadow-card hover:opacity-90 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Layout size={18} /> Open Live Photo Wall
             </button>
 
             <button 
               onClick={() => router.push('/dashboard')} 
-              className="flex-1 py-4 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-300 font-bold text-sm hover:bg-zinc-800 transition-colors"
+              className="flex-1 py-4 rounded-2xl bg-surface border border-border text-text-primary font-bold text-sm hover:bg-bg-subtle transition-colors cursor-pointer shadow-sm"
             >
               Back to Dashboard
             </button>
@@ -285,13 +283,10 @@ export default function CreateEventPage() {
 
   // ── Create Form & Live Print Poster Preview ──
   return (
-    <div className="min-h-screen bg-zinc-950 text-white relative overflow-x-hidden font-sans">
-      {/* Background Radial Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="min-h-screen bg-bg text-text-primary relative overflow-x-hidden font-sans">
       {/* Navigation Header */}
-      <nav className="fixed top-0 inset-x-0 z-50 h-16 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/80 flex items-center justify-between px-6">
-        <Link href="/dashboard" className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold">
+      <nav className="fixed top-0 inset-x-0 z-50 h-16 bg-surface/90 backdrop-blur-md border-b border-border flex items-center justify-between px-6">
+        <Link href="/dashboard" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-xs font-bold">
           <ArrowRight size={16} className="rotate-180" />
           <span>Back to Dashboard</span>
         </Link>
@@ -304,27 +299,27 @@ export default function CreateEventPage() {
       </nav>
 
       {/* Main Container: Realigned Split Grid */}
-      <main className="max-w-6xl mx-auto pt-28 sm:pt-36 pb-20 md:pb-28 px-4 sm:px-6">
+      <main className="max-w-6xl mx-auto pt-24 sm:pt-32 pb-20 md:pb-28 px-4 sm:px-6 flex flex-col items-center w-full">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Create Event Photo Wall</h1>
-          <p className="text-zinc-400 text-sm">Design your event space, customize sponsor branding, and generate modern QR print signs.</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-text-primary font-display">Create Event Photo Wall</h1>
+          <p className="text-text-secondary text-sm">Design your event space, customize sponsor branding, and generate modern QR print signs.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full max-w-5xl mx-auto">
           
           {/* Left Column: Realigned Form */}
-          <div className="lg:col-span-7 bg-zinc-900/90 border border-zinc-800 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+          <div className="lg:col-span-7 bg-surface border border-border rounded-3xl p-6 sm:p-8 shadow-card space-y-6">
             
             <form onSubmit={handleCreate} className="space-y-6">
               
               {/* SECTION 1: Event Essentials */}
               <div className="space-y-4">
-                <h3 className="text-xs font-extrabold text-cyan-400 uppercase tracking-widest flex items-center gap-2 border-b border-zinc-800 pb-2">
+                <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest flex items-center gap-2 border-b border-border pb-2">
                   <Sparkles size={14} /> 1. Event Essentials
                 </h3>
 
                 <div>
-                  <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block mb-1.5">Event Name *</label>
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-1.5">Event Name *</label>
                   <input 
                     type="text" 
                     value={name} 
@@ -332,21 +327,21 @@ export default function CreateEventPage() {
                     placeholder="Rohan & Priya's Wedding / Gala 2026" 
                     required 
                     autoFocus 
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-400 font-medium transition-colors"
+                    className="w-full px-4 py-3 rounded-2xl bg-bg-subtle border border-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-surface font-medium transition-colors"
                   />
                 </div>
 
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
-                    <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider">Custom Event URL</label>
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Custom Event URL</label>
                     {plan === 'starter' && (
-                      <Link href="/pricing" className="text-[11px] font-bold text-cyan-400 hover:underline">
+                      <Link href="/pricing" className="text-[11px] font-bold text-accent hover:underline">
                         Upgrade for Custom Link
                       </Link>
                     )}
                   </div>
                   <div className="flex">
-                    <span className="px-4 py-3 rounded-l-2xl bg-zinc-800 border border-r-0 border-zinc-700 text-zinc-400 font-mono text-xs flex items-center">
+                    <span className="px-4 py-3 rounded-l-2xl bg-bg-subtle border border-r-0 border-border text-text-muted font-mono text-xs flex items-center">
                       memento.live/
                     </span>
                     <input 
@@ -355,63 +350,63 @@ export default function CreateEventPage() {
                       disabled={plan === 'starter'}
                       onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                       placeholder={plan === 'starter' ? 'standard-link' : 'rohan-priya-wedding'} 
-                      className="w-full px-4 py-3 rounded-r-2xl bg-zinc-950 border border-zinc-800 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-400 font-medium transition-colors"
+                      className="w-full px-4 py-3 rounded-r-2xl bg-bg-subtle border border-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-surface font-medium transition-colors"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block mb-1.5">Privacy Password (Optional)</label>
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-1.5">Privacy Password (Optional)</label>
                   <div className="relative">
-                    <Shield size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <Shield size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                     <input 
                       type="password" 
                       value={password} 
                       onChange={(e) => setPassword(e.target.value)} 
                       placeholder="Optional guest password" 
-                      className="w-full pl-12 pr-4 py-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-cyan-400 font-medium transition-colors"
+                      className="w-full pl-12 pr-4 py-3 rounded-2xl bg-bg-subtle border border-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-surface font-medium transition-colors"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* SECTION 2: Print Poster & Sponsor Branding (Ads & Print Messages) */}
+              {/* SECTION 2: Print Poster & Sponsor Branding */}
               <div className="space-y-4 pt-2">
-                <h3 className="text-xs font-extrabold text-amber-400 uppercase tracking-widest flex items-center gap-2 border-b border-zinc-800 pb-2">
+                <h3 className="text-xs font-extrabold text-accent uppercase tracking-widest flex items-center gap-2 border-b border-border pb-2">
                   <Megaphone size={14} /> 2. Print Sign & Sponsor Ad Space
                 </h3>
 
                 <div>
-                  <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block mb-1.5">Print Invitation Message</label>
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-1.5">Print Invitation Message</label>
                   <textarea 
                     value={printMessage}
                     onChange={(e) => setPrintMessage(e.target.value)}
                     rows={2}
                     placeholder="Scan QR code to share your favorite photos live on screen!"
-                    className="w-full px-4 py-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-400 font-medium transition-colors resize-none"
+                    className="w-full px-4 py-3 rounded-2xl bg-bg-subtle border border-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-surface font-medium transition-colors resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block mb-1.5">Sponsor Ad / Tagline</label>
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-1.5">Sponsor Ad / Tagline</label>
                     <input 
                       type="text" 
                       value={sponsorAdText}
                       onChange={(e) => setSponsorAdText(e.target.value)}
                       placeholder="Sponsored by Red Bull / ABC Events"
-                      className="w-full px-4 py-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+                      className="w-full px-4 py-3 rounded-2xl bg-bg-subtle border border-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-surface transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block mb-1.5">Sponsor / Host Logo URL</label>
+                    <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-1.5">Sponsor / Host Logo URL</label>
                     <input 
                       type="url" 
                       value={sponsorLogoUrl}
                       onChange={(e) => setSponsorLogoUrl(e.target.value)}
                       placeholder="https://example.com/logo.png"
-                      className="w-full px-4 py-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-400 transition-colors"
+                      className="w-full px-4 py-3 rounded-2xl bg-bg-subtle border border-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent focus:bg-surface transition-colors"
                     />
                   </div>
                 </div>
@@ -419,25 +414,25 @@ export default function CreateEventPage() {
 
               {/* SECTION 3: Modern QR Code Theme Styling */}
               <div className="space-y-4 pt-2">
-                <h3 className="text-xs font-extrabold text-emerald-400 uppercase tracking-widest flex items-center gap-2 border-b border-zinc-800 pb-2">
+                <h3 className="text-xs font-extrabold text-primary uppercase tracking-widest flex items-center gap-2 border-b border-border pb-2">
                   <Palette size={14} /> 3. Modern QR Code Customizer
                 </h3>
 
                 <div>
-                  <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider block mb-2">QR Color Theme</label>
+                  <label className="text-xs font-bold text-text-secondary uppercase tracking-wider block mb-2">QR Color Theme</label>
                   <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {QR_THEMES.map((theme) => (
                       <button
                         key={theme.id}
                         type="button"
                         onClick={() => setQrThemeId(theme.id)}
-                        className={`p-2.5 rounded-2xl border text-left transition-all flex flex-col items-center gap-1.5 ${
+                        className={`p-2.5 rounded-2xl border text-left transition-all flex flex-col items-center gap-1.5 cursor-pointer ${
                           qrThemeId === theme.id 
-                            ? 'bg-zinc-800 border-cyan-400 shadow-md scale-105' 
-                            : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700'
+                            ? 'bg-surface border-2 border-accent shadow-sm scale-105' 
+                            : 'bg-bg-subtle border-border text-text-secondary hover:border-border-hover'
                         }`}
                       >
-                        <div className="w-5 h-5 rounded-full border border-white/20 shadow-inner" style={{ backgroundColor: theme.fg }} />
+                        <div className="w-5 h-5 rounded-full border border-border shadow-inner" style={{ backgroundColor: theme.fg }} />
                         <span className="text-[10px] font-bold">{theme.name}</span>
                       </button>
                     ))}
@@ -446,7 +441,7 @@ export default function CreateEventPage() {
               </div>
 
               {error && (
-                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
                   <AlertTriangle size={16} />
                   <span>{error}</span>
                 </div>
@@ -455,10 +450,10 @@ export default function CreateEventPage() {
               <button 
                 type="submit" 
                 disabled={loading || !user} 
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-black font-extrabold text-sm uppercase tracking-wider shadow-xl shadow-cyan-500/20 hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl bg-accent hover:opacity-90 text-white font-extrabold text-sm uppercase tracking-wider shadow-card active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {loading ? (
-                  <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
                     <span>Create Photo Wall & Signs</span>
@@ -471,42 +466,38 @@ export default function CreateEventPage() {
           </div>
 
           {/* Right Column: Live Real-Time Poster & QR Code Preview */}
-          <div className="lg:col-span-5 sticky top-24 space-y-4">
-            <div className="text-center sm:text-left">
-              <h3 className="text-xs font-extrabold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                <QrCode size={14} className="text-cyan-400" /> Live Print Sign Preview
+          <div className="lg:col-span-5 sticky top-24 space-y-4 w-full">
+            <div className="text-center">
+              <h3 className="text-xs font-extrabold text-text-secondary uppercase tracking-widest flex items-center justify-center gap-2">
+                <QrCode size={14} className="text-accent" /> Live Print Sign Preview
               </h3>
-              <p className="text-[11px] text-zinc-500 mt-0.5">Real-time preview of your table tent poster & QR code.</p>
+              <p className="text-[11px] text-text-muted mt-0.5">Real-time preview of your table tent poster & QR code.</p>
             </div>
 
-            <div className="bg-zinc-900 border-2 border-zinc-800 rounded-3xl p-6 shadow-2xl flex flex-col items-center justify-between text-center relative overflow-hidden min-h-[440px]">
-              
-              {/* Ambient Glow */}
-              <div className="absolute -top-12 inset-x-0 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-
+            <div className="bg-surface border-2 border-border rounded-3xl p-6 shadow-card flex flex-col items-center justify-between text-center relative overflow-hidden min-h-[440px]">
               {/* Header & Logo */}
               <div className="space-y-2 z-10 w-full">
                 {sponsorLogoUrl && (
                   <img src={sponsorLogoUrl} alt="Sponsor Logo" className="max-h-10 mx-auto object-contain mb-2" />
                 )}
 
-                <h2 className="text-xl font-extrabold text-white tracking-tight line-clamp-2">
+                <h2 className="text-xl font-extrabold text-text-primary tracking-tight line-clamp-2 font-display">
                   {name.trim() || 'Your Event Title'}
                 </h2>
 
                 {sponsorAdText && (
-                  <span className="inline-block px-3 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-extrabold uppercase tracking-wider">
+                  <span className="inline-block px-3 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-[10px] font-extrabold uppercase tracking-wider">
                     {sponsorAdText}
                   </span>
                 )}
 
-                <p className="text-xs text-zinc-400 max-w-xs mx-auto line-clamp-2 leading-relaxed">
+                <p className="text-xs text-text-secondary max-w-xs mx-auto line-clamp-2 leading-relaxed">
                   {printMessage}
                 </p>
               </div>
 
               {/* QR Code Center Box */}
-              <div className={`my-6 p-5 rounded-3xl bg-black border-2 ${activeQrTheme.border} shadow-2xl relative z-10`}>
+              <div className={`my-6 p-5 rounded-3xl bg-bg-subtle border-2 ${activeQrTheme.border} shadow-md relative z-10`}>
                 <QRCodeSVG 
                   value={uploadUrl} 
                   size={160} 
@@ -518,8 +509,8 @@ export default function CreateEventPage() {
               </div>
 
               {/* Footer Banner */}
-              <div className="z-10 w-full border-t border-zinc-800/80 pt-3 flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                <span className="text-cyan-400 font-bold">SCAN WITH PHONE CAMERA</span>
+              <div className="z-10 w-full border-t border-border pt-3 flex items-center justify-between text-[10px] font-mono text-text-muted">
+                <span className="text-accent font-bold">SCAN WITH PHONE CAMERA</span>
                 <span>NO APP NEEDED</span>
               </div>
             </div>
