@@ -1,15 +1,13 @@
 import { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Camera, ArrowLeft, Laptop, Wifi, CheckCircle2, ShieldCheck, Zap, Download, ExternalLink } from 'lucide-react';
+import ThemedNav from '@/components/ThemedNav';
+import Footer from '@/components/sections/Footer';
 
 export const metadata: Metadata = {
   title: 'DSLR & Mirrorless Camera Live Sync Guide | Memento for Photographers',
   description: 'Complete guide for wedding photographers to wirelessly beam professional DSLR/mirrorless photos to the Memento Live Wall in real-time.',
 };
-
-const ThemedNav = dynamic(() => import('@/components/ThemedNav'));
-const Footer = dynamic(() => import('@/components/sections/Footer'));
 
 export default function DSLRGuidePage() {
   return (

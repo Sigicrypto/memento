@@ -1,10 +1,8 @@
 import { Metadata } from 'next';
-import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import Pricing from '@/components/Pricing';
-
-const ThemedNav = dynamic(() => import('@/components/ThemedNav'));
-const Footer = dynamic(() => import('@/components/sections/Footer'));
+import ThemedNav from '@/components/ThemedNav';
+import Footer from '@/components/sections/Footer';
 
 export const metadata: Metadata = {
   title: 'Per-Event Pricing | Memento — Simple Guest-Based Plans',

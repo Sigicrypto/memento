@@ -1,5 +1,4 @@
 import React from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { 
@@ -13,9 +12,8 @@ import {
 } from "lucide-react";
 import { BLOG_POSTS, BlogPost } from "@/lib/blogData";
 import { Metadata } from "next";
-
-const ThemedNav = dynamic(() => import("@/components/ThemedNav"), { ssr: false });
-const Footer = dynamic(() => import("@/components/sections/Footer"), { ssr: false });
+import ThemedNav from "@/components/ThemedNav";
+import Footer from "@/components/sections/Footer";
 
 export async function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({
