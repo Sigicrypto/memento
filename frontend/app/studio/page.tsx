@@ -144,18 +144,8 @@ export default function StudioDashboard() {
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto flex flex-col items-center w-full">
-      {/* Centered Header with Brand Logo */}
+      {/* Centered Header */}
       <div className="flex flex-col items-center text-center max-w-2xl mx-auto w-full">
-        <div className="mb-4 flex justify-center">
-          <div className="inline-flex items-center justify-center rounded-2xl bg-[#141210] border border-[#292524] shadow-md px-4 py-2">
-            <img
-              src="/CC logo.png"
-              alt="Memento Logo"
-              className="h-10 sm:h-12 w-auto object-contain"
-            />
-          </div>
-        </div>
-
         <div className="flex items-center justify-center gap-2.5 flex-wrap">
           <h1 className="text-3xl sm:text-4xl font-black text-text-primary tracking-tight font-display text-center">
             Studio Dashboard
