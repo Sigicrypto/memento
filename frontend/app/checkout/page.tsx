@@ -295,7 +295,7 @@ function CheckoutContent() {
                   </button>
                 </div>
 
-                {/* Coming Soon — More Payment Options */}
+                {/* Flexible Payment Methods Callout */}
                 <div style={{
                   padding: '20px 24px',
                   borderRadius: '16px',
@@ -303,7 +303,7 @@ function CheckoutContent() {
                   border: '1px solid var(--border)',
                   marginBottom: '24px',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                     <div style={{
                       width: '32px', height: '32px', borderRadius: '10px',
                       background: 'color-mix(in srgb, var(--accent-cyan) 15%, transparent)',
@@ -314,11 +314,11 @@ function CheckoutContent() {
                       <CreditCard size={16} />
                     </div>
                     <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                      More payment options coming soon
+                      Flexible Payment Methods
                     </p>
                   </div>
                   <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>
-                    UPI, Net Banking, Credit/Debit Cards, and Razorpay integration are on the way. For now, reach out via WhatsApp for a quick, hassle-free setup.
+                    UPI, Bank Transfer, Cards, and online invoices are accepted. Connect on WhatsApp for instant confirmation.
                   </p>
                 </div>
 

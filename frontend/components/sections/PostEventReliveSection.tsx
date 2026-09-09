@@ -1,5 +1,5 @@
 import React from "react";
-import { FolderArchive, Calendar, Share2, Film } from "lucide-react";
+import { FolderArchive, Calendar, Share2, Tv } from "lucide-react";
 
 export default function PostEventReliveSection() {
   const highlights = [
@@ -25,11 +25,11 @@ export default function PostEventReliveSection() {
       badge: null,
     },
     {
-      icon: <Film className="w-5 h-5 text-accent" />,
+      icon: <Tv className="w-5 h-5 text-accent" />,
       bg: "bg-accent/10 border border-accent/20",
-      title: "Curated Highlight Reels",
-      description: "Auto-surface the best crowd shots and create recap slideshows",
-      badge: "Coming Soon",
+      title: "Fullscreen Slideshow",
+      description: "Replay your celebration anytime on TVs, laptops, or projectors",
+      badge: null,
     },
   ];
 
