@@ -43,64 +43,64 @@ export default function Steps() {
         </p>
 
         {/* 3 Step Flow Cards with Connecting Chevrons */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-11 items-center gap-4 lg:gap-6">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-3 lg:gap-4 max-w-5xl mx-auto">
           
           {/* Step 1 */}
-          <div className="md:col-span-3 h-full flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-[#F0F5FA] border border-blue-100/70 shadow-sm hover:shadow-md transition-all">
-            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center mb-4">
+          <div className="w-full md:flex-1 bg-[#EEF5FB] border border-blue-100/70 rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center shrink-0">
               1
             </div>
-            <div className="w-16 h-16 rounded-2xl bg-white border border-blue-100 flex items-center justify-center text-[#0D3B66] mb-4 shadow-sm">
-              <QrCode size={32} className="stroke-[1.75]" />
+            <QrCode className="w-9 h-9 text-[#0A2540] shrink-0 stroke-[2]" />
+            <div className="text-left">
+              <h3 className="font-bold text-[#0A2540] text-base leading-tight">
+                Scan QR Code
+              </h3>
+              <p className="text-slate-600 text-xs leading-snug mt-0.5">
+                Guests scan the QR code at your event
+              </p>
             </div>
-            <h3 className="font-bold text-[#0A2540] text-lg mb-1.5">
-              Scan QR Code
-            </h3>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs">
-              Guests scan the QR code at your event
-            </p>
           </div>
 
           {/* Chevron 1 */}
-          <div className="hidden md:flex md:col-span-1 items-center justify-center text-slate-400">
-            <ChevronRight size={28} className="stroke-[2.5]" />
+          <div className="hidden md:flex items-center justify-center text-slate-400 shrink-0 px-1">
+            <ChevronRight size={22} className="stroke-[2.5]" />
           </div>
 
           {/* Step 2 */}
-          <div className="md:col-span-3 h-full flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-[#F0F5FA] border border-blue-100/70 shadow-sm hover:shadow-md transition-all">
-            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center mb-4">
+          <div className="w-full md:flex-1 bg-[#EEF5FB] border border-blue-100/70 rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center shrink-0">
               2
             </div>
-            <div className="w-16 h-16 rounded-2xl bg-white border border-blue-100 flex items-center justify-center text-[#0D3B66] mb-4 shadow-sm">
-              <CloudUpload size={32} className="stroke-[1.75]" />
+            <CloudUpload className="w-9 h-9 text-[#0A2540] shrink-0 stroke-[2]" />
+            <div className="text-left">
+              <h3 className="font-bold text-[#0A2540] text-base leading-tight">
+                Upload Photos
+              </h3>
+              <p className="text-slate-600 text-xs leading-snug mt-0.5">
+                Guests capture and upload photos from their phones
+              </p>
             </div>
-            <h3 className="font-bold text-[#0A2540] text-lg mb-1.5">
-              Upload Photos
-            </h3>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs">
-              Guests capture and upload photos from their phones
-            </p>
           </div>
 
           {/* Chevron 2 */}
-          <div className="hidden md:flex md:col-span-1 items-center justify-center text-slate-400">
-            <ChevronRight size={28} className="stroke-[2.5]" />
+          <div className="hidden md:flex items-center justify-center text-slate-400 shrink-0 px-1">
+            <ChevronRight size={22} className="stroke-[2.5]" />
           </div>
 
           {/* Step 3 */}
-          <div className="md:col-span-3 h-full flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-[#F0F5FA] border border-blue-100/70 shadow-sm hover:shadow-md transition-all">
-            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center mb-4">
+          <div className="w-full md:flex-1 bg-[#EEF5FB] border border-blue-100/70 rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center shrink-0">
               3
             </div>
-            <div className="w-16 h-16 rounded-2xl bg-white border border-blue-100 flex items-center justify-center text-[#0D3B66] mb-4 shadow-sm">
-              <Tv size={32} className="stroke-[1.75]" />
+            <Tv className="w-9 h-9 text-[#0A2540] shrink-0 stroke-[2]" />
+            <div className="text-left">
+              <h3 className="font-bold text-[#0A2540] text-base leading-tight">
+                See It Live
+              </h3>
+              <p className="text-slate-600 text-xs leading-snug mt-0.5">
+                Photos appear in real time on the big screen
+              </p>
             </div>
-            <h3 className="font-bold text-[#0A2540] text-lg mb-1.5">
-              See It Live
-            </h3>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs">
-              Photos appear in real time on the big screen
-            </p>
           </div>
 
         </div>

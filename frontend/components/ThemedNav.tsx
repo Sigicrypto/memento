@@ -72,68 +72,57 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
   return (
     <>
-      <motion.header
-        animate={{
-          y: hidden && !isMobileMenuOpen ? -100 : 0,
-          opacity: hidden && !isMobileMenuOpen ? 0 : 1,
-        }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-3 md:top-5 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1440px] z-[9999] rounded-full transition-all duration-300 ${
-          scrolled
-            ? 'bg-white/95 dark:bg-neutral-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-neutral-800 shadow-[0_8px_30px_rgb(0,0,0,0.06)]'
-            : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-slate-200/60 dark:border-neutral-800/80 shadow-[0_4px_20px_rgb(0,0,0,0.04)]'
-        }`}
+      <header
+        className={`sticky top-0 left-0 right-0 w-full z-[9999] transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)]`}
       >
-        <div className="h-16 md:h-20 flex items-center justify-between px-3 sm:px-5 lg:px-6 xl:px-8">
+        <div className="max-w-7xl mx-auto w-full h-16 md:h-20 flex items-center justify-between px-4 sm:px-6 lg:px-10">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="flex items-center flex-shrink-0 cursor-pointer"
-            >
+            <div className="flex items-center flex-shrink-0 cursor-pointer">
               <MyMementoLogo />
-            </motion.div>
+            </div>
           </Link>
 
-          {/* Desktop Menu - Dynamic & strictly non-wrapping */}
+          {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden lg:flex items-center gap-4 xl:gap-7 2xl:gap-8 flex-nowrap shrink-0">
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-nowrap shrink-0">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`group relative text-xs xl:text-sm font-semibold text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white transition-colors duration-200 whitespace-nowrap shrink-0 ${item.desktopClass || ''}`}
+                  className={`group relative text-sm font-semibold text-slate-700 hover:text-slate-950 transition-colors duration-200 whitespace-nowrap shrink-0 ${item.desktopClass || ''}`}
                 >
                   {item.label}
-                  <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
+                  {item.label === 'Home' ? (
+                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-slate-900 rounded-full" />
+                  ) : (
+                    <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
+                  )}
                 </Link>
               ))}
             </nav>
           )}
 
           {/* Right Section */}
-          <div className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 shrink-0">
-            <ThemeToggle />
-            
+          <div className="flex items-center gap-3 shrink-0">
             {!mini && showAuthButtons && (
-              <div className="hidden md:flex items-center gap-2 xl:gap-2.5 shrink-0 flex-nowrap">
+              <div className="hidden md:flex items-center gap-2.5 shrink-0 flex-nowrap">
                 {user ? (
                   <>
                     <Link
                       href="/studio"
-                      className="px-3.5 sm:px-4 py-2 rounded-full bg-[#0A2540] hover:bg-[#0D355C] text-white text-xs font-bold tracking-wide transition-all shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap shrink-0"
+                      className="px-4 py-2 rounded-full bg-[#0A2540] hover:bg-[#0D355C] text-white text-xs font-bold tracking-wide transition-all shadow-sm whitespace-nowrap shrink-0"
                     >
                       Studio Portal
                     </Link>
                     <Link
                       href="/dashboard"
-                      className="px-3 sm:px-3.5 py-2 rounded-full text-text-secondary hover:text-text-primary text-xs font-bold transition-all whitespace-nowrap shrink-0"
+                      className="px-3.5 py-2 rounded-full text-slate-600 hover:text-slate-900 text-xs font-bold transition-all whitespace-nowrap shrink-0"
                     >
                       My Events
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="text-text-secondary hover:text-text-primary transition-colors p-1.5 sm:p-2 rounded-full hover:bg-bg-subtle cursor-pointer shrink-0"
+                      className="text-slate-600 hover:text-slate-900 transition-colors p-1.5 rounded-full hover:bg-slate-100 cursor-pointer shrink-0"
                       title="Sign out"
                     >
                       <LogOut size={18} />
@@ -143,13 +132,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <>
                     <button
                       onClick={() => openAuth('login')}
-                      className="px-4 sm:px-5 py-2 rounded-full border border-slate-300 dark:border-neutral-700 text-slate-800 dark:text-neutral-200 hover:border-slate-400 font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0"
+                      className="px-5 py-1.5 rounded-full border border-slate-700 text-slate-800 hover:bg-slate-50 font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0"
                     >
                       Login
                     </button>
                     <button
                       onClick={() => openAuth('signup')}
-                      className="px-5 sm:px-6 py-2 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-900 font-bold text-xs sm:text-sm tracking-wide shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-1.5"
+                      className="px-5 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-1.5"
                     >
                       <span>Get Started</span>
                       <span className="text-base leading-none">→</span>
@@ -162,7 +151,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             {/* Hamburger Toggle */}
             {!mini && (
               <button
-                className="lg:hidden relative z-[101] min-w-[44px] min-h-[44px] flex items-center justify-center text-text-primary hover:bg-bg-subtle rounded-full transition-colors cursor-pointer"
+                className="lg:hidden relative z-[101] min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-800 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -171,7 +160,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             )}
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>

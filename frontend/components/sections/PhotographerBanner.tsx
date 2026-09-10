@@ -6,49 +6,42 @@ import { ArrowRight } from "lucide-react";
 
 export default function PhotographerBanner() {
   return (
-    <section className="w-full bg-gradient-to-r from-[#06203D] via-[#092E54] to-[#0A345E] text-white py-12 md:py-16 px-4 sm:px-6 lg:px-10 overflow-hidden relative border-b border-blue-950">
-      
-      {/* Ambient background glow */}
-      <div className="absolute -top-24 right-1/4 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
+    <section className="w-full bg-[#072B57] text-white py-4 sm:py-5 px-4 sm:px-6 lg:px-12 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
         
         {/* Left: Photographer Visual & Content */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 text-center sm:text-left flex-1">
-          
-          {/* Photographer Image Thumbnail */}
-          <div className="relative w-36 sm:w-44 md:w-52 aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden shadow-xl border border-white/15 bg-slate-900 shrink-0">
+        <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-6 text-center sm:text-left">
+          {/* Clean photographer image with no cut-off text or borders */}
+          <div className="shrink-0 flex items-center justify-center">
             <img
               src="/mockup-assets/photographer.jpg"
-              alt="Professional photographer capturing wedding moments"
-              className="w-full h-full object-cover object-center"
+              alt="Professional photographer"
+              className="h-24 sm:h-28 object-contain"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           </div>
 
-          {/* Text Info */}
-          <div className="flex flex-col">
-            <span className="text-amber-400 font-bold text-xs sm:text-sm tracking-[0.2em] uppercase mb-2">
+          {/* Text Content */}
+          <div className="flex flex-col items-center sm:items-start">
+            <span className="text-amber-400 font-bold text-[11px] sm:text-xs tracking-[0.2em] uppercase mb-1">
               FOR PHOTOGRAPHERS
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight mb-2.5">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug mb-1">
               Add More Value. Earn More.
             </h2>
-            <p className="text-blue-100 text-xs sm:text-sm md:text-base leading-relaxed max-w-xl font-normal">
+            <p className="text-blue-100 text-xs sm:text-sm leading-relaxed max-w-xl font-normal">
               Bundle MyMemento with your wedding packages and give your clients a unique, memorable experience — while increasing your revenue.
             </p>
           </div>
-
         </div>
 
         {/* Right: CTA Button */}
         <div className="shrink-0">
           <Link
             href="/photographers"
-            className="px-7 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm md:text-base tracking-wide shadow-xl hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
+            className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
           >
             <span>Become a Memento Partner</span>
-            <ArrowRight size={16} />
+            <ArrowRight size={15} />
           </Link>
         </div>
 

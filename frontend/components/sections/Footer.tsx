@@ -43,8 +43,8 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-white border-t border-slate-200/80 py-10 md:py-14 px-4 sm:px-6 lg:px-10">
-      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+    <footer className="w-full bg-white border-t border-slate-200/80 py-5 sm:py-6 px-4 sm:px-6 lg:px-12">
+      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
         
         {/* Left: Brand Logo */}
         <div className="shrink-0">

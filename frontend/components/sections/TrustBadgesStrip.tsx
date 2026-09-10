@@ -28,23 +28,23 @@ export default function TrustBadgesStrip() {
   ];
 
   return (
-    <section className="w-full py-10 md:py-14 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100">
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-center justify-center">
+    <section className="w-full py-8 md:py-10 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 items-center justify-between">
         {badges.map((item, index) => {
           const Icon = item.icon;
           return (
             <div
               key={index}
-              className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3.5"
+              className="flex items-center gap-3.5 text-left"
             >
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 text-[#0A2540] flex items-center justify-center shrink-0">
-                <Icon size={20} className="fill-[#0A2540]/10 text-[#0A2540]" />
+              <div className="text-[#0A2540] shrink-0">
+                <Icon size={24} className={item.title.includes("Special") ? "fill-[#0A2540]" : "stroke-[2.2]"} />
               </div>
               <div className="flex flex-col">
-                <h4 className="font-bold text-[#0A2540] text-xs sm:text-sm tracking-tight">
+                <h4 className="font-bold text-[#0A2540] text-xs sm:text-sm tracking-tight leading-tight">
                   {item.title}
                 </h4>
-                <p className="text-slate-500 text-[11px] sm:text-xs mt-0.5">
+                <p className="text-slate-500 text-[11px] sm:text-xs mt-0.5 leading-snug">
                   {item.desc}
                 </p>
               </div>
