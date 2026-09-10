@@ -150,7 +150,7 @@ export default function InteractiveHeroDemo({ onOpenDemoModal }: InteractiveHero
             From Phone to Big Screen in Seconds
           </h2>
           <p className="text-text-secondary text-sm md:text-base max-w-xl mx-auto mt-3 font-medium leading-relaxed">
-            Watch guest uploads appear live on the event wall in real-time. Zero app downloads required.
+            Watch guest uploads appear live on the event wall in real-time.
           </p>
         </div>
 

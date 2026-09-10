@@ -1,49 +1,28 @@
 import React from "react";
-import { Smile, HeartHandshake, Clapperboard, PartyPopper, Aperture, UsersRound } from "lucide-react";
+import { Smile, HeartHandshake, Clapperboard } from "lucide-react";
 
 export default function EmotionalValueSection() {
   const valuePoints = [
     {
       icon: <Smile className="w-6 h-6 text-accent" />,
       badgeBg: "bg-accent/10 border-accent/20",
-      title: "Friends Laughing",
-      benefit: "Table-Level Candids",
-      description: "Candid guest laughter and inside jokes from every table that formal portrait shoots miss — with zero extra crew hours.",
+      title: "Candid Moments",
+      benefit: "Spontaneous Candids",
+      description: "Unscripted table laughter and unexpected moments crews miss.",
     },
     {
       icon: <HeartHandshake className="w-6 h-6 text-primary" />,
       badgeBg: "bg-primary/10 border-primary/20",
-      title: "Family Reactions",
-      benefit: "Outer-Row Coverage",
-      description: "Tears of joy and proud hugs in the outer rows while your primary team stays locked on the stage rituals and sacred vows.",
+      title: "Family & Guests",
+      benefit: "360° Perspective",
+      description: "Tears, hugs, and genuine reactions across every table.",
     },
     {
       icon: <Clapperboard className="w-6 h-6 text-accent" />,
       badgeBg: "bg-accent/10 border-accent/20",
       title: "Behind the Scenes",
-      benefit: "Pre-Arrival Moments",
-      description: "Getting-ready chaos and baraat car rides captured by guests before your team's scheduled call time.",
-    },
-    {
-      icon: <PartyPopper className="w-6 h-6 text-primary" />,
-      badgeBg: "bg-primary/10 border-primary/20",
-      title: "Dance-Floor Magic",
-      benefit: "After-Hours Energy",
-      description: "The wild moves, sing-alongs, and late-night energy that keep flowing long after your contracted coverage hours wrap up.",
-    },
-    {
-      icon: <Aperture className="w-6 h-6 text-accent" />,
-      badgeBg: "bg-accent/10 border-accent/20",
-      title: "Unexpected Moments",
-      benefit: "Multi-Zone Reach",
-      description: "Simultaneous spontaneous moments across massive multi-acre banquet lawns and halls that no single camera crew can reach.",
-    },
-    {
-      icon: <UsersRound className="w-6 h-6 text-primary" />,
-      badgeBg: "bg-primary/10 border-primary/20",
-      title: "Every Perspective",
-      benefit: "10x Larger Gallery",
-      description: "Turn 200 guest phones into your studio's auxiliary cameras, delivering a 10x richer gallery to your clients under your brand.",
+      benefit: "All-Day Energy",
+      description: "Pre-event prep chaos and late-night dance floor magic.",
     },
   ];
 
@@ -64,7 +43,7 @@ export default function EmotionalValueSection() {
           Give your couples 360° wedding coverage no single photography crew can achieve alone — without hiring second shooters or renting extra gear.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-12 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mt-12 text-center">
           {valuePoints.map((point) => (
             <div
               key={point.title}

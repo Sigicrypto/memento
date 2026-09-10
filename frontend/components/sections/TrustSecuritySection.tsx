@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, Lock, EyeOff, Trash2, KeyRound, FileCheck } from "lucide-react";
+import { ShieldCheck, Lock, KeyRound, Shield } from "lucide-react";
 
 export default function TrustSecuritySection() {
   const trustPoints = [
@@ -20,26 +20,14 @@ export default function TrustSecuritySection() {
     {
       icon: <KeyRound className="w-5 h-5 text-accent" />,
       bg: "bg-accent/10 border border-accent/20",
-      title: "Encrypted Cloud Vault",
+      title: "Encrypted Storage",
       description: "Enterprise-grade SSL/TLS in transit and AES-256 encrypted storage at rest.",
     },
     {
-      icon: <Trash2 className="w-5 h-5 text-text-secondary" />,
-      bg: "bg-bg-subtle border border-border",
-      title: "Full Deletion Rights",
-      description: "Delete any individual photo, video clip, or your entire event album anytime.",
-    },
-    {
-      icon: <EyeOff className="w-5 h-5 text-primary" />,
-      bg: "bg-primary/10 border border-primary/20",
-      title: "No Third-Party Sharing",
-      description: "We never monetize, train AI on, or share your private event memories. Ever.",
-    },
-    {
-      icon: <FileCheck className="w-5 h-5 text-accent" />,
+      icon: <Shield className="w-5 h-5 text-accent" />,
       bg: "bg-accent/10 border border-accent/20",
-      title: "Original Full-Res Quality",
-      description: "Zero compression or downscaling. All original high-res photos and EXIF preserved.",
+      title: "Your Data, Your Rules",
+      description: "Delete any photo or album anytime. We never monetize, share, or train AI on your memories.",
     },
   ];
 
@@ -55,8 +43,8 @@ export default function TrustSecuritySection() {
           Your Memories Belong to You. Period.
         </h2>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mb-12 text-center">
+        {/* 4 Trust Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full text-center">
           {trustPoints.map((tp) => (
             <div
               key={tp.title}
@@ -69,14 +57,6 @@ export default function TrustSecuritySection() {
               <p className="text-text-secondary text-sm leading-relaxed text-center">{tp.description}</p>
             </div>
           ))}
-        </div>
-
-        {/* Callout */}
-        <div className="bg-surface border border-border rounded-xl p-6 mt-4 max-w-2xl w-full mx-auto shadow-sm text-center">
-          <h4 className="font-bold text-text-primary text-lg mb-2 text-center">Q: "Who can see my photos?"</h4>
-          <p className="text-text-secondary text-base leading-relaxed text-center">
-            A: "Only people with your unique event QR code or event link. Galleries are private by default and you can lock them at any time."
-          </p>
         </div>
 
       </div>

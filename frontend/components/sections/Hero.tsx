@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowRight, Play, Shield, Smartphone, Radio, Check, QrCode } from "lucide-react";
+import { ArrowRight, Play, Check, QrCode } from "lucide-react";
 import { useAuthModal } from "@/context/AuthModalContext";
 
 interface HeroProps {
@@ -31,7 +31,7 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
         </p>
 
         {/* CTA buttons row */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-10 mx-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-14 mx-auto">
           <button
             onClick={() => openAuth("signup")}
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-accent text-white font-bold text-sm sm:text-base tracking-wide hover:bg-[#D9932B] active:scale-95 transition-all shadow-[0_2px_8px_rgba(242,169,59,0.3)] hover:shadow-[0_4px_16px_rgba(242,169,59,0.4)] flex items-center justify-center gap-2 cursor-pointer"
@@ -47,25 +47,6 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
             <Play size={16} className="fill-current" />
             <span>Try Live Demo</span>
           </button>
-        </div>
-
-        {/* Trust strip */}
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm text-text-secondary font-medium mx-auto mb-14">
-          <span className="flex items-center gap-1.5">
-            <Shield size={14} className="text-accent" /> Your Studio Brand
-          </span>
-          <span className="text-border hidden sm:inline">·</span>
-          <span className="flex items-center gap-1.5">
-            <Smartphone size={14} className="text-accent" /> Zero Guest App Installs
-          </span>
-          <span className="text-border hidden sm:inline">·</span>
-          <span className="flex items-center gap-1.5">
-            <Check size={14} className="text-accent" /> DSLR / Mirrorless Sync
-          </span>
-          <span className="text-border hidden sm:inline">·</span>
-          <span className="flex items-center gap-1.5">
-            <Radio size={14} className="text-accent" /> Real-Time Venue Wall
-          </span>
         </div>
 
         {/* Centerpiece: Sleek Device & Live Wall Composite */}

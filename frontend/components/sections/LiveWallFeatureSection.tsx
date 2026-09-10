@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Tv, ShieldCheck, Palette, Radio, ArrowRight } from "lucide-react";
+import { Tv, ShieldCheck, Palette, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function LiveWallFeatureSection() {
@@ -23,12 +23,6 @@ export default function LiveWallFeatureSection() {
       bg: "bg-accent/10 border border-accent/20",
       title: "Studio & Couple Co-Branding",
       desc: "Couple monogram, studio watermark, custom colors, and sponsor overlays.",
-    },
-    {
-      icon: <Radio className="w-5 h-5 text-accent" />,
-      bg: "bg-accent/10 border border-accent/20",
-      title: "Real-Time 2s Sync",
-      desc: "Photos pulse onto the big screen in under 2 seconds from the guest tapping share.",
     },
   ];
 
@@ -117,8 +111,8 @@ export default function LiveWallFeatureSection() {
           </div>
         </div>
 
-        {/* 4 Feature Cards (Centered Grid) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-10 text-center">
+        {/* 3 Feature Cards (Centered Grid) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mb-10 text-center">
           {features.map((feat) => (
             <div key={feat.title} className="flex flex-col items-center text-center p-6 rounded-2xl bg-surface border border-border shadow-card hover:shadow-card-hover transition-all h-full justify-start">
               <div className={`w-12 h-12 rounded-xl ${feat.bg} flex items-center justify-center mb-4 mx-auto shrink-0`}>

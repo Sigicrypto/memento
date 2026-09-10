@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { QrCode, Camera, Share2, Tv, Check } from "lucide-react";
+import { QrCode, Camera, Share2, Tv } from "lucide-react";
 
 export default function Steps() {
   const steps = [
@@ -33,13 +33,6 @@ export default function Steps() {
       iconBg: "bg-accent/10 border border-accent/20",
       description: "Photos appear live on your venue TV or projector.",
     },
-  ];
-
-  const trustItems = [
-    "No app download",
-    "No account creation",
-    "No login",
-    "Works on any phone"
   ];
 
   return (
@@ -90,16 +83,6 @@ export default function Steps() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Trust strip below steps */}
-        <div className="text-text-secondary text-sm flex items-center justify-center gap-4 mt-12 flex-wrap">
-          {trustItems.map((item, idx) => (
-            <div key={idx} className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-emerald-500" />
-              <span>{item}</span>
-            </div>
-          ))}
         </div>
 
       </div>
