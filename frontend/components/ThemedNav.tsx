@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/context/AuthModalContext';
 import AnimatedLogo from './AnimatedLogo';
+import MyMementoLogo from './MyMementoLogo';
 import ThemeToggle from './ThemeToggle';
 import { LogOut, Menu, X, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,12 +63,11 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   }
 
   const navItems: NavItem[] = [
-    { label: 'For Photographers', href: '/photographers' },
-    { label: 'How It Works', href: '/how-it-works' },
-    { label: 'Pricing', href: '/pricing' },
-    { label: 'DSLR Guide', href: '/photographers/dslr-guide' },
-    { label: 'Weddings', href: '/weddings', desktopClass: 'hidden xl:inline-block' },
-    { label: 'Contact', href: '/contact', desktopClass: 'hidden 2xl:inline-block' },
+    { label: 'Home', href: '/' },
+    { label: 'How It Works', href: '/#how-it-works' },
+    { label: 'Events', href: '/#celebrations' },
+    { label: 'Pricing', href: '/#pricing' },
+    { label: 'Testimonials', href: '/#testimonials' },
   ];
 
   return (
@@ -78,33 +78,31 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
           opacity: hidden && !isMobileMenuOpen ? 0 : 1,
         }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1440px] z-[9999] rounded-full transition-all duration-300 ${
+        className={`fixed top-3 md:top-5 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] md:w-[calc(100%-2rem)] max-w-[1440px] z-[9999] rounded-full transition-all duration-300 ${
           scrolled
-            ? 'bg-surface/95 backdrop-blur-2xl border border-border shadow-[0_8px_30px_rgb(28,25,23,0.04)]'
-            : 'bg-surface/85 backdrop-blur-xl border border-border/80 shadow-[0_4px_20px_rgb(28,25,23,0.02)]'
+            ? 'bg-white/95 dark:bg-neutral-900/95 backdrop-blur-2xl border border-slate-200/80 dark:border-neutral-800 shadow-[0_8px_30px_rgb(0,0,0,0.06)]'
+            : 'bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-slate-200/60 dark:border-neutral-800/80 shadow-[0_4px_20px_rgb(0,0,0,0.04)]'
         }`}
       >
         <div className="h-16 md:h-20 flex items-center justify-between px-3 sm:px-5 lg:px-6 xl:px-8">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <motion.div
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="flex items-center flex-shrink-0 cursor-pointer"
             >
-              <div className="h-10 md:h-12 flex items-center justify-center overflow-hidden shrink-0">
-                <AnimatedLogo width={140} height={44} />
-              </div>
+              <MyMementoLogo />
             </motion.div>
           </Link>
 
           {/* Desktop Menu - Dynamic & strictly non-wrapping */}
           {!mini && (
-            <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 2xl:gap-7 flex-nowrap shrink-0">
+            <nav className="hidden lg:flex items-center gap-4 xl:gap-7 2xl:gap-8 flex-nowrap shrink-0">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`group relative text-xs xl:text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors duration-200 whitespace-nowrap shrink-0 ${item.desktopClass || ''}`}
+                  className={`group relative text-xs xl:text-sm font-semibold text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white transition-colors duration-200 whitespace-nowrap shrink-0 ${item.desktopClass || ''}`}
                 >
                   {item.label}
                   <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
@@ -123,7 +121,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <>
                     <Link
                       href="/studio"
-                      className="px-3.5 sm:px-4 py-2 rounded-full bg-primary hover:opacity-90 text-white text-xs font-bold tracking-wide transition-all shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap shrink-0"
+                      className="px-3.5 sm:px-4 py-2 rounded-full bg-[#0A2540] hover:bg-[#0D355C] text-white text-xs font-bold tracking-wide transition-all shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap shrink-0"
                     >
                       Studio Portal
                     </Link>
@@ -145,21 +143,16 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   <>
                     <button
                       onClick={() => openAuth('login')}
-                      className="px-3 sm:px-3.5 py-2 rounded-full text-text-primary hover:text-primary text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0"
+                      className="px-4 sm:px-5 py-2 rounded-full border border-slate-300 dark:border-neutral-700 text-slate-800 dark:text-neutral-200 hover:border-slate-400 font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0"
                     >
-                      Log in
+                      Login
                     </button>
-                    <Link
-                      href="/studio"
-                      className="px-3 sm:px-3.5 py-2 rounded-full border border-primary/30 text-primary hover:bg-primary/5 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0"
-                    >
-                      Studio Portal
-                    </Link>
                     <button
                       onClick={() => openAuth('signup')}
-                      className="px-3.5 sm:px-4 py-2 rounded-full bg-accent hover:bg-[#D9932B] text-white text-xs font-bold tracking-wide shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap shrink-0 cursor-pointer"
+                      className="px-5 sm:px-6 py-2 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-900 font-bold text-xs sm:text-sm tracking-wide shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-1.5"
                     >
-                      Add to Your Studio
+                      <span>Get Started</span>
+                      <span className="text-base leading-none">→</span>
                     </button>
                   </>
                 )}

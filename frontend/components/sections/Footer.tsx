@@ -1,94 +1,119 @@
-"use client";
+import React from "react";
+import Link from "next/link";
+import MyMementoLogo from "@/components/MyMementoLogo";
 
-import React from 'react';
-import Link from 'next/link';
-import AnimatedLogo from '@/components/AnimatedLogo';
-
-const FacebookIcon = ({ size = 20, className = "" }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+const InstagramIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
   </svg>
 );
 
-const InstagramIcon = ({ size = 20, className = "" }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+const YoutubeIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="currentColor" />
+  </svg>
+);
+
+const FacebookIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </svg>
+);
+
+const LinkedinIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect x="2" y="9" width="4" height="12" />
+    <circle cx="4" cy="4" r="2" />
   </svg>
 );
 
 export default function Footer() {
+  const links = [
+    { label: "Home", href: "/" },
+    { label: "Events", href: "/#celebrations" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "FAQ", href: "/#faq" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+    { label: "Contact", href: "/contact" },
+  ];
+
   return (
-    <footer className="w-full py-16 px-4 md:px-8 bg-bg-subtle border-t border-border text-text-primary flex flex-col items-center text-center">
-      <div className="w-full max-w-6xl mx-auto flex flex-col items-center text-center">
-        {/* Top part: 4 Columns */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 text-center">
-          
-          {/* Column 1 (Brand) */}
-          <div className="flex flex-col items-center text-center gap-4">
-            <div className="flex items-center justify-center gap-2">
-              <AnimatedLogo width={32} height={32} />
-              <span className="text-xl font-bold tracking-tight text-text-primary">Memento</span>
-            </div>
-            <p className="text-text-secondary text-sm mt-1 leading-relaxed max-w-xs">
-              Every Guest. Every Moment. One Living Memory.
-            </p>
-            <p className="text-text-muted text-xs max-w-xs">
-              Professional live photo wall and QR collection software for wedding photographers and event creators.
-            </p>
-          </div>
-
-          {/* Column 2 (Product) */}
-          <div className="flex flex-col items-center text-center gap-3">
-            <h3 className="text-text-primary font-bold text-sm tracking-wide mb-1">Product</h3>
-            <Link href="/how-it-works" className="text-text-secondary hover:text-primary transition-colors text-sm">How It Works</Link>
-            <Link href="/features" className="text-text-secondary hover:text-primary transition-colors text-sm">Features Suite</Link>
-            <Link href="/features/live" className="text-text-secondary hover:text-primary transition-colors text-sm">Memento Live Wall</Link>
-            <Link href="/pricing" className="text-text-secondary hover:text-primary transition-colors text-sm">Pricing (Per-Event)</Link>
-            <Link href="/demo" className="text-text-secondary hover:text-primary transition-colors text-sm">Live Wall Demo</Link>
-          </div>
-
-          {/* Column 3 (Use Cases) */}
-          <div className="flex flex-col items-center text-center gap-3">
-            <h3 className="text-text-primary font-bold text-sm tracking-wide mb-1">Use Cases</h3>
-            <Link href="/weddings" className="text-text-secondary hover:text-primary transition-colors text-sm">Weddings & Sangeet</Link>
-            <Link href="/parties" className="text-text-secondary hover:text-primary transition-colors text-sm">Birthday Parties & Bashes</Link>
-            <Link href="/corporate-events" className="text-text-secondary hover:text-primary transition-colors text-sm">Corporate Galas</Link>
-            <Link href="/conferences" className="text-text-secondary hover:text-primary transition-colors text-sm">Conferences & Expos</Link>
-          </div>
-
-          {/* Column 4 (For Studios & Company) */}
-          <div className="flex flex-col items-center text-center gap-3">
-            <h3 className="text-text-primary font-bold text-sm tracking-wide mb-1">For Photographers</h3>
-            <Link href="/photographers" className="text-primary font-semibold hover:underline transition-colors text-sm">Studio White-Label</Link>
-            <Link href="/photographers/dslr-guide" className="text-text-secondary hover:text-primary transition-colors text-sm">DSLR Wireless Sync Guide</Link>
-            <Link href="/studio" className="text-text-secondary hover:text-primary transition-colors text-sm">Studio Portal Console</Link>
-            <Link href="/about" className="text-text-secondary hover:text-primary transition-colors text-sm">About Us</Link>
-            <Link href="/contact" className="text-text-secondary hover:text-primary transition-colors text-sm">Contact Support</Link>
-          </div>
+    <footer className="w-full bg-white border-t border-slate-200/80 py-10 md:py-14 px-4 sm:px-6 lg:px-10">
+      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+        
+        {/* Left: Brand Logo */}
+        <div className="shrink-0">
+          <Link href="/" className="inline-block">
+            <MyMementoLogo />
+          </Link>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="w-full border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-center">
-          <div className="text-text-muted text-sm text-center">
-            © 2026 Memento. All rights reserved.
+        {/* Center: Inline Links */}
+        <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm text-slate-600 font-medium">
+          {links.map((item, idx) => (
+            <React.Fragment key={item.label}>
+              <Link
+                href={item.href}
+                className="hover:text-[#0A2540] transition-colors"
+              >
+                {item.label}
+              </Link>
+              {idx < links.length - 1 && (
+                <span className="text-slate-300 select-none">|</span>
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+
+        {/* Right: Social Icons + Made in India */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+          <div className="flex items-center gap-3 text-slate-700">
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:text-[#0A2540] hover:border-slate-400 transition-colors"
+              aria-label="Instagram"
+            >
+              <InstagramIcon size={15} />
+            </a>
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:text-[#0A2540] hover:border-slate-400 transition-colors"
+              aria-label="YouTube"
+            >
+              <YoutubeIcon size={15} />
+            </a>
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:text-[#0A2540] hover:border-slate-400 transition-colors"
+              aria-label="Facebook"
+            >
+              <FacebookIcon size={15} />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:text-[#0A2540] hover:border-slate-400 transition-colors"
+              aria-label="LinkedIn"
+            >
+              <LinkedinIcon size={15} />
+            </a>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6">
-            <Link href="/privacy" className="text-text-secondary hover:text-primary transition-colors text-sm">Privacy Policy</Link>
-            <Link href="/terms" className="text-text-secondary hover:text-primary transition-colors text-sm">Terms of Service</Link>
-            <Link href="/cookies" className="text-text-secondary hover:text-primary transition-colors text-sm">Cookies</Link>
-          </div>
-
-          <div className="flex items-center justify-center gap-4">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-primary transition-colors" aria-label="Instagram">
-              <InstagramIcon size={20} />
-            </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-text-muted hover:text-primary transition-colors" aria-label="Facebook">
-              <FacebookIcon size={20} />
-            </a>
-          </div>
+          <span className="text-xs text-slate-500 font-medium flex items-center gap-1.5 whitespace-nowrap pl-2 border-l border-slate-200 hidden sm:flex">
+            Made with <span className="text-red-500">❤️</span> in India 🇮🇳
+          </span>
         </div>
 
       </div>

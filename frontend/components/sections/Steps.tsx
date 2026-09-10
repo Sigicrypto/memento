@@ -1,88 +1,108 @@
 "use client";
 
 import React from "react";
-import { QrCode, Camera, Share2, Tv } from "lucide-react";
+import { QrCode, CloudUpload, Tv, ChevronRight } from "lucide-react";
 
 export default function Steps() {
   const steps = [
     {
-      step: "01",
-      title: "SCAN",
-      icon: <QrCode className="w-6 h-6 text-primary" />,
-      iconBg: "bg-primary/10 border border-primary/20",
-      description: "Guests point their phone camera at your event QR code.",
+      number: "1",
+      icon: QrCode,
+      title: "Scan QR Code",
+      description: "Guests scan the QR code at your event",
     },
     {
-      step: "02",
-      title: "CAPTURE",
-      icon: <Camera className="w-6 h-6 text-accent" />,
-      iconBg: "bg-accent/10 border border-accent/20",
-      description: "The camera opens right in their browser. Snap a photo.",
+      number: "2",
+      icon: CloudUpload,
+      title: "Upload Photos",
+      description: "Guests capture and upload photos from their phones",
     },
     {
-      step: "03",
-      title: "SHARE",
-      icon: <Share2 className="w-6 h-6 text-primary" />,
-      iconBg: "bg-primary/10 border border-primary/20",
-      description: "One tap uploads it in full resolution to your gallery.",
-    },
-    {
-      step: "04",
-      title: "EXPERIENCE",
-      icon: <Tv className="w-6 h-6 text-accent" />,
-      iconBg: "bg-accent/10 border border-accent/20",
-      description: "Photos appear live on your venue TV or projector.",
+      number: "3",
+      icon: Tv,
+      title: "See It Live",
+      description: "Photos appear in real time on the big screen",
     },
   ];
 
   return (
-    <section id="how-it-works" className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg border-b border-border flex flex-col items-center justify-center">
+    <section id="how-it-works" className="w-full py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
       <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
         
-        <span className="bg-primary/10 border border-primary/20 text-primary rounded-full uppercase tracking-wider text-xs font-bold px-3.5 py-1 mb-4">
-          HOW IT WORKS
-        </span>
+        {/* Section Heading with decorative flanking rules */}
+        <div className="flex items-center justify-center gap-3 md:gap-4 mb-2">
+          <div className="w-8 sm:w-16 h-px bg-amber-400" />
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl font-bold text-[#0A2540] tracking-tight">
+            How It Works
+          </h2>
+          <div className="w-8 sm:w-16 h-px bg-amber-400" />
+        </div>
 
-        <h2 className="text-text-primary font-bold text-3xl md:text-4xl lg:text-5xl tracking-tight max-w-3xl">
-          From QR Code to Live Gallery in Seconds
-        </h2>
-
-        <p className="text-text-secondary text-base md:text-lg mt-4 max-w-2xl">
-          Zero friction for your guests. No app, no login, no frustration.
+        <p className="text-slate-500 text-sm sm:text-base mb-12">
+          Just 3 simple steps
         </p>
 
-        {/* 4 Steps Grid */}
-        <div className="relative w-full mt-16">
-          {/* Connecting Line - Desktop */}
-          <div className="hidden lg:block absolute top-[48px] left-[12.5%] right-[12.5%] h-[2px] bg-border z-0"></div>
+        {/* 3 Step Flow Cards with Connecting Chevrons */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-11 items-center gap-4 lg:gap-6">
           
-          {/* Connecting Line - Mobile */}
-          <div className="block lg:hidden absolute top-[48px] bottom-[48px] left-1/2 -translate-x-1/2 w-[2px] border-l-2 border-dotted border-border z-0"></div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full relative z-10 text-center">
-            {steps.map((item) => (
-              <div
-                key={item.step}
-                className="bg-surface border border-border rounded-2xl p-6 text-center flex flex-col items-center relative overflow-hidden group h-full justify-start shadow-card"
-              >
-                <span className="text-7xl font-bold text-border/30 absolute top-2 right-4 pointer-events-none select-none">
-                  {item.step}
-                </span>
-
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 relative z-10 ${item.iconBg}`}>
-                  {item.icon}
-                </div>
-
-                <h3 className="text-text-primary font-semibold text-lg mb-3 relative z-10">
-                  {item.title}
-                </h3>
-
-                <p className="text-text-secondary text-sm leading-relaxed relative z-10">
-                  {item.description}
-                </p>
-              </div>
-            ))}
+          {/* Step 1 */}
+          <div className="md:col-span-3 h-full flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-[#F0F5FA] border border-blue-100/70 shadow-sm hover:shadow-md transition-all">
+            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center mb-4">
+              1
+            </div>
+            <div className="w-16 h-16 rounded-2xl bg-white border border-blue-100 flex items-center justify-center text-[#0D3B66] mb-4 shadow-sm">
+              <QrCode size={32} className="stroke-[1.75]" />
+            </div>
+            <h3 className="font-bold text-[#0A2540] text-lg mb-1.5">
+              Scan QR Code
+            </h3>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs">
+              Guests scan the QR code at your event
+            </p>
           </div>
+
+          {/* Chevron 1 */}
+          <div className="hidden md:flex md:col-span-1 items-center justify-center text-slate-400">
+            <ChevronRight size={28} className="stroke-[2.5]" />
+          </div>
+
+          {/* Step 2 */}
+          <div className="md:col-span-3 h-full flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-[#F0F5FA] border border-blue-100/70 shadow-sm hover:shadow-md transition-all">
+            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center mb-4">
+              2
+            </div>
+            <div className="w-16 h-16 rounded-2xl bg-white border border-blue-100 flex items-center justify-center text-[#0D3B66] mb-4 shadow-sm">
+              <CloudUpload size={32} className="stroke-[1.75]" />
+            </div>
+            <h3 className="font-bold text-[#0A2540] text-lg mb-1.5">
+              Upload Photos
+            </h3>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs">
+              Guests capture and upload photos from their phones
+            </p>
+          </div>
+
+          {/* Chevron 2 */}
+          <div className="hidden md:flex md:col-span-1 items-center justify-center text-slate-400">
+            <ChevronRight size={28} className="stroke-[2.5]" />
+          </div>
+
+          {/* Step 3 */}
+          <div className="md:col-span-3 h-full flex flex-col items-center text-center p-6 sm:p-7 rounded-2xl bg-[#F0F5FA] border border-blue-100/70 shadow-sm hover:shadow-md transition-all">
+            <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center mb-4">
+              3
+            </div>
+            <div className="w-16 h-16 rounded-2xl bg-white border border-blue-100 flex items-center justify-center text-[#0D3B66] mb-4 shadow-sm">
+              <Tv size={32} className="stroke-[1.75]" />
+            </div>
+            <h3 className="font-bold text-[#0A2540] text-lg mb-1.5">
+              See It Live
+            </h3>
+            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xs">
+              Photos appear in real time on the big screen
+            </p>
+          </div>
+
         </div>
 
       </div>
