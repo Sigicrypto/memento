@@ -1,114 +1,114 @@
 "use client";
 
 import React from "react";
-import { Smartphone, Zap, Camera, Palette, MessageSquare, ShieldCheck, Check, Sparkles, ArrowRight } from "lucide-react";
+import { Zap, Camera, Palette, MessageSquare, Check, Sparkles, TrendingUp, Tv, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function FoundingStudioSection() {
   return (
-    <section id="studio-program" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
+    <section id="benefits" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center">
         
         {/* Section Eyebrow & Title */}
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-bold tracking-[0.15em] uppercase mb-4">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-            <span>FOUNDING STUDIO PROGRAM · NOW ONBOARDING</span>
+            <span>BENEFITS FOR PHOTOGRAPHERS</span>
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
-            Be One of the First Studios Offering Live Photo Walls
+            Built Specifically for Wedding Photographers &amp; Studios
           </h2>
 
           <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
-            We are onboarding an exclusive cohort of wedding photographers and studios for the upcoming wedding season. Get direct 1-on-1 founder onboarding, wholesale per-event pricing, and white-label studio branding.
+            Memento helps you deliver a modern, interactive experience your couples will talk about for years—while creating a high-margin new revenue stream for your business.
           </p>
         </div>
 
         {/* Magic UI Bento Grid */}
         <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-8 sm:gap-y-10 md:gap-y-8 gap-x-6 sm:gap-x-8 max-w-6xl mx-auto mb-12 sm:mb-16">
           
-          {/* Bento Card 1: 0 App Downloads (Span 7) */}
+          {/* Bento Card 1: MORE MOMENTS (Span 7) */}
           <div className="md:col-span-7 bg-[#F8FAFC] border border-slate-200/90 rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-[#0A2540] mb-5 shadow-sm">
-                <Smartphone size={24} className="stroke-[2.2]" />
+                <Users size={24} className="stroke-[2.2]" />
               </div>
               <div className="inline-block text-xs font-bold uppercase tracking-wider text-amber-600 mb-1">
-                Zero Friction for Guests
+                PILLAR 01 · MORE MEMORIES
               </div>
               <h3 className="text-2xl font-bold text-[#0A2540] mb-3">
-                0 App Downloads for Guests
+                Capture Perspectives Your Team Can&apos;t Cover
               </h3>
               <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-md">
-                100% browser-based QR flow. Guests simply point their iPhone or Android camera at your table cards. An in-browser camera opens instantly with zero downloads, zero logins, and zero friction.
+                Your camera crew is focused on the couple and key ceremony milestones. Memento effortlessly gathers the hundreds of unscripted table candids, guest selfies, and dance-floor moments happening across the room.
               </p>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-slate-200/70 flex items-center gap-4 text-xs font-semibold text-slate-700">
+            <div className="mt-8 pt-4 border-t border-slate-200/70 flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-700">
               <span className="flex items-center gap-1.5 text-emerald-700">
-                <Check size={16} /> Works on Safari &amp; Chrome
+                <Check size={16} /> 0 App Installs for Guests
               </span>
               <span className="flex items-center gap-1.5 text-emerald-700">
-                <Check size={16} /> No account creation
+                <Check size={16} /> Instant Safari &amp; Chrome QR flow
               </span>
             </div>
           </div>
 
-          {/* Bento Card 2: < 2s Screen Sync (Span 5) */}
+          {/* Bento Card 2: BETTER EXPERIENCE (Span 5) */}
           <div className="md:col-span-5 bg-gradient-to-br from-[#0A2540] to-[#051324] text-white border border-slate-800 rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-lg relative overflow-hidden">
             <div className="relative z-10">
               <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-amber-400 mb-5 shadow-inner">
                 <Zap size={24} className="stroke-[2.2]" />
               </div>
               <div className="inline-block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
-                Real-Time Streaming
+                PILLAR 02 · CLIENT DELIGHT
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">
-                &lt; 2s Venue Screen Sync
+                Interactive Centerpiece That Electrifies the Room
               </h3>
               <p className="text-slate-300 text-sm leading-relaxed">
-                Ultra-fast real-time photo wall projection with built-in auto-slideshow, customizable display modes, and host moderation console.
+                Project guest candids onto venue screens in under 2 seconds. Guests love seeing their shots appear live, turning your coverage into the talk of the evening.
               </p>
             </div>
 
             <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-amber-300 font-mono">
-              <span>Smart TV · HDMI · Projector</span>
-              <span className="font-bold">1080p &amp; 4K</span>
+              <span>Smart TV · HDMI · LED Wall</span>
+              <span className="font-bold">Sub-2s Sync</span>
             </div>
           </div>
 
-          {/* Bento Card 3: DSLR Sync (Span 5) */}
+          {/* Bento Card 3: NEW REVENUE (Span 5) */}
           <div className="md:col-span-5 bg-[#F8FAFC] border border-slate-200/90 rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-[#0A2540] mb-5 shadow-sm">
-                <Camera size={24} className="stroke-[2.2]" />
+                <TrendingUp size={24} className="stroke-[2.2]" />
               </div>
               <div className="inline-block text-xs font-bold uppercase tracking-wider text-amber-600 mb-1">
-                Dual-Stream Ingestion
+                PILLAR 03 · NEW REVENUE
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-[#0A2540] mb-3">
-                DSLR &amp; Pro Camera Sync
+                High-Margin Package Add-On
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Stream your professional camera selects right onto the venue screen alongside guest phone candids for a high-impact presentation.
+                Package Memento as an exclusive live interactive add-on for ₹10,000–₹15,000. Your cost starts from just ₹999/event, unlocking high-margin incremental revenue with zero extra gear.
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-200/70 text-xs font-semibold text-slate-600 flex items-center gap-2">
-              <Sparkles size={14} className="text-amber-500" />
-              <span>Pro photographer workflow ready</span>
+            <div className="mt-6 pt-4 border-t border-slate-200/70 text-xs font-semibold text-emerald-700 flex items-center gap-2">
+              <Check size={16} />
+              <span>Keep 80%+ profit margin per event</span>
             </div>
           </div>
 
-          {/* Bento Card 4: White-Label Studio Branding (Span 7) */}
+          {/* Bento Card 4: YOUR BRAND (Span 7) */}
           <div className="md:col-span-7 bg-[#EEF5FB] border border-blue-100 rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
             <div>
               <div className="w-12 h-12 rounded-2xl bg-white border border-blue-200/80 flex items-center justify-center text-[#0A2540] mb-5 shadow-sm">
                 <Palette size={24} className="stroke-[2.2]" />
               </div>
               <div className="inline-block text-xs font-bold uppercase tracking-wider text-blue-700 mb-1">
-                Agency Mode
+                AGENCY &amp; STUDIO MODE
               </div>
               <h3 className="text-2xl font-bold text-[#0A2540] mb-3">
                 100% White-Label Studio Branding
@@ -118,12 +118,12 @@ export default function FoundingStudioSection() {
               </p>
             </div>
 
-            <div className="mt-8 pt-4 border-t border-blue-200/60 flex items-center gap-6 text-xs font-semibold text-slate-700">
+            <div className="mt-8 pt-4 border-t border-blue-200/60 flex flex-wrap items-center gap-6 text-xs font-semibold text-slate-700">
               <span className="flex items-center gap-1.5 text-blue-900">
-                <Check size={16} className="text-blue-700" /> Zero MyMemento mentions
+                <Check size={16} className="text-blue-700" /> Zero Memento branding
               </span>
               <span className="flex items-center gap-1.5 text-blue-900">
-                <Check size={16} className="text-blue-700" /> Custom table card PDFs
+                <Check size={16} className="text-blue-700" /> Custom printable PDF table cards
               </span>
             </div>
           </div>

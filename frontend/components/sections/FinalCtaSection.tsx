@@ -4,7 +4,11 @@ import React from "react";
 import { ArrowRight, MessageSquare, Sparkles, CheckCircle2 } from "lucide-react";
 import { useAuthModal } from "@/context/AuthModalContext";
 
-export default function FinalCtaSection() {
+interface FinalCtaSectionProps {
+  onOpenDemo?: () => void;
+}
+
+export default function FinalCtaSection({ onOpenDemo }: FinalCtaSectionProps) {
   const { openAuth } = useAuthModal();
 
   return (
@@ -30,17 +34,17 @@ export default function FinalCtaSection() {
 
         {/* Headline */}
         <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.12] mb-6">
-          Ready to Add Live Photo Sharing to Your Next Wedding?
+          Give Every Guest a Camera. Give Every Moment a Place to Live.
         </h2>
 
         {/* Subtitle */}
         <p className="text-slate-300 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mb-10 font-normal">
-          Delight couples and guests with real-time venue projections while archiving hundreds of unscripted memories in full 4K resolution.
+          Add Memento to your next wedding and give your couples the moments your camera crew can&apos;t capture alone.
         </p>
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-12">
-          {/* Primary CTA with Subtle Moving / Gold Accent Border */}
+          {/* Primary CTA */}
           <button
             onClick={() => openAuth("signup")}
             className="group relative w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base tracking-wide shadow-xl hover:shadow-amber-500/25 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
@@ -49,15 +53,25 @@ export default function FinalCtaSection() {
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
 
-          {/* Secondary CTA: WhatsApp to Founder */}
+          {/* Secondary CTA: Try Live Demo */}
+          {onOpenDemo && (
+            <button
+              onClick={onOpenDemo}
+              className="w-full sm:w-auto px-7 py-4 rounded-full border border-white/25 hover:border-white hover:bg-white/10 text-white font-semibold text-sm sm:text-base active:scale-95 transition-all flex items-center justify-center gap-2.5 backdrop-blur-sm cursor-pointer"
+            >
+              <span>Try the Live Demo</span>
+            </button>
+          )}
+
+          {/* WhatsApp Direct Line */}
           <a
             href="https://wa.me/919866161775?text=Hi%2C%20I%27m%20ready%20to%20add%20MyMemento%20to%20my%20studio%20for%20upcoming%20weddings."
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto px-7 py-4 rounded-full border border-white/25 hover:border-white hover:bg-white/10 text-white font-semibold text-sm sm:text-base active:scale-95 transition-all flex items-center justify-center gap-2.5 backdrop-blur-sm cursor-pointer"
+            className="w-full sm:w-auto px-6 py-4 rounded-full text-slate-300 hover:text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
           >
-            <MessageSquare size={18} className="text-emerald-400" />
-            <span>Talk Directly with Founder</span>
+            <MessageSquare size={16} className="text-emerald-400" />
+            <span>Chat on WhatsApp</span>
           </a>
         </div>
 

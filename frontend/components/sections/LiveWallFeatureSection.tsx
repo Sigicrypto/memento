@@ -37,6 +37,10 @@ export default function LiveWallFeatureSection({ onOpenDemo }: LiveWallFeatureSe
             Memento Live — Your Event&apos;s Real-Time Photo Wall
           </h2>
 
+          <p className="text-amber-300/90 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-2">
+            This is what guests actually see on the venue screen
+          </p>
+
           <p className="text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
             Display guest photos on any screen the moment they&apos;re captured. The ultimate interactive centerpiece for weddings, sangeets, and corporate galas.
           </p>
@@ -47,12 +51,17 @@ export default function LiveWallFeatureSection({ onOpenDemo }: LiveWallFeatureSe
           <div className="bg-[#141E30] rounded-3xl border-4 sm:border-8 border-slate-800 p-2 sm:p-3 shadow-2xl overflow-hidden relative group">
             
             {/* TV Screen Top Bezel */}
-            <div className="h-10 bg-[#0A1322] flex items-center justify-between px-4 rounded-t-2xl border-b border-white/10">
+            <div className="h-11 bg-[#0A1322] flex items-center justify-between px-4 rounded-t-2xl border-b border-white/10">
               <div className="flex items-center gap-2.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
                 <span className="text-xs font-black tracking-widest text-white uppercase">MEMENTO LIVE</span>
               </div>
-              <div className="text-xs text-slate-300 font-medium">Priya &amp; Rohan&apos;s Sangeet &amp; Wedding</div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-300 font-medium hidden sm:inline">Priya &amp; Rohan&apos;s Wedding</span>
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30 font-semibold tracking-wider">
+                  LIVE DEMO — SAMPLE EVENT
+                </span>
+              </div>
               <div className="text-xs text-amber-300 font-mono hidden sm:flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 <span>184 Photos · Live Ingestion</span>

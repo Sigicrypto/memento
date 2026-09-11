@@ -77,13 +77,13 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
             transition={{ duration: 0.5, delay: 0.35 }}
             className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl mb-8 font-normal mx-auto text-center"
           >
-            Guests scan a QR code, capture unscripted moments in their phone browser, and watch them appear live on your venue screen in seconds.
+            Give your couples every candid moment your camera crew can&apos;t capture. Guests scan your branded QR code, share their photos, and watch them appear live on the venue screen.
             <span className="block mt-2 text-slate-400 text-xs sm:text-sm font-medium">
               Zero apps for guests to download · Zero logins · 100% private.
             </span>
           </motion.p>
 
-          {/* CTAs Row */}
+          {/* CTAs Row — Try Live Demo (Primary) & Add to Studio (Secondary) */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -91,19 +91,19 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
             className="flex flex-wrap items-center justify-center gap-3.5 mb-5 w-full sm:w-auto"
           >
             <button
-              onClick={() => openAuth("signup")}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              onClick={() => setIsDemoOpen(true)}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
             >
-              <span>Add Memento to Your Studio</span>
-              <ArrowRight size={16} />
+              <Play size={16} className="fill-slate-950 text-slate-950" />
+              <span>Try the Live Demo</span>
             </button>
 
             <button
-              onClick={() => setIsDemoOpen(true)}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full border border-white/30 hover:border-white hover:bg-white/10 text-white font-semibold text-sm sm:text-base active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer backdrop-blur-sm"
+              onClick={() => openAuth("signup")}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full border border-white/30 hover:border-white hover:bg-white/10 text-white font-semibold text-sm sm:text-base active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer backdrop-blur-sm"
             >
-              <Play size={15} className="fill-white text-white" />
-              <span>See Live Demo</span>
+              <span>Add Memento to Your Studio</span>
+              <ArrowRight size={16} />
             </button>
           </motion.div>
 
@@ -192,7 +192,7 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
                 <span className="px-2.5 py-1 rounded-full bg-red-500/90 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow">
                   <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                  Live on Venue Screen
+                  LIVE DEMO — SAMPLE EVENT
                 </span>
                 <span className="text-[11px] text-white/90 font-medium bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
                   Priya &amp; Rohan
@@ -268,7 +268,7 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
               <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
                 <span className="px-2 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                  Live Wall
+                  LIVE DEMO — SAMPLE EVENT
                 </span>
                 <span className="text-[10px] text-white/90 font-medium bg-black/60 px-2 py-0.5 rounded-full">
                   Priya &amp; Rohan

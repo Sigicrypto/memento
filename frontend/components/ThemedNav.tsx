@@ -67,8 +67,9 @@ export default function ThemedNav({ showAuthButtons = true, mini = false, onOpen
     { label: 'How It Works', href: '/#how-it-works' },
     { label: 'Live Demo', href: '/#demo' },
     { label: 'Studio Advantage', href: '/#studio-advantage' },
+    { label: 'Benefits', href: '/#benefits' },
     { label: 'Memento Live', href: '/#live-wall' },
-    { label: 'Pricing', href: '/pricing' },
+    { label: 'Revenue & Pricing', href: '/#pricing' },
     { label: 'FAQ', href: '/#faq' },
     { label: 'For Photographers', href: '/photographers', desktopClass: 'text-amber-600 hover:text-amber-700 font-bold' },
   ];
@@ -149,7 +150,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false, onOpen
                       }}
                       className="px-3.5 py-1.5 text-slate-600 hover:text-[#0A2540] font-semibold text-xs transition-colors cursor-pointer whitespace-nowrap shrink-0"
                     >
-                      See Live Demo
+                      Try Live Demo
                     </button>
                     <button
                       onClick={() => openAuth('login')}
@@ -161,7 +162,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false, onOpen
                       onClick={() => openAuth('signup')}
                       className="px-4 py-1.5 rounded-full bg-[#0A2540] hover:bg-[#0D355C] text-white font-bold text-xs tracking-wide shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-1.5"
                     >
-                      <span>Create Your Event</span>
+                      <span>Add Memento to Your Studio</span>
                       <span className="text-amber-400">→</span>
                     </button>
                   </>
@@ -269,13 +270,13 @@ export default function ThemedNav({ showAuthButtons = true, mini = false, onOpen
                       }}
                       className="w-full min-h-[44px] flex items-center justify-center py-3 rounded-xl border border-slate-300 text-slate-800 font-bold text-sm cursor-pointer"
                     >
-                      See Live Demo
+                      Try Live Demo
                     </button>
                     <button
                       onClick={() => { openAuth('signup'); setIsMobileMenuOpen(false); }}
                       className="w-full min-h-[44px] flex items-center justify-center py-3.5 rounded-xl bg-[#0A2540] text-white font-bold text-sm shadow-md cursor-pointer"
                     >
-                      Create Your Event →
+                      Add Memento to Your Studio →
                     </button>
                     <button
                       onClick={() => { openAuth('login'); setIsMobileMenuOpen(false); }}

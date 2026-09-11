@@ -83,16 +83,17 @@ export default function TestimonialsSection() {
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center text-center">
         
         {/* Section Heading */}
-        <div className="flex items-center justify-center gap-3 md:gap-4 mb-2">
-          <div className="w-8 sm:w-16 h-px bg-amber-400" />
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl font-bold text-[#0A2540] tracking-tight">
-            Loved by Photographers &amp; Couples
-          </h2>
-          <div className="w-8 sm:w-16 h-px bg-amber-400" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-bold tracking-[0.15em] uppercase mb-4">
+          <Star size={13} className="fill-amber-500 text-amber-500" />
+          <span>PROVEN ON EVENT DAY</span>
         </div>
 
-        <p className="text-slate-500 text-sm sm:text-base mb-12 max-w-xl">
-          Real experiences from wedding studios, banquet coordinators, and couples across the country.
+        <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
+          Loved by Photographers
+        </h2>
+
+        <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl mx-auto mb-12">
+          Real stories from wedding studios, cinematographers, and couples using Memento during live celebrations.
         </p>
 
         {/* Testimonials 4-Card Grid */}

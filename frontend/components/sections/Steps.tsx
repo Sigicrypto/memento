@@ -111,6 +111,25 @@ export default function Steps() {
 
         </div>
 
+        {/* Trust strip below steps */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-12 text-xs sm:text-sm text-slate-600 font-medium">
+          <span className="flex items-center gap-1.5 text-emerald-700">
+            <CheckCircle2 size={16} /> No app download
+          </span>
+          <span className="text-slate-300 hidden sm:inline select-none">•</span>
+          <span className="flex items-center gap-1.5 text-emerald-700">
+            <CheckCircle2 size={16} /> No account creation
+          </span>
+          <span className="text-slate-300 hidden sm:inline select-none">•</span>
+          <span className="flex items-center gap-1.5 text-emerald-700">
+            <CheckCircle2 size={16} /> Works on any smartphone browser
+          </span>
+          <span className="text-slate-300 hidden sm:inline select-none">•</span>
+          <span className="flex items-center gap-1.5 text-emerald-700">
+            <CheckCircle2 size={16} /> Smart offline queueing
+          </span>
+        </div>
+
       </div>
     </section>
   );

@@ -16,11 +16,11 @@ export default function PostEventReliveSection() {
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
-            One Celebration. Every Perspective. One Lasting Archive.
+            The Wedding Ends. The Memories Don&apos;t.
           </h2>
 
           <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
-            Memento isn&apos;t just an interactive centerpiece for the wedding night. It curates a timeless digital heirloom ready to relive for decades to come.
+            Memento continues to provide value long after the reception ends. Deliver every guest photo as a polished 4K digital archive alongside your official studio collection.
           </p>
         </div>
 

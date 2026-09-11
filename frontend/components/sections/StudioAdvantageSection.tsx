@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Smile, HeartHandshake, Clapperboard, Sparkles } from "lucide-react";
+import { Smile, HeartHandshake, Clapperboard, Sparkles, ArrowRight } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useAuthModal } from "@/context/AuthModalContext";
 
 export default function StudioAdvantageSection() {
+  const { openAuth } = useAuthModal();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -33,12 +35,12 @@ export default function StudioAdvantageSection() {
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
-            You Capture the Masterpieces.<br />
-            <span className="text-amber-600">Your Guests Capture Every Other Angle.</span>
+            Your Camera Captures the Masterpieces.<br />
+            <span className="text-amber-600">Your Guests Capture Everything Else.</span>
           </h2>
 
           <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
-            Give your couples 360° wedding coverage no single photography crew can achieve alone — without hiring second shooters or renting extra gear.
+            Your team cannot be everywhere at once. Guests are already holding cameras. Memento turns those guest photographs into an additional layer of authentic event coverage under your studio brand.
           </p>
         </div>
 
@@ -101,10 +103,10 @@ export default function StudioAdvantageSection() {
                 360° PERSPECTIVE
               </span>
               <h3 className="text-xl font-bold text-[#0A2540] mb-2">
-                Family &amp; Guests
+                Family &amp; Friends
               </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Grandparents smiling from the front row, childhood friends catching up, and proud siblings wiped out from dancing.
+                Grandparents smiling from the front row, childhood friends catching up, and relatives your camera team cannot follow all night.
               </p>
             </div>
 
@@ -180,6 +182,20 @@ export default function StudioAdvantageSection() {
             </div>
           </motion.div>
 
+        </div>
+
+        {/* Section Primary CTA */}
+        <div className="mt-14 sm:mt-16 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+          <button
+            onClick={() => openAuth("signup")}
+            className="px-8 py-4 rounded-full bg-[#0A2540] hover:bg-[#0D355C] text-white font-bold text-sm sm:text-base shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+          >
+            <span>Add Memento to Your Studio</span>
+            <ArrowRight size={18} className="text-amber-400" />
+          </button>
+          <span className="text-xs text-slate-500 font-medium">
+            Offer Memento at your next wedding with zero extra gear or crew
+          </span>
         </div>
 
       </div>

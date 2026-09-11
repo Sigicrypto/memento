@@ -35,9 +35,10 @@ export default function Footer() {
   const links = [
     { label: "Home", href: "/" },
     { label: "How It Works", href: "/#how-it-works" },
-    { label: "Celebrations", href: "/#celebrations" },
-    { label: "Live Wall", href: "/#live-wall" },
-    { label: "Pricing", href: "/#pricing" },
+    { label: "Live Demo", href: "/#demo" },
+    { label: "Studio Benefits", href: "/#benefits" },
+    { label: "Memento Live", href: "/#live-wall" },
+    { label: "Pricing & Revenue", href: "/#pricing" },
     { label: "Testimonials", href: "/#testimonials" },
     { label: "FAQ", href: "/#faq" },
     { label: "For Photographers", href: "/photographers" },

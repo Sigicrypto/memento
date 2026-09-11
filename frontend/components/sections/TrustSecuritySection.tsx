@@ -39,15 +39,15 @@ export default function TrustSecuritySection() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-200/80 text-slate-700 text-xs font-bold tracking-[0.15em] uppercase mb-4">
             <Lock size={13} className="text-amber-600" />
-            <span>SECURITY, PRIVACY &amp; OWNERSHIP</span>
+            <span>PRIVACY &amp; CONTROL</span>
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
-            Your Memories Belong to You. Period.
+            Private. Moderated. Yours.
           </h2>
 
           <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
-            Built from the ground up for high-profile weddings and private family gatherings where trust, discretion, and data privacy are non-negotiable.
+            Built from the ground up for high-profile weddings and private celebrations where trust, discretion, and moderation control are non-negotiable.
           </p>
         </div>
 

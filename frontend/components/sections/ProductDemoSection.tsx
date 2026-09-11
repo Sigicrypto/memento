@@ -24,36 +24,36 @@ const STEPS: StepItem[] = [
     id: "scan",
     number: "01",
     badge: "Instant Access",
-    title: "Guest Scans the Table QR",
+    title: "SCAN · Guest Scans Table QR",
     subtitle: "Zero apps to download · Zero logins required",
-    description: "Guests simply point their regular phone camera at your custom table card or entrance poster. The mobile gallery opens immediately in Safari, Chrome, or any standard browser.",
+    description: "Guests point their normal phone camera at your studio-branded table card or entrance banner. The private event gallery opens immediately in Safari or Chrome.",
     icon: QrCode,
   },
   {
     id: "capture",
     number: "02",
     badge: "In-Browser Camera",
-    title: "Guests Snap Real Candids",
+    title: "CAPTURE · Guest Takes a Photo",
     subtitle: "No accounts · High resolution · Fun & intuitive",
-    description: "The built-in camera lets everyone capture spontaneous, unscripted moments throughout the night — emotional reactions, table laughter, and behind-the-scenes magic.",
+    description: "A fast, intuitive in-browser camera opens. Guests snap authentic candid moments throughout the celebration — unscripted table laughter and dance-floor magic.",
     icon: Camera,
   },
   {
     id: "share",
     number: "03",
     badge: "Sub-2s Sync",
-    title: "Photos Upload & Sync Instantly",
+    title: "SHARE · Photo Uploads Instantly",
     subtitle: "Automatic compression · Offline queueing built-in",
-    description: "One tap uploads each memory securely. Even if the venue has spotty Wi-Fi, our smart offline queue holds the photos and syncs the moment signal returns.",
+    description: "One tap uploads each memory securely. Even if venue reception drops in thick stone basements, smart offline queueing resyncs the moment signal returns.",
     icon: Upload,
   },
   {
     id: "experience",
     number: "04",
-    badge: "The Climax",
-    title: "Memories Stream Live to the Big Screen",
+    badge: "Live Projection",
+    title: "LIVE · Streams to Venue Screen",
     subtitle: "Smart TVs, projectors & LED walls · Live moderation",
-    description: "Photos project onto venue screens within 2 seconds. Guests cheer as their selfies appear, creating contagious energy across the entire reception.",
+    description: "Photos project onto venue screens in under 2 seconds. Guests cheer as their selfies appear, creating contagious energy across the entire wedding.",
     icon: Tv,
   },
 ];
@@ -87,13 +87,13 @@ export default function ProductDemoSection({ onOpenDemo }: ProductDemoSectionPro
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase mb-4">
             <Sparkles size={13} className="text-amber-400" />
-            <span>Interactive Live Product Demonstration</span>
+            <span>SEE MEMENTO IN ACTION</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
-            See the Magic Happen in Real Time
+            From a Guest&apos;s Phone to the Big Screen in Seconds
           </h2>
           <p className="text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed font-normal">
-            From the guest&apos;s phone in their hand to the glowing venue screen across the hall — here is how Memento brings every celebration to life.
+            Watch how Memento turns wedding guests into real-time contributors without requiring an app download.
           </p>
         </div>
 
@@ -308,7 +308,7 @@ export default function ProductDemoSection({ onOpenDemo }: ProductDemoSectionPro
                   <div className="h-8 bg-[#040C1A] flex items-center justify-between px-3 border-b border-white/10 z-20">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                      <span className="text-[10px] font-bold tracking-widest text-white uppercase">MEMENTO LIVE</span>
+                      <span className="text-[10px] font-bold tracking-widest text-white uppercase">LIVE DEMO — SAMPLE EVENT</span>
                     </div>
                     <span className="text-[10px] text-amber-300 font-mono">1080p / 4K Screen Feed</span>
                   </div>
@@ -348,6 +348,20 @@ export default function ProductDemoSection({ onOpenDemo }: ProductDemoSectionPro
             </AnimatePresence>
           </div>
 
+        </div>
+
+        {/* Prominent Live Working Demo Launcher Button */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+          <button
+            onClick={onOpenDemo}
+            className="px-8 py-4 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base shadow-xl hover:shadow-amber-500/25 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+          >
+            <Play size={18} className="fill-slate-950 text-slate-950" />
+            <span>Launch Interactive Live Demo (Sample Event)</span>
+          </button>
+          <span className="text-xs text-slate-400 font-medium">
+            Test the guest QR scanner &amp; live wall display in your browser
+          </span>
         </div>
 
       </div>

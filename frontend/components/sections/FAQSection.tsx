@@ -14,40 +14,44 @@ export default function FAQSection() {
 
   const faqs: FAQItem[] = [
     {
-      q: "Are the photos private? Who can see them?",
-      a: "Yes, 100% private. Galleries are private by default and can only be accessed by guests who scan your unique event QR code or visit your private event link. They are never indexed on Google, never made public, and never shared with third parties or advertisers. As the host, you have full moderation control, gallery locking capabilities, and permanent 1-click data deletion rights at any time.",
+      q: "Do guests need to download an app?",
+      a: "No, absolutely zero downloads or app store visits are required. Guests point their standard smartphone camera (iPhone or Android) at your event QR code, and an in-browser camera opens instantly in Safari or Chrome. They don't even need to register or create an account.",
     },
     {
-      q: "What happens if there's poor Wi-Fi or cellular signal at the venue?",
-      a: "MyMemento features built-in intelligent offline queueing. When guests capture photos in areas with spotty reception (like banquet basements, remote outdoor lawns, or thick stone walls), their browser securely queues the uploads locally on their phone. As soon as their device detects even a brief cellular or Wi-Fi signal, photos automatically sync to the cloud and stream to the venue screen without guests having to re-upload.",
+      q: "How does the QR code work at the venue?",
+      a: "When you create your event in Memento, you instantly get high-resolution printable table card PDFs, entrance posters, and digital links. You can place the QR cards on dining tables, cocktail bars, or wedding favors. Guests simply point their camera and start sharing.",
     },
     {
-      q: "How long does setup take, and what do I need to bring or print?",
-      a: "Online setup takes under 60 seconds. Once your event is created, download print-ready PDF/PNG table cards and entrance posters with your custom QR code directly from your dashboard. For the venue, you only need any screen with an internet browser — a Smart TV, or a laptop connected to a projector/LED screen via HDMI, AirPlay, or Chromecast. Simply open your private Live Wall URL, press full screen, and you're live.",
+      q: "Can I apply my own studio branding or white-label it?",
+      a: "Yes! On the Pro plan, you can include custom couple monograms and theme colors. On our Premium tier, full white-label agency mode is enabled: your photography studio logo, custom colors, and watermark replace all Memento references across the live wall, QR cards, and digital gallery.",
     },
     {
-      q: "What's the refund or cancellation policy if our event is rescheduled?",
-      a: "We offer complete date flexibility. If your wedding, party, or conference is rescheduled, you can adjust your event date anytime in your dashboard with zero penalties or re-booking fees. If your event is cancelled before the event date, simply contact our WhatsApp concierge support team for a full, prompt refund.",
+      q: "Can guests see incoming photos immediately?",
+      a: "Yes. In under 2 seconds, uploaded photos appear on both the live venue screen and the mobile live stream for guests browsing from their tables. The real-time projection creates an energetic, viral loop that encourages more guests to participate.",
     },
     {
-      q: "How exactly does custom branding / white-labeling get applied?",
-      a: "On the Pro plan, you can set your couple monogram (e.g., 'Ananya & Rohan'), select your theme colors, and customize the live wall ticker bar and table cards. On our Premium tier for studios and agencies, full white-labeling allows you to upload your photography studio logo and hex brand colors, removing all MyMemento references so couples and guests interact exclusively with your brand.",
+      q: "Can I moderate photos before they hit the venue screen?",
+      a: "Yes, 100%. In your host dashboard, you can turn on Live Moderation so photos require 1-tap approval before projecting onto the big screen. You or an assistant can approve or reject photos in real time. If you prefer a hands-off experience, you can switch on Auto-Approve anytime.",
     },
     {
-      q: "What happens to photos after the gallery retention period ends?",
-      a: "All photos and video clips remain safely stored in your high-speed cloud archive for the full duration of your plan (30 days on Starter, 1 year on Pro, and extended/lifetime on Premium). Before any expiration, you receive automatic reminders via email and WhatsApp with a direct 1-click download link for your full-resolution master 4K ZIP. We never purge memories without notifying you first.",
+      q: "Can I charge my clients for Memento as an add-on?",
+      a: "Absolutely. Most studios package Memento as a 'Live Photo Wall & Guest Interactive Experience' add-on for ₹10,000–₹15,000 per wedding. Since your per-event cost is just ₹999 to ₹3,499, you retain an 80%+ profit margin with zero additional equipment or crew.",
     },
     {
-      q: "Can guests download their own photos, or only the host?",
-      a: "Both! Guests can easily save high-resolution copies of their own photos and candid shots taken by others directly from their mobile browser gallery. As the host or studio, you have exclusive access to download the master 1-click full-resolution 4K ZIP archive containing every single photo and video captured throughout the celebration.",
+      q: "How much does Memento cost per event?",
+      a: "Pricing is transparent and per-event: Starter is ₹999 (up to 500 photos), Pro is ₹1,999 (up to 2,000 photos, custom branding), and Premium is ₹3,499 (unlimited photos, full white-labeling). There are zero monthly subscriptions or recurring fees—you only pay when you have an event.",
     },
     {
-      q: "What devices and browsers are supported for guests and venue screens?",
-      a: "For guests: Works on any modern smartphone (iPhone, Android, Samsung, Pixel) using standard browsers (Safari, Chrome, Samsung Internet, Edge, Firefox) with zero app download or account creation required. For the venue screen: Any device with a web browser — Smart TVs, MacBooks, Windows laptops, Chromebooks, Apple TV, Chromecast, or HDMI projector setups.",
+      q: "What happens if the venue has spotty Wi-Fi or cellular reception?",
+      a: "Memento features built-in intelligent offline queueing. When guests snap photos in venue basements or remote lawns with weak signal, their browser securely queues the photos locally. As soon as the phone detects even a moment of reception, photos automatically upload to the cloud and venue wall without any re-upload needed.",
     },
     {
-      q: "Can incoming photos be moderated before they appear on the live screen?",
-      a: "Yes. In your host console, you can enable live moderation so photos require 1-tap approval by you, your event coordinator, or a second shooter before projecting onto the venue screen. If you prefer a completely hands-off experience, you can switch on auto-approval anytime with a single tap.",
+      q: "What happens after the event / how do we download photos?",
+      a: "You have exclusive access to a 1-click master 4K ZIP download from your dashboard. It downloads all original full-resolution photos and videos without compression, making it effortless to include guest candids in your final studio client delivery.",
+    },
+    {
+      q: "Can the couple and guests access the gallery later?",
+      a: "Yes. You can share a private, password-protected gallery link with the couple and guests. They can browse the chronological timeline, relive the celebration, and download their favorite photos anytime throughout the gallery retention period.",
     },
   ];
 
