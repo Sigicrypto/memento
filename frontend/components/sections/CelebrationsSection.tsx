@@ -10,6 +10,7 @@ interface CelebrationItem {
   name: string;
   image: string;
   href: string;
+  ctaText: string;
   headline: string;
   description: string;
   features: string[];
@@ -25,6 +26,7 @@ export default function CelebrationsSection() {
       name: "Weddings",
       image: "/mockup-assets/wedding.jpg",
       href: "/weddings",
+      ctaText: "Create Wedding Event",
       headline: "Capture Every Table's Laughter & Love",
       description:
         "Your official photographer catches the ceremony; MyMemento collects hundreds of candid selfies, dance-floor madness, and family tears streaming live to the reception hall screen.",
@@ -35,6 +37,7 @@ export default function CelebrationsSection() {
       name: "Birthdays",
       image: "/mockup-assets/birthday.jpg",
       href: "/parties",
+      ctaText: "Create Birthday Event",
       headline: "Crowdsource Every Angle of the Party",
       description:
         "Guests snap cake-cuttings, toasts, and dance moves right from their phones. The birthday star gets an instant memory vault without chasing anyone for photos the next day.",
@@ -45,6 +48,7 @@ export default function CelebrationsSection() {
       name: "Corporate Events",
       image: "/mockup-assets/corporate.jpg",
       href: "/corporate-events",
+      ctaText: "Create Corporate Event",
       headline: "Amplify Engagement & Brand Sponsorships",
       description:
         "Boost conference participation with a branded live wall. Display sponsor logos, announce key moments, and give attendees an interactive stage presence.",
@@ -55,6 +59,7 @@ export default function CelebrationsSection() {
       name: "College Events",
       image: "/mockup-assets/college.jpg",
       href: "/conferences",
+      ctaText: "Create College Event",
       headline: "High-Energy Live Crowdsourcing for Fests",
       description:
         "From convocation to cultural night, students love seeing their selfies hit the auditorium LED wall instantly. Handles high concurrent uploads smoothly.",
@@ -65,6 +70,7 @@ export default function CelebrationsSection() {
       name: "Parties",
       image: "/mockup-assets/party.jpg",
       href: "/parties",
+      ctaText: "Create Party Event",
       headline: "The Ultimate Icebreaker for Any Night Out",
       description:
         "Keep the dance floor buzzing! As soon as guests scan the bar QR code, their photos flash on venue screens, encouraging everyone to capture the vibe.",
@@ -75,6 +81,7 @@ export default function CelebrationsSection() {
       name: "Festivals",
       image: "/mockup-assets/festival.jpg",
       href: "/parties",
+      ctaText: "Create Festival Event",
       headline: "Community Memories on Grand Venue Screens",
       description:
         "Whether a cultural gala, holiday celebration, or music night, celebrate collective joy across massive screens with unified community photo sharing.",
@@ -143,16 +150,17 @@ export default function CelebrationsSection() {
         </div>
 
         {/* Interactive Celebration Spotlight Detail Card */}
-        <div className="w-full max-w-4xl bg-gradient-to-br from-[#0A2540] to-[#041324] text-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl border border-white/10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 text-left transition-all duration-300">
+        <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-[#0A2540] to-[#041324] text-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl border border-white/10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 text-left transition-all duration-300">
           <div className="relative w-full md:w-5/12 aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15">
             <img
               src={activeItem.image}
               alt={activeItem.name}
               className="w-full h-full object-cover"
             />
+            {/* Non-redundant Feature Tag */}
             <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-amber-300 text-xs font-bold flex items-center gap-1.5 border border-white/10">
               <Sparkles size={13} />
-              <span>{activeItem.name}</span>
+              <span>Live Demonstration</span>
             </div>
           </div>
 
@@ -179,7 +187,7 @@ export default function CelebrationsSection() {
                 onClick={() => openAuth("signup")}
                 className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
               >
-                <span>Create {activeItem.name} Event</span>
+                <span>{activeItem.ctaText}</span>
                 <ArrowRight size={14} />
               </button>
 

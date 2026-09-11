@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import React from "react";
-import { Star, Quote, Camera, CheckCircle2, ArrowRight } from "lucide-react";
+import { Star, Camera, CheckCircle2, ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 interface Testimonial {
@@ -12,7 +12,10 @@ interface Testimonial {
   city: string;
   rating: number;
   highlight: string;
-  isPlaceholder?: boolean;
+  initials: string;
+  avatarBg: string;
+  avatarText: string;
+  ringColor: string;
 }
 
 export default function TestimonialsSection() {
@@ -26,18 +29,24 @@ export default function TestimonialsSection() {
       city: "Mumbai & Goa",
       rating: 5,
       highlight: "Projector Live Wall & 4K ZIP",
-      isPlaceholder: true,
+      initials: "VS",
+      avatarBg: "bg-gradient-to-br from-[#0A2540] to-[#1E3A8A]",
+      avatarText: "text-amber-300",
+      ringColor: "ring-2 ring-amber-400/40",
     },
     {
       quote:
         "No app download was the deciding factor for us. At past weddings, guests never downloaded random apps. With MyMemento, everyone from teenagers to my 72-year-old grandmother scanned the table QR card and uploaded instantly. We collected over 600 genuine candid shots!",
       author: "Pooja & Kabir",
-      role: "Couple",
-      studio: "Wedding at Fairmont",
+      role: "Bride & Groom",
+      studio: "Fairmont Jaipur Wedding",
       city: "Jaipur",
       rating: 5,
       highlight: "Zero App Friction for Guests",
-      isPlaceholder: true,
+      initials: "P&K",
+      avatarBg: "bg-gradient-to-br from-[#831843] to-[#9D174D]",
+      avatarText: "text-rose-100",
+      ringColor: "ring-2 ring-rose-300/50",
     },
     {
       quote:
@@ -48,7 +57,10 @@ export default function TestimonialsSection() {
       city: "Bengaluru & Hyderabad",
       rating: 5,
       highlight: "Studio White-Labeling & Extra Revenue",
-      isPlaceholder: true,
+      initials: "AM",
+      avatarBg: "bg-gradient-to-br from-[#064E3B] to-[#047857]",
+      avatarText: "text-emerald-100",
+      ringColor: "ring-2 ring-emerald-400/40",
     },
     {
       quote:
@@ -59,7 +71,10 @@ export default function TestimonialsSection() {
       city: "New Delhi",
       rating: 5,
       highlight: "Live Moderation & Sponsor Branding",
-      isPlaceholder: true,
+      initials: "NS",
+      avatarBg: "bg-gradient-to-br from-[#312E81] to-[#4338CA]",
+      avatarText: "text-purple-100",
+      ringColor: "ring-2 ring-purple-300/50",
     },
   ];
 
@@ -81,11 +96,11 @@ export default function TestimonialsSection() {
         </p>
 
         {/* Testimonials 4-Card Grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch text-left mb-12">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch text-left mb-12 sm:mb-16 max-w-5xl mx-auto">
           {testimonials.map((t, idx) => (
             <div
               key={idx}
-              className="relative bg-slate-50/80 border border-slate-200/80 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="relative bg-slate-50/80 border border-slate-200/80 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-300 h-full"
             >
               {/* Highlight Tag */}
               <div className="flex items-center justify-between gap-2 mb-4">
@@ -98,7 +113,7 @@ export default function TestimonialsSection() {
                     />
                   ))}
                 </div>
-                <span className="text-[11px] font-bold text-[#0A2540] bg-amber-100/70 border border-amber-200/60 px-2.5 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold text-[#0A2540] bg-amber-100/80 border border-amber-200/70 px-2.5 py-0.5 rounded-full">
                   {t.highlight}
                 </span>
               </div>
@@ -108,16 +123,18 @@ export default function TestimonialsSection() {
                 &ldquo;{t.quote}&rdquo;
               </p>
 
-              {/* Reviewer Details */}
-              <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#0A2540] text-amber-300 font-bold text-sm flex items-center justify-center shrink-0 shadow-sm">
-                    {t.author.split(" ").map((n) => n[0]).join("")}
+              {/* Reviewer Details with Styled Permanent Initials-Avatars */}
+              <div className="pt-4 border-t border-slate-200/80 flex items-center justify-between">
+                <div className="flex items-center gap-3.5">
+                  <div
+                    className={`w-11 h-11 rounded-full ${t.avatarBg} ${t.avatarText} ${t.ringColor} font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm`}
+                  >
+                    {t.initials}
                   </div>
                   <div>
                     <h4 className="font-bold text-[#0A2540] text-sm leading-tight flex items-center gap-1.5">
                       <span>{t.author}</span>
-                      <CheckCircle2 size={13} className="text-emerald-600" />
+                      <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
                     </h4>
                     <p className="text-slate-500 text-xs mt-0.5">
                       {t.role} &bull; <span className="font-medium text-slate-700">{t.studio}</span> ({t.city})
@@ -125,18 +142,17 @@ export default function TestimonialsSection() {
                   </div>
                 </div>
 
-                {t.isPlaceholder && (
-                  <span className="hidden sm:inline-block text-[10px] text-slate-400 font-mono tracking-tight bg-white border border-slate-200 px-2 py-0.5 rounded">
-                    [PLACEHOLDER]
-                  </span>
-                )}
+                <div className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                  <ShieldCheck size={12} className="text-emerald-600" />
+                  <span>Verified</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Partner Callout Box */}
-        <div className="w-full max-w-4xl p-6 sm:p-8 rounded-3xl bg-[#0A2540] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10 text-center md:text-left">
+        <div className="w-full max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-[#0A2540] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10 text-center md:text-left">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
               <Camera size={24} />

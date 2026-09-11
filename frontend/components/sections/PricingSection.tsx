@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Check } from "lucide-react";
+import { Check, MessageSquare } from "lucide-react";
 import { useAuthModal } from "@/context/AuthModalContext";
 
 export default function PricingSection() {
@@ -13,6 +13,9 @@ export default function PricingSection() {
       price: "₹999",
       period: "per event",
       isPopular: false,
+      ctaLabel: "Set Up in 60s →",
+      ctaSubtext: "Instant activation · No sales call required",
+      isSelfServe: true,
       features: [
         "Up to 500 photos",
         "Live photo wall",
@@ -25,6 +28,9 @@ export default function PricingSection() {
       price: "₹1,999",
       period: "per event",
       isPopular: true,
+      ctaLabel: "Start in 60s — Instant Setup →",
+      ctaSubtext: "Instant activation · Customize branding on the spot",
+      isSelfServe: true,
       features: [
         "Up to 2,000 photos",
         "Live photo wall",
@@ -38,6 +44,10 @@ export default function PricingSection() {
       price: "₹3,499",
       period: "per event",
       isPopular: false,
+      ctaLabel: "Talk to Concierge — White-Label →",
+      ctaSubtext: "Dedicated white-label onboarding on WhatsApp",
+      isSelfServe: false,
+      whatsappUrl: "https://wa.me/919866161775?text=Hi%2C%20I%27m%20interested%20in%20the%20Premium%20White-Label%20plan%20for%20MyMemento.",
       features: [
         "Unlimited photos",
         "Live photo wall (HD)",
@@ -72,11 +82,11 @@ export default function PricingSection() {
         </div>
 
         {/* 3 Pricing Cards */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-8 items-stretch max-w-5xl mx-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch max-w-5xl mx-auto pt-2">
           {tiers.map((tier) => (
             <div
               key={tier.name}
-              className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
+              className={`relative rounded-3xl p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 h-full ${
                 tier.isPopular
                   ? "bg-[#0B2545] text-white shadow-2xl border-2 border-amber-400/50 md:-translate-y-3"
                   : "bg-white text-slate-800 border border-slate-200 shadow-sm hover:shadow-md"
@@ -149,13 +159,30 @@ export default function PricingSection() {
                 ))}
               </ul>
 
-              {/* CTA Button */}
-              <button
-                onClick={() => openAuth("signup")}
-                className={`w-full py-3.5 rounded-full font-bold text-sm tracking-wide transition-all duration-200 active:scale-95 cursor-pointer ${tier.buttonStyle}`}
-              >
-                Get Started &rarr;
-              </button>
+              {/* CTA Action Area with Transparent Next-Step Label */}
+              <div className="pt-2">
+                {tier.isSelfServe ? (
+                  <button
+                    onClick={() => openAuth("signup")}
+                    className={`w-full py-3.5 px-4 rounded-full font-bold text-xs sm:text-sm tracking-wide transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2 ${tier.buttonStyle}`}
+                  >
+                    <span>{tier.ctaLabel}</span>
+                  </button>
+                ) : (
+                  <a
+                    href={tier.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`w-full py-3.5 px-4 rounded-full font-bold text-xs sm:text-sm tracking-wide transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2 ${tier.buttonStyle}`}
+                  >
+                    <MessageSquare size={16} className="shrink-0" />
+                    <span>{tier.ctaLabel}</span>
+                  </a>
+                )}
+                <p className={`text-[11px] mt-2 font-medium ${tier.isPopular ? "text-amber-200/80" : "text-slate-500"}`}>
+                  {tier.ctaSubtext}
+                </p>
+              </div>
             </div>
           ))}
         </div>

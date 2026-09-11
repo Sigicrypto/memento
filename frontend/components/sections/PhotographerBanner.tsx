@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function PhotographerBanner() {
   return (
-    <section className="w-full bg-[#072B57] text-white py-4 sm:py-5 px-4 sm:px-6 lg:px-12 overflow-hidden relative">
+    <section className="w-full bg-[#072B57] text-white py-6 sm:py-8 px-4 sm:px-6 lg:px-12 overflow-hidden relative">
       <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
         
         {/* Left: Photographer Visual & Content */}

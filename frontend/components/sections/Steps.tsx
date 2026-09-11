@@ -95,12 +95,12 @@ export default function Steps() {
         </div>
 
         {/* 3 Step Flow Cards with Connecting Chevrons */}
-        <div className="w-full flex flex-col md:flex-row items-stretch justify-between gap-4 lg:gap-4 max-w-5xl mx-auto">
+        <div className="w-full flex flex-col md:flex-row items-stretch justify-between gap-4 lg:gap-6 max-w-5xl mx-auto">
           {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
               <React.Fragment key={step.number}>
-                <div className="w-full md:flex-1 bg-[#EEF5FB] border border-blue-100/80 rounded-2xl p-5 flex flex-col items-start text-left shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-full md:flex-1 bg-[#EEF5FB] border border-blue-100/80 rounded-2xl p-5 sm:p-6 flex flex-col items-start text-left shadow-sm hover:shadow-md transition-shadow h-full justify-between">
                   <div className="flex items-center justify-between w-full mb-4">
                     <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center shrink-0">
                       {step.number}
