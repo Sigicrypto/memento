@@ -79,7 +79,7 @@ export default function TestimonialsSection() {
   ];
 
   return (
-    <section id="testimonials" className="w-full py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
+    <section id="testimonials" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center text-center">
         
         {/* Section Heading */}

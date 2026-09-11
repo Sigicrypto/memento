@@ -92,7 +92,7 @@ export default function CelebrationsSection() {
   const activeItem = celebrations.find((c) => c.id === selectedId) || celebrations[0];
 
   return (
-    <section id="celebrations" className="w-full py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
+    <section id="celebrations" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center text-center">
         
         {/* Section Heading with decorative gold rules */}
@@ -109,7 +109,7 @@ export default function CelebrationsSection() {
         </p>
 
         {/* 6 Category Interactive Selector Cards */}
-        <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-6 mb-12 sm:mb-16">
+        <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-6 sm:gap-y-8 gap-x-4 sm:gap-x-6 mb-14 sm:mb-16">
           {celebrations.map((item) => {
             const isSelected = item.id === selectedId;
             return (

@@ -57,8 +57,8 @@ export default function Steps() {
           </p>
         </div>
 
-        {/* 4 Steps Grid (Desktop Horizontal Flow with Connector, Mobile Vertical Stack) */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto relative">
+        {/* 4 Steps Grid (Desktop Horizontal Flow, Mobile Vertical Stack with Generous Gap) */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-8 sm:gap-y-10 lg:gap-y-8 gap-x-6 sm:gap-x-8 max-w-6xl mx-auto relative">
           
           {steps.map((step, idx) => {
             const Icon = step.icon;
@@ -69,39 +69,39 @@ export default function Steps() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative group"
+                className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center justify-between shadow-sm hover:shadow-md transition-shadow relative group h-full"
               >
                 {/* Header with Step Number & Tag */}
                 <div className="flex items-center justify-between w-full mb-6">
                   <span className="text-3xl sm:text-4xl font-serif font-black text-[#0A2540]/25 group-hover:text-amber-500/40 transition-colors">
                     {step.number}
                   </span>
-                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+                  <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
                     {step.tag}
                   </span>
                 </div>
 
                 {/* Icon & Title */}
-                <div className="flex flex-col flex-1">
-                  <div className="w-12 h-12 rounded-2xl bg-[#EEF5FB] border border-blue-100 flex items-center justify-center text-[#0A2540] mb-5 group-hover:bg-[#0A2540] group-hover:text-amber-400 transition-colors">
-                    <Icon size={22} className="stroke-[2.2]" />
+                <div className="flex flex-col items-center text-center flex-1">
+                  <div className="w-14 h-14 rounded-2xl bg-[#EEF5FB] border border-blue-100 flex items-center justify-center text-[#0A2540] mb-5 mx-auto group-hover:bg-[#0A2540] group-hover:text-amber-400 transition-colors shadow-sm">
+                    <Icon size={24} className="stroke-[2.2]" />
                   </div>
 
-                  <div className="text-xs font-mono font-bold tracking-widest text-amber-600 uppercase mb-1">
+                  <div className="text-xs font-mono font-bold tracking-widest text-amber-600 uppercase mb-1.5">
                     STEP {step.number} · {step.title}
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-[#0A2540] mb-2 leading-snug">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#0A2540] mb-2.5 leading-snug">
                     {step.headline}
                   </h3>
 
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-6">
                     {step.description}
                   </p>
                 </div>
 
                 {/* Bottom Status */}
-                <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                <div className="w-full pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-xs font-medium text-emerald-700">
                   <CheckCircle2 size={14} />
                   <span>Instant browser execution</span>
                 </div>

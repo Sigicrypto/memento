@@ -43,10 +43,10 @@ export default function StudioAdvantageSection() {
         </div>
 
         {/* Aceternity Parallax Photography Grid (3 Columns Desktop, 1 Column Mobile) */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto items-start">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-y-10 sm:gap-y-12 md:gap-y-8 gap-x-6 lg:gap-x-8 max-w-6xl mx-auto items-start">
           
           {/* Column 1: Candid Moments */}
-          <motion.div style={{ y: y1 }} className="flex flex-col gap-6">
+          <motion.div style={{ y: y1 }} className="flex flex-col gap-6 sm:gap-8">
             {/* Photo 1 */}
             <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-md border border-slate-200 group relative">
               <img
@@ -91,7 +91,7 @@ export default function StudioAdvantageSection() {
           </motion.div>
 
           {/* Column 2: Family & Guests */}
-          <motion.div style={{ y: y2 }} className="flex flex-col gap-6">
+          <motion.div style={{ y: y2 }} className="flex flex-col gap-6 sm:gap-8">
             {/* Concept Card 2 */}
             <div className="p-7 rounded-3xl bg-[#EEF5FB] border border-blue-100 shadow-sm flex flex-col items-start text-left">
               <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-200 flex items-center justify-center text-[#0A2540] mb-4">
@@ -136,7 +136,7 @@ export default function StudioAdvantageSection() {
           </motion.div>
 
           {/* Column 3: Behind the Scenes */}
-          <motion.div style={{ y: y3 }} className="flex flex-col gap-6">
+          <motion.div style={{ y: y3 }} className="flex flex-col gap-6 sm:gap-8">
             {/* Photo 5 */}
             <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-md border border-slate-200 group relative">
               <img

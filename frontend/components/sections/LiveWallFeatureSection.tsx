@@ -153,10 +153,10 @@ export default function LiveWallFeatureSection({ onOpenDemo }: LiveWallFeatureSe
         </div>
 
         {/* 3 Live Wall Feature Columns */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-left">
-          <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-start">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
-              <Tv size={22} />
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-y-8 md:gap-y-6 gap-x-6 sm:gap-x-8 max-w-5xl mx-auto text-center">
+          <div className="p-7 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5 mx-auto">
+              <Tv size={24} />
             </div>
             <h3 className="font-bold text-lg text-white mb-2">Works on Any Screen</h3>
             <p className="text-slate-300 text-sm leading-relaxed">
@@ -164,9 +164,9 @@ export default function LiveWallFeatureSection({ onOpenDemo }: LiveWallFeatureSe
             </p>
           </div>
 
-          <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-start">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
-              <ShieldCheck size={22} />
+          <div className="p-7 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5 mx-auto">
+              <ShieldCheck size={24} />
             </div>
             <h3 className="font-bold text-lg text-white mb-2">Safety-First Moderation</h3>
             <p className="text-slate-300 text-sm leading-relaxed">
@@ -174,9 +174,9 @@ export default function LiveWallFeatureSection({ onOpenDemo }: LiveWallFeatureSe
             </p>
           </div>
 
-          <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-start">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
-              <Palette size={22} />
+          <div className="p-7 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-5 mx-auto">
+              <Palette size={24} />
             </div>
             <h3 className="font-bold text-lg text-white mb-2">Custom Studio Co-Branding</h3>
             <p className="text-slate-300 text-sm leading-relaxed">

@@ -52,20 +52,20 @@ export default function TrustSecuritySection() {
         </div>
 
         {/* 4 Trust Cards Grid with Subtle Restrained Borders */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 sm:gap-y-10 lg:gap-y-8 gap-x-6 w-full max-w-6xl mx-auto">
           {trustPoints.map((point) => {
             const Icon = point.icon;
             return (
               <div
                 key={point.title}
-                className="p-7 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-amber-400/40 transition-all flex flex-col justify-between text-left group"
+                className="p-7 rounded-3xl bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-amber-400/40 transition-all flex flex-col items-center text-center justify-between group h-full"
               >
-                <div>
-                  <div className="w-12 h-12 rounded-2xl bg-[#EEF5FB] border border-blue-100 flex items-center justify-center text-[#0A2540] mb-5 group-hover:bg-[#0A2540] group-hover:text-amber-400 transition-colors">
-                    <Icon size={22} className="stroke-[2.2]" />
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[#EEF5FB] border border-blue-100 flex items-center justify-center text-[#0A2540] mb-5 mx-auto group-hover:bg-[#0A2540] group-hover:text-amber-400 transition-colors shadow-sm">
+                    <Icon size={24} className="stroke-[2.2]" />
                   </div>
 
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 mb-1 block">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 mb-1.5 block">
                     {point.title}
                   </span>
 
@@ -78,7 +78,7 @@ export default function TrustSecuritySection() {
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                <div className="w-full pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-xs font-medium text-emerald-700">
                   <CheckCircle2 size={14} />
                   <span>Guaranteed by design</span>
                 </div>

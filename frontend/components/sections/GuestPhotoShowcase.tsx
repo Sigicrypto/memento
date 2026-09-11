@@ -86,36 +86,37 @@ export default function GuestPhotoShowcase() {
 
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-12 flex flex-col items-center">
         
-        {/* Header with Navigation Controls */}
-        <div className="w-full flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-12">
-          <div className="max-w-2xl text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase mb-4">
-              <Sparkles size={13} className="text-amber-400" />
-              <span>ACTUAL GUEST PHOTOGRAPHS</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
-              Memories You Can Never Stage.
-            </h2>
-            <p className="text-slate-300 text-sm sm:text-base mt-3 leading-relaxed">
-              Photographers capture the timeless portraits. Memento unlocks the hundred other perspectives happening in every corner of the room.
-            </p>
+        {/* Centered Header with Navigation Controls */}
+        <div className="w-full max-w-3xl mx-auto flex flex-col items-center text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase mb-4 mx-auto">
+            <Sparkles size={13} className="text-amber-400" />
+            <span>ACTUAL GUEST PHOTOGRAPHS</span>
           </div>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+            Memories You Can Never Stage.
+          </h2>
+          <p className="text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl font-normal">
+            Photographers capture the timeless portraits. Memento unlocks the hundred other perspectives happening in every corner of the room.
+          </p>
 
-          {/* Carousel Arrow Buttons */}
-          <div className="hidden sm:flex items-center gap-3 shrink-0">
+          {/* Carousel Navigation Buttons */}
+          <div className="flex items-center justify-center gap-3 mt-6">
             <button
               onClick={scrollLeft}
-              className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+              className="w-11 h-11 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
               aria-label="Scroll left"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={18} />
             </button>
+            <span className="text-xs font-mono text-slate-400 px-3 select-none">
+              Swipe or Click to Explore
+            </span>
             <button
               onClick={scrollRight}
-              className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
+              className="w-11 h-11 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95"
               aria-label="Scroll right"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={18} />
             </button>
           </div>
         </div>

@@ -75,7 +75,7 @@ export default function FAQSection() {
         </div>
 
         {/* Clean Accessible Accordion */}
-        <div className="w-full space-y-3.5 mb-14">
+        <div className="w-full space-y-4 sm:space-y-5 mb-16">
           {faqs.map((item, idx) => {
             const isOpen = openIndex === idx;
             return (

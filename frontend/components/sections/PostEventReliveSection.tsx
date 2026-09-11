@@ -25,7 +25,7 @@ export default function PostEventReliveSection() {
         </div>
 
         {/* Magic UI Bento Grid (Gallery & Archive Dominant) */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 max-w-6xl mx-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-8 sm:gap-y-10 md:gap-y-8 gap-x-6 sm:gap-x-8 max-w-6xl mx-auto">
           
           {/* Card 1: 1-Click Master 4K ZIP (Span 7) */}
           <div className="md:col-span-7 bg-[#F8FAFC] border border-slate-200/90 rounded-3xl p-7 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
