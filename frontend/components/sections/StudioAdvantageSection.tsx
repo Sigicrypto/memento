@@ -61,11 +61,11 @@ export default function StudioAdvantageSection() {
             </div>
 
             {/* Concept Card 1 */}
-            <div className="p-7 rounded-3xl bg-[#F8FAFC] border border-slate-200/90 shadow-sm flex flex-col items-start text-left">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 mb-4">
+            <div className="p-7 rounded-3xl bg-[#F8FAFC] border border-slate-200/90 shadow-sm flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 mb-4 mx-auto">
                 <Smile size={24} className="stroke-[2.2]" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 text-center">
                 UNSCRIPTED CANDIDS
               </span>
               <h3 className="text-xl font-bold text-[#0A2540] mb-2">
@@ -93,11 +93,11 @@ export default function StudioAdvantageSection() {
           {/* Column 2: Family & Guests */}
           <motion.div style={{ y: y2 }} className="flex flex-col gap-6 sm:gap-8">
             {/* Concept Card 2 */}
-            <div className="p-7 rounded-3xl bg-[#EEF5FB] border border-blue-100 shadow-sm flex flex-col items-start text-left">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-200 flex items-center justify-center text-[#0A2540] mb-4">
+            <div className="p-7 rounded-3xl bg-[#EEF5FB] border border-blue-100 shadow-sm flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600/10 border border-blue-200 flex items-center justify-center text-[#0A2540] mb-4 mx-auto">
                 <HeartHandshake size={24} className="stroke-[2.2]" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-700 mb-1 text-center">
                 360° PERSPECTIVE
               </span>
               <h3 className="text-xl font-bold text-[#0A2540] mb-2">
@@ -151,11 +151,11 @@ export default function StudioAdvantageSection() {
             </div>
 
             {/* Concept Card 3 */}
-            <div className="p-7 rounded-3xl bg-[#F8FAFC] border border-slate-200/90 shadow-sm flex flex-col items-start text-left">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 mb-4">
+            <div className="p-7 rounded-3xl bg-[#F8FAFC] border border-slate-200/90 shadow-sm flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 mb-4 mx-auto">
                 <Clapperboard size={24} className="stroke-[2.2]" />
               </div>
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 mb-1 text-center">
                 ALL-DAY ENERGY
               </span>
               <h3 className="text-xl font-bold text-[#0A2540] mb-2">

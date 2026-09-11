@@ -92,7 +92,7 @@ export default function CelebrationsSection() {
   const activeItem = celebrations.find((c) => c.id === selectedId) || celebrations[0];
 
   return (
-    <section id="celebrations" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
+    <section id="celebrations" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-[#FAFAF8] border-b border-slate-100 flex flex-col items-center justify-center">
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center text-center">
         
         {/* Section Heading with decorative gold rules */}
@@ -150,8 +150,8 @@ export default function CelebrationsSection() {
         </div>
 
         {/* Interactive Celebration Spotlight Detail Card */}
-        <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-[#0A2540] to-[#041324] text-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl border border-white/10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 text-left transition-all duration-300">
-          <div className="relative w-full md:w-5/12 aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15">
+        <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-[#0A2540] to-[#041324] text-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-xl border border-white/10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 text-center md:text-left transition-all duration-300">
+          <div className="relative w-full md:w-5/12 aspect-[4/3] rounded-2xl overflow-hidden shadow-md shrink-0 border border-white/15 mx-auto">
             <img
               src={activeItem.image}
               alt={activeItem.name}
@@ -164,7 +164,7 @@ export default function CelebrationsSection() {
             </div>
           </div>
 
-          <div className="w-full md:w-7/12 flex flex-col items-start">
+          <div className="w-full md:w-7/12 flex flex-col items-center md:items-start text-center md:text-left">
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-2 leading-tight">
               {activeItem.headline}
             </h3>
@@ -173,7 +173,7 @@ export default function CelebrationsSection() {
             </p>
 
             {/* Highlights */}
-            <div className="grid grid-cols-2 gap-2.5 w-full mb-6">
+            <div className="grid grid-cols-2 gap-2.5 w-full mb-6 text-left">
               {activeItem.features.map((feat) => (
                 <div key={feat} className="flex items-center gap-2 text-xs text-blue-100">
                   <CheckCircle2 size={14} className="text-amber-400 shrink-0" />
@@ -182,7 +182,7 @@ export default function CelebrationsSection() {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 w-full">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 w-full">
               <button
                 onClick={() => openAuth("signup")}
                 className="px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center gap-2 cursor-pointer"

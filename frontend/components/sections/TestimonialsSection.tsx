@@ -151,10 +151,10 @@ export default function TestimonialsSection() {
           ))}
         </div>
 
-        {/* Partner Callout Box */}
+        {/* Partner Callout Box (Responsive Centered) */}
         <div className="w-full max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-[#0A2540] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10 text-center md:text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0 mx-auto sm:mx-0">
               <Camera size={24} />
             </div>
             <div>
@@ -169,7 +169,7 @@ export default function TestimonialsSection() {
 
           <Link
             href="/photographers"
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center gap-2 shrink-0 whitespace-nowrap"
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 whitespace-nowrap mx-auto md:mx-0"
           >
             <span>Partner With Us</span>
             <ArrowRight size={15} />

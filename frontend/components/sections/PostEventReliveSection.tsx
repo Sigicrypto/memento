@@ -5,7 +5,7 @@ import { FolderArchive, Calendar, Share2, Tv, DownloadCloud, Sparkles, Check } f
 
 export default function PostEventReliveSection() {
   return (
-    <section className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200/80 flex flex-col items-center justify-center">
+    <section className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-[#FAFAF8] border-b border-slate-200/80 flex flex-col items-center justify-center">
       <div className="max-w-7xl w-full mx-auto flex flex-col items-center">
         
         {/* Section Header */}

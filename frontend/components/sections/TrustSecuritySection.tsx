@@ -32,7 +32,7 @@ export default function TrustSecuritySection() {
   ];
 
   return (
-    <section className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-[#F8FAFC] border-b border-slate-200/80 flex flex-col items-center justify-center">
+    <section className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200/80 flex flex-col items-center justify-center">
       <div className="max-w-7xl mx-auto w-full flex flex-col items-center">
         
         {/* Section Heading */}

@@ -107,10 +107,10 @@ export default function LandingPage() {
 
       {/* Sticky Mobile CTA */}
       {showStickyCta && !stickyDismissed && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-3 px-4 z-50 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] md:hidden flex items-center gap-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-amber-300/40 py-3 px-4 z-50 shadow-[0_-4px_24px_rgba(245,158,11,0.18)] md:hidden flex items-center gap-2">
           <button
             onClick={() => openAuth("signup")}
-            className="flex-1 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] text-slate-950 font-bold text-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="flex-1 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] text-slate-950 font-bold text-sm shadow-[0_2px_12px_rgba(245,158,11,0.25)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>Create Your Event</span>
             <ArrowRight size={16} />
