@@ -34,9 +34,13 @@ const LinkedinIcon = ({ size = 16 }: { size?: number }) => (
 export default function Footer() {
   const links = [
     { label: "Home", href: "/" },
-    { label: "Events", href: "/#celebrations" },
+    { label: "How It Works", href: "/#how-it-works" },
+    { label: "Celebrations", href: "/#celebrations" },
+    { label: "Live Wall", href: "/#live-wall" },
     { label: "Pricing", href: "/#pricing" },
+    { label: "Testimonials", href: "/#testimonials" },
     { label: "FAQ", href: "/#faq" },
+    { label: "For Photographers", href: "/photographers" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
     { label: "Contact", href: "/contact" },
@@ -116,6 +120,11 @@ export default function Footer() {
           </span>
         </div>
 
+      </div>
+
+      {/* Sub-footer copyright */}
+      <div className="max-w-7xl mx-auto w-full pt-4 mt-4 border-t border-slate-100 flex items-center justify-center text-[11px] text-slate-400">
+        &copy; {new Date().getFullYear()} MyMemento. All rights reserved. Live photo sharing for weddings, studios &amp; celebrations.
       </div>
     </footer>
   );

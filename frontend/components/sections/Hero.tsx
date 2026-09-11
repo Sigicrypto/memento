@@ -89,7 +89,7 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
           </p>
 
           {/* CTA Buttons Row */}
-          <div className="flex flex-wrap items-center gap-3.5 mb-10 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-3.5 mb-4 w-full sm:w-auto">
             <button
               onClick={() => setIsDemoOpen(true)}
               className="px-6 sm:px-7 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base shadow-md hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
@@ -106,19 +106,37 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
             </a>
           </div>
 
+          {/* Secondary CTA for Photographers */}
+          <div className="mb-8 flex items-center gap-2 text-xs sm:text-sm text-slate-300">
+            <span>📸 Are you a photographer or studio?</span>
+            <a
+              href="/photographers"
+              className="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-4 decoration-amber-400/50 hover:decoration-amber-300 transition-colors"
+            >
+              Partner With Us &rarr;
+            </a>
+          </div>
+
           {/* 4 Feature Badges (Matching mockup layout & order) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-white/10 w-full">
             {trustFeatures.map((item, index) => {
               const Icon = item.icon;
               return (
-                <div key={index} className="flex items-center gap-2.5">
-                  <div className="text-amber-400 shrink-0">
-                    <Icon size={18} />
+                <div key={index} className="flex flex-col text-left">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="text-amber-400 shrink-0">
+                      <Icon size={18} />
+                    </div>
+                    <div className="text-[11px] sm:text-xs leading-tight font-medium text-slate-300">
+                      <div>{item.line1}</div>
+                      <div className="text-white font-semibold">{item.line2}</div>
+                    </div>
                   </div>
-                  <div className="text-[11px] sm:text-xs leading-tight font-medium text-slate-300">
-                    <div>{item.line1}</div>
-                    <div className="text-white font-semibold">{item.line2}</div>
-                  </div>
+                  {item.line1 === "100% Private" && (
+                    <p className="text-[10px] text-slate-400 leading-tight">
+                      Private QR only · Never indexed · Fully encrypted
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -126,13 +144,41 @@ export default function Hero({ setIsDemoOpen }: HeroProps) {
 
         </div>
 
-        {/* Mobile-only view of the scene */}
-        <div className="lg:hidden mt-8 w-full rounded-2xl overflow-hidden shadow-xl border border-white/10">
-          <img
-            src="/mockup-assets/hero-scene.jpg"
-            alt="Live Photo Wall at Wedding Reception"
-            className="w-full h-auto object-cover"
-          />
+        {/* Mobile-only view: Live Wall venue preview card (different from hero-scene.jpg) */}
+        <div className="lg:hidden mt-8 w-full rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-gradient-to-b from-[#0D2444] to-[#041021] p-3 sm:p-4">
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-xs font-bold tracking-wide uppercase text-amber-400">Live Venue Wall</span>
+            </div>
+            <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-0.5 rounded-full">Screen Feed (1080p/4K)</span>
+          </div>
+          
+          {/* Simulated Live Wall Photo Grid */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-sm">
+              <img src="/landing-hero/photo1.jpg" alt="Wedding guest selfie" className="w-full h-full object-cover" />
+              <span className="absolute bottom-1 left-1 text-[8px] bg-black/60 px-1 py-0.5 rounded text-white font-medium">Just now</span>
+            </div>
+            <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-sm">
+              <img src="/landing-hero/photo2.jpg" alt="Dance floor moment" className="w-full h-full object-cover" />
+              <span className="absolute bottom-1 left-1 text-[8px] bg-black/60 px-1 py-0.5 rounded text-white font-medium">4s ago</span>
+            </div>
+            <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-sm">
+              <img src="/landing-hero/photo3.jpg" alt="Bride and groom laughing" className="w-full h-full object-cover" />
+              <span className="absolute bottom-1 left-1 text-[8px] bg-black/60 px-1 py-0.5 rounded text-white font-medium">12s ago</span>
+            </div>
+          </div>
+
+          <div className="mt-3 pt-2.5 flex items-center justify-between text-[11px] text-slate-300 border-t border-white/10">
+            <span>✨ Photos sync in under 2 seconds</span>
+            <button
+              onClick={() => setIsDemoOpen(true)}
+              className="text-amber-400 font-bold hover:underline cursor-pointer flex items-center gap-1"
+            >
+              <span>Watch Live Demo</span> &rarr;
+            </button>
+          </div>
         </div>
 
       </div>

@@ -10,23 +10,27 @@ interface AnimatedLogoProps {
 
 export default function AnimatedLogo({ 
   className = "", 
-  width = 180, 
-  height = 60 
+  width, 
+  height = 40 
 }: AnimatedLogoProps) {
   return (
     <div 
-      className={`relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-[#141210] border border-[#292524] shadow-sm p-1.5 shrink-0 ${className}`}
-      style={{ 
-        width: width, 
-        height: height,
-      }}
+      className={`inline-flex items-center gap-2.5 shrink-0 select-none ${className}`}
+      style={{ height: height }}
     >
-      {/* Static PNG Logo */}
       <img 
-        src="/CC logo.png" 
-        alt="Memento Logo"
-        className="w-full h-full object-contain"
+        src="/memento-camera-logo.png" 
+        alt="MyMemento Logo"
+        className="h-full w-auto object-contain drop-shadow-sm"
       />
+      <div className="flex flex-col text-left">
+        <span className="font-serif font-black text-base sm:text-lg tracking-tight leading-none text-current">
+          MyMemento
+        </span>
+        <span className="text-[7.5px] font-bold tracking-[0.16em] uppercase text-amber-500 leading-tight mt-0.5">
+          YOUR MOMENTS LIVE FOREVER
+        </span>
+      </div>
     </div>
   );
 }

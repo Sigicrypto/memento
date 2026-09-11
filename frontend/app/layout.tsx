@@ -32,14 +32,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "Memento — Live Photo Wall for Wedding Photographers & Studios",
-    template: "%s | Memento"
+    default: "MyMemento — Live Photo Wall for Weddings, Events & Studios",
+    template: "%s | MyMemento"
   },
-  description: "The live photo sharing add-on for wedding photographers and studios. Guests scan QR, candid photos stream to venue screens in real time, all branded under your studio.",
-  keywords: ["wedding photographer tools", "live photo wall", "wedding studio add-on", "DSLR live sync", "wedding guest photos", "white-label photo wall", "event live wall"],
-  authors: [{ name: "Memento Team" }],
-  creator: "Memento",
-  publisher: "Memento",
+  description: "The live photo sharing add-on for weddings, events, and photographers. Guests scan QR, candid photos stream to venue screens in real time, with a private gallery archive.",
+  keywords: ["MyMemento", "live photo wall", "wedding photo wall", "event live photo sharing", "wedding guest photos", "white-label photo wall", "photographer add-on"],
+  authors: [{ name: "MyMemento Team" }],
+  creator: "MyMemento",
+  publisher: "MyMemento",
   formatDetection: {
     email: false,
     address: false,
@@ -50,16 +50,16 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: "Memento — Live Photo Wall for Wedding Photographers & Studios",
-    description: "The live photo sharing add-on for wedding photographers and studios. Guests scan QR, candid photos stream to venue screens in real time, all branded under your studio.",
+    title: "MyMemento — Live Photo Wall for Weddings, Events & Studios",
+    description: "The live photo sharing add-on for weddings, events, and photographers. Guests scan QR, candid photos stream to venue screens in real time, with a private gallery archive.",
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.mymementoapp.com',
-    siteName: 'Memento',
+    siteName: 'MyMemento',
     images: [
       {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Memento - Live Photo Wall for Wedding Photographers & Studios',
+        url: '/memento-camera-logo.png',
+        width: 1024,
+        height: 869,
+        alt: 'MyMemento — Live Photo Wall',
       },
     ],
     locale: 'en_IN',
@@ -67,20 +67,20 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Memento — Live Photo Wall for Wedding Photographers & Studios",
-    description: "The live photo sharing add-on for wedding photographers and studios. Guests scan QR, candid photos stream to venue screens in real time, all branded under your studio.",
-    images: ['/og-image.jpg'],
+    title: "MyMemento — Live Photo Wall for Weddings, Events & Studios",
+    description: "The live photo sharing add-on for weddings, events, and photographers. Guests scan QR, candid photos stream to venue screens in real time, with a private gallery archive.",
+    images: ['/memento-camera-logo.png'],
   },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Memento Hub',
+    title: 'MyMemento',
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon.ico',
-    apple: '/favicon.ico',
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/memento-camera-logo.png',
   },
 };
 

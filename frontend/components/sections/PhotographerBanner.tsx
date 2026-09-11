@@ -40,7 +40,7 @@ export default function PhotographerBanner() {
             href="/photographers"
             className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
           >
-            <span>Become a Memento Partner</span>
+            <span>Become a MyMemento Partner</span>
             <ArrowRight size={15} />
           </Link>
         </div>

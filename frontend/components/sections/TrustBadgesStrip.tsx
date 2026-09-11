@@ -6,24 +6,24 @@ import { ShieldCheck, Users, Heart, Headphones } from "lucide-react";
 export default function TrustBadgesStrip() {
   const badges = [
     {
-      icon: ShieldCheck,
-      title: "Secure & Encrypted",
-      desc: "Your photos are safe with us.",
+      icon: Users,
+      title: "500+ Events Powered",
+      desc: "Weddings & galas worldwide.",
     },
     {
-      icon: Users,
-      title: "Trusted by Professionals",
-      desc: "Used across India.",
+      icon: ShieldCheck,
+      title: "150,000+ Photos Shared",
+      desc: "Full 4K resolution & encrypted.",
     },
     {
       icon: Heart,
-      title: "Made for Special Moments",
-      desc: "Weddings, birthdays and more.",
+      title: "100% In-Browser",
+      desc: "Zero app download for guests.",
     },
     {
       icon: Headphones,
-      title: "Dedicated Support",
-      desc: "We're here to help.",
+      title: "Direct WhatsApp Support",
+      desc: "Real-time event day concierge.",
     },
   ];
 

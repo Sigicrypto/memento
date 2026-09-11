@@ -5,8 +5,11 @@ import dynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
 import Steps from '@/components/sections/Steps';
 import CelebrationsSection from '@/components/sections/CelebrationsSection';
+import LiveWallGallery from '@/components/sections/LiveWallGallery';
+import TestimonialsSection from '@/components/sections/TestimonialsSection';
 import PricingSection from '@/components/sections/PricingSection';
 import PhotographerBanner from '@/components/sections/PhotographerBanner';
+import FAQSection from '@/components/sections/FAQSection';
 import TrustBadgesStrip from '@/components/sections/TrustBadgesStrip';
 import Footer from '@/components/sections/Footer';
 import { ArrowRight } from 'lucide-react';
@@ -48,22 +51,31 @@ export default function LandingPage() {
         {/* 1. Hero: Every Guest. Every Moment. Live. */}
         <Hero setIsDemoOpen={setIsDemoOpen} />
 
-        {/* 2. How It Works: Just 3 simple steps */}
+        {/* 2. How It Works: Dual-Track (Guests vs. Hosts/Photographers) */}
         <Steps />
 
-        {/* 3. Made for Every Celebration: 6 event category cards */}
+        {/* 3. Made for Every Celebration: Interactive category cards & spotlight */}
         <CelebrationsSection />
 
-        {/* 4. Simple & Transparent Pricing: Starter, Pro (Popular), Premium */}
+        {/* 4. Live Wall in Action: Authentic venue screens & projector setups */}
+        <LiveWallGallery onOpenDemo={() => setIsDemoOpen(true)} />
+
+        {/* 5. Social Proof: Loved by Photographers & Couples */}
+        <TestimonialsSection />
+
+        {/* 6. Simple & Transparent Pricing: Starter, Pro, Premium */}
         <PricingSection />
 
-        {/* 5. For Photographers: Add More Value. Earn More. */}
+        {/* 7. For Photographers: Add More Value. Earn More. */}
         <PhotographerBanner />
 
-        {/* 6. Trust Badges Strip: 4 value props */}
+        {/* 8. Frequently Asked Questions: Working Accordion */}
+        <FAQSection />
+
+        {/* 9. Trust Badges Strip: Concrete Verified Stats */}
         <TrustBadgesStrip />
 
-        {/* 7. Footer: Links, socials & Made in India */}
+        {/* 10. Footer: Links, socials & Made in India */}
         <Footer />
       </main>
 

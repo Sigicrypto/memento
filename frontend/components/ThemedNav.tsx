@@ -63,17 +63,19 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
   }
 
   const navItems: NavItem[] = [
-    { label: 'Home', href: '/' },
     { label: 'How It Works', href: '/#how-it-works' },
-    { label: 'Events', href: '/#celebrations' },
+    { label: 'Celebrations', href: '/#celebrations' },
+    { label: 'Live Wall', href: '/#live-wall' },
     { label: 'Pricing', href: '/#pricing' },
     { label: 'Testimonials', href: '/#testimonials' },
+    { label: 'FAQ', href: '/#faq' },
+    { label: 'Partner With Us', href: '/photographers', desktopClass: 'text-amber-600 hover:text-amber-700 font-bold' },
   ];
 
   return (
     <>
       <header
-        className={`sticky top-0 left-0 right-0 w-full z-[9999] transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)]`}
+        className="sticky top-0 left-0 right-0 w-full z-[9999] transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)]"
       >
         <div className="max-w-7xl mx-auto w-full h-16 md:h-20 flex items-center justify-between px-4 sm:px-6 lg:px-10">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
@@ -84,7 +86,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
 
           {/* Desktop Menu */}
           {!mini && (
-            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 flex-nowrap shrink-0">
+            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 flex-nowrap shrink-0">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
@@ -92,11 +94,7 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
                   className={`group relative text-sm font-semibold text-slate-700 hover:text-slate-950 transition-colors duration-200 whitespace-nowrap shrink-0 ${item.desktopClass || ''}`}
                 >
                   {item.label}
-                  {item.label === 'Home' ? (
-                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-slate-900 rounded-full" />
-                  ) : (
-                    <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-accent transition-all duration-300 group-hover:w-full" />
-                  )}
+                  <span className="absolute -bottom-1.5 left-0 h-0.5 w-0 bg-amber-400 transition-all duration-300 group-hover:w-full" />
                 </Link>
               ))}
             </nav>
