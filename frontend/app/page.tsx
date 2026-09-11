@@ -3,14 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Hero from '@/components/sections/Hero';
+import ProductDemoSection from '@/components/sections/ProductDemoSection';
+import FoundingStudioSection from '@/components/sections/FoundingStudioSection';
 import Steps from '@/components/sections/Steps';
+import GuestPhotoShowcase from '@/components/sections/GuestPhotoShowcase';
 import CelebrationsSection from '@/components/sections/CelebrationsSection';
-import LiveWallGallery from '@/components/sections/LiveWallGallery';
-import TestimonialsSection from '@/components/sections/TestimonialsSection';
+import StudioAdvantageSection from '@/components/sections/StudioAdvantageSection';
+import LiveWallFeatureSection from '@/components/sections/LiveWallFeatureSection';
+import PostEventReliveSection from '@/components/sections/PostEventReliveSection';
+import TrustSecuritySection from '@/components/sections/TrustSecuritySection';
 import PricingSection from '@/components/sections/PricingSection';
-import PhotographerBanner from '@/components/sections/PhotographerBanner';
+import TestimonialsSection from '@/components/sections/TestimonialsSection';
 import FAQSection from '@/components/sections/FAQSection';
-import TrustBadgesStrip from '@/components/sections/TrustBadgesStrip';
+import FinalCtaSection from '@/components/sections/FinalCtaSection';
 import Footer from '@/components/sections/Footer';
 import { ArrowRight } from 'lucide-react';
 import { useAuthModal } from '@/context/AuthModalContext';
@@ -45,37 +50,53 @@ export default function LandingPage() {
 
   return (
     <>
-      <ThemedNav />
+      <ThemedNav onOpenDemo={() => setIsDemoOpen(true)} />
+      
       <main className="min-h-screen bg-white text-slate-900 relative overflow-hidden flex flex-col items-stretch">
         
-        {/* 1. Hero: Every Guest. Every Moment. Live. */}
+        {/* 1. Hero: Add a Live Photo Wall to Every Wedding You Shoot (Parallax Images + Reveal) */}
         <Hero setIsDemoOpen={setIsDemoOpen} />
 
-        {/* 2. How It Works: Dual-Track (Guests vs. Hosts/Photographers) */}
+        {/* 2. Interactive Live Product Demonstration (Scan -> Capture -> Share -> Experience) */}
+        <ProductDemoSection onOpenDemo={() => setIsDemoOpen(true)} />
+
+        {/* 3. Founding Studio Program (Magic UI Bento Grid: 0 Apps, <2s Sync, DSLR, White-Label) */}
+        <FoundingStudioSection />
+
+        {/* 4. How It Works: 4 Clean Editorial Steps */}
         <Steps />
 
-        {/* 3. Made for Every Celebration: Interactive category cards & spotlight */}
+        {/* 5. Guest Photo Showcase: Aceternity Apple Cards Carousel with Real Photographs */}
+        <GuestPhotoShowcase />
+
+        {/* 6. Made for Every Celebration: Category Selector Cards & Spotlight */}
         <CelebrationsSection />
 
-        {/* 4. Live Wall in Action: Authentic venue screens & projector setups */}
-        <LiveWallGallery onOpenDemo={() => setIsDemoOpen(true)} />
+        {/* 7. The Studio Advantage: Parallax Grid (You Capture Masterpieces, Guests Capture Everything Else) */}
+        <StudioAdvantageSection />
 
-        {/* 5. Social Proof: Loved by Photographers & Couples */}
-        <TestimonialsSection />
+        {/* 8. Memento Live: Luxury Venue Screen Display + Magic UI Photo Marquee */}
+        <LiveWallFeatureSection onOpenDemo={() => setIsDemoOpen(true)} />
 
-        {/* 6. Simple & Transparent Pricing: Starter, Pro, Premium */}
+        {/* 9. After the Event: Bento Grid (1-Click 4K ZIP, Timeline, Private Link, Slideshow) */}
+        <PostEventReliveSection />
+
+        {/* 10. Privacy & Control: Clean Trustworthy Cards with Subtle Glowing Borders */}
+        <TrustSecuritySection />
+
+        {/* 11. Transparent Pricing: Starter, Pro, Premium */}
         <PricingSection />
 
-        {/* 7. For Photographers: Add More Value. Earn More. */}
-        <PhotographerBanner />
+        {/* 12. Verified Social Proof: Loved by Photographers & Couples */}
+        <TestimonialsSection />
 
-        {/* 8. Frequently Asked Questions: Working Accordion */}
+        {/* 13. Frequently Asked Questions: Smooth Accessible Accordion with Verified Answers */}
         <FAQSection />
 
-        {/* 9. Trust Badges Strip: Concrete Verified Stats */}
-        <TrustBadgesStrip />
+        {/* 14. Cinematic Final CTA: Wedding Photography Backdrop + Moving Border Studio CTA */}
+        <FinalCtaSection />
 
-        {/* 10. Footer: Links, socials & Made in India */}
+        {/* 15. Center-Aligned Luxury Footer: All Links, Socials & Legal */}
         <Footer />
       </main>
 
@@ -91,7 +112,7 @@ export default function LandingPage() {
             onClick={() => openAuth("signup")}
             className="flex-1 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] text-slate-950 font-bold text-sm shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Get Started</span>
+            <span>Create Your Event</span>
             <ArrowRight size={16} />
           </button>
           <button

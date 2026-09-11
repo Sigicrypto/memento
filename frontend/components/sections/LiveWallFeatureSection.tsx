@@ -1,136 +1,190 @@
 "use client";
 
 import React from "react";
-import { Tv, ShieldCheck, Palette, ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { Tv, ShieldCheck, Palette, Sparkles, Play, ArrowRight, Radio } from "lucide-react";
 
-export default function LiveWallFeatureSection() {
-  const features = [
-    {
-      icon: <Tv className="w-5 h-5 text-primary" />,
-      bg: "bg-primary/10 border border-primary/20",
-      title: "Works on Any Screen",
-      desc: "Smart TVs, projectors, HDMI setups, or laptops — if it has a browser, it works.",
-    },
-    {
-      icon: <ShieldCheck className="w-5 h-5 text-primary" />,
-      bg: "bg-primary/10 border border-primary/20",
-      title: "Safety-First Moderation",
-      desc: "Review guest photos in real time before they hit the screen, or enable 1-tap Auto-Approve.",
-    },
-    {
-      icon: <Palette className="w-5 h-5 text-accent" />,
-      bg: "bg-accent/10 border border-accent/20",
-      title: "Studio & Couple Co-Branding",
-      desc: "Couple monogram, studio watermark, custom colors, and sponsor overlays.",
-    },
+interface LiveWallFeatureSectionProps {
+  onOpenDemo?: () => void;
+}
+
+export default function LiveWallFeatureSection({ onOpenDemo }: LiveWallFeatureSectionProps) {
+  const marqueePhotos = [
+    { url: "/landing-hero/photo1.jpg", caption: "First dance magic" },
+    { url: "/landing-hero/photo2.jpg", caption: "Altar joy" },
+    { url: "/landing-hero/photo3.jpg", caption: "Table 4 laughter" },
+    { url: "/landing-hero/photo5.jpg", caption: "Family toast" },
+    { url: "/landing-hero/photo7.jpg", caption: "Midnight dancing" },
+    { url: "/landing-hero/photo8.jpg", caption: "Grand entrance" },
+    { url: "/landing-hero/photo9.jpg", caption: "Rooftop sunset" },
+    { url: "/landing-hero/photo11.jpg", caption: "Champagne tower" },
   ];
 
   return (
-    <section className="w-full py-20 md:py-28 px-4 md:px-8 bg-bg border-b border-border flex flex-col items-center justify-center text-center">
-      <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
+    <section id="live-wall" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-[#050E1D] text-white relative overflow-hidden border-b border-slate-800">
+      {/* Background Lighting */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-600/10 rounded-full blur-[160px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col items-center">
         
-        {/* Centered Header */}
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wider uppercase mb-4 mx-auto">
-          <Tv size={13} />
-          FLAGSHIP LIVE EXPERIENCE
-        </span>
-        <h2 className="text-3xl md:text-5xl font-black text-text-primary tracking-tight font-display mb-4 max-w-3xl mx-auto">
-          Memento Live — Your Event's Real-Time Photo Wall
-        </h2>
-        <p className="text-text-secondary text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-          Display guest photos on any venue screen the moment they're captured. The ultimate interactive centerpiece for weddings, receptions, and corporate galas.
-        </p>
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase mb-4">
+            <Radio size={14} className="text-red-400 animate-pulse" />
+            <span>FLAGSHIP VENUE EXPERIENCE</span>
+          </div>
 
-        {/* Center TV Display Mockup (Context 2: Dim-Venue #1C1917) */}
-        <div className="w-full max-w-4xl mx-auto mb-14">
-          <div className="bg-neutral-800 rounded-2xl border-4 border-neutral-300 p-1.5 sm:p-2 shadow-2xl overflow-hidden">
-            {/* TV Screen Top Bezel */}
-            <div className="h-9 bg-[#292524] flex items-center px-3 justify-between rounded-t-xl border-b border-neutral-700">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
-                <span className="text-xs font-bold text-white tracking-widest uppercase">MEMENTO LIVE</span>
-              </div>
-              <div className="text-xs text-neutral-300 font-medium">Priya & Arjun's Sangeet</div>
-              <div className="text-[11px] text-accent font-bold hidden sm:block">184 Photos · Live</div>
-            </div>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight mb-4">
+            Memento Live — Your Event&apos;s Real-Time Photo Wall
+          </h2>
+
+          <p className="text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
+            Display guest photos on any screen the moment they&apos;re captured. The ultimate interactive centerpiece for weddings, sangeets, and corporate galas.
+          </p>
+        </div>
+
+        {/* Large Venue Screen Simulator Presentation */}
+        <div className="w-full max-w-5xl mx-auto mb-16">
+          <div className="bg-[#141E30] rounded-3xl border-4 sm:border-8 border-slate-800 p-2 sm:p-3 shadow-2xl overflow-hidden relative group">
             
-            {/* Live Wall Canvas (Context 2: Dim-Venue #1C1917) */}
-            <div className="p-3.5 grid grid-cols-3 gap-2.5 aspect-video bg-[#1C1917] relative">
-              {/* Photo 1: Just Landed (Amber Pulse) */}
-              <div className="relative bg-gradient-to-br from-amber-200 via-rose-200 to-pink-200 rounded-lg shadow-md border-2 border-accent overflow-hidden p-2 flex flex-col justify-between">
-                <span className="self-end px-1.5 py-0.5 rounded bg-accent text-white font-bold text-[8px] flex items-center gap-1 shadow">
-                  <span className="w-1 h-1 rounded-full bg-white animate-ping" />
-                  New
-                </span>
-                <span className="text-[9px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded self-start">Aunt Seema</span>
+            {/* TV Screen Top Bezel */}
+            <div className="h-10 bg-[#0A1322] flex items-center justify-between px-4 rounded-t-2xl border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                <span className="text-xs font-black tracking-widest text-white uppercase">MEMENTO LIVE</span>
               </div>
+              <div className="text-xs text-slate-300 font-medium">Priya &amp; Rohan&apos;s Sangeet &amp; Wedding</div>
+              <div className="text-xs text-amber-300 font-mono hidden sm:flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>184 Photos · Live Ingestion</span>
+              </div>
+            </div>
 
-              {/* Photo 2: Large Center Tile */}
-              <div className="relative bg-gradient-to-bl from-sky-200 via-indigo-200 to-purple-200 rounded-lg shadow-md row-span-2 overflow-hidden p-2 flex flex-col justify-end">
-                <span className="text-[9px] font-bold text-neutral-900 bg-white/90 px-1.5 py-0.5 rounded self-start">First Dance ✨</span>
-              </div>
-
-              {/* Photo 3: Pinned with Coral Tag */}
-              <div className="relative bg-gradient-to-tr from-emerald-200 via-teal-200 to-green-200 rounded-lg shadow-md overflow-hidden p-2 flex flex-col justify-between">
-                <span className="self-end px-1.5 py-0.5 rounded bg-[#FF7A59] text-white font-bold text-[8px] shadow">
-                  ⭐ Pinned
-                </span>
-                <span className="text-[9px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded self-start">Grandparents</span>
-              </div>
+            {/* Live Wall Screen Matrix */}
+            <div className="p-3 sm:p-5 grid grid-cols-2 md:grid-cols-4 gap-3 bg-[#030914] relative aspect-[16/9] min-h-[300px] sm:min-h-[420px]">
               
+              {/* Photo 1 (Featured Just Landed with Amber Glow) */}
+              <div className="relative rounded-2xl overflow-hidden border-2 border-amber-400 shadow-xl col-span-2 row-span-2 group/card">
+                <img
+                  src="/landing-hero/photo1.jpg"
+                  alt="Live screen feature photo"
+                  className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-red-500 text-white font-bold text-xs flex items-center gap-1.5 shadow">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                  Just Landed
+                </span>
+                
+                <div className="absolute bottom-3 left-3 right-3 text-left">
+                  <p className="text-white text-sm sm:text-base font-bold">First dance under fairy lights ✨</p>
+                  <p className="text-amber-300 text-xs font-mono">Captured by Table 2 · 2s ago</p>
+                </div>
+              </div>
+
+              {/* Photo 2 */}
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-md">
+                <img src="/landing-hero/photo2.jpg" alt="Altar joy" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 text-[10px] text-white font-medium">Ceremony Tears</span>
+              </div>
+
+              {/* Photo 3 */}
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-md">
+                <img src="/landing-hero/photo3.jpg" alt="Table candids" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 text-[10px] text-white font-medium">Table 4 Laughs</span>
+              </div>
+
               {/* Photo 4 */}
-              <div className="bg-gradient-to-tl from-purple-200 to-pink-200 rounded-lg shadow-md overflow-hidden p-2 flex items-end">
-                <span className="text-[8px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded">Toast 🥂</span>
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-md">
+                <img src="/landing-hero/photo7.jpg" alt="Dance floor" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 text-[10px] text-white font-medium">Dance Floor 💃</span>
               </div>
 
               {/* Photo 5 */}
-              <div className="bg-gradient-to-br from-orange-200 to-amber-200 rounded-lg shadow-md overflow-hidden p-2 flex items-end">
-                <span className="text-[8px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded">DJ Energy 💃</span>
-              </div>
-              
-              {/* Photo 6 */}
-              <div className="bg-gradient-to-bl from-cyan-200 to-blue-200 rounded-lg shadow-md overflow-hidden p-2 flex items-end">
-                <span className="text-[8px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded">Table 8 😂</span>
-              </div>
-              {/* Photo 7 */}
-              <div className="bg-gradient-to-tr from-rose-200 to-pink-200 rounded-lg shadow-md overflow-hidden p-2 flex items-end">
-                <span className="text-[8px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded">Ring Ceremony</span>
-              </div>
-              {/* Photo 8 */}
-              <div className="bg-gradient-to-tl from-teal-200 to-emerald-200 rounded-lg shadow-md overflow-hidden p-2 flex items-end">
-                <span className="text-[8px] font-bold text-neutral-900 bg-white/90 px-1 py-0.5 rounded">Baraat 🎉</span>
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-md">
+                <img src="/landing-hero/photo8.jpg" alt="Baraat" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 text-[10px] text-white font-medium">Baraat Energy</span>
               </div>
 
-              {/* Lower-third Watermark Bar (Deep Teal) */}
-              <div className="absolute bottom-1.5 left-3.5 right-3.5 py-1 px-2.5 rounded bg-black/75 backdrop-blur-sm border border-white/10 flex items-center justify-between text-[9px]">
-                <span className="text-neutral-300">Scan table cards to add your photos live</span>
-                <span className="text-[#0E6B6B] font-bold">Royal Moments Studio</span>
+              {/* Bottom Watermark Overlay Bar */}
+              <div className="absolute bottom-2 left-4 right-4 py-1.5 px-4 rounded-xl bg-black/80 backdrop-blur-md border border-white/10 flex items-center justify-between text-xs z-10">
+                <span className="text-slate-300">Scan QR on your table card to share your photos live</span>
+                <span className="text-amber-400 font-bold">Royal Moments Studio</span>
               </div>
             </div>
+
+            {/* Simulator Overlay Trigger */}
+            <div className="p-4 bg-[#0A1322] flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10">
+              <span className="text-xs text-slate-300">
+                Works on Smart TVs, HDMI monitors, projectors, or LED walls — if it has a web browser, it runs.
+              </span>
+              <button
+                onClick={onOpenDemo}
+                className="px-5 py-2 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-xs tracking-wide shadow transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                <Play size={13} className="fill-slate-950" />
+                <span>Launch Fullscreen Live Wall Simulator</span>
+              </button>
+            </div>
+
           </div>
         </div>
 
-        {/* 3 Feature Cards (Centered Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mb-10 text-center">
-          {features.map((feat) => (
-            <div key={feat.title} className="flex flex-col items-center text-center p-6 rounded-2xl bg-surface border border-border shadow-card hover:shadow-card-hover transition-all h-full justify-start">
-              <div className={`w-12 h-12 rounded-xl ${feat.bg} flex items-center justify-center mb-4 mx-auto shrink-0`}>
-                {feat.icon}
+        {/* Magic UI Subtle Photo Stream Marquee */}
+        <div className="w-full max-w-6xl mx-auto overflow-hidden relative mb-16 py-3">
+          <div className="flex gap-4 animate-marquee hover:[animation-play-state:paused] w-max">
+            {[...marqueePhotos, ...marqueePhotos].map((photo, i) => (
+              <div
+                key={i}
+                className="w-40 sm:w-48 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-lg shrink-0 relative group"
+              >
+                <img src={photo.url} alt={photo.caption} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 text-[10px] font-medium text-white truncate max-w-[90%]">
+                  {photo.caption}
+                </span>
               </div>
-              <h3 className="font-bold text-text-primary text-base mb-2 text-center">{feat.title}</h3>
-              <p className="text-text-secondary text-sm leading-relaxed text-center">{feat.desc}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <Link
-          href="/features/live"
-          className="inline-flex items-center justify-center gap-2 text-primary font-bold hover:underline transition-all mx-auto text-base"
-        >
-          <span>Explore All Live Features</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+        {/* 3 Live Wall Feature Columns */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-left">
+          <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-start">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
+              <Tv size={22} />
+            </div>
+            <h3 className="font-bold text-lg text-white mb-2">Works on Any Screen</h3>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Smart TVs, projectors, laptops, or stage LED panels. Simply open your private Live Wall URL in any browser and press full-screen.
+            </p>
+          </div>
+
+          <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-start">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
+              <ShieldCheck size={22} />
+            </div>
+            <h3 className="font-bold text-lg text-white mb-2">Safety-First Moderation</h3>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Review and approve photos with a single tap in your host console before they reach the screen, or enable 1-tap Auto-Approve anytime.
+            </p>
+          </div>
+
+          <div className="p-7 rounded-3xl bg-white/[0.03] border border-white/10 shadow-sm flex flex-col items-start">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
+              <Palette size={22} />
+            </div>
+            <h3 className="font-bold text-lg text-white mb-2">Custom Studio Co-Branding</h3>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Display couple monograms, studio watermarks, custom hex colors, and sponsor logos on the lower-third ticker bar.
+            </p>
+          </div>
+        </div>
+
       </div>
     </section>
   );

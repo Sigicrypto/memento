@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FAQItem {
   q: string;
@@ -9,7 +10,6 @@ interface FAQItem {
 }
 
 export default function FAQSection() {
-  // First item open by default for immediate preview
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const faqs: FAQItem[] = [
@@ -34,7 +34,7 @@ export default function FAQSection() {
       a: "On the Pro plan, you can set your couple monogram (e.g., 'Ananya & Rohan'), select your theme colors, and customize the live wall ticker bar and table cards. On our Premium tier for studios and agencies, full white-labeling allows you to upload your photography studio logo and hex brand colors, removing all MyMemento references so couples and guests interact exclusively with your brand.",
     },
     {
-      q: "What happens to photos after the gallery retention period ends (30 days / 1 year / lifetime)?",
+      q: "What happens to photos after the gallery retention period ends?",
       a: "All photos and video clips remain safely stored in your high-speed cloud archive for the full duration of your plan (30 days on Starter, 1 year on Pro, and extended/lifetime on Premium). Before any expiration, you receive automatic reminders via email and WhatsApp with a direct 1-click download link for your full-resolution master 4K ZIP. We never purge memories without notifying you first.",
     },
     {
@@ -56,24 +56,26 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="w-full py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-slate-50/50 border-b border-slate-100 flex flex-col items-center justify-center">
-      <div className="max-w-4xl w-full mx-auto flex flex-col items-center text-center">
+    <section id="faq" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-200/80 flex flex-col items-center justify-center">
+      <div className="max-w-4xl w-full mx-auto flex flex-col items-center">
         
         {/* Section Heading */}
-        <div className="flex items-center justify-center gap-3 md:gap-4 mb-2">
-          <div className="w-8 sm:w-16 h-px bg-amber-400" />
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl font-bold text-[#0A2540] tracking-tight">
-            Frequently Asked Questions
+        <div className="text-center max-w-2xl mx-auto mb-14">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold tracking-[0.15em] uppercase mb-4">
+            FREQUENTLY ASKED QUESTIONS
+          </span>
+
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
+            Everything You Need to Know
           </h2>
-          <div className="w-8 sm:w-16 h-px bg-amber-400" />
+
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-normal">
+            Clear answers about privacy, venue screen displays, setup, and studio policies.
+          </p>
         </div>
 
-        <p className="text-slate-500 text-sm sm:text-base mb-12 max-w-xl">
-          Everything you need to know about privacy, venue displays, setup, and event policies.
-        </p>
-
-        {/* Accordion List */}
-        <div className="w-full space-y-3.5 text-left mb-12">
+        {/* Clean Accessible Accordion */}
+        <div className="w-full space-y-3.5 mb-14">
           {faqs.map((item, idx) => {
             const isOpen = openIndex === idx;
             return (
@@ -81,53 +83,67 @@ export default function FAQSection() {
                 key={idx}
                 className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                   isOpen
-                    ? "bg-white border-[#0A2540]/25 shadow-md ring-1 ring-[#0A2540]/5"
-                    : "bg-white/80 border-slate-200/80 hover:border-slate-300 hover:bg-white"
+                    ? "bg-white border-[#0A2540]/30 shadow-md ring-1 ring-[#0A2540]/5"
+                    : "bg-[#F8FAFC] border-slate-200 hover:border-slate-300 hover:bg-white"
                 }`}
               >
                 <button
                   onClick={() => toggle(idx)}
-                  className="w-full px-5 sm:px-6 py-4 sm:py-5 flex items-center justify-between gap-4 text-left cursor-pointer select-none"
+                  className="w-full px-5 sm:px-7 py-4 sm:py-5 flex items-center justify-between gap-4 text-left cursor-pointer select-none"
                   aria-expanded={isOpen}
                 >
                   <span className="font-bold text-[#0A2540] text-sm sm:text-base md:text-lg leading-snug pr-2">
                     {item.q}
                   </span>
                   <div
-                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-200 ${
                       isOpen
                         ? "bg-[#0A2540] text-white rotate-180"
-                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                        : "bg-slate-200/80 text-slate-600 hover:bg-slate-300"
                     }`}
                   >
                     <ChevronDown size={16} />
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-1 text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed border-t border-slate-100/70">
-                    {item.a}
-                  </div>
-                )}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                    >
+                      <div className="px-5 sm:px-7 pb-5 sm:pb-6 pt-1 text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed border-t border-slate-100">
+                        {item.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
         </div>
 
         {/* Live Concierge Support Box */}
-        <div className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-6 px-6 py-4 rounded-2xl bg-white border border-slate-200 shadow-sm text-slate-700 text-xs sm:text-sm">
-          <div className="flex items-center gap-2 font-medium">
-            <HelpCircle size={18} className="text-amber-500 shrink-0" />
-            <span>Still have questions about your venue or setup?</span>
+        <div className="w-full max-w-2xl bg-gradient-to-r from-amber-50 to-emerald-50 border border-slate-200/90 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+              <MessageCircle size={20} />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">Still have questions about your venue or setup?</h4>
+              <p className="text-xs text-slate-600 mt-0.5">Chat directly with our founder on WhatsApp for fast answers.</p>
+            </div>
           </div>
+
           <a
             href="https://wa.me/919866161775?text=Hi%2C%20I%20have%20a%20question%20about%20MyMemento%20for%20my%20event."
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-bold hover:underline cursor-pointer"
+            className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap"
           >
-            <MessageCircle size={16} />
-            <span>Chat on WhatsApp &rarr;</span>
+            Chat on WhatsApp &rarr;
           </a>
         </div>
 

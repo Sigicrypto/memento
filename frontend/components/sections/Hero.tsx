@@ -1,186 +1,292 @@
 "use client";
 
-import React from "react";
-import { Play, Smartphone, UserCheck, Zap, Lock } from "lucide-react";
-import Image from "next/image";
+import React, { useRef } from "react";
+import { Play, ArrowRight, Smartphone, Zap, Lock, Camera, Sparkles } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useAuthModal } from "@/context/AuthModalContext";
 
 interface HeroProps {
   setIsDemoOpen: (val: boolean) => void;
 }
 
 export default function Hero({ setIsDemoOpen }: HeroProps) {
-  const trustFeatures = [
-    {
-      icon: Smartphone,
-      line1: "No App",
-      line2: "Required",
-    },
-    {
-      icon: UserCheck,
-      line1: "No Login",
-      line2: "Needed",
-    },
-    {
-      icon: Zap,
-      line1: "Works on",
-      line2: "Any Phone",
-    },
-    {
-      icon: Lock,
-      line1: "100% Private",
-      line2: "& Secure",
-    },
-  ];
+  const { openAuth } = useAuthModal();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Parallax scroll effects (desktop only)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const yCenter = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const yUpper = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const yLower = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.2]);
+
+  const words = "Add a Live Photo Wall to Every Wedding You Shoot.".split(" ");
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#030F22] text-white pt-10 sm:pt-14 pb-12 sm:pb-16 px-4 sm:px-8 lg:px-14">
-      {/* Right Side Visual - Fills the right side seamlessly matching the mockup */}
-      <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-[55%] pointer-events-none select-none overflow-hidden">
-        <img
-          src="/mockup-assets/hero-scene.jpg"
-          alt="Live photo sharing on venue screen at wedding reception"
-          className="w-full h-full object-cover object-left"
-        />
-        {/* Smooth Left Gradient Fade so it blends into #030F22 */}
-        <div className="absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-[#030F22] to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#030F22] to-transparent" />
-      </div>
+    <section
+      ref={containerRef}
+      className="relative w-full overflow-hidden bg-[#040C1A] text-white pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-8 lg:px-14 border-b border-slate-800/60"
+    >
+      {/* Subtle Luxury Ambient Background Gradients */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-40" />
 
-      <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center">
-        
-        {/* Left Column: Headline, Copy & CTAs */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left max-w-xl">
+      <div className="max-w-7xl mx-auto w-full relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        {/* Left Column: Editorial Headline, Supporting Copy, and CTAs */}
+        <div className="lg:col-span-6 flex flex-col items-start text-left">
           
-          {/* Eyebrow */}
-          <div className="text-amber-400 font-bold text-xs sm:text-sm tracking-[0.2em] uppercase mb-4">
-            TURN MOMENTS INTO MEMORIES
-          </div>
+          {/* Eyebrow Pill Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/15 text-amber-300 text-xs font-bold tracking-[0.15em] uppercase mb-6 backdrop-blur-sm"
+          >
+            <Sparkles size={13} className="text-amber-400" />
+            <span>Live Wedding &amp; Event Photo Sharing</span>
+          </motion.div>
 
-          {/* Headline H1 (Serif font matching mockup) */}
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-[60px] font-bold leading-[1.08] tracking-tight text-white mb-6">
-            Every Guest.<br />
-            Every Moment.<br />
-            <span className="relative inline-flex items-center text-amber-400">
-              Live.
-              {/* Decorative Underline flourish */}
-              <svg
-                className="absolute -bottom-2.5 left-0 w-full h-3 text-amber-400/90"
-                viewBox="0 0 120 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+          {/* Headline H1 with Word-by-Word Reveal */}
+          <h1 className="font-serif text-3xl sm:text-5xl lg:text-[54px] font-bold leading-[1.12] tracking-tight text-white mb-6">
+            {words.map((word, idx) => (
+              <motion.span
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.08 + idx * 0.035 }}
+                className={`inline-block mr-2.5 ${
+                  word.includes("Live") || word.includes("Photo") || word.includes("Wall")
+                    ? "text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-200 to-amber-400 font-extrabold"
+                    : ""
+                }`}
               >
-                <path
-                  d="M2 9C35 3 85 3 118 9"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              {/* Floating Heart */}
-              <span className="ml-3 text-2xl sm:text-3xl font-light text-amber-300 select-none">
-                ♡
-              </span>
-            </span>
+                {word}
+              </motion.span>
+            ))}
           </h1>
 
           {/* Subheadline */}
-          <p className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-lg mb-8 font-normal">
-            Guests scan a QR code, capture and share their photos from their phones. Watch them appear live on the big screen and keep them forever in a private gallery.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="text-slate-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl mb-8 font-normal"
+          >
+            Guests scan a QR code, capture unscripted moments in their phone browser, and watch them appear live on your venue screen in seconds.
+            <span className="block mt-2 text-slate-400 text-xs sm:text-sm font-medium">
+              Zero apps for guests to download · Zero logins · 100% private.
+            </span>
+          </motion.p>
 
-          {/* CTA Buttons Row */}
-          <div className="flex flex-wrap items-center gap-3.5 mb-4 w-full sm:w-auto">
+          {/* CTAs Row */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="flex flex-wrap items-center gap-3.5 mb-5 w-full sm:w-auto"
+          >
             <button
-              onClick={() => setIsDemoOpen(true)}
-              className="px-6 sm:px-7 py-3 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base shadow-md hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
+              onClick={() => openAuth("signup")}
+              className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-[#E5A93C] hover:from-amber-500 hover:to-[#D9932B] text-slate-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Play size={15} className="fill-slate-950 text-slate-950" />
-              <span>Try Live Demo</span>
+              <span>Add Memento to Your Studio</span>
+              <ArrowRight size={16} />
             </button>
 
-            <a
-              href="#how-it-works"
-              className="px-6 sm:px-7 py-3 rounded-full border border-white/60 hover:border-white hover:bg-white/10 text-white font-semibold text-sm sm:text-base active:scale-95 transition-all cursor-pointer"
+            <button
+              onClick={() => setIsDemoOpen(true)}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full border border-white/30 hover:border-white hover:bg-white/10 text-white font-semibold text-sm sm:text-base active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer backdrop-blur-sm"
             >
-              How It Works
-            </a>
-          </div>
+              <Play size={15} className="fill-white text-white" />
+              <span>See Live Demo</span>
+            </button>
+          </motion.div>
 
-          {/* Secondary CTA for Photographers */}
-          <div className="mb-8 flex items-center gap-2 text-xs sm:text-sm text-slate-300">
-            <span>📸 Are you a photographer or studio?</span>
+          {/* Secondary Studio Partner Link */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+            className="mb-8 flex items-center gap-2 text-xs sm:text-sm text-slate-400"
+          >
+            <Camera size={15} className="text-amber-400 shrink-0" />
+            <span>Are you a photographer or studio?</span>
             <a
               href="/photographers"
               className="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-4 decoration-amber-400/50 hover:decoration-amber-300 transition-colors"
             >
-              Partner With Us &rarr;
+              Explore Studio Benefits &rarr;
             </a>
-          </div>
+          </motion.div>
 
-          {/* 4 Feature Badges (Matching mockup layout & order) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-white/10 w-full">
-            {trustFeatures.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <div key={index} className="flex flex-col text-left">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="text-amber-400 shrink-0">
-                      <Icon size={18} />
-                    </div>
-                    <div className="text-[11px] sm:text-xs leading-tight font-medium text-slate-300">
-                      <div>{item.line1}</div>
-                      <div className="text-white font-semibold">{item.line2}</div>
-                    </div>
-                  </div>
-                  {item.line1 === "100% Private" && (
-                    <p className="text-[10px] text-slate-400 leading-tight">
-                      Private QR only · Never indexed · Fully encrypted
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          {/* 4 Feature Badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.65 }}
+            className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-5 pt-6 border-t border-white/10 w-full"
+          >
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <Smartphone size={16} className="text-amber-400 shrink-0" />
+                <span className="text-xs font-semibold text-white">0 App Installs</span>
+              </div>
+              <span className="text-[11px] text-slate-400 leading-tight">Instant browser camera</span>
+            </div>
 
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <Zap size={16} className="text-amber-400 shrink-0" />
+                <span className="text-xs font-semibold text-white">&lt; 2s Screen Sync</span>
+              </div>
+              <span className="text-[11px] text-slate-400 leading-tight">Real-time venue stream</span>
+            </div>
+
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <Camera size={16} className="text-amber-400 shrink-0" />
+                <span className="text-xs font-semibold text-white">DSLR + Candids</span>
+              </div>
+              <span className="text-[11px] text-slate-400 leading-tight">Pro camera ingestion</span>
+            </div>
+
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <Lock size={16} className="text-amber-400 shrink-0" />
+                <span className="text-xs font-semibold text-white">100% Private QR</span>
+              </div>
+              <span className="text-[11px] text-slate-400 leading-tight">Never indexed on web</span>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Mobile-only view: Live Wall venue preview card (different from hero-scene.jpg) */}
-        <div className="lg:hidden mt-8 w-full rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-gradient-to-b from-[#0D2444] to-[#041021] p-3 sm:p-4">
-          <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-xs font-bold tracking-wide uppercase text-amber-400">Live Venue Wall</span>
-            </div>
-            <span className="text-[10px] text-slate-300 bg-white/10 px-2 py-0.5 rounded-full">Screen Feed (1080p/4K)</span>
-          </div>
+        {/* Right Column: Parallax Cinematic Photography Experience */}
+        <div className="lg:col-span-6 relative w-full flex items-center justify-center">
           
-          {/* Simulated Live Wall Photo Grid */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-sm">
-              <img src="/landing-hero/photo1.jpg" alt="Wedding guest selfie" className="w-full h-full object-cover" />
-              <span className="absolute bottom-1 left-1 text-[8px] bg-black/60 px-1 py-0.5 rounded text-white font-medium">Just now</span>
-            </div>
-            <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-sm">
-              <img src="/landing-hero/photo2.jpg" alt="Dance floor moment" className="w-full h-full object-cover" />
-              <span className="absolute bottom-1 left-1 text-[8px] bg-black/60 px-1 py-0.5 rounded text-white font-medium">4s ago</span>
-            </div>
-            <div className="relative aspect-square rounded-lg overflow-hidden border border-white/10 shadow-sm">
-              <img src="/landing-hero/photo3.jpg" alt="Bride and groom laughing" className="w-full h-full object-cover" />
-              <span className="absolute bottom-1 left-1 text-[8px] bg-black/60 px-1 py-0.5 rounded text-white font-medium">12s ago</span>
-            </div>
-          </div>
+          {/* Desktop Parallax Multi-Card Composition */}
+          <motion.div
+            style={{ opacity }}
+            className="hidden sm:block relative w-full h-[520px] max-w-lg mx-auto"
+          >
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/20 via-blue-500/15 to-purple-500/10 rounded-3xl filter blur-2xl pointer-events-none" />
 
-          <div className="mt-3 pt-2.5 flex items-center justify-between text-[11px] text-slate-300 border-t border-white/10">
-            <span>✨ Photos sync in under 2 seconds</span>
-            <button
-              onClick={() => setIsDemoOpen(true)}
-              className="text-amber-400 font-bold hover:underline cursor-pointer flex items-center gap-1"
+            {/* Card 1 (Center / Main): First Dance Reception Venue Screen */}
+            <motion.div
+              style={{ y: yCenter }}
+              className="absolute left-6 top-8 w-[82%] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/20 z-20 bg-slate-900 group"
             >
-              <span>Watch Live Demo</span> &rarr;
-            </button>
-          </div>
-        </div>
+              <img
+                src="/landing-hero/photo1.jpg"
+                alt="Wedding couple first dance displayed live on venue screen"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              
+              {/* Live Ticker Bar */}
+              <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                <span className="px-2.5 py-1 rounded-full bg-red-500/90 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow">
+                  <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                  Live on Venue Screen
+                </span>
+                <span className="text-[11px] text-white/90 font-medium bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/10">
+                  Priya &amp; Rohan
+                </span>
+              </div>
 
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white">
+                <span className="font-semibold text-white/95">First Dance under the fairy lights ✨</span>
+                <span className="text-amber-300 font-mono text-[11px]">Just now</span>
+              </div>
+            </motion.div>
+
+            {/* Card 2 (Floating Top Right): Joyful Couple Emotion */}
+            <motion.div
+              style={{ y: yUpper }}
+              className="absolute right-0 top-0 w-[48%] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-2 border-amber-400/40 z-30 bg-slate-950"
+            >
+              <img
+                src="/landing-hero/photo2.jpg"
+                alt="Joyful laughter candid moment"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <div className="absolute bottom-2 left-2.5 text-[10px] font-semibold text-amber-300 flex items-center gap-1">
+                <span>✨ Guest Snapshot</span>
+                <span className="text-white/60">· 4s ago</span>
+              </div>
+            </motion.div>
+
+            {/* Card 3 (Floating Bottom Left): Dance Floor Energy */}
+            <motion.div
+              style={{ y: yLower }}
+              className="absolute left-0 bottom-4 w-[52%] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/20 z-30 bg-slate-950"
+            >
+              <img
+                src="/landing-hero/photo7.jpg"
+                alt="Late night dance floor guest candids"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+              <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-[10px] text-white font-medium">
+                <span className="truncate">Dance floor celebration 💃</span>
+                <span className="text-amber-300 shrink-0 font-mono">Table 6</span>
+              </div>
+            </motion.div>
+
+            {/* Floating Live Badge */}
+            <div className="absolute -bottom-2 right-6 z-40 px-3.5 py-1.5 rounded-full bg-slate-900/95 border border-amber-400/40 text-white text-xs font-bold shadow-xl flex items-center gap-2 backdrop-blur-md">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>184 Photos Uploaded Live</span>
+            </div>
+          </motion.div>
+
+          {/* Mobile Single Photographic View (High-Performance, Zero Lag) */}
+          <div className="sm:hidden w-full flex flex-col items-center">
+            <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/20 relative bg-slate-900">
+              <img
+                src="/landing-hero/photo1.jpg"
+                alt="Wedding couple live on venue screen"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              
+              <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between">
+                <span className="px-2 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                  Live Wall
+                </span>
+                <span className="text-[10px] text-white/90 font-medium bg-black/60 px-2 py-0.5 rounded-full">
+                  Priya &amp; Rohan
+                </span>
+              </div>
+
+              <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-xs text-white">
+                <span className="font-semibold text-xs">First Dance under fairy lights ✨</span>
+                <span className="text-amber-300 font-mono text-[10px]">Live</span>
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center justify-between w-full px-1 text-[11px] text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>Syncs in &lt; 2 seconds</span>
+              </span>
+              <button
+                onClick={() => setIsDemoOpen(true)}
+                className="text-amber-400 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>Launch Interactive Demo</span> &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );

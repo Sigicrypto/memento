@@ -1,131 +1,114 @@
 "use client";
 
-import React, { useState } from "react";
-import { QrCode, Camera, Tv, ChevronRight, Sparkles, MonitorPlay, DownloadCloud, Users, Briefcase } from "lucide-react";
+import React from "react";
+import { QrCode, Camera, Upload, Tv, CheckCircle2, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Steps() {
-  const [activeTab, setActiveTab] = useState<"guests" | "hosts">("guests");
-
-  const guestSteps = [
+  const steps = [
     {
-      number: "1",
+      number: "01",
+      title: "SCAN",
+      headline: "Point & Open",
+      description: "Guests aim their smartphone camera at table cards or entrance banners. The gallery opens in their browser instantly.",
       icon: QrCode,
-      title: "Scan QR Code",
-      description: "Point phone camera at table cards or entrance posters. Instant access.",
+      tag: "No App Install",
     },
     {
-      number: "2",
+      number: "02",
+      title: "CAPTURE",
+      headline: "Snap Unscripted Moments",
+      description: "A fast, intuitive in-browser camera opens. Guests snap authentic candids from their table and dance floor.",
       icon: Camera,
-      title: "Snap in Browser",
-      description: "Mobile web camera opens instantly. No app to download, no account required.",
+      tag: "Zero Logins",
     },
     {
-      number: "3",
+      number: "03",
+      title: "SHARE",
+      headline: "Sub-2s Cloud Ingestion",
+      description: "One tap uploads each photo with smart offline queueing in case of spotty reception in venue basements.",
+      icon: Upload,
+      tag: "Offline Queueing",
+    },
+    {
+      number: "04",
+      title: "EXPERIENCE",
+      headline: "Live on the Venue Screen",
+      description: "Photos project live onto venue TVs, projectors, or LED stages within 2 seconds. The room erupts in excitement.",
       icon: Tv,
-      title: "Appears Live on Screen",
-      description: "Photos and selfies stream live to venue TVs and projectors within 2 seconds.",
+      tag: "1080p & 4K",
     },
   ];
-
-  const hostSteps = [
-    {
-      number: "1",
-      icon: Sparkles,
-      title: "Create Event & QR Kit",
-      description: "Set up in 60 seconds. Add your couple/studio branding and download printable QR cards.",
-    },
-    {
-      number: "2",
-      icon: MonitorPlay,
-      title: "Connect Venue Screen",
-      description: "Open the live wall link on any smart TV, projector, or laptop via HDMI or AirPlay.",
-    },
-    {
-      number: "3",
-      icon: DownloadCloud,
-      title: "Moderate & 4K ZIP",
-      description: "Filter photos in real-time or auto-approve, then download full-resolution ZIP archives.",
-    },
-  ];
-
-  const steps = activeTab === "guests" ? guestSteps : hostSteps;
 
   return (
-    <section id="how-it-works" className="w-full py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white border-b border-slate-100 flex flex-col items-center justify-center">
-      <div className="max-w-6xl w-full mx-auto flex flex-col items-center text-center">
+    <section id="how-it-works" className="w-full py-20 md:py-28 px-4 sm:px-6 lg:px-12 bg-[#F8FAFC] border-b border-slate-200/80 flex flex-col items-center justify-center">
+      <div className="max-w-7xl w-full mx-auto flex flex-col items-center">
         
-        {/* Section Heading with decorative flanking rules */}
-        <div className="flex items-center justify-center gap-3 md:gap-4 mb-2">
-          <div className="w-8 sm:w-16 h-px bg-amber-400" />
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-4xl font-bold text-[#0A2540] tracking-tight">
-            How It Works
+        {/* Section Heading */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-slate-200/80 text-slate-700 text-xs font-bold tracking-[0.15em] uppercase mb-4">
+            HOW MEMENTO WORKS
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[#0A2540] tracking-tight leading-tight mb-4">
+            Four Steps. Zero Friction for Guests.
           </h2>
-          <div className="w-8 sm:w-16 h-px bg-amber-400" />
+          <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-normal">
+            Designed for 80-year-old grandparents and tech-savvy teens alike. If a guest can scan a restaurant menu, they can use Memento.
+          </p>
         </div>
 
-        <p className="text-slate-500 text-sm sm:text-base mb-8">
-          Simple for guests. Powerful for hosts and photographers.
-        </p>
-
-        {/* Dual-Track Tabs */}
-        <div className="inline-flex p-1 rounded-full bg-slate-100 border border-slate-200 mb-12 shadow-inner">
-          <button
-            onClick={() => setActiveTab("guests")}
-            className={`flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === "guests"
-                ? "bg-[#0A2540] text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Users size={15} />
-            <span>For Guests</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("hosts")}
-            className={`flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              activeTab === "hosts"
-                ? "bg-[#0A2540] text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Briefcase size={15} />
-            <span>For Hosts &amp; Photographers</span>
-          </button>
-        </div>
-
-        {/* 3 Step Flow Cards with Connecting Chevrons */}
-        <div className="w-full flex flex-col md:flex-row items-stretch justify-between gap-6 sm:gap-8 md:gap-4 lg:gap-6 max-w-5xl mx-auto">
+        {/* 4 Steps Grid (Desktop Horizontal Flow with Connector, Mobile Vertical Stack) */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-6xl mx-auto relative">
+          
           {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
-              <React.Fragment key={step.number}>
-                <div className="w-full md:flex-1 bg-[#EEF5FB] border border-blue-100/80 rounded-2xl p-5 sm:p-6 flex flex-col items-start text-left shadow-sm hover:shadow-md transition-shadow h-full justify-between">
-                  <div className="flex items-center justify-between w-full mb-4">
-                    <div className="w-8 h-8 rounded-full bg-[#0A2540] text-white font-bold text-sm flex items-center justify-center shrink-0">
-                      {step.number}
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-white/90 flex items-center justify-center text-[#0A2540] shadow-sm">
-                      <Icon className="w-5 h-5 stroke-[2.2]" />
-                    </div>
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative group"
+              >
+                {/* Header with Step Number & Tag */}
+                <div className="flex items-center justify-between w-full mb-6">
+                  <span className="text-3xl sm:text-4xl font-serif font-black text-[#0A2540]/25 group-hover:text-amber-500/40 transition-colors">
+                    {step.number}
+                  </span>
+                  <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200/60">
+                    {step.tag}
+                  </span>
+                </div>
+
+                {/* Icon & Title */}
+                <div className="flex flex-col flex-1">
+                  <div className="w-12 h-12 rounded-2xl bg-[#EEF5FB] border border-blue-100 flex items-center justify-center text-[#0A2540] mb-5 group-hover:bg-[#0A2540] group-hover:text-amber-400 transition-colors">
+                    <Icon size={22} className="stroke-[2.2]" />
                   </div>
 
-                  <h3 className="font-bold text-[#0A2540] text-base sm:text-lg mb-1.5">
-                    {step.title}
+                  <div className="text-xs font-mono font-bold tracking-widest text-amber-600 uppercase mb-1">
+                    STEP {step.number} · {step.title}
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-bold text-[#0A2540] mb-2 leading-snug">
+                    {step.headline}
                   </h3>
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
                     {step.description}
                   </p>
                 </div>
 
-                {idx < steps.length - 1 && (
-                  <div className="hidden md:flex items-center justify-center text-slate-400 shrink-0 px-1 self-center">
-                    <ChevronRight size={22} className="stroke-[2.5]" />
-                  </div>
-                )}
-              </React.Fragment>
+                {/* Bottom Status */}
+                <div className="pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs font-medium text-emerald-700">
+                  <CheckCircle2 size={14} />
+                  <span>Instant browser execution</span>
+                </div>
+              </motion.div>
             );
           })}
+
         </div>
 
       </div>
