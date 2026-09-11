@@ -82,7 +82,7 @@ export default function PricingSection() {
         </div>
 
         {/* 3 Pricing Cards */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch max-w-5xl mx-auto pt-2">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-y-12 sm:gap-y-14 md:gap-y-8 gap-x-6 lg:gap-x-8 items-stretch max-w-5xl mx-auto pt-4 pb-2">
           {tiers.map((tier) => (
             <div
               key={tier.name}

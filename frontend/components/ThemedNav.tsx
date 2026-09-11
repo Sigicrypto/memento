@@ -84,9 +84,9 @@ export default function ThemedNav({ showAuthButtons = true, mini = false }: Them
             </div>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu - Center Aligned */}
           {!mini && (
-            <nav className="hidden lg:flex items-center gap-5 xl:gap-7 flex-nowrap shrink-0">
+            <nav className="hidden lg:flex items-center justify-center gap-5 xl:gap-7 flex-1 mx-6 flex-nowrap">
               {navItems.map((item) => (
                 <Link
                   key={item.label}

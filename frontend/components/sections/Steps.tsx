@@ -95,7 +95,7 @@ export default function Steps() {
         </div>
 
         {/* 3 Step Flow Cards with Connecting Chevrons */}
-        <div className="w-full flex flex-col md:flex-row items-stretch justify-between gap-4 lg:gap-6 max-w-5xl mx-auto">
+        <div className="w-full flex flex-col md:flex-row items-stretch justify-between gap-6 sm:gap-8 md:gap-4 lg:gap-6 max-w-5xl mx-auto">
           {steps.map((step, idx) => {
             const Icon = step.icon;
             return (

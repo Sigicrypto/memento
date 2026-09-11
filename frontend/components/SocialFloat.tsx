@@ -31,7 +31,7 @@ export default function SocialFloat() {
   ) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 sm:bottom-6 sm:left-6 sm:right-auto z-50 flex items-center gap-2 sm:gap-3">
+    <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2.5 sm:gap-3">
       <a 
         href="https://www.facebook.com/1270689629459999" 
         target="_blank" 

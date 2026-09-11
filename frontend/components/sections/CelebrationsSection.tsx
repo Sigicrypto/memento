@@ -109,7 +109,7 @@ export default function CelebrationsSection() {
         </p>
 
         {/* 6 Category Interactive Selector Cards */}
-        <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
+        <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-6 mb-12 sm:mb-16">
           {celebrations.map((item) => {
             const isSelected = item.id === selectedId;
             return (

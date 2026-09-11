@@ -47,18 +47,18 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-white border-t border-slate-200/80 py-5 sm:py-6 px-4 sm:px-6 lg:px-12">
-      <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+    <footer className="w-full bg-white border-t border-slate-200/80 py-10 sm:py-12 px-4 sm:px-6 lg:px-12 flex flex-col items-center justify-center text-center">
+      <div className="max-w-4xl mx-auto w-full flex flex-col items-center justify-center gap-6 text-center">
         
-        {/* Left: Brand Logo */}
-        <div className="shrink-0">
+        {/* Centered Brand Logo */}
+        <div className="flex items-center justify-center">
           <Link href="/" className="inline-block">
             <MyMementoLogo />
           </Link>
         </div>
 
-        {/* Center: Inline Links */}
-        <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm text-slate-600 font-medium">
+        {/* Centered Inline Links */}
+        <div className="flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-5 gap-y-2 text-xs sm:text-sm text-slate-600 font-medium max-w-2xl mx-auto">
           {links.map((item, idx) => (
             <React.Fragment key={item.label}>
               <Link
@@ -68,15 +68,15 @@ export default function Footer() {
                 {item.label}
               </Link>
               {idx < links.length - 1 && (
-                <span className="text-slate-300 select-none">|</span>
+                <span className="text-slate-300 select-none">&bull;</span>
               )}
             </React.Fragment>
           ))}
         </div>
 
-        {/* Right: Social Icons + Made in India */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
-          <div className="flex items-center gap-3 text-slate-700">
+        {/* Centered Social Icons + Made in India */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-1">
+          <div className="flex items-center justify-center gap-3 text-slate-700">
             <a
               href="https://instagram.com"
               target="_blank"
@@ -115,16 +115,16 @@ export default function Footer() {
             </a>
           </div>
 
-          <span className="text-xs text-slate-500 font-medium flex items-center gap-1.5 whitespace-nowrap pl-2 border-l border-slate-200 hidden sm:flex">
+          <span className="text-xs text-slate-500 font-medium flex items-center justify-center gap-1.5 whitespace-nowrap sm:pl-3 sm:border-l sm:border-slate-200">
             Made with <span className="text-red-500">❤️</span> in India 🇮🇳
           </span>
         </div>
 
-      </div>
+        {/* Sub-footer copyright */}
+        <div className="w-full pt-4 mt-2 border-t border-slate-100 flex items-center justify-center text-center text-[11px] text-slate-400">
+          &copy; {new Date().getFullYear()} MyMemento. All rights reserved. Live photo sharing for weddings, studios &amp; celebrations.
+        </div>
 
-      {/* Sub-footer copyright */}
-      <div className="max-w-7xl mx-auto w-full pt-4 mt-4 border-t border-slate-100 flex items-center justify-center text-[11px] text-slate-400">
-        &copy; {new Date().getFullYear()} MyMemento. All rights reserved. Live photo sharing for weddings, studios &amp; celebrations.
       </div>
     </footer>
   );

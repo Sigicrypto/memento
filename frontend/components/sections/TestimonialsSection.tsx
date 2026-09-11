@@ -96,7 +96,7 @@ export default function TestimonialsSection() {
         </p>
 
         {/* Testimonials 4-Card Grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch text-left mb-12 sm:mb-16 max-w-5xl mx-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-y-10 sm:gap-y-12 md:gap-y-8 gap-x-8 items-stretch text-left mb-16 sm:mb-20 max-w-5xl mx-auto">
           {testimonials.map((t, idx) => (
             <div
               key={idx}

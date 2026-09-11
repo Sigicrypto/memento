@@ -28,8 +28,8 @@ export default function TrustBadgesStrip() {
   ];
 
   return (
-    <section className="w-full py-8 md:py-10 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100">
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 items-center justify-between">
+    <section className="w-full py-10 md:py-14 px-4 sm:px-6 lg:px-12 bg-white border-b border-slate-100">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-2 lg:grid-cols-4 gap-y-8 sm:gap-y-10 gap-x-6 sm:gap-x-8 items-center justify-between">
         {badges.map((item, index) => {
           const Icon = item.icon;
           return (

@@ -71,7 +71,7 @@ export default function LiveWallGallery({ onOpenDemo }: LiveWallGalleryProps) {
         </div>
 
         {/* Showcase Grid */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-left mb-12 max-w-5xl mx-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-y-10 sm:gap-y-12 md:gap-y-8 gap-x-8 text-left mb-14 sm:mb-16 max-w-5xl mx-auto">
           {showcaseItems.map((item, idx) => {
             const Tag1Icon = item.tag1.icon;
             const Tag2Icon = item.tag2.icon;
